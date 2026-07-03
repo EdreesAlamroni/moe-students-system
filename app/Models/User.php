@@ -207,11 +207,4 @@ class User extends Authenticatable
     {
         return auth($scope->guard())->user()?->model_id;
     }
-
-    private function currentOrganizationId(?UserScope $scope = null): ?int
-    {
-        $scope ??= $this->scope;
-
-        return auth($scope->guard())->user()?->model_id;
-    }
 }

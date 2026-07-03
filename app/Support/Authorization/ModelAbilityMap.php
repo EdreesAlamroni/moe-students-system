@@ -18,7 +18,12 @@ final class ModelAbilityMap
      */
     public static function make(Model $model, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
     {
-        $guard ??= DashboardAuth::resolve()?->guard ?? config('auth.defaults.guard');
+        if ($guard === null) {
+            $dashboardAuth = DashboardAuth::resolve();
+            $guard = $dashboardAuth !== null
+                ? $dashboardAuth->guard
+                : null;
+        }
 
         $user ??= auth($guard)->user();
 
