@@ -1,0 +1,153 @@
+/*
+ * Start: SomarSans
+ */
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-Thin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-ThinItalic.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-ExtraLight.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 200;
+    font-style: italic;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-ExtraLightItalic.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-Light.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-LightItalic.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 400;
+    font-style: italic;
+    src: url('./../assets/fonts/SomarSans-RegularItalic.woff2') format('woff2');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-MediumItalic.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 600;
+    font-style: italic;
+    src: url('./../assets/fonts/SomarSans-SemiBoldItalic.woff2') format('woff2');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-Bold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-BoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-ExtraBold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-ExtraBoldItalic.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-Black.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'SomarSans';
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+    src: url('./../assets/fonts/SomarSans-BlackItalic.woff2') format('woff2');
+}
+
+/*
+ * End: SomarSans
+ */

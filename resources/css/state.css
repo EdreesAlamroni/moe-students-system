@@ -1,0 +1,208 @@
+/*
+ * Start: For Pills
+ */
+
+.pill {
+    @apply inline-flex items-baseline space-x-2 space-x-reverse rounded-full px-3.5 py-1.5 text-xs font-medium;
+}
+
+.pill span {
+    @apply relative pr-2.5 before:absolute before:top-[0.35rem] before:-right-1 before:h-1.5 before:w-1.5 before:rounded-full before:content-[''];
+}
+
+.pill-red {
+    @apply bg-red-100 text-red-600;
+}
+.pill-red:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-red-200/70;
+}
+.pill-red span {
+    @apply before:bg-red-500;
+}
+
+.pill-green {
+    @apply bg-green-100 text-green-700;
+}
+.pill-green:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-green-200/70;
+}
+.pill-green span {
+    @apply before:bg-green-600;
+}
+
+.pill-lime {
+    @apply bg-lime-100 text-lime-700;
+}
+.pill-lime:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-lime-200/70;
+}
+.pill-lime span {
+    @apply before:bg-lime-600;
+}
+
+.pill-sky {
+    @apply bg-sky-100 text-sky-700;
+}
+.pill-sky:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-sky-200/70;
+}
+.pill-sky span {
+    @apply before:bg-sky-600;
+}
+
+.pill-blue {
+    @apply bg-blue-100 text-blue-700;
+}
+.pill-blue:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-blue-200/70;
+}
+.pill-blue span {
+    @apply before:bg-blue-600;
+}
+
+.pill-purple {
+    @apply bg-purple-100 text-purple-700;
+}
+.pill-purple:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-purple-200/70;
+}
+.pill-purple span {
+    @apply before:bg-purple-600;
+}
+
+.pill-yellow {
+    @apply bg-yellow-100 text-yellow-700;
+}
+.pill-yellow:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-yellow-200/70;
+}
+.pill-yellow span {
+    @apply before:bg-yellow-600;
+}
+
+.pill-orange {
+    @apply bg-orange-100 text-orange-700;
+}
+.pill-orange:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-orange-200/70;
+}
+.pill-orange span {
+    @apply before:bg-orange-600;
+}
+
+.pill-slate {
+    @apply bg-slate-100 text-slate-700;
+}
+.pill-slate:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-slate-200/70;
+}
+.pill-slate span {
+    @apply before:bg-slate-600;
+}
+
+.pill-teal {
+    @apply bg-teal-100 text-teal-700;
+}
+.pill-teal:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-teal-200/70;
+}
+.pill-teal span {
+    @apply before:bg-teal-600;
+}
+
+.pill-pink {
+    @apply bg-pink-100 text-pink-700;
+}
+.pill-pink:where([class~='cursor-pointer']) {
+    @apply transition-colors duration-75 ease-in hover:bg-pink-200/70;
+}
+.pill-pink span {
+    @apply before:bg-pink-600;
+}
+
+/*
+ * End: For Pills
+ */
+
+/*
+ * Start: For States
+ */
+
+.state-indicator--available {
+    @apply bg-green-100 text-green-600;
+}
+
+.state-indicator--approved {
+    @apply bg-green-100 text-green-600;
+}
+
+.state-indicator--active {
+    @apply bg-green-100 text-green-600;
+}
+
+.state-indicator--paid {
+    @apply bg-green-100 text-green-600;
+}
+
+.state-indicator--activated {
+    @apply bg-green-100 text-green-600;
+}
+
+.state-indicator--read {
+    @apply bg-green-100 text-green-600;
+}
+
+.state-indicator--unavailable {
+    @apply bg-red-100 text-red-600;
+}
+
+.state-indicator--rejected {
+    @apply bg-red-100 text-red-600;
+}
+
+.state-indicator--deactivated {
+    @apply bg-red-100 text-red-600;
+}
+
+.state-indicator--expired {
+    @apply bg-red-100 text-red-600;
+}
+
+.state-indicator--unpaid {
+    @apply bg-red-100 text-red-600;
+}
+
+.state-indicator--pending {
+    @apply bg-slate-100 text-slate-700;
+}
+
+.state-indicator--inactive {
+    @apply bg-pink-100 text-pink-700;
+}
+
+.state-indicator--busy {
+    @apply bg-pink-100 text-pink-700;
+}
+
+.state-indicator--exported {
+    @apply bg-yellow-100 text-yellow-700;
+}
+.state-indicator--pending {
+    @apply bg-yellow-100 text-yellow-700;
+}
+
+.state-indicator--unread {
+    @apply bg-yellow-100 text-yellow-700;
+}
+
+.state-indicator--used {
+    @apply bg-slate-100 text-slate-700;
+}
+
+.state-indicator--offline {
+    @apply bg-slate-100 text-slate-700;
+}
+
+/*
+ * End: For States
+ */

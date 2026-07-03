@@ -1,0 +1,278 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validation Language Lines
+    |--------------------------------------------------------------------------
+    |
+    | The following language lines contain the default error messages used by
+    | the validator class. Some of these rules have multiple versions such
+    | as the size rules. Feel free to tweak each of these messages here.
+    |
+    */
+
+    'accepted' => 'يجب قبول الحقل :attribute.',
+    'accepted_if' => 'الحقل :attribute مقبول في حال ما إذا كان :other يساوي :value.',
+    'active_url' => 'الحقل :attribute لا يُمثّل رابطًا صحيحًا.',
+    'after' => 'يجب على الحقل :attribute أن يكون تاريخًا لاحقًا للتاريخ :date.',
+    'after_or_equal' => 'الحقل :attribute يجب أن يكون تاريخاً لاحقاً أو مطابقاً للتاريخ :date.',
+    'alpha' => 'يجب أن لا يحتوي الحقل :attribute سوى على حروف.',
+    'alpha_dash' => 'يجب أن لا يحتوي الحقل :attribute إلا على حروف، أرقام ومطّات ( - ـ ).',
+    'alpha_num' => 'يجب أن يحتوي :attribute على حروفٍ وأرقامٍ فقط.',
+    'array' => 'يجب أن يكون الحقل :attribute ًمصفوفة.',
+    'before' => 'يجب على الحقل :attribute أن يكون تاريخًا سابقًا للتاريخ :date.',
+    'before_or_equal' => 'الحقل :attribute يجب أن يكون تاريخا سابقا أو مطابقا للتاريخ :date.',
+    'between' => [
+        'array' => 'يجب أن يحتوي :attribute على عدد من العناصر بين :min و :max.',
+        'file' => 'يجب أن يكون حجم الملف :attribute بين :min و :max كيلوبايت.',
+        'numeric' => 'يجب أن تكون قيمة :attribute بين :min و :max.',
+        'string' => 'يجب أن يكون عدد حروف النّص :attribute بين :min و :max.',
+    ],
+    'boolean' => 'يجب أن تكون قيمة الحقل :attribute إما true أو false.',
+    'confirmed' => 'حقل التأكيد غير مُطابق للحقل :attribute.',
+    'current_password' => 'كلمة المرور غير صحيحة.',
+    'date' => 'الحقل :attribute ليس تاريخًا صحيحًا.',
+    'date_equals' => 'لا يساوي الحقل :attribute مع :date.',
+    'date_format' => 'لا يتوافق الحقل :attribute مع الشكل :format.',
+    'declined' => 'يجب رفض الحقل :attribute.',
+    'declined_if' => 'الحقل :attribute مرفوض في حال ما إذا كان :other يساوي :value.',
+    'different' => 'يجب أن يكون الحقلان :attribute و :other مُختلفان.',
+    'digits' => 'يجب أن يحتوي الحقل :attribute على :digits رقمًا/أرقام.',
+    'digits_between' => 'يجب أن يحتوي الحقل :attribute بين :min و :max رقمًا/أرقام.',
+    'dimensions' => 'الـ :attribute يحتوي على أبعاد صورة غير صالحة.',
+    'distinct' => 'للحقل :attribute قيمة مُكرّرة.',
+    'email' => 'يجب أن يكون :attribute عنوان بريد إلكتروني صحيح البُنية.',
+    'ends_with' => 'الـ :attribute يجب ان ينتهي بأحد القيم التالية :value.',
+    'enum' => 'الحقل :attribute غير صحيح.',
+    'exists' => 'الحقل :attribute غير موجود.',
+    'file' => 'الـ :attribute يجب أن يكون من ملفا.',
+    'filled' => 'الحقل :attribute إجباري.',
+    'gt' => [
+        'array' => 'الـ :attribute يجب ان يحتوي علي اكثر من :value عناصر/عنصر.',
+        'file' => 'الـ :attribute يجب ان يكون اكبر من :value كيلو بايت.',
+        'numeric' => 'الـ :attribute يجب ان يكون اكبر من :value.',
+        'string' => 'الـ :attribute يجب ان يكون اكبر من :value حروفٍ/حرفًا.',
+    ],
+    'gte' => [
+        'array' => 'الـ :attribute يجب ان يحتوي علي :value عناصر/عنصر او اكثر.',
+        'file' => 'الـ :attribute يجب ان يكون اكبر من او يساوي :value كيلو بايت.',
+        'numeric' => 'الـ :attribute يجب ان يكون اكبر من او يساوي :value.',
+        'string' => 'الـ :attribute يجب ان يكون اكبر من او يساوي :value حروفٍ/حرفًا.',
+    ],
+    'image' => 'يجب أن يكون الحقل :attribute صورةً',
+    'in' => 'الحقل :attribute غير موجود.',
+    'in_array' => 'الحقل :attribute غير موجود في :other.',
+    'integer' => 'يجب أن يكون الحقل :attribute عددًا صحيحًا',
+    'ip' => 'يجب أن يكون الحقل :attribute عنوان IP ذا بُنية صحيحة',
+    'ipv4' => 'يجب أن يكون الحقل :attribute عنوان IPv4 ذا بنية صحيحة.',
+    'ipv6' => 'يجب أن يكون الحقل :attribute عنوان IPv6 ذا بنية صحيحة.',
+    'json' => 'يجب أن يكون الحقل :attribute نصا من نوع JSON.',
+    'lt' => [
+        'array' => 'الـ :attribute يجب ان يحتوي علي اقل من :value عناصر/عنصر.',
+        'file' => 'الـ :attribute يجب ان يكون اقل من :value كيلو بايت.',
+        'numeric' => 'الـ :attribute يجب ان يكون اقل من :value.',
+        'string' => 'الـ :attribute يجب ان يكون اقل من :value حروفٍ/حرفًا.',
+    ],
+    'lte' => [
+        'array' => 'الـ :attribute يجب ان يحتوي علي اكثر من :value عناصر/عنصر.',
+        'file' => 'الـ :attribute يجب ان يكون اقل من او يساوي :value كيلو بايت.',
+        'numeric' => 'الـ :attribute يجب ان يكون اقل من او يساوي :value.',
+        'string' => 'الـ :attribute يجب ان يكون اقل من او يساوي :value حروفٍ/حرفًا.',
+    ],
+    'mac_address' => 'يجب أن يكون الحقل :attribute عنوان MAC ذا بنية صحيحة.',
+    'max' => [
+        'array' => 'يجب أن لا يحتوي الحقل :attribute على أكثر من :max عناصر/عنصر.',
+        'file' => 'يجب أن لا يتجاوز حجم الملف :attribute :max كيلوبايت.',
+        'numeric' => 'يجب أن تكون قيمة الحقل :attribute مساوية أو أصغر لـ :max.',
+        'string' => 'يجب أن لا يتجاوز طول نص :attribute :max حروفٍ/حرفًا.',
+    ],
+    'mimes' => 'يجب أن يكون الحقل ملفًا من نوع : :values.',
+    'mimetypes' => 'يجب أن يكون الحقل ملفًا من نوع : :values.',
+    'min' => [
+        'array' => 'يجب أن يحتوي الحقل :attribute على الأقل على :min عُنصرًا/عناصر.',
+        'file' => 'يجب أن يكون حجم الملف :attribute على الأقل :min كيلوبايت.',
+        'numeric' => 'يجب أن تكون قيمة الحقل :attribute مساوية أو أكبر لـ :min.',
+        'string' => 'يجب أن يكون طول نص :attribute على الأقل :min حروفٍ/حرفًا.',
+    ],
+    'multiple_of' => 'The :attribute must be a multiple of :value.',
+    'not_in' => 'الحقل :attribute لاغٍ.',
+    'not_regex' => 'الحقل :attribute نوعه لاغٍ.',
+    'numeric' => 'يجب على الحقل :attribute أن يكون رقمًا',
+    'password' => 'كلمة المرور غير صحيحة.',
+    'present' => 'يجب تقديم الحقل :attribute.',
+    'prohibited' => 'الحقل :attribute محظور.',
+    'prohibited_if' => 'الحقل :attribute محظور في حال ما إذا كان :other يساوي :value.',
+    'prohibited_unless' => 'الحقل :attribute محظور في حال ما لم يكون :other يساوي :value.',
+    'prohibits' => 'الحقل :attribute يحظر :other من اي يكون موجود',
+    'regex' => 'صيغة الحقل :attribute غير صحيحة.',
+    'required' => 'الحقل :attribute مطلوب.',
+    'required_array_keys' => 'الحقل :attribute يجب ان يحتوي علي مدخلات للقيم التالية :values.',
+    'required_if' => 'الحقل :attribute مطلوب في حال ما إذا كان :other يساوي :value.',
+    'required_unless' => 'الحقل :attribute مطلوب في حال ما لم يكن :other يساوي :values.',
+    'required_with' => 'الحقل :attribute إذا توفّر :values.',
+    'required_with_all' => 'الحقل :attribute إذا توفّر :values.',
+    'required_without' => 'الحقل :attribute إذا لم يتوفّر :values.',
+    'required_without_all' => 'الحقل :attribute إذا لم يتوفّر :values.',
+    'same' => 'يجب أن يتطابق الحقل :attribute مع :other.',
+    'size' => [
+        'array' => 'يجب أن يحتوي الحقل :attribute على :size عنصرٍ/عناصر بالظبط.',
+        'file' => 'يجب أن يكون حجم الملف :attribute :size كيلوبايت.',
+        'numeric' => 'يجب أن تكون قيمة الحقل :attribute مساوية لـ :size.',
+        'string' => 'يجب أن يحتوي النص :attribute على :size حروفٍ/حرفًا بالظبط.',
+    ],
+    'starts_with' => 'الحقل :attribute يجب ان يبدأ بأحد القيم التالية: :values.',
+    'string' => 'يجب أن يكون الحقل :attribute نصآ.',
+    'timezone' => 'يجب أن يكون :attribute نطاقًا زمنيًا صحيحًا.',
+    'unique' => 'قيمة الحقل :attribute مُستخدمة من قبل.',
+    'uploaded' => 'فشل في تحميل الـ :attribute.',
+    'url' => 'صيغة الرابط :attribute غير صحيحة.',
+    'uuid' => 'الحقل :attribute يجب ان ايكون رقم UUID صحيح.',
+    'lowercase' => 'يجب أن تكون قيمة الحقل :attribute بحروف صغيرة.',
+    'uppercase' => 'يجب أن تكون قيمة الحقل :attribute بحروف كبيرة.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Validation Language Lines
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify custom validation messages for attributes using the
+    | convention "attribute.rule" to name the lines. This makes it quick to
+    | specify a specific custom language line for a given attribute rule.
+    |
+    */
+    'libyan_phone_number' => 'الرجاء إدخال رقم هاتف ليبي بصيغة صحيحة',
+    'nid_starts_with' => 'يجب ان يبدأ حقل الرقم الوطني بالقيم التالية: 1 إذا كان ذكر، 2 إذا كانت أنثى',
+    'nid_year_of_birth' => 'يجب ان تكون سنة الميلاد في الرقم الوطني مطابقة لسنة تاريخ الميلاد',
+    'username' => 'يجب أن يحتوي الحقل اسم المُستخدم على حروف صغيرة، أرقام، شرطات سفلية (_) أو نقاط (.) فقط، بدون مسافات.',
+
+    'custom' => [
+        'student_transfer' => [
+            'student_ids_required' => 'يجب تحديد طالب واحد على الأقل لإضافته إلى المدرسة.',
+            'student_ids_array' => 'صيغة قائمة الطلاب غير صحيحة. يرجى إعادة البحث وتحديد الطلاب من النتائج.',
+            'student_ids_min' => 'يجب تحديد طالب واحد على الأقل لإضافته إلى المدرسة.',
+            'student_id_required' => 'معرّف الطالب مطلوب. يرجى إعادة البحث وتحديد الطلاب من النتائج.',
+            'student_id_integer' => 'معرّف الطالب غير صالح. يرجى إعادة البحث وتحديد الطلاب من النتائج.',
+            'student_id_distinct' => 'تم تحديد بعض الطلاب أكثر من مرة. يرجى إزالة التكرار والمحاولة مرة أخرى.',
+            'student_id_not_found' => 'أحد الطلاب المحددين غير موجود في النظام. يرجى إعادة البحث وتحديث القائمة.',
+            'already_in_school' => 'تعذّر إضافة الطالب/الطالبة :name لأنه مسجّل بالفعل في مدرسة. يمكن إضافة الطلاب المُنتقلين فقط الذين لا ينتمون إلى أي مدرسة حالياً.',
+            'wrong_education_monitor' => 'تعذّر إضافة الطالب/الطالبة :name لأنه ينتمي إلى مُراقبة تعليمية أخرى. يجب أن يكون الطالب غير مُسند إلى مُراقبة، أو تابعاً لنفس مُراقبة هذه المدرسة.',
+            'no_grade_level' => 'تعذّر إضافة الطالب/الطالبة :name لأنه لا يملك صفاً دراسياً مسجّلاً في العام الدراسي الحالي. يرجى التحقق من تسجيل الطالب في صف دراسي قبل إضافته.',
+            'grade_level_not_in_school' => 'تعذّر إضافة الطالب/الطالبة :name لأن صفه الدراسي (:grade_level) غير متاح في هذه المدرسة للعام الدراسي الحالي. يرجى التأكد من أن المدرسة لديها هذا الصف دراسي، أو اختيار طالباً بصف دراسي متاح.',
+            'not_awaiting_transfer' => 'تعذّر إضافة الطالب/الطالبة :name لأنه غير مسجّل كطالب مُنتقل (لم يُخرج من مدرسته السابقة بعد). يرجى التأكد من إخراج الطالب من مدرسته السابقة قبل إضافته.',
+        ],
+        'education_monitor_student_transfer' => [
+            'student_ids_required' => 'يجب تحديد طالب واحد على الأقل لإضافته إلى المُراقبة.',
+            'student_ids_min' => 'يجب تحديد طالب واحد على الأقل لإضافته إلى المُراقبة.',
+            'already_in_monitor' => 'تعذّر إضافة الطالب/الطالبة :name لأنه مسجّل بالفعل في مُراقبة تعليمية. يمكن إضافة الطلاب المُنتقلين فقط الذين لا ينتمون إلى أي مُراقبة حالياً.',
+        ],
+        'class_schedule' => [
+            'items_required' => 'بيانات الجدول الدراسي مطلوبة.',
+            'items_array' => 'صيغة بيانات الجدول الدراسي غير صحيحة. يرجى إعادة المحاولة.',
+            'class_period_id_required' => 'يجب تحديد الحصة الدراسية لكل عنصر في الجدول.',
+            'class_period_id_invalid' => 'الحصة الدراسية المحددة غير موجودة في السنة الدراسية الحالية.',
+            'day_of_week_required' => 'يجب تحديد يوم الأسبوع لكل عنصر في الجدول.',
+            'day_of_week_invalid' => 'يوم الأسبوع المحدد غير صالح.',
+            'subject_id_required' => 'يجب تحديد المادة الدراسية لكل حصة في الجدول.',
+            'subject_id_invalid' => 'المادة الدراسية المحددة غير متاحة لهذا الصف الدراسي.',
+            'notes_string' => 'يجب أن تكون الملاحظات نصاً صالحاً.',
+            'notes_max' => 'يجب ألا تتجاوز الملاحظات 500 حرف.',
+            'no_subjects_available' => 'لا توجد مواد دراسية متاحة لهذا الصف الدراسي. يرجى إضافة المواد الدراسية أولاً قبل إعداد الجدول.',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Validation Attributes
+    |--------------------------------------------------------------------------
+    |
+    | The following language lines are used to swap our attribute placeholder
+    | with something more reader friendly such as "E-Mail Address" instead
+    | of "email". This simply helps us make our message more expressive.
+    |
+    */
+
+    'attributes' => [
+        'email' => 'البريد الالكتروني',
+        'password' => 'كلمة المرور',
+        'password_confirmation' => 'تأكيد كلمة المرور',
+        'name' => 'الاسم',
+        'username' => 'اسم المُستخدم',
+        'first_name' => 'الاسم',
+        'last_name' => 'اسم العائلة',
+        'municipal' => 'البلدية',
+        'country' => 'الدولة',
+        'address' => 'العنوان',
+        'phone' => 'الهاتف',
+        'phone_number' => 'رقم الهاتف',
+        'mobile' => 'الجوال',
+        'age' => 'العمر',
+        'sex' => 'الجنس',
+        'gender' => 'الجنس',
+        'day' => 'اليوم',
+        'month' => 'الشهر',
+        'year' => 'السنة',
+        'hour' => 'ساعة',
+        'minute' => 'دقيقة',
+        'second' => 'ثانية',
+        'content' => 'المُحتوى',
+        'description' => 'الوصف',
+        'excerpt' => 'المُلخص',
+        'date' => 'التاريخ',
+        'time' => 'الوقت',
+        'available' => 'مُتاح',
+        'size' => 'الحجم',
+        'price' => 'السعر',
+        'desc' => 'نبذه',
+        'title' => 'العنوان',
+        'q' => 'البحث',
+        'current_password' => 'كلمة المرور الحالية',
+        'new_password' => 'كلمة المرور الجديدة',
+        'state' => 'الحالة',
+        'subject_classification_id' => 'تصنيف المادة الدراسية',
+        'grade_level_id' => 'الصف الدراسي',
+        'code' => 'الرمز',
+        'included_in_total_score' => 'هل المقرر داخل المجموع ؟',
+        'needs_lab' => 'هل يحتاج إلى معمل ؟',
+        'municipal_id' => 'البلدية',
+        'whatsapp_phone_number' => 'رقم هاتف الواتساب',
+        'facebook_account_url' => 'رابط حساب الفيسبوك',
+        'latitude' => 'خط العرض',
+        'longitude' => 'خط الطول',
+        'add_location_to_map' => 'إضافة الموقع على الخريطة',
+        'roles' => 'الأدوار والصلاحيات',
+        'roles.*' => 'الأدوار والصلاحيات',
+        'education_monitor_id' => 'المُراقبة',
+        'education_services_office_id' => 'مكتب الخدمات التعليمية',
+        'office_id' => 'مكتب الخدمات التعليمية',
+        'school_id' => 'المدرسة',
+        'scope' => 'النطاق',
+        'educational_stage' => 'المرحلة الدراسية',
+        'capacity' => 'سعة الفصل',
+        'registration_status' => 'صفة القيد',
+        'student_first_name' => 'اسم الأول للطالب',
+        'student_father_name' => 'اسم الأب للطالب',
+        'student_grandfather_name' => 'اسم الجد للطالب',
+        'student_surname' => 'اللقب للطالب',
+        'mother_name' => 'اسم الأم',
+        'nationality_id' => 'الجنسية',
+        'passport_number' => 'رقم جواز السفر',
+        'date_of_birth' => 'تاريخ الميلاد',
+        'national_id' => 'الرقم الوطني',
+        'family_registration_number' => 'رقم القيد',
+        'classroom_id' => 'الفصل الدراسي',
+        'classroom_ids' => 'الفصول الدراسية',
+        'classroom_ids.*' => 'الفصل الدراسي',
+        'student_ids' => 'الطلاب',
+        'student_ids.*' => 'الطالب',
+        'items' => 'الجدول الدراسي',
+        'items.*' => 'عنصر الجدول الدراسي',
+        'items.*.class_period_id' => 'الحصة الدراسية',
+        'items.*.day_of_week' => 'يوم الأسبوع',
+        'items.*.subject_id' => 'المادة الدراسية',
+        'items.*.notes' => 'الملاحظات',
+    ],
+
+    'values' => [],
+];

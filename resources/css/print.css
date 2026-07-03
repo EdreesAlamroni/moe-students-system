@@ -1,0 +1,234 @@
+/*  ==========================================================
+    Print reporting system
+
+    Standardized, print-optimized styles shared by every report
+    rendered through `resources/views/print/layout.blade.php`.
+    ========================================================== 
+*/
+
+@layer base {
+    /* Institutional header (masthead) */
+    .print-header {
+        @apply flex items-center justify-between gap-3 border-b-2 border-black pb-2 text-black;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+    .print-header-side {
+        @apply flex w-[23%] min-w-0 shrink-0 flex-col items-center gap-2;
+    }
+
+    .print-header-logo {
+        @apply h-16 w-16 shrink-0 object-contain;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .print-header-meta {
+        @apply flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded border border-black px-1.5 py-1.5 text-center text-[11px] leading-tight;
+    }
+
+    .print-header .print-header-center {
+        @apply flex min-w-0 flex-1 flex-col items-center px-2 pt-0.5 text-center;
+    }
+
+    .print-ministry-title {
+        @apply text-base font-semibold leading-snug tracking-tight;
+    }
+
+    .print-header-organization {
+        @apply mt-1 text-sm font-medium leading-snug;
+    }
+
+    .print-header-organization-line {
+        @apply wrap-break-word;
+    }
+
+    .print-header-organization-line + .print-header-organization-line {
+        @apply mt-1 text-[13px] font-normal text-black/85;
+    }
+
+    .print-header-title-rule {
+        @apply mt-2 h-px w-3/4 max-w-[16rem] bg-black/60;
+    }
+
+    .print-header-title {
+        @apply mt-1.5 text-[13px] font-semibold leading-snug tracking-wide;
+    }
+
+    .print-header-title--primary {
+        @apply mt-1 text-sm;
+    }
+
+    /* Meta bar (contextual key/value strip, repeats with the header) */
+    .print-meta-bar {
+        @apply flex items-center justify-between gap-3 mb-4;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-meta-bar-item {
+        @apply rounded border border-black px-2 py-1.5 text-center text-xs leading-snug text-black;
+    }
+
+    .print-meta-bar-item-wide {
+        @apply flex-1 rounded border border-black px-2 py-1.5 text-center text-xs leading-snug text-black;
+    }
+
+    /* Report table: single table whose <thead> repeats on every printed page */
+    .print-report {
+        @apply w-full text-right text-black;
+        border-collapse: collapse;
+        break-inside: auto;
+        page-break-inside: auto;
+    }
+
+    .print-report > thead {
+        display: table-header-group;
+    }
+
+    .print-report > tfoot {
+        display: table-footer-group;
+    }
+
+    /* Masthead + meta rows: borderless full-width wrappers */
+    .print-masthead > th {
+        @apply border-0 bg-transparent pt-0 pb-4 px-0 font-normal;
+    }
+
+    .print-meta > th {
+        @apply border-0 bg-transparent px-0 pb-0 pt-3 font-normal;
+    }
+
+    /* Column header row */
+    .print-columns > th {
+        @apply border border-black bg-gray-200 px-2 py-2 align-middle text-xs font-semibold text-black;
+        border-top-width: 1px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    /* Data rows + cells */
+    .print-report > tbody > tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-report > tbody > tr:nth-child(even) {
+        @apply bg-gray-100;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .print-report > tbody > tr.print-row-highlight,
+    .print-report > tbody > tr.print-row-highlight:nth-child(even) {
+        @apply bg-gray-200;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .print-report > tbody > tr > td {
+        @apply border border-black px-2 py-2 align-middle text-xs font-normal text-black;
+    }
+
+    /* 2px outer frame around the data grid (RTL edges) */
+    .print-columns > th:first-child,
+    .print-report > tbody > tr > td:first-child {
+        border-right-width: 1px;
+    }
+
+    .print-columns > th:last-child,
+    .print-report > tbody > tr > td:last-child {
+        border-left-width: 1px;
+    }
+
+    .print-report > tbody > tr:last-child > td {
+        border-bottom-width: 1px;
+    }
+
+    .print-report-compact > thead > tr.print-columns > th,
+    .print-report-compact > tbody > tr > td {
+        @apply px-2 py-1.5 text-xs leading-snug;
+    }
+
+    .print-empty-cell {
+        @apply py-8 text-center;
+    }
+
+    /* Standalone section spacing inside designed forms */
+    .print-table-section {
+        @apply mt-4;
+    }
+
+    /* In-flow footer (used by designed multi-page forms) */
+    .print-footer {
+        @apply mt-5 text-xs text-black;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-footer > div {
+        @apply flex justify-between border-t-2 border-black pt-3;
+    }
+
+    /* Pagination + grouping helpers */
+    .print-page-break {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    .print-section {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-keep-together {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    /* Form field primitives (designed forms) */
+    .print-section-title {
+        @apply mt-4 mb-2 border-b border-black pb-1 text-sm font-bold text-black;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+    .print-field-grid {
+        @apply grid grid-cols-2 gap-x-4 gap-y-2 text-xs;
+    }
+
+    .print-field {
+        @apply flex min-h-6 items-end gap-2;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-field-label {
+        @apply shrink-0 font-medium text-black;
+    }
+
+    .print-field-value {
+        @apply min-h-5 flex-1 border-b border-dotted border-black pb-0.5 text-black;
+    }
+
+    .print-checkbox-group {
+        @apply flex flex-wrap gap-x-4 gap-y-1 text-xs;
+    }
+
+    .print-checkbox-item {
+        @apply inline-flex items-center gap-1.5;
+    }
+
+    .print-checkbox-box {
+        @apply inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center border border-black text-[10px] leading-none;
+    }
+
+    .print-notes-list {
+        @apply space-y-1.5 text-[11px] leading-relaxed text-black;
+    }
+}
