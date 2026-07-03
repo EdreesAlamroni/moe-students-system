@@ -2,7 +2,7 @@
 
 use App\Enums\UserScope;
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
@@ -24,7 +24,7 @@ test('reset link can be requested with a valid email', function () {
         'email' => $user->email,
     ])->assertSessionHas('status');
 
-    Notification::assertSentTo($user, ResetPassword::class);
+    Notification::assertSentTo($user, ResetPasswordNotification::class);
 });
 
 test('reset link request requires a valid email', function () {

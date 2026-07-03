@@ -78,7 +78,7 @@ class User extends Authenticatable
             return;
         }
 
-        $this->notify(new ResetPasswordNotification($token, $dashboard->url('password.reset')));
+        $this->notify(new ResetPasswordNotification($token, $dashboard->routeName('password.reset')));
     }
 
     /*
