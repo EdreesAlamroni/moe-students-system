@@ -3,10 +3,11 @@
 use App\Models\Municipal;
 use App\Models\User;
 use App\Support\Authorization\ModelAbilityMap;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
-uses(TestCase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 it('builds an ability map for an explicit user', function () {
     $municipal = Municipal::factory()->makeOne();
