@@ -1,13 +1,16 @@
 <?php
 
 use App\Http\Resources\Administration\MunicipalResource;
+use App\Http\Resources\Administration\UserCollection;
 use App\Models\Municipal;
-use App\Support\Http\ResourcePayloadBuilder;
+use App\Models\User;
+use App\Support\ResourcePayloadBuilder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
-uses(TestCase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 it('merges resource data with additional attributes', function () {
     $municipal = Municipal::factory()->make([
@@ -44,6 +47,7 @@ it('appends authorization abilities to the resource payload', function () {
         'id' => 1,
         'uuid' => 'municipal-uuid',
         'name' => 'Tripoli',
+        'canAny' => false,
         'can' => [
             'view' => false,
         ],
@@ -61,3 +65,37 @@ it('requires the resource to wrap an eloquent model', function () {
 
     ResourcePayloadBuilder::withAbilities($resource, ['view']);
 })->throws(InvalidArgumentException::class, 'Resource must wrap an Eloquent model.');
+
+it('preserves paginator metadata when resolving a resource collection', function () {
+    User::factory()->count(2)->create();
+
+    $paginator = User::query()
+        ->paginate(1, ['*'], 'page', 1)
+        ->withQueryString()
+        ->onEachSide(0);
+
+    $payload = ResourcePayloadBuilder::paginate($paginator, UserCollection::make($paginator));
+
+    expect($payload)
+        ->toHaveKeys(['data', 'links', 'current_page', 'last_page', 'total'])
+        ->and($payload['data'])->toHaveCount(1)
+        ->and($payload['data'][0])->toHaveKeys(['id', 'name', 'email', 'scope']);
+});
+
+it('appends row abilities when paginating a resource collection', function () {
+    User::factory()->create();
+
+    $paginator = User::query()->paginate()->onEachSide(0);
+
+    Gate::define('view', fn () => true);
+
+    $payload = ResourcePayloadBuilder::paginateWithAbilities($paginator, UserCollection::make($paginator), ['view']);
+
+    expect($payload['data'][0])->toMatchArray([
+        'id' => $paginator->items()[0]->id,
+        'canAny' => false,
+        'can' => [
+            'view' => false,
+        ],
+    ]);
+});

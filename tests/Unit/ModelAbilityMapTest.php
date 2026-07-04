@@ -2,14 +2,14 @@
 
 use App\Models\Municipal;
 use App\Models\User;
-use App\Support\Authorization\ModelAbilityMap;
+use App\Support\ModelAbilityMap;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class);
 
-it('builds an ability map for an explicit user', function () {
+it('maps individual abilities with can', function () {
     $municipal = Municipal::factory()->makeOne();
 
     /** @var User $user */
@@ -18,23 +18,23 @@ it('builds an ability map for an explicit user', function () {
     Gate::define('view', fn () => true);
     Gate::define('update', fn () => false);
 
-    expect(ModelAbilityMap::make($municipal, ['view', 'update'], user: $user))->toBe([
+    expect(ModelAbilityMap::can($municipal, ['view', 'update'], user: $user))->toBe([
         'view' => true,
         'update' => false,
     ]);
 });
 
-it('returns false for every ability when no user is authenticated', function () {
+it('returns false for every ability with can when no user is authenticated', function () {
     $municipal = Municipal::factory()->make();
 
     Gate::define('view', fn () => true);
 
-    expect(ModelAbilityMap::make($municipal, ['view']))->toBe([
+    expect(ModelAbilityMap::can($municipal, ['view']))->toBe([
         'view' => false,
     ]);
 });
 
-it('resolves the user from an explicit guard', function () {
+it('resolves the user from an explicit guard with can', function () {
     $municipal = Municipal::factory()->make();
     $user = User::factory()->create();
 
@@ -42,7 +42,72 @@ it('resolves the user from an explicit guard', function () {
 
     $this->actingAs($user, 'administration');
 
-    expect(ModelAbilityMap::make($municipal, ['view'], guard: 'administration'))->toBe([
+    expect(ModelAbilityMap::can($municipal, ['view'], guard: 'administration'))->toBe([
         'view' => true,
+    ]);
+});
+
+it('maps abilities for a model class with can', function () {
+    /** @var User $user */
+    $user = User::factory()->makeOne();
+
+    Gate::define('create', fn () => true);
+    Gate::define('viewAny', fn () => false);
+
+    expect(ModelAbilityMap::can(Municipal::class, ['create', 'viewAny'], user: $user))->toBe([
+        'create' => true,
+        'viewAny' => false,
+    ]);
+});
+
+it('returns true from canAny when any ability is granted', function () {
+    /** @var User $user */
+    $user = User::factory()->makeOne();
+
+    Gate::define('create', fn () => true);
+    Gate::define('viewAny', fn () => false);
+
+    expect(ModelAbilityMap::canAny(Municipal::class, ['create', 'viewAny'], user: $user))->toBeTrue();
+});
+
+it('returns false from canAny when no abilities are granted', function () {
+    /** @var User $user */
+    $user = User::factory()->makeOne();
+
+    Gate::define('create', fn () => false);
+    Gate::define('viewAny', fn () => false);
+
+    expect(ModelAbilityMap::canAny(Municipal::class, ['create', 'viewAny'], user: $user))->toBeFalse();
+});
+
+it('returns both can and canAny from make', function () {
+    /** @var User $user */
+    $user = User::factory()->makeOne();
+
+    Gate::define('create', fn () => true);
+    Gate::define('viewAny', fn () => false);
+
+    expect(ModelAbilityMap::make(Municipal::class, ['create', 'viewAny'], user: $user))->toBe([
+        'canAny' => true,
+        'can' => [
+            'create' => true,
+            'viewAny' => false,
+        ],
+    ]);
+});
+
+it('returns canAny false from make when no abilities are granted', function () {
+    /** @var User $user */
+    $user = User::factory()->makeOne();
+
+    Gate::define('create', fn () => false);
+    Gate::define('viewAny', fn () => false);
+
+    expect(ModelAbilityMap::make(Municipal::class, ['create', 'viewAny'], user: $user))->toBe([
+        'canAny' => false,
+        'can' => [
+            'create' => false,
+            'viewAny' => false,
+        ],
     ]);
 });

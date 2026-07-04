@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Administration\MunicipalResource;
+use App\Http\Resources\Administration\MunicipalCollection;
 use App\Models\Municipal;
-use App\Support\Http\ResourcePayloadBuilder;
+use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -29,14 +29,13 @@ class MunicipalController extends Controller
             ->paginate()
             ->withQueryString()
             ->appends($request->query())
-            ->onEachSide(0)
-            ->through(fn (Municipal $municipal): array => ResourcePayloadBuilder::withAbilities(
-                MunicipalResource::make($municipal),
-                ['view'],
-            ));
+            ->onEachSide(0);
 
         return Inertia::render('administration/municipals/index', [
-            'municipals' => $municipals,
+            'municipals' => ResourcePayloadBuilder::paginate(
+                $municipals,
+                MunicipalCollection::make($municipals),
+            ),
             'filter' => $request->input('filter', []),
         ]);
     }

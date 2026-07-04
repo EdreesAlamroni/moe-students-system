@@ -36,7 +36,7 @@ export default function Index({ municipals, filter }: PageProps) {
     const hasFilter = Object.values(filter).some((value) => value);
 
     return (
-        <MainContainer showAcademicYearNotice>
+        <MainContainer>
             <Head title="البلديات" />
 
             <section>

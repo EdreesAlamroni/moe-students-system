@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use App\Models\AcademicYear;
 use App\Models\User;
 use App\Support\Auth\DashboardAuth;
-use App\Support\Features;
 use App\Support\Navigation\NavigationManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -59,10 +58,6 @@ class HandleInertiaRequests extends Middleware
             'currentAcademicYear' => fn (): ?array => AcademicYear::current()?->only(['id', 'name', 'is_active']),
             'availableAcademicYears' => fn (): Collection => AcademicYear::list(),
             'flash' => flash()->getMessage(),
-            'features' => [
-                'excelExport' => Features::excelExportEnabled(),
-                'schoolStaff' => Features::schoolStaffEnabled(),
-            ],
         ];
     }
 

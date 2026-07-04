@@ -19,21 +19,21 @@ export type PermissionAction = typeof PERMISSION_ACTIONS[number];
 export type CanPermissions = Record<PermissionAction, boolean>;
 
 export type Enum = {
+    key: string;
+    id: string;
     name: string;
-    value: string;
-    label: string;
 }
 
 export type ModelState = {
-    value: string,
-    label: string,
+    id: string,
+    name: string,
     uiClasses: string,
     action?: string,
 }
 
 export type BooleanSelectOption = {
-    value: boolean;
-    label: string;
+    id: boolean;
+    name: string;
 }
 
 export type PaginationMeta = {

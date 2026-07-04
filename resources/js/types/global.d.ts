@@ -24,10 +24,6 @@ declare module '@inertiajs/core' {
             currentAcademicYear: AcademicYear | null;
             availableAcademicYears: AcademicYear[];
             flash: FlashMessage;
-            features: {
-                excelExport: boolean;
-                schoolStaff: boolean;
-            };
         };
     }
 }

@@ -48,8 +48,8 @@ abstract class ModelState extends State
     public function toArray(): array
     {
         return [
-            'value' => $this->value(),
-            'label' => $this->label(),
+            'id' => $this->value(),
+            'name' => $this->label(),
             'uiClasses' => $this->getUiClasses(),
             'action' => $this->action(),
         ];
