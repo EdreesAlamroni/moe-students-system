@@ -65,7 +65,8 @@ function PaginationLink({
                     variant: isActive ? "outline" : "ghost",
                     size,
                 }),
-                className
+                className,
+                "font-medium",
             )}
             {...props}
         />

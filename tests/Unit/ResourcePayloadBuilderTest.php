@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\Administration\MunicipalResource;
+use App\Http\Resources\Administration\MunicipalCollection;
 use App\Http\Resources\Administration\UserCollection;
 use App\Models\Municipal;
 use App\Models\User;
@@ -13,40 +13,69 @@ use Tests\TestCase;
 uses(TestCase::class, RefreshDatabase::class);
 
 it('merges resource data with additional attributes', function () {
-    $municipal = Municipal::factory()->make([
+    $user = User::factory()->make([
         'id' => 1,
-        'uuid' => 'municipal-uuid',
-        'name' => 'Tripoli',
+        'uuid' => 'user-uuid',
+        'name' => 'Admin User',
+        'username' => 'admin',
     ]);
 
+    $resource = new class($user) extends JsonResource
+    {
+        public function toArray($request): array
+        {
+            return [
+                'id' => $this->resource->id,
+                'uuid' => $this->resource->uuid,
+                'name' => $this->resource->name,
+                'username' => $this->resource->username,
+            ];
+        }
+    };
+
     expect(ResourcePayloadBuilder::make(
-        MunicipalResource::make($municipal),
+        $resource,
         ['extra' => 'value'],
     ))->toBe([
         'id' => 1,
-        'uuid' => 'municipal-uuid',
-        'name' => 'Tripoli',
-        'schools_count' => null,
+        'uuid' => 'user-uuid',
+        'name' => 'Admin User',
+        'username' => 'admin',
         'extra' => 'value',
     ]);
 });
 
 it('appends authorization abilities to the resource payload', function () {
-    $municipal = Municipal::factory()->make([
+    $user = User::factory()->make([
         'id' => 1,
-        'uuid' => 'municipal-uuid',
-        'name' => 'Tripoli',
+        'uuid' => 'user-uuid',
+        'name' => 'Admin User',
+        'username' => 'admin',
     ]);
+
+    $resource = new class($user) extends JsonResource
+    {
+        public function toArray($request): array
+        {
+            return [
+                'id' => $this->resource->id,
+                'uuid' => $this->resource->uuid,
+                'name' => $this->resource->name,
+                'username' => $this->resource->username,
+            ];
+        }
+    };
 
     Gate::define('view', fn () => true);
 
     expect(ResourcePayloadBuilder::withAbilities(
-        MunicipalResource::make($municipal),
+        $resource,
         ['view'],
     ))->toMatchArray([
         'id' => 1,
-        'uuid' => 'municipal-uuid',
-        'name' => 'Tripoli',
+        'uuid' => 'user-uuid',
+        'name' => 'Admin User',
+        'username' => 'admin',
         'canAny' => false,
         'can' => [
             'view' => false,
@@ -66,7 +95,7 @@ it('requires the resource to wrap an eloquent model', function () {
     ResourcePayloadBuilder::withAbilities($resource, ['view']);
 })->throws(InvalidArgumentException::class, 'Resource must wrap an Eloquent model.');
 
-it('preserves paginator metadata when resolving a resource collection', function () {
+it('preserves paginator metadata when resolving a user collection', function () {
     User::factory()->count(2)->create();
 
     $paginator = User::query()
@@ -79,7 +108,23 @@ it('preserves paginator metadata when resolving a resource collection', function
     expect($payload)
         ->toHaveKeys(['data', 'links', 'current_page', 'last_page', 'total'])
         ->and($payload['data'])->toHaveCount(1)
-        ->and($payload['data'][0])->toHaveKeys(['id', 'name', 'email', 'scope']);
+        ->and($payload['data'][0])->toHaveKeys(['id', 'uuid', 'name', 'username', 'scope']);
+});
+
+it('preserves paginator metadata when resolving a municipal collection', function () {
+    Municipal::factory()->count(2)->create();
+
+    $paginator = Municipal::query()
+        ->paginate(1, ['*'], 'page', 1)
+        ->withQueryString()
+        ->onEachSide(0);
+
+    $payload = ResourcePayloadBuilder::paginate($paginator, MunicipalCollection::make($paginator));
+
+    expect($payload)
+        ->toHaveKeys(['data', 'links', 'current_page', 'last_page', 'total'])
+        ->and($payload['data'])->toHaveCount(1)
+        ->and($payload['data'][0])->toHaveKeys(['id', 'uuid', 'name', 'schools_count']);
 });
 
 it('appends row abilities when paginating a resource collection', function () {
@@ -93,9 +138,20 @@ it('appends row abilities when paginating a resource collection', function () {
 
     expect($payload['data'][0])->toMatchArray([
         'id' => $paginator->items()[0]->id,
+        'uuid' => $paginator->items()[0]->uuid,
         'canAny' => false,
         'can' => [
             'view' => false,
         ],
     ]);
+});
+
+it('places resolved collection data before paginator metadata', function () {
+    User::factory()->create();
+
+    $paginator = User::query()->paginate()->onEachSide(0);
+
+    $payload = ResourcePayloadBuilder::paginate($paginator, UserCollection::make($paginator));
+
+    expect(array_key_first($payload))->toBe('data');
 });
