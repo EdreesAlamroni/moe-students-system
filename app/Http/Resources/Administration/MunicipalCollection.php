@@ -2,23 +2,19 @@
 
 namespace App\Http\Resources\Administration;
 
+use App\Http\Resources\DirectModelCollection;
 use App\Models\Municipal;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class MunicipalCollection extends ResourceCollection
+class MunicipalCollection extends DirectModelCollection
 {
     public function toArray(Request $request): array
     {
-        return $this->collection->map(function (JsonResource $resource): array {
-            /** @var Municipal $municipal */
-            $municipal = $resource->resource;
-
-            return [
-                'id' => $municipal->id,
-                'name' => $municipal->name,
-            ];
-        })->all();
+        return $this->collection->map(fn (Municipal $municipal): array => [
+            'id' => $municipal->id,
+            'uuid' => $municipal->uuid,
+            'name' => $municipal->name,
+            'schools_count' => $municipal->schools_count,
+        ])->all();
     }
 }
