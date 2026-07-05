@@ -140,7 +140,7 @@ class AdministrationNavigation extends NavigationPanel
                 'href' => route('administration.users.index'),
                 'icon' => 'UserRoundCogIcon',
                 'activeRoutes' => 'administration.users.*',
-                'can' => $this->user->canAny(['viewAny'], User::class),
+                'can' => $this->user?->canAny(['viewAny'], User::class),
             ],
             [
                 'title' => 'البلديات',
