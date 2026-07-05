@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -55,7 +56,7 @@ final class ResourcePayloadBuilder
      *
      * @return array<string, mixed>
      */
-    public static function paginate(Paginator $paginator, ResourceCollection $collection, ?Request $request = null): array
+    public static function paginate(Paginator&Arrayable $paginator, ResourceCollection $collection, ?Request $request = null): array
     {
         $request ??= request();
 
@@ -71,7 +72,7 @@ final class ResourcePayloadBuilder
      * @param  list<string>  $abilities
      * @return array<string, mixed>
      */
-    public static function paginateWithAbilities(Paginator $paginator, ResourceCollection $collection, array $abilities, ?Request $request = null): array
+    public static function paginateWithAbilities(Paginator&Arrayable $paginator, ResourceCollection $collection, array $abilities, ?Request $request = null): array
     {
         $request ??= request();
 
