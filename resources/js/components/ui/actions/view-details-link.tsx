@@ -13,19 +13,36 @@ interface ViewDetailsLinkProps {
     className?: string;
 }
 
-export default function ViewDetailsLink({ title = "عرض التفاصيل", href, showIcon = true, className = "" }: ViewDetailsLinkProps) {
+export default function ViewDetailsLink({
+    title = "عرض التفاصيل",
+    href,
+    showIcon = true,
+    className,
+}: ViewDetailsLinkProps) {
     return (
         <Button
             variant="link"
             className={cn(
-                "text-xs group cursor-pointer h-auto p-0",
+                "group/details h-auto gap-1 p-0 text-xs font-medium normal-case tracking-normal",
+                "no-underline decoration-primary/30 underline-offset-4",
+                "transition-[color,text-decoration-color] duration-300 ease-out",
+                "hover:underline hover:decoration-current",
                 className,
             )}
             asChild
         >
             <Link href={href}>
                 <span>{title}</span>
-                {showIcon && <MoveLeftIcon className="w-4 h-4 group-hover:animate-pulse" />}
+                {showIcon && (
+                    <MoveLeftIcon
+                        aria-hidden
+                        className={cn(
+                            "size-3.5 shrink-0 opacity-70 transition-opacity duration-300",
+                            "group-hover/details:animate-gentle-drift group-hover/details:opacity-100",
+                            "motion-reduce:group-hover/details:animate-none",
+                        )}
+                    />
+                )}
             </Link>
         </Button>
     );

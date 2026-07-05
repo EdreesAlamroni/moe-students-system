@@ -30,7 +30,7 @@ class SecurityController extends Controller
             'password' => $request->validated('password'),
         ]);
 
-        flash_success('password-updated');
+        flash_success('update-password');
 
         return Redirect::back();
     }

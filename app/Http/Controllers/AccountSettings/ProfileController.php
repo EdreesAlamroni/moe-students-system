@@ -28,7 +28,7 @@ class ProfileController extends Controller
         $user->fill($request->validated());
         $user->save();
 
-        flash_success('profile-updated');
+        flash_success('update-profile');
 
         return Redirect::to($dashboard->url('account-settings.profile.edit'));
     }

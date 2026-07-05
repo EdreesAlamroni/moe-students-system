@@ -53,8 +53,8 @@ trait ModelStateUtilities
 
     /**
      * @return array{
-     *     value: string,
-     *     label: string,
+     *     id: string,
+     *     name: string,
      *     uiClasses: string,
      *     action: string|null
      * }|null

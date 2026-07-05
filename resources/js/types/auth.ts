@@ -47,13 +47,14 @@ export type UserOrganizationContext =
 
 export type User = {
     id: number;
+    uuid: string;
     name: string;
     email: string;
     username: string;
+    scope: Enum;
     role?: Enum;
     state: ModelState;
     request_state: ModelState;
-    scope: Enum;
     /** Raw morph key — mirrors `users.model_id`. */
     model_id?: number | null;
     /** Raw morph type — mirrors `users.model_type`. */

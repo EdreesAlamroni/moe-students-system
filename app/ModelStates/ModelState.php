@@ -2,6 +2,8 @@
 
 namespace App\ModelStates;
 
+use Illuminate\Support\Facades\Lang;
+use Spatie\ModelStates\Exceptions\InvalidConfig;
 use Spatie\ModelStates\State;
 
 /**
@@ -26,24 +28,18 @@ abstract class ModelState extends State
 
     public function label(): string
     {
-        return __(sprintf(
-            'app.states.%s.labels.%s',
-            static::getTranslationKey(),
-            static::getMorphClass(),
-        ));
+        return __($this->translationPath('labels'));
     }
 
     public function action(): ?string
     {
-        return __(sprintf(
-            'app.states.%s.actions.%s',
-            static::getTranslationKey(),
-            static::getMorphClass(),
-        ));
+        $key = $this->translationPath('actions');
+
+        return Lang::has($key) ? __($key) : null;
     }
 
     /**
-     * @return array{value: string, label: string, uiClasses: string, action: string|null}
+     * @return array{id: string, name: string, uiClasses: string, action: string|null}
      */
     public function toArray(): array
     {
@@ -53,5 +49,38 @@ abstract class ModelState extends State
             'uiClasses' => $this->getUiClasses(),
             'action' => $this->action(),
         ];
+    }
+
+    /**
+     * @return array{id: string, name: string, uiClasses: string, action: string|null}
+     */
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
+
+    /**
+     * @return class-string<static>
+     */
+    public static function resolve(string $state): string
+    {
+        $resolved = static::resolveStateClass($state);
+
+        if (! is_subclass_of($resolved, static::class)) {
+            throw InvalidConfig::doesNotExtendBaseClass($state, static::class);
+        }
+
+        return $resolved;
+    }
+
+    protected function translationPath(string $segment): string
+    {
+        return sprintf(
+            'app.states.%s.%s.%s',
+            static::getTranslationKey(),
+            $segment,
+            $this->value(),
+        );
     }
 }
