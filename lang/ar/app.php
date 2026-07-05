@@ -27,6 +27,14 @@ return [
             'education_monitor' => 'المُراقبة',
             'education_services_office' => 'مكتب الخدمات التعليمية',
             'school' => 'المدرسة',
+
+            'create' => [
+                'administration' => 'مُستخدم إدارة',
+                'warehouse' => 'مُستخدم مخزن',
+                'education_monitor' => 'مُستخدم مُراقبة',
+                'education_services_office' => 'مُستخدم مكتب',
+                'school' => 'مُستخدم مدرسة',
+            ],
         ],
     ],
 

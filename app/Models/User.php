@@ -207,4 +207,49 @@ class User extends Authenticatable
     {
         return auth($scope->guard())->user()?->model_id;
     }
+
+    public function hasAnyRelations(): bool
+    {
+        return false;
+    }
+
+    public function isAdministrator(): bool
+    {
+        return $this->scope->isAdministration() && $this->role->isManager();
+    }
+
+    public function isAdministrationStaff(): bool
+    {
+        return $this->scope->isAdministration();
+    }
+
+    public function isEducationMonitorStaff(): bool
+    {
+        return $this->scope->isEducationMonitor();
+    }
+
+    public function isEducationServicesOfficeStaff(): bool
+    {
+        return $this->scope->isEducationServicesOffice();
+    }
+
+    public function isSchoolStaff(): bool
+    {
+        return $this->scope->isSchool();
+    }
+
+    public function isWarehouseStaff(): bool
+    {
+        return $this->scope->isWarehouse();
+    }
+
+    public function isRoleManager(): bool
+    {
+        return $this->role->isManager();
+    }
+
+    public function isRoleEmployee(): bool
+    {
+        return $this->role->isEmployee();
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Models\User;
+use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
@@ -10,7 +12,9 @@ final class PolicyRegistrar
 {
     /** @var array<string, array<class-string, class-string>> */
     private const MODEL_POLICIES = [
-        'administration' => [],
+        'administration' => [
+            User::class => AdministrationUserPolicy::class,
+        ],
         'warehouse' => [],
         'education-monitor' => [],
         'education-services-office' => [],

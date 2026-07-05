@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
 class AdministrationNavigation extends NavigationPanel
@@ -136,10 +137,10 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'المُستخدمين',
-                'href' => '#',
+                'href' => route('administration.users.index'),
                 'icon' => 'UserRoundCogIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.users.*',
+                'can' => $this->user->canAny(['viewAny'], User::class),
             ],
             [
                 'title' => 'البلديات',

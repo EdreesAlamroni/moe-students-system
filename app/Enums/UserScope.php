@@ -57,11 +57,53 @@ enum UserScope: string
         $user = Auth::user();
 
         if (! $user) {
-            return collect();
+            return collect([]);
         }
 
         return $user->scope->getAccessibleScopes()->map(function (self $scope) use ($idKey, $nameKey): array {
             return $scope->toOption($idKey, $nameKey);
+        });
+    }
+
+    public function getCreationLabel(): string
+    {
+        return __(sprintf(
+            'app.enums.%s.create.%s',
+            $this->getTranslationKey(),
+            $this->value,
+        ));
+    }
+
+    public function icon(): string
+    {
+        return match ($this) {
+            self::ADMINISTRATION => 'UserRoundCogIcon',
+            self::WAREHOUSE => 'WarehouseIcon',
+            self::EDUCATION_MONITOR => 'LandmarkIcon',
+            self::EDUCATION_SERVICES_OFFICE => 'BuildingIcon',
+            self::SCHOOL => 'SchoolIcon',
+        };
+    }
+
+    public function toCreationMenuItem(): array
+    {
+        return [
+            'label' => $this->getCreationLabel(),
+            'value' => $this->value,
+            'icon' => $this->icon(),
+        ];
+    }
+
+    public static function getCreationMenuItems(): Collection
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return collect([]);
+        }
+
+        return $user->scope->getAccessibleScopes()->map(function (self $scope): array {
+            return $scope->toCreationMenuItem();
         });
     }
 
