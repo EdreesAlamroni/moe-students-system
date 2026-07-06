@@ -2,7 +2,9 @@
 
 namespace App\Support;
 
+use App\Models\AcademicYear;
 use App\Models\User;
+use App\Policies\Administration\AcademicYearPolicy as AdministrationAcademicYearPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -14,6 +16,7 @@ final class PolicyRegistrar
     private const MODEL_POLICIES = [
         'administration' => [
             User::class => AdministrationUserPolicy::class,
+            AcademicYear::class => AdministrationAcademicYearPolicy::class,
         ],
         'warehouse' => [],
         'education-monitor' => [],

@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Models\AcademicYear;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
@@ -19,10 +20,10 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'السنوات الدراسية',
-                'href' => '#',
+                'href' => route('administration.academic-years.index'),
                 'icon' => 'CalendarRangeIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.academic-years.*',
+                'can' => $this->user?->canAny(['viewAny'], AcademicYear::class),
             ],
             [
                 'title' => 'الصفوف الدراسية',

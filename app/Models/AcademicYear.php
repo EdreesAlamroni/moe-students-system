@@ -7,6 +7,7 @@ use App\Support\Auth\DashboardAuth;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Session;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read string $status
  */
 #[Guarded(['id'])]
 class AcademicYear extends Model
@@ -94,7 +96,9 @@ class AcademicYear extends Model
     public static function createNewYear(array $attributes): self
     {
         $self = DB::transaction(function () use ($attributes) {
-            self::query()->where('is_active', '=', true)->update(['is_active' => false]);
+            self::query()
+                ->active()
+                ->update(['is_active' => false]);
 
             return self::create($attributes);
         });
@@ -120,6 +124,21 @@ class AcademicYear extends Model
     }
 
     /*
+     * Start: Accessors & Mutators
+     */
+
+    public function status(): Attribute
+    {
+        return Attribute::get(function (): string {
+            return $this->is_active ? 'السنة الحالية' : 'سنة مؤرشفة';
+        });
+    }
+
+    /*
+     * End: Accessors & Mutators
+     */
+
+    /*
      * Start: Scopes
      */
 
@@ -129,6 +148,14 @@ class AcademicYear extends Model
         return $query->where('is_active', '=', true);
     }
 
+    #[Scope]
+    protected function orderedByActiveFirst(Builder $query): Builder
+    {
+        return $query
+            ->orderByDesc('is_active')
+            ->orderByDesc('start_date');
+    }
+
     /*
      * End: Scopes
      */
@@ -136,6 +163,45 @@ class AcademicYear extends Model
     /*
      * Start: Custom methods
      */
+
+    public static function currentStartYear(?Carbon $date = null): int
+    {
+        $date ??= now();
+
+        return $date->month >= 9
+            ? $date->year
+            : $date->year - 1;
+    }
+
+    public static function nextStartYear(): int
+    {
+        $latestStartDate = self::query()
+            ->orderByDesc('start_date')
+            ->value('start_date');
+
+        if ($latestStartDate) {
+            return Carbon::parse($latestStartDate)->year + 1;
+        }
+
+        return self::currentStartYear() + 1;
+    }
+
+    /**
+     * @return array{name: string, min_start_date: string, max_end_date: string}
+     */
+    public static function defaultsForCreateForm(): array
+    {
+        $startYear = self::nextStartYear();
+
+        $startDate = Carbon::create($startYear, 9, 1);
+        $endDate = Carbon::create($startYear + 1, 6, 30);
+
+        return [
+            'name' => sprintf('%d/%d', $startYear + 1, $startYear),
+            'min_start_date' => $startDate->toDateString(),
+            'max_end_date' => $endDate->toDateString(),
+        ];
+    }
 
     public function hasAnyRelations(): bool
     {

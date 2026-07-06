@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
+use App\Http\Controllers\Administration\AcademicYearController;
 use App\Http\Controllers\Administration\DashboardController;
 use App\Http\Controllers\Administration\MunicipalController;
 use App\Http\Controllers\Administration\UserController;
@@ -19,6 +20,15 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
     // Municipals
     Route::prefix('/municipals')->group(function () {
         Route::get('/', [MunicipalController::class, 'index'])->name('municipals.index');
+    });
+
+    // Academic Years
+    Route::prefix('academic-years')->group(function () {
+        Route::get('/', [AcademicYearController::class, 'index'])->name('academic-years.index');
+        Route::get('/create', [AcademicYearController::class, 'create'])->name('academic-years.create');
+        Route::post('/', [AcademicYearController::class, 'store'])->name('academic-years.store');
+        Route::get('/{academicYear}', [AcademicYearController::class, 'show'])->name('academic-years.show');
+        Route::delete('/{academicYear}/close', [AcademicYearController::class, 'close'])->name('academic-years.close');
     });
 
     // Users

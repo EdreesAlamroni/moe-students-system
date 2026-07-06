@@ -25,7 +25,7 @@ class AcademicYearSeeder extends Seeder
 
         $years = [];
 
-        for ($offset = 2; $offset >= 0; $offset--) {
+        for ($offset = 20; $offset >= 0; $offset--) {
             $startYear = $currentStartYear - $offset;
 
             $start = Carbon::create($startYear, 9, 1);
