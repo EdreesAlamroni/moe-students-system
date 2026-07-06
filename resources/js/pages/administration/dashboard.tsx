@@ -3,10 +3,8 @@ import { Head } from '@inertiajs/react';
 import { PlaceholderPattern } from '@/components/ui/structure/placeholder-pattern';
 
 import { dashboard } from '@/routes/administration';
-import { useFlashToast } from "@/hooks/use-flash-toast";
 
 export default function Dashboard() {
-    useFlashToast();
 
     return (
         <>
