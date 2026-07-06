@@ -51,7 +51,7 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
 
     const hasFilter = Object.values(filter).some((value) => value);
 
-    console.log(canAny, can);
+    const hasPagination = data.length > 0 && meta.last_page > 1;
 
     return (
         <MainContainer>
@@ -182,7 +182,7 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
                             />
                         </CardContent>
                     )}
-                    {(data.length > 0 && meta.last_page > 1) && (
+                    {hasPagination && (
                         <CardFooter className="border-t">
                             <Paginator
                                 links={links}
