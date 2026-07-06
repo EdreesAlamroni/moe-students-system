@@ -138,11 +138,11 @@ export default function Index({ municipals, filter }: PageProps) {
     )
 }
 
-Index.layout = {
+Index.layout = () => ({
     breadcrumbs: [
         {
             title: 'البلديات',
             href: index.url(),
         },
     ],
-};
+});

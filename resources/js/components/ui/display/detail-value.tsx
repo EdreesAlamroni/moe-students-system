@@ -51,7 +51,6 @@ function shouldUseFontMonoFallback(fallback: React.ReactNode): boolean {
 type DetailValueProps = {
     value?: React.ReactNode
     fallback?: React.ReactNode
-    fontMono?: boolean
     multiline?: boolean
     variant?: "default" | "plain"
     children?: React.ReactNode
@@ -60,7 +59,6 @@ type DetailValueProps = {
 function DetailValue({
     value,
     fallback = "-",
-    fontMono = false,
     multiline = false,
     variant = "default",
     className,
@@ -70,7 +68,7 @@ function DetailValue({
     const hasChildren = hasRenderableChildren(children)
     const isBlank = !hasChildren && isEmptyValue(value)
     const useFontMonoFallback = isBlank && shouldUseFontMonoFallback(fallback)
-    const useFontMono = !hasChildren && (fontMono || useFontMonoFallback)
+    const useFontMono = !hasChildren && useFontMonoFallback
     const isPlain = variant === "plain"
 
     const content = hasChildren

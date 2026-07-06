@@ -53,7 +53,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
     return (
         <div
             data-slot="card-description"
-            className={cn("text-sm leading-relaxed text-muted-foreground", className)}
+            className={cn("text-xs leading-relaxed text-muted-foreground", className)}
             {...props}
         />
     )
@@ -92,6 +92,16 @@ function CardTableContent({ className, ...props }: React.ComponentProps<"div">) 
     )
 }
 
+function CardFormContent({ className, ...props }: React.ComponentProps<"div">) {
+    return (
+        <div
+            data-slot="card-form-content"
+            className={cn("flex flex-col gap-(--card-spacing) px-(--card-spacing)", className)}
+            {...props}
+        />
+    )
+}
+
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     return (
         <div
@@ -114,4 +124,5 @@ export {
     CardDescription,
     CardContent,
     CardTableContent,
+    CardFormContent,
 }

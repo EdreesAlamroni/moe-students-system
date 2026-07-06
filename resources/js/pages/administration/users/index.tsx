@@ -196,11 +196,11 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
     )
 }
 
-Index.layout = {
+Index.layout = () => ({
     breadcrumbs: [
         {
             title: 'المُستخدمين',
             href: index.url(),
         },
     ],
-};
+});
