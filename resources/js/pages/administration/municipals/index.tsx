@@ -35,6 +35,8 @@ export default function Index({ municipals, filter }: PageProps) {
 
     const hasFilter = Object.values(filter).some((value) => value);
 
+    const hasPagination = data.length > 0 && meta.last_page > 1;
+
     return (
         <MainContainer>
             <Head title="البلديات" />
@@ -124,7 +126,7 @@ export default function Index({ municipals, filter }: PageProps) {
                             />
                         </CardContent>
                     )}
-                    {(data.length > 0 && meta.last_page > 1) && (
+                    {hasPagination && (
                         <CardFooter className="border-t">
                             <Paginator
                                 links={links}
