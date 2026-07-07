@@ -32,8 +32,8 @@ export default function AuthCardLayout({
                 <div className="flex flex-col gap-6">
                     <Card>
                         <CardHeader className="px-10 pt-6 pb-0 text-center">
-                            <CardTitle className="text-lg">{title}</CardTitle>
-                            <CardDescription>{description}</CardDescription>
+                            <CardTitle className="text-lg justify-center">{title}</CardTitle>
+                            <CardDescription className="text-sm">{description}</CardDescription>
                         </CardHeader>
                         <CardContent className="px-10 py-6">
                             {children}

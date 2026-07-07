@@ -55,10 +55,10 @@ function SelectTrigger({
             data-size={size}
             aria-invalid={hasError}
             className={cn(
-                "flex w-full items-center justify-between gap-1.5 px-2.5 py-2 bg-transparent text-sm rounded-none border border-input whitespace-nowrap text-start outline-none transition-colors",
+                "w-full flex items-center justify-between gap-1.5 px-2.5 py-2 bg-transparent text-sm rounded-none border border-input whitespace-nowrap text-start outline-none transition-colors",
                 "focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/50",
                 "disabled:cursor-not-allowed disabled:opacity-50",
-                "data-placeholder:text-muted-foreground data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:flex-1 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 *:data-[slot=select-value]:text-start",
+                "data-placeholder:text-muted-foreground data-[size=default]:h-10 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:flex-1 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 *:data-[slot=select-value]:text-start",
                 "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
                 "aria-invalid:border-destructive aria-invalid:ring-destructive/30",
                 className
