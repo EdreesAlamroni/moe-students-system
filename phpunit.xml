@@ -19,17 +19,18 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_CONFIG_CACHE" value="bootstrap/cache/phpunit-config.php"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="pgsql"/>
-        <env name="DB_DATABASE" value="moe_students_system"/>
-        <env name="DB_HOST" value="127.0.0.1"/>
-        <env name="DB_PORT" value="5433"/> <!-- 5433 is the port for PostgreSQL in the testing environment -->
-        <env name="DB_USERNAME" value="postgres"/>
-        <env name="DB_PASSWORD" value=""/>
-        <env name="DB_URL" value=""/>
+        <env name="DB_CONNECTION" value="pgsql_testing"/>
+        <env name="DB_TEST_DATABASE" value="moe_students_system"/>
+        <env name="DB_TEST_HOST" value="127.0.0.1"/>
+        <env name="DB_TEST_PORT" value="5433"/>
+        <env name="DB_TEST_USERNAME" value="postgres"/>
+        <env name="DB_TEST_PASSWORD" value=""/>
+        <env name="DB_TEST_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
