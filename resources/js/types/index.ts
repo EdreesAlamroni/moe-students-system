@@ -67,7 +67,7 @@ export type Nationality = {
     uuid: string;
     name: string;
     code: string;
-    fullName: string;
+    full_name: string;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
