@@ -93,9 +93,6 @@ enum GradeLevelEnum: string
         return SchoolEducationalStageEnum::SECONDARY_EDUCATION;
     }
 
-    /**
-     * @return Collection<int, self>
-     */
     public static function filteredByStage(SchoolEducationalStageEnum|string $stage): Collection
     {
         $stage = is_string($stage) ? SchoolEducationalStageEnum::from($stage) : $stage;
