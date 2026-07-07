@@ -23,7 +23,7 @@ import ViewDetailsLink from "@/components/ui/actions/view-details-link";
 import { Paginator } from "@/components/ui/navigation/paginator";
 
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
-import { PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
+import { ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
 import { create, index, show } from "@/routes/administration/users";
 
@@ -138,7 +138,10 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
             <section>
                 <Card>
                     <CardHeader className="border-b">
-                        <CardTitle className="text-sm">البلديات</CardTitle>
+                        <CardTitle className="text-sm">
+                            <ListIcon />
+                            <span>المُستخدمين</span>
+                        </CardTitle>
                     </CardHeader>
                     {data.length > 0 ? (
                         <CardTableContent>

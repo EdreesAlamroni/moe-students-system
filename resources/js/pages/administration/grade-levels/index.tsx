@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/actions/button";
 import { Paginator } from "@/components/ui/navigation/paginator";
 
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
-import { RefreshCcwIcon, SearchIcon } from "lucide-react";
+import { ListIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
 import { index } from "@/routes/administration/grade-levels";
 
@@ -118,7 +118,10 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
             <section>
                 <Card>
                     <CardHeader className="border-b">
-                        <CardTitle className="text-sm">الصفوف الدراسية</CardTitle>
+                        <CardTitle className="text-sm">
+                            <ListIcon />
+                            <span>الصفوف الدراسية</span>
+                        </CardTitle>
                     </CardHeader>
                     {data.length > 0 ? (
                         <CardTableContent>

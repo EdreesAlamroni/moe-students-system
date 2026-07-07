@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/actions/button";
 import { Paginator } from "@/components/ui/navigation/paginator";
 
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
-import { RefreshCcwIcon, SearchIcon } from "lucide-react";
+import { ListIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
 import { index } from "@/routes/administration/municipals";
 
@@ -94,7 +94,10 @@ export default function Index({ municipals, filter }: PageProps) {
             <section>
                 <Card>
                     <CardHeader className="border-b">
-                        <CardTitle className="text-sm">البلديات</CardTitle>
+                        <CardTitle className="text-sm">
+                            <ListIcon />
+                            <span>البلديات</span>
+                        </CardTitle>
                     </CardHeader>
                     {data.length > 0 ? (
                         <CardTableContent>

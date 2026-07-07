@@ -21,7 +21,7 @@ import ViewDetailsLink from "@/components/ui/actions/view-details-link";
 import { Paginator } from "@/components/ui/navigation/paginator";
 
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
-import { PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
+import { ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
 import { index, create, show } from "@/routes/administration/academic-years";
 
@@ -134,7 +134,10 @@ export default function Index({ academicYears, filter, canAny, can }: PageProps)
             <section>
                 <Card>
                     <CardHeader className="border-b">
-                        <CardTitle className="text-sm">السنوات الدراسية</CardTitle>
+                        <CardTitle className="text-sm">
+                            <ListIcon />
+                            <span>السنوات الدراسية</span>
+                        </CardTitle>
                     </CardHeader>
                     {data.length > 0 ? (
                         <CardTableContent>
