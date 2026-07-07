@@ -3,6 +3,7 @@
 namespace App\Support\Navigation\Panels;
 
 use App\Models\AcademicYear;
+use App\Models\GradeLevel;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
@@ -27,10 +28,10 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'الصفوف الدراسية',
-                'href' => '#',
+                'href' => route('administration.grade-levels.index'),
                 'icon' => 'GraduationCapIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.grade-levels.*',
+                'can' => $this->user?->canAny(['viewAny'], GradeLevel::class),
             ],
             [
                 'title' => 'المقررات الدراسية',

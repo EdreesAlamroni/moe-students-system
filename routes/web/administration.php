@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\Administration\AcademicYearController;
 use App\Http\Controllers\Administration\DashboardController;
+use App\Http\Controllers\Administration\GradeLevelController;
 use App\Http\Controllers\Administration\MunicipalController;
 use App\Http\Controllers\Administration\UserController;
 use App\Http\Controllers\Administration\UserStateController;
@@ -29,6 +30,11 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
         Route::post('/', [AcademicYearController::class, 'store'])->name('academic-years.store');
         Route::get('/{academicYear}', [AcademicYearController::class, 'show'])->name('academic-years.show');
         Route::delete('/{academicYear}/close', [AcademicYearController::class, 'close'])->name('academic-years.close');
+    });
+
+    // Grade Levels
+    Route::prefix('grade-levels')->group(function () {
+        Route::get('/', [GradeLevelController::class, 'index'])->name('grade-levels.index');
     });
 
     // Users

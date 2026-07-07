@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             NationalitySeeder::class,
             MunicipalSeeder::class,
             AcademicYearSeeder::class,
+            GradeLevelSeeder::class,
             UserSeeder::class,
         ]);
 

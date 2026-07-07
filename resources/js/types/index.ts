@@ -95,3 +95,15 @@ export type AcademicYear = {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export type GradeLevel = {
+    id: number;
+    uuid: string;
+    name: string;
+    code: string;
+    educational_stage: Enum;
+    order: number;
+    created_at: string,
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}

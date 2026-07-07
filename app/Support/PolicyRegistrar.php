@@ -3,8 +3,10 @@
 namespace App\Support;
 
 use App\Models\AcademicYear;
+use App\Models\GradeLevel;
 use App\Models\User;
 use App\Policies\Administration\AcademicYearPolicy as AdministrationAcademicYearPolicy;
+use App\Policies\Administration\GradeLevelPolicy as AdministrationGradeLevelPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +19,7 @@ final class PolicyRegistrar
         'administration' => [
             User::class => AdministrationUserPolicy::class,
             AcademicYear::class => AdministrationAcademicYearPolicy::class,
+            GradeLevel::class => AdministrationGradeLevelPolicy::class,
         ],
         'warehouse' => [],
         'education-monitor' => [],
