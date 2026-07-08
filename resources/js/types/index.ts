@@ -107,3 +107,20 @@ export type GradeLevel = {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export type Subject = {
+    id: number;
+    uuid: string;
+    grade_level_id: number;
+    grade_level: GradeLevel;
+    name: string;
+    code: string;
+    included_in_total_score: boolean;
+    included_in_total_score_label: string;
+    needs_lab: boolean;
+    needs_lab_label: string;
+    description?: string;
+    created_at: string,
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}

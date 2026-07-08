@@ -6,6 +6,7 @@ use App\Http\Controllers\Administration\AcademicYearController;
 use App\Http\Controllers\Administration\DashboardController;
 use App\Http\Controllers\Administration\GradeLevelController;
 use App\Http\Controllers\Administration\MunicipalController;
+use App\Http\Controllers\Administration\SubjectController;
 use App\Http\Controllers\Administration\UserController;
 use App\Http\Controllers\Administration\UserStateController;
 use App\Support\Auth\DashboardAuth;
@@ -35,6 +36,17 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
     // Grade Levels
     Route::prefix('grade-levels')->group(function () {
         Route::get('/', [GradeLevelController::class, 'index'])->name('grade-levels.index');
+    });
+
+    // Subjects
+    Route::prefix('subjects')->group(function () {
+        Route::get('/', [SubjectController::class, 'index'])->name('subjects.index');
+        Route::get('/create', [SubjectController::class, 'create'])->name('subjects.create');
+        Route::post('/', [SubjectController::class, 'store'])->name('subjects.store');
+        Route::get('/{subject}', [SubjectController::class, 'show'])->name('subjects.show');
+        Route::get('/{subject}/edit', [SubjectController::class, 'edit'])->name('subjects.edit');
+        Route::put('/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
+        Route::delete('/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
     });
 
     // Users

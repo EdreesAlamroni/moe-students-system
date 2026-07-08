@@ -4,6 +4,7 @@ namespace App\Support\Navigation\Panels;
 
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
+use App\Models\Subject;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
@@ -35,10 +36,10 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'المقررات الدراسية',
-                'href' => '#',
+                'href' => route('administration.subjects.index'),
                 'icon' => 'BookTextIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.subjects.*',
+                'can' => $this->user?->canAny(['viewAny'], Subject::class),
             ],
             [
                 'title' => 'الحصص الدراسية',

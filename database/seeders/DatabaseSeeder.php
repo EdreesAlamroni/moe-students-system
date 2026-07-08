@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             MunicipalSeeder::class,
             AcademicYearSeeder::class,
             GradeLevelSeeder::class,
+            SubjectSeeder::class,
             UserSeeder::class,
         ]);
 
