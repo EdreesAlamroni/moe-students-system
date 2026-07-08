@@ -1,0 +1,14 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Http\Resources\DirectModelCollection;
+use Illuminate\Http\Request;
+
+class {{ class }} extends DirectModelCollection
+{
+    public function toArray(Request $request): array
+    {
+        return parent::toArray($request);
+    }
+}
