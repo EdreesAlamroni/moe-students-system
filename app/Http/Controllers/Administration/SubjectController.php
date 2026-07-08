@@ -38,9 +38,8 @@ class SubjectController extends Controller
             ])
             ->with(['gradeLevel:id,name'])
             ->allowedFilters(
-                AllowedFilter::partial('name'),
-                AllowedFilter::partial('code'),
                 AllowedFilter::exact('grade_level_id'),
+                AllowedFilter::partial('name'),
             )
             ->paginate()
             ->withQueryString()

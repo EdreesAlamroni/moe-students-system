@@ -92,12 +92,14 @@ export default function Index({ academicYears, filter, canAny, can }: PageProps)
                                     value={filter.name}
                                     placeholder="السنة الدراسية"
                                 />
+
                                 <DatePicker
                                     id="start_date"
                                     name="filter[start_date]"
                                     placeholder="تاريخ بداية العام الدراسي"
                                     date={filter.start_date}
                                 />
+
                                 <DatePicker
                                     id="end_date"
                                     name="filter[end_date]"

@@ -89,12 +89,6 @@ export default function Index({ subjects, gradeLevels, filter, canAny, can }: Pa
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <Input
-                                    type="text"
-                                    name="filter[name]"
-                                    defaultValue={filter.name}
-                                    placeholder="اسم المقرر الدراسي"
-                                />
                                 <Select
                                     name="filter[grade_level_id]"
                                     defaultValue={filter.grade_level_id}
@@ -115,6 +109,13 @@ export default function Index({ subjects, gradeLevels, filter, canAny, can }: Pa
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
+
+                                <Input
+                                    type="text"
+                                    name="filter[name]"
+                                    defaultValue={filter.name}
+                                    placeholder="اسم المقرر الدراسي"
+                                />
                             </div>
                         </CardContent>
                         <CardFooter className="border-t">
