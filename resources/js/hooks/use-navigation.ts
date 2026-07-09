@@ -5,7 +5,7 @@ import { emptyNavigation } from '@/types/navigation';
 import type { Navigation } from '@/types';
 
 export function useNavigation(): Navigation {
-    const { navigation } = usePage<{ navigation: Navigation }>().props;
+    const { navigation } = usePage().props;
 
     return navigation ?? emptyNavigation();
 }
