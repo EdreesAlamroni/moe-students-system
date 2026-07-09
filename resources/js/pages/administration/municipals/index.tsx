@@ -2,9 +2,9 @@ import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
-import MainContainer from "@/components/ui/structure/main-container";
-
 import type { Municipal, Paginated } from "@/types";
+
+import MainContainer from "@/components/ui/structure/main-container";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 

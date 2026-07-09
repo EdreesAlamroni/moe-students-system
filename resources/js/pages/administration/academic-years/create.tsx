@@ -38,8 +38,7 @@ export default function Create({ name, minStartDate, maxEndDate }: PageProps) {
 
             <MainContainer>
                 <Form
-                    action={store.url()}
-                    method="POST"
+                    {...store.form()}
                     disableWhileProcessing
                 >
                     {({ processing, errors }) => (

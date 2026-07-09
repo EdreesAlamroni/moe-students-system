@@ -21,7 +21,7 @@ function StateIndicator({ state, className = "", childClassName = "" }: {
 }
 
 function StatePill({ state, className = "" }: {
-    state: Pick<ModelState, "label" | "uiClasses">;
+    state: Pick<ModelState, "name" | "uiClasses">;
     className?: string;
 }) {
     return (
@@ -29,7 +29,7 @@ function StatePill({ state, className = "" }: {
             state.uiClasses,
             className,
         )}>
-            <span>{state.label}</span>
+            <span>{state.name}</span>
         </div>
     );
 }

@@ -18,9 +18,9 @@ use Illuminate\Support\Collection;
  * @property string $name
  * @property SchoolEducationalStageEnum $educational_stage
  * @property int $order
- * @property Carbon $created_at
- * @property Carbon $updated_at
- * @property Carbon $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  */
 #[Guarded(['id'])]
 class GradeLevel extends Model
