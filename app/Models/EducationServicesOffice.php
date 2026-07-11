@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -32,6 +31,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read string|null $formatted_whatsapp_phone_number
+ * @property-read EducationMonitor $monitor
  * @property-read int|null $schools_count
  * @property-read int|null $students_count
  */
@@ -143,11 +143,6 @@ class EducationServicesOffice extends Model
 
     public function hasAnyRelations(): bool
     {
-        // TODO: Remove this once the schools table is created and use the relationship instead.
-        if (! Schema::hasTable('schools')) {
-            return false;
-        }
-
         return $this->schools()->exists();
     }
 
@@ -160,20 +155,12 @@ class EducationServicesOffice extends Model
     {
         $this->loadMissing(['monitor:id,name']);
 
-        if ($this->monitor === null) {
-            return $this->name;
-        }
-
         return "{$this->monitor->name} - {$this->name}";
     }
 
     public function printOrganizationLines(): array
     {
         $this->loadMissing(['monitor:id,name']);
-
-        if ($this->monitor === null) {
-            return [$this->name];
-        }
 
         return [$this->monitor->name, $this->name];
     }

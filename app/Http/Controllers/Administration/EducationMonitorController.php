@@ -10,6 +10,7 @@ use App\Http\Resources\Administration\EducationMonitorFormResource;
 use App\Http\Resources\Administration\EducationMonitorResource;
 use App\Http\Resources\Administration\EducationServicesOfficeCollection;
 use App\Models\EducationMonitor;
+use App\Models\EducationServicesOffice;
 use App\Models\Municipal;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
@@ -86,7 +87,8 @@ class EducationMonitorController extends Controller
             // 'students', // TODO: Uncomment this when students are implemented
         ]);
 
-        $offices = $monitor->offices()
+        $offices = EducationServicesOffice::query()
+            ->whereBelongsTo($monitor)
             ->select(['id', 'uuid', 'education_monitor_id', 'name', 'created_at', 'deleted_at'])
             ->ordered()
             ->paginate(pageName: 'offices')

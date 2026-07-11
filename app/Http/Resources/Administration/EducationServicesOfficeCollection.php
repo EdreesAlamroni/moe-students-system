@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Administration;
 
 use App\Http\Resources\DirectModelCollection;
-use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use Illuminate\Http\Request;
 
@@ -16,7 +15,7 @@ class EducationServicesOfficeCollection extends DirectModelCollection
             'uuid' => $office->uuid,
             'education_monitor_id' => $office->education_monitor_id,
             'name' => $office->name,
-            'monitor' => $office->relationLoaded('monitor') && $office->monitor instanceof EducationMonitor
+            'monitor' => $office->relationLoaded('monitor')
                 ? $office->monitor->only(['id', 'uuid', 'name'])
                 : null,
             'schools_count' => intval($office->schools_count ?? 0),

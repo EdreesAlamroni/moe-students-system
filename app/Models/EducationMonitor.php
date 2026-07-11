@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -154,16 +153,7 @@ class EducationMonitor extends Model
 
     public function hasAnyRelations(): bool
     {
-        if ($this->offices()->exists()) {
-            return true;
-        }
-
-        // TODO: Remove this guard once the schools table is created and rely on the relationship directly.
-        if (Schema::hasTable('schools') && $this->schools()->exists()) {
-            return true;
-        }
-
-        return false;
+        return $this->offices()->exists() || $this->schools()->exists();
     }
 
     public function hasCoordinates(): bool
