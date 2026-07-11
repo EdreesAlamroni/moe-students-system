@@ -88,7 +88,7 @@ class EducationMonitorController extends Controller
         ]);
 
         $offices = EducationServicesOffice::query()
-            ->whereBelongsTo($monitor)
+            ->whereBelongsTo($monitor, 'monitor')
             ->select(['id', 'uuid', 'education_monitor_id', 'name', 'created_at', 'deleted_at'])
             ->ordered()
             ->paginate(pageName: 'offices')
