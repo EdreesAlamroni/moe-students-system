@@ -19,8 +19,8 @@ class EducationServicesOfficeCollection extends DirectModelCollection
             'monitor' => $office->relationLoaded('monitor') && $office->monitor instanceof EducationMonitor
                 ? $office->monitor->only(['id', 'uuid', 'name'])
                 : null,
-            'schools_count' => $office->schools_count,
-            'students_count' => $office->students_count,
+            'schools_count' => intval($office->schools_count ?? 0),
+            'students_count' => intval($office->students_count ?? 0),
         ])->all();
     }
 }
