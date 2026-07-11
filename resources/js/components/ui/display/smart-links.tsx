@@ -153,7 +153,7 @@ export function SmartLink({
             className={cn(
                 "focus:!ring-0",
                 className,
-                isFilled ? "hover:underline" : "cursor-default font-sans",
+                isFilled ? "hover:underline" : "cursor-default",
             )}
             {...props}
         >

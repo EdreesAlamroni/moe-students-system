@@ -94,7 +94,7 @@ export default function Index({ municipals, filter }: PageProps) {
             <section>
                 <Card>
                     <CardHeader className="border-b">
-                        <CardTitle className="text-sm">
+                        <CardTitle>
                             <ListIcon />
                             <span>البلديات</span>
                         </CardTitle>

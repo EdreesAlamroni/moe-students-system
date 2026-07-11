@@ -124,3 +124,114 @@ export type Subject = {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export type Warehouse = {
+    id: number;
+    uuid: string;
+    name: string;
+    address?: string;
+    add_location_to_map?: boolean;
+    latitude?: string;
+    longitude?: string;
+    has_coordinates: boolean;
+    monitors: EducationMonitor[];
+    monitors_count: number;
+    schools_count: number;
+    education_monitor_ids: number[];
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}
+
+export type EducationMonitor = {
+    id: number;
+    uuid: string;
+    municipal_id?: number;
+    municipal?: Municipal;
+    name: string;
+    phone_number?: string;
+    whatsapp_phone_number?: string;
+    formatted_whatsapp_phone_number?: string;
+    address?: string;
+    add_location_to_map?: boolean;
+    latitude?: string;
+    longitude?: string;
+    has_coordinates?: boolean;
+    offices?: EducationServicesOffice[];
+    schools?: School[];
+    offices_count?: number;
+    schools_count?: number;
+    students_count?: number;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}
+
+export type EducationServicesOffice = {
+    id: number;
+    uuid: string;
+    education_monitor_id: number;
+    monitor?: EducationMonitor;
+    education_monitor?: EducationMonitor;
+    name: string;
+    phone_number?: string;
+    whatsapp_phone_number?: string;
+    formatted_whatsapp_phone_number?: string;
+    address?: string;
+    add_location_to_map?: boolean;
+    latitude?: string;
+    longitude?: string;
+    has_coordinates?: boolean;
+    schools?: {
+        id: number;
+        uuid: string;
+        name: string;
+    }[];
+    schools_count?: number;
+    students_count?: number;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface School {
+    id: number;
+    uuid: string;
+    education_monitor_id: number;
+    monitor?: EducationMonitor;
+    education_services_office_id?: number;
+    office?: EducationServicesOffice;
+    educational_stages?: SchoolEducationalStage[];
+    serial_number: string;
+    type: Enum;
+    educational_company_name?: string;
+    branch_type?: Enum;
+    name: string;
+    academic_period?: Enum;
+    students_gender?: Enum;
+    phone_number?: string;
+    whatsapp_phone_number?: string;
+    address?: string;
+    is_public?: boolean;
+    is_private?: boolean;
+    is_morning_period?: boolean;
+    is_evening_period?: boolean;
+    grade_levels_count?: number;
+    classrooms_count?: number;
+    students_count?: number;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface SchoolEducationalStage {
+    id: number;
+    school_id: number;
+    school?: School;
+    academic_year_id?: number;
+    academic_year?: AcademicYear;
+    stage: Enum;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+};

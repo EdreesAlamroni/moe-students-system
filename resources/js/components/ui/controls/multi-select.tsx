@@ -89,7 +89,7 @@ const multiSelectCheckboxClassName = cn(
 const multiSelectTriggerClassName = cn(
     "flex h-10 min-h-10 max-h-10 w-full items-center justify-between gap-1.5 rounded-none border border-input bg-background px-1.5 py-0 text-start text-sm outline-none transition-colors",
     "focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/50",
-    "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+    "disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50",
     "aria-expanded:border-primary aria-expanded:ring-1 aria-expanded:ring-primary/50",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
 );
@@ -226,9 +226,16 @@ interface MultiSelectProps
 
     /**
      * Placeholder text to be displayed when no values are selected.
-     * Optional, defaults to "Select options".
+     * Optional, defaults to "اختر".
      */
     placeholder?: string;
+
+    /**
+     * Placeholder text shown when the options list is empty.
+     * The field is also disabled in that case.
+     * Optional, defaults to "لا توجد خيارات متاحة".
+     */
+    emptyPlaceholder?: string;
 
     /**
      * Animation duration in seconds for the visual effects (e.g., bouncing badges).
@@ -409,6 +416,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
             variant,
             defaultValue = [],
             placeholder = "اختر",
+            emptyPlaceholder = "لا توجد خيارات متاحة",
             animation = 0,
             animationConfig,
             maxCount = 3,
@@ -442,6 +450,10 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
         const prevSelectedCount = React.useRef(selectedValues.length);
         const prevIsOpen = React.useRef(isPopoverOpen);
         const prevSearchValue = React.useRef(searchValue);
+
+        const isDisabled = disabled || options.length === 0;
+        const resolvedPlaceholder =
+            options.length === 0 ? emptyPlaceholder : placeholder;
 
         const announce = React.useCallback(
             (message: string, priority: "polite" | "assertive" = "polite") => {
@@ -720,7 +732,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
         };
 
         const toggleOption = (optionValue: string) => {
-            if (disabled) return;
+            if (isDisabled) return;
             const option = getOptionByValue(optionValue);
             if (option?.disabled) return;
             const newSelectedValues = selectedValues.includes(optionValue)
@@ -734,13 +746,13 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
         };
 
         const handleClear = () => {
-            if (disabled) return;
+            if (isDisabled) return;
             setSelectedValues([]);
             onValueChange([]);
         };
 
         const handleTogglePopover = () => {
-            if (disabled) return;
+            if (isDisabled) return;
             setIsPopoverOpen((prev) => !prev);
         };
 
@@ -755,7 +767,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
         // };
 
         const toggleAll = () => {
-            if (disabled) return;
+            if (isDisabled) return;
             const allOptions = getAllOptions().filter((option) => !option.disabled);
             if (selectedValues.length === allOptions.length) {
                 handleClear();
@@ -799,6 +811,12 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
                 setSearchValue("");
             }
         }, [isPopoverOpen]);
+
+        React.useEffect(() => {
+            if (isDisabled) {
+                setIsPopoverOpen(false);
+            }
+        }, [isDisabled]);
 
         React.useEffect(() => {
             const selectedCount = selectedValues.length;
@@ -875,7 +893,12 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 
                 <Popover
                     open={isPopoverOpen}
-                    onOpenChange={setIsPopoverOpen}
+                    onOpenChange={(open) => {
+                        if (isDisabled) {
+                            return;
+                        }
+                        setIsPopoverOpen(open);
+                    }}
                     modal={modalPopover}>
                     <div id={triggerDescriptionId} className="sr-only">
                         Multi-select dropdown. Use arrow keys to navigate, Enter to select,
@@ -897,30 +920,33 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
                             variant="outline"
                             {...props}
                             onClick={handleTogglePopover}
-                            disabled={disabled}
+                            disabled={isDisabled}
                             role="combobox"
                             aria-expanded={isPopoverOpen}
                             aria-haspopup="listbox"
                             aria-controls={isPopoverOpen ? listboxId : undefined}
                             aria-describedby={`${triggerDescriptionId} ${selectedCountId}`}
                             aria-label={`Multi-select: ${selectedValues.length} of ${getAllOptions().length
-                                } options selected. ${placeholder}`}
+                                } options selected. ${resolvedPlaceholder}`}
                             className={cn(
                                 multiSelectTriggerClassName,
                                 "px-1.5! py-0! font-normal normal-case tracking-normal shadow-none",
                                 "hover:bg-transparent aria-expanded:bg-transparent",
-                                "[&_svg]:pointer-events-auto",
+                                !isDisabled && "[&_svg]:pointer-events-auto",
                                 autoSize ? "w-auto" : "w-full",
                                 responsiveSettings.compactMode &&
                                 "h-9 min-h-9 max-h-9 text-sm",
-                                disabled && "opacity-50 cursor-not-allowed",
                                 className
                             )}
                             style={{
                                 ...widthConstraints,
                                 maxWidth: `min(${widthConstraints.maxWidth}, 100%)`,
                             }}>
-                            <div className="flex min-h-0 min-w-0 flex-1 items-center overflow-hidden">
+                            <div
+                                className={cn(
+                                    "flex min-h-0 min-w-0 flex-1 items-center overflow-hidden",
+                                    isDisabled && "pointer-events-none",
+                                )}>
                                 {selectedValues.length > 0 ? (
                                     <div
                                         className={cn(
@@ -994,7 +1020,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
                                                         </span>
                                                         <div
                                                             role="button"
-                                                            tabIndex={0}
+                                                            tabIndex={isDisabled ? -1 : 0}
                                                             onClick={(event) => {
                                                                 event.stopPropagation();
                                                                 toggleOption(value);
@@ -1010,6 +1036,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
                                                                 }
                                                             }}
                                                             aria-label={`Remove ${option.label} from selection`}
+                                                            aria-disabled={isDisabled}
                                                             className="flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-none text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50">
                                                             <XCircle
                                                                 className={cn(
@@ -1044,24 +1071,32 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
                                         )}
                                     </div>
                                 ) : (
-                                    <span className="truncate text-muted-foreground">
-                                        {placeholder}
+                                    <span
+                                        className={cn(
+                                            "truncate text-muted-foreground",
+                                        )}
+                                    >
+                                        {resolvedPlaceholder}
                                     </span>
                                 )}
                             </div>
-                            <div className="flex shrink-0 items-center">
+                            <div
+                                className={cn(
+                                    "flex shrink-0 items-center",
+                                    isDisabled && "pointer-events-none",
+                                )}>
                                 <div
                                     role="button"
-                                    tabIndex={selectedValues.length > 0 ? 0 : -1}
+                                    tabIndex={isDisabled || selectedValues.length === 0 ? -1 : 0}
                                     onClick={(event) => {
-                                        if (selectedValues.length === 0) {
+                                        if (isDisabled || selectedValues.length === 0) {
                                             return;
                                         }
                                         event.stopPropagation();
                                         handleClear();
                                     }}
                                     onKeyDown={(event) => {
-                                        if (selectedValues.length === 0) {
+                                        if (isDisabled || selectedValues.length === 0) {
                                             return;
                                         }
                                         if (event.key === "Enter" || event.key === " ") {

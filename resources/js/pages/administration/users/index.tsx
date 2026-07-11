@@ -138,7 +138,7 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
             <section>
                 <Card>
                     <CardHeader className="border-b">
-                        <CardTitle className="text-sm">
+                        <CardTitle>
                             <ListIcon />
                             <span>المُستخدمين</span>
                         </CardTitle>

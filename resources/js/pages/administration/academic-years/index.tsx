@@ -76,12 +76,12 @@ export default function Index({ academicYears, filter, canAny, can }: PageProps)
                 >
                     <Card>
                         <CardHeader className="border-b">
-                            <CardTitle className="gap-x-1.5">
-                                <div className="flex items-center gap-x-3">
-                                    <FunnelIcon />
+                            <CardTitle>
+                                <FunnelIcon />
+                                <div className="flex items-center gap-x-1.5">
                                     <span>فرز النتائج</span>
+                                    <span className="font-mono">({meta.total})</span>
                                 </div>
-                                <span className="font-mono">({meta.total})</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -136,7 +136,7 @@ export default function Index({ academicYears, filter, canAny, can }: PageProps)
             <section>
                 <Card>
                     <CardHeader className="border-b">
-                        <CardTitle className="text-sm">
+                        <CardTitle>
                             <ListIcon />
                             <span>السنوات الدراسية</span>
                         </CardTitle>

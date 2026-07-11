@@ -19,7 +19,7 @@ class SubjectResource extends JsonResource
             'uuid' => $subject->uuid,
             'grade_level_id' => $subject->grade_level_id,
             'grade_level' => $this->whenLoaded('gradeLevel', function (GradeLevel $gradeLevel) {
-                return GradeLevelSummaryResource::make($gradeLevel);
+                return $gradeLevel->only(['id', 'uuid', 'name']);
             }),
             'name' => $subject->name,
             'code' => $subject->code,

@@ -1,0 +1,222 @@
+import React from 'react'
+
+import { Form, Head, Link } from "@inertiajs/react";
+
+import type { CanPermissions, EducationMonitor, EducationServicesOffice, Paginated } from "@/types";
+
+import MainContainer from "@/components/ui/structure/main-container";
+
+import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
+import ActionsSection from "@/components/ui/display/actions-section";
+
+import { Table, TableBody, TableCell, TableCellActions, TableCellNullableValue, TableHead, TableHeader, TableRow } from "@/components/ui/display/table";
+import EmptyState from "@/components/ui/display/empty-state";
+
+import { Input } from "@/components/ui/controls/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
+
+import { Button } from "@/components/ui/actions/button";
+import ViewDetailsLink from "@/components/ui/actions/view-details-link";
+
+import { Paginator } from "@/components/ui/navigation/paginator";
+
+import FunnelIcon from "@/components/ui/icons/funnel-icon";
+import { ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
+
+import { create, index, show } from "@/routes/administration/education-services-offices";
+
+type MonitorOption = Pick<EducationMonitor, "id" | "name">;
+
+type OfficeProps = EducationServicesOffice & {
+    monitor?: MonitorOption;
+    canAny: boolean;
+    can: CanPermissions;
+}
+
+type PageProps = {
+    offices: Paginated<OfficeProps>;
+    monitors: MonitorOption[];
+    filter: {
+        education_monitor_id?: string;
+        name?: string;
+    };
+    canAny: boolean;
+    can: CanPermissions;
+}
+
+export default function Index({ offices, monitors, filter, canAny, can }: PageProps) {
+    const { data, links, ...meta } = offices;
+
+    const hasFilter = Object.values(filter).some((value) => value);
+
+    const hasPagination = data.length > 0 && meta.last_page > 1;
+
+    return (
+        <MainContainer>
+            <Head title="مكاتب الخدمات التعليمية" />
+
+            {canAny && (
+                <ActionsSection>
+                    {can.create && (
+                        <Button
+                            variant="default"
+                            asChild
+                        >
+                            <Link href={create.url()}>
+                                <PlusIcon />
+                                <span>إضافة مكتب خدمات تعليمية جديد</span>
+                            </Link>
+                        </Button>
+                    )}
+                </ActionsSection>
+            )}
+
+            <section>
+                <Form
+                    action={index.url()}
+                    method="GET"
+                >
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <FunnelIcon />
+                                <div className="flex items-center gap-x-1.5">
+                                    <span>فرز النتائج</span>
+                                    <span className="font-mono">({meta.total})</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <Select
+                                    name="filter[education_monitor_id]"
+                                    defaultValue={filter.education_monitor_id}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="اختر المُراقبة" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {monitors.map((monitor) => (
+                                                <SelectItem
+                                                    key={monitor.id}
+                                                    value={monitor.id.toString()}
+                                                >
+                                                    {monitor.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+
+                                <Input
+                                    type="text"
+                                    name="filter[name]"
+                                    defaultValue={filter.name}
+                                    placeholder="اسم مكتب الخدمات التعليمية"
+                                />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="border-t">
+                            <div className="flex items-center gap-x-3">
+                                <Button
+                                    type="submit"
+                                    variant="default"
+                                >
+                                    <SearchIcon />
+                                    <span>بحث</span>
+                                </Button>
+                                <Button
+                                    type="reset"
+                                    variant="outline"
+                                    asChild
+                                >
+                                    <Link href={index.url()}>
+                                        <RefreshCcwIcon />
+                                        <span>مسح حقول الفلتر</span>
+                                    </Link>
+                                </Button>
+                            </div>
+                        </CardFooter>
+                    </Card>
+                </Form>
+            </section>
+
+            <section>
+                <Card>
+                    <CardHeader className="border-b">
+                        <CardTitle>
+                            <ListIcon />
+                            <span>مكاتب الخدمات التعليمية</span>
+                        </CardTitle>
+                    </CardHeader>
+                    {data.length > 0 ? (
+                        <CardTableContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                        <TableHead scope="col">اسم مكتب الخدمات التعليمية</TableHead>
+                                        <TableHead scope="col">المُراقبة</TableHead>
+                                        <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
+                                        <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                        <TableHead scope="col" />
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {data.map((office: OfficeProps, rowIndex: number) => (
+                                        <TableRow key={office.uuid}>
+                                            <TableCell className="font-mono">{rowIndex + 1}</TableCell>
+                                            <TableCell>{office.name}</TableCell>
+                                            <TableCell>{office.monitor?.name}</TableCell>
+                                            <TableCell className="text-center">
+                                                <TableCellNullableValue className="font-mono" value={office.schools_count} fallback={0} />
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                <TableCellNullableValue className="font-mono" value={office.students_count} fallback={0} />
+                                            </TableCell>
+                                            <TableCellActions>
+                                                {office.canAny && (
+                                                    <>
+                                                        {office.can.view && (
+                                                            <ViewDetailsLink
+                                                                href={show.url({ office: office })}
+                                                            />
+                                                        )}
+                                                    </>
+                                                )}
+                                            </TableCellActions>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardTableContent>
+                    ) : (
+                        <CardContent>
+                            <EmptyState
+                                hasFilter={hasFilter}
+                            />
+                        </CardContent>
+                    )}
+                    {hasPagination && (
+                        <CardFooter className="border-t">
+                            <Paginator
+                                links={links}
+                                meta={meta}
+                            />
+                        </CardFooter>
+                    )}
+                </Card>
+            </section>
+        </MainContainer>
+    )
+}
+
+Index.layout = () => ({
+    breadcrumbs: [
+        {
+            title: 'مكاتب الخدمات التعليمية',
+            href: index.url(),
+        },
+    ],
+});

@@ -4,9 +4,13 @@ namespace App\Models;
 
 use App\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -24,6 +28,19 @@ class Municipal extends Model
 {
     /** @use HasFactory<\Database\Factories\MunicipalFactory> */
     use HasFactory, HasUuid, SoftDeletes;
+
+    /*
+     * Start: Relations
+     */
+
+    public function monitor(): HasOne
+    {
+        return $this->hasOne(EducationMonitor::class, 'municipal_id');
+    }
+
+    /*
+     * End: Relations
+     */
 
     /*
      * Start: Custom Functions
@@ -54,9 +71,15 @@ class Municipal extends Model
 
     public static function listUnassigned(array|int|null $except = null): Collection
     {
-        // TODO: Implement the listUnassigned method after implementing the EducationMonitor model.
+        $exceptIds = Arr::wrap($except);
 
-        return new Collection;
+        return self::list(function (Builder $query) use ($exceptIds) {
+            $query->whereDoesntHave('monitor', function (Builder $query) use ($exceptIds): void {
+                $query->when(filled($exceptIds), function (Builder $query) use ($exceptIds): void {
+                    $query->whereNotIn('education_monitors.id', $exceptIds);
+                })->withoutGlobalScope(SoftDeletingScope::class);
+            });
+        });
     }
 
     /*

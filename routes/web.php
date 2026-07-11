@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcademicYearSelectionController;
+use App\Http\Controllers\LocationSearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('welcome');
@@ -30,4 +31,10 @@ Route::name('school.')->prefix('school')->middleware('bind.dashboard:school')->g
 // Academic Year selection (available to all guards)
 Route::middleware(['auth:administration,warehouse,education_monitor,education_services_office,school'])->group(function () {
     Route::patch('academic-year/select', AcademicYearSelectionController::class)->name('academic-year.select');
+});
+
+Route::prefix('api')->middleware(['auth:administration,warehouse,education_monitor,education_services_office,school'])->group(function () {
+    Route::get('locations/search', LocationSearchController::class)
+        ->middleware('throttle:30,1')
+        ->name('locations.search');
 });

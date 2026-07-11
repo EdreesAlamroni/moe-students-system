@@ -4,11 +4,14 @@ use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\Administration\AcademicYearController;
 use App\Http\Controllers\Administration\DashboardController;
+use App\Http\Controllers\Administration\EducationMonitorController;
+use App\Http\Controllers\Administration\EducationServicesOfficeController;
 use App\Http\Controllers\Administration\GradeLevelController;
 use App\Http\Controllers\Administration\MunicipalController;
 use App\Http\Controllers\Administration\SubjectController;
 use App\Http\Controllers\Administration\UserController;
 use App\Http\Controllers\Administration\UserStateController;
+use App\Http\Controllers\Administration\WarehouseController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
 use Illuminate\Auth\Middleware\RequirePassword;
@@ -47,6 +50,39 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
         Route::get('/{subject}/edit', [SubjectController::class, 'edit'])->name('subjects.edit');
         Route::put('/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
         Route::delete('/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
+    });
+
+    // Warehouses
+    Route::prefix('warehouses')->group(function () {
+        Route::get('/', [WarehouseController::class, 'index'])->name('warehouses.index');
+        Route::get('/create', [WarehouseController::class, 'create'])->name('warehouses.create');
+        Route::post('/', [WarehouseController::class, 'store'])->name('warehouses.store');
+        Route::get('/{warehouse}', [WarehouseController::class, 'show'])->name('warehouses.show');
+        Route::get('/{warehouse}/edit', [WarehouseController::class, 'edit'])->name('warehouses.edit');
+        Route::put('/{warehouse}', [WarehouseController::class, 'update'])->name('warehouses.update');
+        Route::delete('/{warehouse}', [WarehouseController::class, 'destroy'])->name('warehouses.destroy');
+    });
+
+    // Education Monitors
+    Route::prefix('education-monitors')->group(function () {
+        Route::get('/', [EducationMonitorController::class, 'index'])->name('education-monitors.index');
+        Route::get('/create', [EducationMonitorController::class, 'create'])->name('education-monitors.create');
+        Route::post('/', [EducationMonitorController::class, 'store'])->name('education-monitors.store');
+        Route::get('/{monitor}', [EducationMonitorController::class, 'show'])->name('education-monitors.show');
+        Route::get('/{monitor}/edit', [EducationMonitorController::class, 'edit'])->name('education-monitors.edit');
+        Route::put('/{monitor}', [EducationMonitorController::class, 'update'])->name('education-monitors.update');
+        Route::delete('/{monitor}', [EducationMonitorController::class, 'destroy'])->name('education-monitors.destroy');
+    });
+
+    // Education Services Offices
+    Route::prefix('education-services-offices')->group(function () {
+        Route::get('/', [EducationServicesOfficeController::class, 'index'])->name('education-services-offices.index');
+        Route::get('/create', [EducationServicesOfficeController::class, 'create'])->name('education-services-offices.create');
+        Route::post('/', [EducationServicesOfficeController::class, 'store'])->name('education-services-offices.store');
+        Route::get('/{office}', [EducationServicesOfficeController::class, 'show'])->name('education-services-offices.show');
+        Route::get('/{office}/edit', [EducationServicesOfficeController::class, 'edit'])->name('education-services-offices.edit');
+        Route::put('/{office}', [EducationServicesOfficeController::class, 'update'])->name('education-services-offices.update');
+        Route::delete('/{office}', [EducationServicesOfficeController::class, 'destroy'])->name('education-services-offices.destroy');
     });
 
     // Users

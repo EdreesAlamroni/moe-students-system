@@ -3,10 +3,14 @@
 namespace App\Support;
 
 use App\Models\AcademicYear;
+use App\Models\EducationMonitor;
+use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\Subject;
 use App\Models\User;
 use App\Policies\Administration\AcademicYearPolicy as AdministrationAcademicYearPolicy;
+use App\Policies\Administration\EducationMonitorPolicy as AdministrationEducationMonitorPolicy;
+use App\Policies\Administration\EducationServicesOfficePolicy as AdministrationEducationServicesOfficePolicy;
 use App\Policies\Administration\GradeLevelPolicy as AdministrationGradeLevelPolicy;
 use App\Policies\Administration\SubjectPolicy as AdministrationSubjectPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
@@ -23,6 +27,8 @@ final class PolicyRegistrar
             AcademicYear::class => AdministrationAcademicYearPolicy::class,
             GradeLevel::class => AdministrationGradeLevelPolicy::class,
             Subject::class => AdministrationSubjectPolicy::class,
+            EducationMonitor::class => AdministrationEducationMonitorPolicy::class,
+            EducationServicesOffice::class => AdministrationEducationServicesOfficePolicy::class,
         ],
         'warehouse' => [],
         'education-monitor' => [],

@@ -3,9 +3,12 @@
 namespace App\Support\Navigation\Panels;
 
 use App\Models\AcademicYear;
+use App\Models\EducationMonitor;
+use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\Subject;
 use App\Models\User;
+use App\Models\Warehouse;
 use App\Support\Navigation\NavigationPanel;
 
 class AdministrationNavigation extends NavigationPanel
@@ -50,24 +53,24 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'المخازن',
-                'href' => '#',
+                'href' => route('administration.warehouses.index'),
                 'icon' => 'WarehouseIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.warehouses.*',
+                'can' => $this->user?->canAny(['viewAny'], Warehouse::class),
             ],
             [
                 'title' => 'المُراقبات',
-                'href' => '#',
+                'href' => route('administration.education-monitors.index'),
                 'icon' => 'LandmarkIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.education-monitors.*',
+                'can' => $this->user?->canAny(['viewAny'], EducationMonitor::class),
             ],
             [
                 'title' => 'مكاتب الخدمات التعليمية',
-                'href' => '#',
+                'href' => route('administration.education-services-offices.index'),
                 'icon' => 'BuildingIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.education-services-offices.*',
+                'can' => $this->user?->canAny(['viewAny'], EducationServicesOffice::class),
             ],
             [
                 'title' => 'المدارس',

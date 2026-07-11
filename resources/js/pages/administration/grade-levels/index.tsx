@@ -118,7 +118,7 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
             <section>
                 <Card>
                     <CardHeader className="border-b">
-                        <CardTitle className="text-sm">
+                        <CardTitle>
                             <ListIcon />
                             <span>الصفوف الدراسية</span>
                         </CardTitle>
