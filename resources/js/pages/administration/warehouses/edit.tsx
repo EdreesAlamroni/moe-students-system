@@ -92,6 +92,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                                     name="name"
                                                     defaultValue={warehouse.name}
                                                     hasErrors={!!errors.name}
+                                                    autoComplete="off"
                                                     required
                                                 />
 
@@ -142,6 +143,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                                     name="address"
                                                     defaultValue={warehouse.address ?? ""}
                                                     hasErrors={!!errors.address}
+                                                    autoComplete="off"
                                                 />
 
                                                 <InputError message={errors.address} />
@@ -198,6 +200,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                                             defaultValue={warehouse.latitude ?? ""}
                                                             hasErrors={!!errors.latitude}
                                                             className="font-mono"
+                                                            autoComplete="off"
                                                             required
                                                             {...latitudeInputConstraints()}
                                                         />
@@ -221,6 +224,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                                             defaultValue={warehouse.longitude ?? ""}
                                                             hasErrors={!!errors.longitude}
                                                             className="font-mono"
+                                                            autoComplete="off"
                                                             required
                                                             {...longitudeInputConstraints()}
                                                         />

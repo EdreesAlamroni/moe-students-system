@@ -15,6 +15,7 @@ import { DetailValue } from "@/components/ui/display/detail-value";
 
 import Field from "@/components/ui/controls/field";
 import { Label } from "@/components/ui/controls/label";
+import { Textarea } from "@/components/ui/controls/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
 import InputError from "@/components/ui/controls/input-error";
 
@@ -22,8 +23,6 @@ import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
 import { Button } from "@/components/ui/actions/button";
 import { UpdateButton } from "@/components/ui/actions/submit-button";
-
-import { cn } from "@/lib/utils";
 
 import { ReplyIcon } from "lucide-react";
 
@@ -135,18 +134,12 @@ export default function Edit({ subject }: PageProps) {
                                                     الوصف
                                                 </Label>
 
-                                                <textarea
+                                                <Textarea
                                                     id="description"
                                                     name="description"
-                                                    rows={4}
                                                     defaultValue={subject.description ?? ""}
-                                                    aria-invalid={!!errors.description}
-                                                    className={cn(
-                                                        "min-h-24 w-full min-w-0 px-2.5 py-2 bg-transparent text-sm border border-input outline-none transition-colors placeholder:text-muted-foreground",
-                                                        "focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/50",
-                                                        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-                                                        "aria-invalid:border-destructive aria-invalid:ring-destructive/30",
-                                                    )}
+                                                    hasError={!!errors.description}
+                                                    autoComplete="off"
                                                 />
 
                                                 <InputError message={errors.description} />

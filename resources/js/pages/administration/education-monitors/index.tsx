@@ -87,6 +87,7 @@ export default function Index({ monitors, filter, canAny, can }: PageProps) {
                                     name="filter[name]"
                                     defaultValue={filter.name}
                                     placeholder="اسم المُراقبة"
+                                    autoComplete="off"
                                 />
                             </div>
                         </CardContent>

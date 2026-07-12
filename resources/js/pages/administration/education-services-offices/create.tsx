@@ -130,6 +130,7 @@ export default function Create({ monitors }: PageProps) {
                                                     type="text"
                                                     name="name"
                                                     hasErrors={!!errors.name}
+                                                    autoComplete="off"
                                                     required
                                                 />
 
@@ -151,6 +152,7 @@ export default function Create({ monitors }: PageProps) {
                                                     hasErrors={!!errors.phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
+                                                    autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
 
@@ -172,6 +174,7 @@ export default function Create({ monitors }: PageProps) {
                                                     hasErrors={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
+                                                    autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
 
@@ -191,6 +194,7 @@ export default function Create({ monitors }: PageProps) {
                                                     type="text"
                                                     name="address"
                                                     hasErrors={!!errors.address}
+                                                    autoComplete="off"
                                                 />
 
                                                 <InputError message={errors.address} />
@@ -248,6 +252,7 @@ export default function Create({ monitors }: PageProps) {
                                                             hasErrors={!!errors.latitude}
                                                             className="font-mono"
                                                             required
+                                                            autoComplete="off"
                                                             {...latitudeInputConstraints()}
                                                         />
 
@@ -270,6 +275,7 @@ export default function Create({ monitors }: PageProps) {
                                                             hasErrors={!!errors.longitude}
                                                             className="font-mono"
                                                             required
+                                                            autoComplete="off"
                                                             {...longitudeInputConstraints()}
                                                         />
 

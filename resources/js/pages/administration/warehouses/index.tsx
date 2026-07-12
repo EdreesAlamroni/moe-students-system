@@ -87,6 +87,7 @@ export default function Index({ warehouses, filter, canAny, can }: PageProps) {
                                     name="filter[name]"
                                     defaultValue={filter.name}
                                     placeholder="اسم المخزن"
+                                    autoComplete="off"
                                 />
                             </div>
                         </CardContent>

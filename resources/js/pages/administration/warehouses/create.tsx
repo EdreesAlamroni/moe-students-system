@@ -89,6 +89,7 @@ export default function Create({ monitors }: PageProps) {
                                                     type="text"
                                                     name="name"
                                                     hasErrors={!!errors.name}
+                                                    autoComplete="off"
                                                     required
                                                 />
 
@@ -138,6 +139,7 @@ export default function Create({ monitors }: PageProps) {
                                                     type="text"
                                                     name="address"
                                                     hasErrors={!!errors.address}
+                                                    autoComplete="off"
                                                 />
 
                                                 <InputError message={errors.address} />
@@ -194,6 +196,7 @@ export default function Create({ monitors }: PageProps) {
                                                             name="latitude"
                                                             hasErrors={!!errors.latitude}
                                                             className="font-mono"
+                                                            autoComplete="off"
                                                             required
                                                             {...latitudeInputConstraints()}
                                                         />
@@ -216,6 +219,7 @@ export default function Create({ monitors }: PageProps) {
                                                             name="longitude"
                                                             hasErrors={!!errors.longitude}
                                                             className="font-mono"
+                                                            autoComplete="off"
                                                             required
                                                             {...longitudeInputConstraints()}
                                                         />

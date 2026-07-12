@@ -63,6 +63,7 @@ export default function Index({ municipals, filter }: PageProps) {
                                     name="filter[name]"
                                     value={filter.name}
                                     placeholder="الاسم"
+                                    autoComplete="off"
                                 />
                             </div>
                         </CardContent>

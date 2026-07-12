@@ -161,6 +161,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                     hasErrors={!!errors.phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
+                                                    autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
 
@@ -183,6 +184,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                     hasErrors={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
+                                                    autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
 
@@ -203,6 +205,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                     name="address"
                                                     defaultValue={monitor.address ?? ""}
                                                     hasErrors={!!errors.address}
+                                                    autoComplete="off"
                                                 />
 
                                                 <InputError message={errors.address} />
@@ -259,6 +262,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                             defaultValue={monitor.latitude ?? ""}
                                                             hasErrors={!!errors.latitude}
                                                             className="font-mono"
+                                                            autoComplete="off"
                                                             required
                                                             {...latitudeInputConstraints()}
                                                         />
@@ -282,6 +286,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                             defaultValue={monitor.longitude ?? ""}
                                                             hasErrors={!!errors.longitude}
                                                             className="font-mono"
+                                                            autoComplete="off"
                                                             required
                                                             {...longitudeInputConstraints()}
                                                         />

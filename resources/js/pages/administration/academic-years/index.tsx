@@ -89,8 +89,9 @@ export default function Index({ academicYears, filter, canAny, can }: PageProps)
                                 <Input
                                     type="text"
                                     name="filter[name]"
-                                    value={filter.name}
+                                    defaultValue={filter.name || undefined}
                                     placeholder="السنة الدراسية"
+                                    autoComplete="off"
                                 />
 
                                 <DatePicker

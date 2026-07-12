@@ -90,7 +90,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Select
                                     name="filter[education_monitor_id]"
-                                    defaultValue={filter.education_monitor_id}
+                                    defaultValue={filter.education_monitor_id || undefined}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="اختر المُراقبة" />
@@ -114,6 +114,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                                     name="filter[name]"
                                     defaultValue={filter.name}
                                     placeholder="اسم مكتب الخدمات التعليمية"
+                                    autoComplete="off"
                                 />
                             </div>
                         </CardContent>

@@ -138,6 +138,7 @@ export default function Create({ municipals }: PageProps) {
                                                     type="text"
                                                     value={generatedName}
                                                     placeholder={selectedMunicipalId ? "اسم المُراقبة" : "يرجى اختيار البلدية أولاً"}
+                                                    autoComplete="off"
                                                     disabled
                                                 />
                                             </Field>
@@ -157,6 +158,7 @@ export default function Create({ municipals }: PageProps) {
                                                     hasErrors={!!errors.phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
+                                                    autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
 
@@ -178,6 +180,7 @@ export default function Create({ municipals }: PageProps) {
                                                     hasErrors={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
+                                                    autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
 
@@ -197,6 +200,7 @@ export default function Create({ municipals }: PageProps) {
                                                     type="text"
                                                     name="address"
                                                     hasErrors={!!errors.address}
+                                                    autoComplete="off"
                                                 />
 
                                                 <InputError message={errors.address} />
@@ -253,6 +257,7 @@ export default function Create({ municipals }: PageProps) {
                                                             name="latitude"
                                                             hasErrors={!!errors.latitude}
                                                             className="font-mono"
+                                                            autoComplete="off"
                                                             required
                                                             {...latitudeInputConstraints()}
                                                         />
@@ -275,6 +280,7 @@ export default function Create({ municipals }: PageProps) {
                                                             name="longitude"
                                                             hasErrors={!!errors.longitude}
                                                             className="font-mono"
+                                                            autoComplete="off"
                                                             required
                                                             {...longitudeInputConstraints()}
                                                         />

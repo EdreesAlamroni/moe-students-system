@@ -66,11 +66,12 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                                     name="filter[name]"
                                     value={filter.name}
                                     placeholder="الاسم"
+                                    autoComplete="off"
                                 />
 
                                 <Select
                                     name="filter[educational_stage]"
-                                    defaultValue={filter.educational_stage}
+                                    defaultValue={filter.educational_stage || undefined}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="اختر المرحلة الدراسية" />

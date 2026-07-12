@@ -91,7 +91,7 @@ export default function Index({ subjects, gradeLevels, filter, canAny, can }: Pa
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Select
                                     name="filter[grade_level_id]"
-                                    defaultValue={filter.grade_level_id}
+                                    defaultValue={filter.grade_level_id || undefined}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="اختر الصف الدراسي" />
@@ -115,6 +115,7 @@ export default function Index({ subjects, gradeLevels, filter, canAny, can }: Pa
                                     name="filter[name]"
                                     defaultValue={filter.name}
                                     placeholder="اسم المقرر الدراسي"
+                                    autoComplete="off"
                                 />
                             </div>
                         </CardContent>

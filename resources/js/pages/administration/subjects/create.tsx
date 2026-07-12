@@ -112,6 +112,7 @@ export default function Create({ gradeLevels }: PageProps) {
                                                     type="text"
                                                     name="name"
                                                     hasErrors={!!errors.name}
+                                                    autoComplete="off"
                                                     required
                                                 />
 
@@ -133,6 +134,7 @@ export default function Create({ gradeLevels }: PageProps) {
                                                     name="code"
                                                     hasErrors={!!errors.code}
                                                     className="font-mono"
+                                                    autoComplete="off"
                                                     required
                                                     aria-describedby="code-hint"
                                                     {...codeSlugInputConstraints()}
@@ -223,6 +225,7 @@ export default function Create({ gradeLevels }: PageProps) {
                                                     id="description"
                                                     name="description"
                                                     hasError={!!errors.description}
+                                                    autoComplete="off"
                                                 />
 
                                                 <InputError message={errors.description} />
