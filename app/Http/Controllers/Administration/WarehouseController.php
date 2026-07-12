@@ -33,7 +33,7 @@ class WarehouseController extends Controller
             ->select(['id', 'uuid', 'name', 'created_at', 'deleted_at'])
             ->withCount([
                 'monitors',
-                // 'schools', // TODO: Uncomment this when schools are implemented
+                'schools',
             ])
             ->allowedFilters(
                 'name',
@@ -94,15 +94,15 @@ class WarehouseController extends Controller
             'monitors',
         ])->loadCount([
             'monitors',
-            // 'schools', // TODO: Uncomment this when schools are implemented
+            'schools',
         ]);
 
         $monitors = $warehouse->monitors()
             ->select(['id', 'uuid', 'name', 'municipal_id', 'created_at', 'deleted_at'])
             ->withCount([
                 'offices',
-                // 'schools', // TODO: Uncomment this when schools are implemented
-                // 'students', // TODO: Uncomment this when students are implemented
+                'schools',
+                'students',
             ])
             ->paginate(pageName: 'monitors')
             ->withQueryString()

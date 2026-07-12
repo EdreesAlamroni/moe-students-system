@@ -90,8 +90,8 @@ class EducationServicesOfficeController extends Controller
         ]);
 
         $office->loadCount([
-            // 'schools', // TODO: Uncomment this when schools are implemented
-            // 'students', // TODO: Uncomment this when students are implemented
+            'schools',
+            'students',
         ]);
 
         return Inertia::render('administration/education-services-offices/show', [

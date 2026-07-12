@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             WarehouseSeeder::class,
             EducationMonitorSeeder::class,
             EducationServicesOfficeSeeder::class,
+            SchoolSeeder::class,
             UserSeeder::class,
         ]);
 

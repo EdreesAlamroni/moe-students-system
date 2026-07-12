@@ -202,10 +202,12 @@ export interface School {
     education_services_office_id?: number;
     office?: EducationServicesOffice;
     educational_stages?: SchoolEducationalStage[];
+    educational_stages_labels?: string;
     serial_number: string;
     type: Enum;
     educational_company_name?: string;
     branch_type?: Enum;
+    building_type?: Enum;
     name: string;
     academic_period?: Enum;
     students_gender?: Enum;

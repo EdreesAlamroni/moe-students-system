@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -127,11 +128,10 @@ class EducationServicesOffice extends Model
         return $this->hasMany(School::class);
     }
 
-    // TODO: Add students relationship
-    // public function students(): HasManyThrough
-    // {
-    //     return $this->hasManyThrough(Student::class, School::class);
-    // }
+    public function students(): HasManyThrough
+    {
+        return $this->hasManyThrough(Student::class, School::class);
+    }
 
     /*
      * End: Relations

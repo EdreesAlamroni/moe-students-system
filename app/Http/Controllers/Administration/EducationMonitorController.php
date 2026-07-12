@@ -32,8 +32,8 @@ class EducationMonitorController extends Controller
             ->select(['id', 'uuid', 'name', 'municipal_id', 'created_at', 'deleted_at'])
             ->withCount([
                 'offices',
-                // 'schools', // TODO: Uncomment this when schools are implemented
-                // 'students', // TODO: Uncomment this when students are implemented
+                'schools',
+                'students',
             ])
             ->allowedFilters(
                 'name',
@@ -83,8 +83,8 @@ class EducationMonitorController extends Controller
             'municipal:id,uuid,name',
         ])->loadCount([
             'offices',
-            // 'schools', // TODO: Uncomment this when schools are implemented
-            // 'students', // TODO: Uncomment this when students are implemented
+            'schools',
+            'students',
         ]);
 
         $offices = EducationServicesOffice::query()

@@ -37,6 +37,40 @@ return [
             ],
         ],
 
+        'school_academic_periods' => [
+            'morning' => 'صباحية',
+            'evening' => 'مسائية',
+            'dual_period' => 'فترتين (صباحية و مسائية)',
+        ],
+
+        'school_types' => [
+            'public' => 'عامة',
+            'private' => 'خاصة',
+
+            'plural' => [
+                'public' => 'مدارس عامة',
+                'private' => 'مدارس خاصة',
+            ],
+        ],
+
+        'school_branch_types' => [
+            'main' => 'رئيسي',
+            'sub' => 'فرعي',
+        ],
+
+        'school_building_types' => [
+            'school' => 'مدرسة',
+            'villa' => 'فيلا',
+            'flat' => 'شقة',
+            'otherwise' => 'أخرى',
+        ],
+
+        'school_students_gender' => [
+            'boys' => 'بنين',
+            'girls' => 'بنات',
+            'mixed' => 'مختلط',
+        ],
+
         'school_educational_stages' => [
             'kindergarten' => 'رياض الأطفال',
             'primary_education' => 'التعليم الأساسي',
@@ -62,6 +96,11 @@ return [
             'grade_11_literary' => 'الصف الثاني ثانوي - أدبي',
             'grade_12_scientific' => 'الصف الثالث ثانوي - علمي',
             'grade_12_literary' => 'الصف الثالث ثانوي - أدبي',
+        ],
+
+        'exam_enrollment_statuses' => [
+            'registered' => 'مُسجل',
+            'deferred' => 'مُتعثر',
         ],
     ],
 

@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
+use App\Models\School;
 use App\Models\Subject;
 use App\Models\User;
 use App\Models\Warehouse;
@@ -74,10 +75,10 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'المدارس',
-                'href' => '#',
+                'href' => route('administration.schools.index'),
                 'icon' => 'SchoolIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.schools.*',
+                'can' => $this->user?->canAny(['viewAny'], School::class),
             ],
             [
                 'title' => 'الطلاب',
