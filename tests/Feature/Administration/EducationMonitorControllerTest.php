@@ -7,7 +7,24 @@ use App\Models\Municipal;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
+use Mockery\MockInterface;
 use Spatie\Permission\Models\Permission;
+
+/**
+ * Wrap a persisted monitor in a partial mock so route-model binding resolves it,
+ * allowing the instance-level hasAnyRelations() check to be controlled in tests.
+ */
+function bindEducationMonitorBinding(EducationMonitor $monitor, bool $hasAnyRelations): EducationMonitor
+{
+    /** @var EducationMonitor&MockInterface $mock */
+    $mock = Mockery::mock($monitor)->makePartial();
+    $mock->shouldReceive('hasAnyRelations')->andReturn($hasAnyRelations);
+    $mock->shouldReceive('resolveRouteBinding')->andReturn($mock);
+
+    app()->instance(EducationMonitor::class, $mock);
+
+    return $mock;
+}
 
 function createEducationMonitorAdminUser(): User
 {
@@ -171,13 +188,24 @@ test('authenticated users can update an education monitor and regenerated name f
         ->and($monitor->municipal_id)->toBe($newMunicipal->id);
 });
 
-test('authenticated users can delete an education monitor', function () {
+test('authenticated users can delete an education monitor without relations', function () {
     $user = createEducationMonitorAdminUser();
-    $monitor = EducationMonitor::factory()->create();
+    $monitor = bindEducationMonitorBinding(EducationMonitor::factory()->create(), hasAnyRelations: false);
 
     $this->actingAs($user, 'administration')
         ->delete(route('administration.education-monitors.destroy', ['monitor' => $monitor]))
         ->assertRedirect(route('administration.education-monitors.index'));
 
-    $this->assertSoftDeleted($monitor);
+    $this->assertSoftDeleted('education_monitors', ['id' => $monitor->id]);
+});
+
+test('education monitors with relations cannot be deleted', function () {
+    $user = createEducationMonitorAdminUser();
+    $monitor = bindEducationMonitorBinding(EducationMonitor::factory()->create(), hasAnyRelations: true);
+
+    $this->actingAs($user, 'administration')
+        ->delete(route('administration.education-monitors.destroy', ['monitor' => $monitor]))
+        ->assertForbidden();
+
+    $this->assertNotSoftDeleted('education_monitors', ['id' => $monitor->id]);
 });

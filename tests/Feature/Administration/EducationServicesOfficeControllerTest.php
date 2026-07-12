@@ -6,7 +6,24 @@ use App\Models\EducationServicesOffice;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
+use Mockery\MockInterface;
 use Spatie\Permission\Models\Permission;
+
+/**
+ * Wrap a persisted office in a partial mock so route-model binding resolves it,
+ * allowing the instance-level hasAnyRelations() check to be controlled in tests.
+ */
+function bindEducationServicesOfficeBinding(EducationServicesOffice $office, bool $hasAnyRelations): EducationServicesOffice
+{
+    /** @var EducationServicesOffice&MockInterface $mock */
+    $mock = Mockery::mock($office)->makePartial();
+    $mock->shouldReceive('hasAnyRelations')->andReturn($hasAnyRelations);
+    $mock->shouldReceive('resolveRouteBinding')->andReturn($mock);
+
+    app()->instance(EducationServicesOffice::class, $mock);
+
+    return $mock;
+}
 
 function createEducationServicesOfficeAdminUser(): User
 {
@@ -170,13 +187,24 @@ test('authenticated users can update an education services office', function () 
         ->and($office->education_monitor_id)->toBe($newMonitor->id);
 });
 
-test('authenticated users can delete an education services office', function () {
+test('authenticated users can delete an education services office without relations', function () {
     $user = createEducationServicesOfficeAdminUser();
-    $office = EducationServicesOffice::factory()->create();
+    $office = bindEducationServicesOfficeBinding(EducationServicesOffice::factory()->create(), hasAnyRelations: false);
 
     $this->actingAs($user, 'administration')
         ->delete(route('administration.education-services-offices.destroy', ['office' => $office]))
         ->assertRedirect(route('administration.education-services-offices.index'));
 
-    $this->assertSoftDeleted($office);
+    $this->assertSoftDeleted('education_services_offices', ['id' => $office->id]);
+});
+
+test('education services offices with relations cannot be deleted', function () {
+    $user = createEducationServicesOfficeAdminUser();
+    $office = bindEducationServicesOfficeBinding(EducationServicesOffice::factory()->create(), hasAnyRelations: true);
+
+    $this->actingAs($user, 'administration')
+        ->delete(route('administration.education-services-offices.destroy', ['office' => $office]))
+        ->assertForbidden();
+
+    $this->assertNotSoftDeleted('education_services_offices', ['id' => $office->id]);
 });

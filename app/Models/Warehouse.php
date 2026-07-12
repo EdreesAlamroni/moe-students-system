@@ -92,7 +92,7 @@ class Warehouse extends Model
 
     public function hasAnyRelations(): bool
     {
-        return $this->monitors()->exists();
+        return true;
     }
 
     public static function list(?callable $callback = null, array $additionalColumns = ['id', 'name']): Collection

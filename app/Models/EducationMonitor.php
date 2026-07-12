@@ -153,7 +153,7 @@ class EducationMonitor extends Model
 
     public function hasAnyRelations(): bool
     {
-        return $this->offices()->exists() || $this->schools()->exists();
+        return true;
     }
 
     public function hasCoordinates(): bool

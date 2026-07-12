@@ -224,12 +224,12 @@ class StoreRequest extends FormRequest
         $educationalStagesMorning = $educationalStagesEvening = null;
 
         if (! $this->isDualPeriod()) {
-            $educationalStages = json_decode($this->input('educational_stages', []), true) ?: null;
+            $educationalStages = $this->decodeEducationalStages('educational_stages');
         }
 
         if ($this->isDualPeriod()) {
-            $educationalStagesMorning = json_decode($this->input('educational_stages_morning', []), true) ?: null;
-            $educationalStagesEvening = json_decode($this->input('educational_stages_evening', []), true) ?: null;
+            $educationalStagesMorning = $this->decodeEducationalStages('educational_stages_morning');
+            $educationalStagesEvening = $this->decodeEducationalStages('educational_stages_evening');
         }
 
         $this->merge([
@@ -272,6 +272,21 @@ class StoreRequest extends FormRequest
         return EducationServicesOffice::query()
             ->where('education_monitor_id', '=', $monitorId)
             ->exists();
+    }
+
+    protected function decodeEducationalStages(string $key): ?array
+    {
+        $value = $this->input($key);
+
+        if (is_array($value)) {
+            return $value ?: null;
+        }
+
+        if (is_string($value)) {
+            return json_decode($value, true) ?: null;
+        }
+
+        return null;
     }
 
     protected function buildEducationalStages(string $key): array

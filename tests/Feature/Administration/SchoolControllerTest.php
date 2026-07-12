@@ -15,6 +15,7 @@ use App\Models\SchoolEducationalStage;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
+use Mockery\MockInterface;
 use Spatie\Permission\Models\Permission;
 
 function createSchoolAdminUser(): User
@@ -36,6 +37,22 @@ function createSchoolAdminUser(): User
     $user->givePermissionTo($permissions);
 
     return $user;
+}
+
+/**
+ * Wrap a persisted school in a partial mock so route-model binding resolves it,
+ * allowing the instance-level hasAnyRelations() check to be controlled in tests.
+ */
+function bindSchoolBinding(School $school, bool $hasAnyRelations): School
+{
+    /** @var School&MockInterface $mock */
+    $mock = Mockery::mock($school)->makePartial();
+    $mock->shouldReceive('hasAnyRelations')->andReturn($hasAnyRelations);
+    $mock->shouldReceive('resolveRouteBinding')->andReturn($mock);
+
+    app()->instance(School::class, $mock);
+
+    return $mock;
 }
 
 function publicSchoolPayload(EducationMonitor $monitor, array $overrides = []): array
@@ -283,13 +300,24 @@ test('authenticated users can update private school specific fields', function (
         ->and($school->building_type)->toBe(SchoolBuildingType::VILLA);
 });
 
-test('authenticated users can delete a school', function () {
+test('authenticated users can delete a school without relations', function () {
     $user = createSchoolAdminUser();
-    $school = School::factory()->create();
+    $school = bindSchoolBinding(School::factory()->create(), hasAnyRelations: false);
 
     $this->actingAs($user, 'administration')
         ->delete(route('administration.schools.destroy', ['school' => $school]))
         ->assertRedirect(route('administration.schools.index'));
 
-    $this->assertSoftDeleted($school);
+    $this->assertSoftDeleted('schools', ['id' => $school->id]);
+});
+
+test('schools with relations cannot be deleted', function () {
+    $user = createSchoolAdminUser();
+    $school = bindSchoolBinding(School::factory()->create(), hasAnyRelations: true);
+
+    $this->actingAs($user, 'administration')
+        ->delete(route('administration.schools.destroy', ['school' => $school]))
+        ->assertForbidden();
+
+    $this->assertNotSoftDeleted('schools', ['id' => $school->id]);
 });

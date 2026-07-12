@@ -143,7 +143,7 @@ class EducationServicesOffice extends Model
 
     public function hasAnyRelations(): bool
     {
-        return $this->schools()->exists();
+        return true;
     }
 
     public function hasCoordinates(): bool
