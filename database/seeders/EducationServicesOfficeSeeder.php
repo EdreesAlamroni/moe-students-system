@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use Illuminate\Database\Seeder;
-use RuntimeException;
 
 class EducationServicesOfficeSeeder extends Seeder
 {
@@ -18,17 +17,14 @@ class EducationServicesOfficeSeeder extends Seeder
             ->first();
 
         if ($monitor === null) {
-            throw new RuntimeException('Unable to seed education services offices: missing بنغازي education monitor.');
+            return;
         }
 
         foreach ($this->offices() as $name) {
-            EducationServicesOffice::query()->updateOrCreate(
-                [
-                    'education_monitor_id' => $monitor->id,
-                    'name' => $name,
-                ],
-                [],
-            );
+            EducationServicesOffice::query()->updateOrCreate([
+                'education_monitor_id' => $monitor->id,
+                'name' => $name,
+            ], []);
         }
     }
 

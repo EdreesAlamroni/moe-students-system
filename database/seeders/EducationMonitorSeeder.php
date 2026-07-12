@@ -6,7 +6,6 @@ use App\Models\EducationMonitor;
 use App\Models\Municipal;
 use App\Models\Warehouse;
 use Illuminate\Database\Seeder;
-use RuntimeException;
 
 class EducationMonitorSeeder extends Seeder
 {
@@ -30,18 +29,15 @@ class EducationMonitorSeeder extends Seeder
             $municipal = $municipals->get($municipalName) ?? $municipals->get($this->normalizeMunicipalName($municipalName));
             $warehouse = $warehouses->get($warehouseName);
 
-            if ($municipal === null) {
-                throw new RuntimeException("Unable to seed education monitor: missing municipal [{$municipalName}].");
+            if ($municipal === null || $warehouse === null) {
+                continue;
             }
 
-            if ($warehouse === null) {
-                throw new RuntimeException("Unable to seed education monitor: missing warehouse [{$warehouseName}].");
-            }
-
-            EducationMonitor::query()->updateOrCreate(
-                ['municipal_id' => $municipal->id],
-                ['warehouse_id' => $warehouse->id],
-            );
+            EducationMonitor::query()->updateOrCreate([
+                'municipal_id' => $municipal->id,
+            ], [
+                'warehouse_id' => $warehouse->id,
+            ]);
         }
     }
 
