@@ -48,8 +48,6 @@ class SchoolSeeder extends Seeder
                 'type' => $attributes['type'],
                 'academic_period' => $attributes['academic_period'],
                 'students_gender' => $attributes['students_gender'],
-                'phone_number' => $attributes['phone_number'],
-                'whatsapp_phone_number' => $attributes['whatsapp_phone_number'],
             ],
         );
 

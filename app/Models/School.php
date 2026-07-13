@@ -11,7 +11,6 @@ use App\Enums\SchoolType;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,15 +29,12 @@ use Illuminate\Support\Str;
  * @property int|null $education_services_office_id
  * @property string $serial_number
  * @property SchoolType $type
- * @property SchoolBranchType|null $branch_type
  * @property string|null $educational_company_name
+ * @property SchoolBranchType|null $branch_type
  * @property SchoolBuildingType|null $building_type
  * @property string $name
- * @property SchoolAcademicPeriod|null $academic_period
- * @property SchoolStudentsGender|null $students_gender
- * @property string|null $phone_number
- * @property string|null $whatsapp_phone_number
- * @property string|null $address
+ * @property SchoolAcademicPeriod $academic_period
+ * @property SchoolStudentsGender $students_gender
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -74,27 +70,6 @@ class School extends Model
             $school->serial_number = $serialNumber;
         });
     }
-
-    /*
-     * Start: Accessors & Mutators
-     */
-
-    public function formattedWhatsappPhoneNumber(): Attribute
-    {
-        return Attribute::get(function (): ?string {
-            $phoneNumber = $this->whatsapp_phone_number;
-
-            if (blank($phoneNumber)) {
-                return null;
-            }
-
-            return Str::of($phoneNumber)->ltrim('0')->prepend('+218')->toString();
-        });
-    }
-
-    /*
-     * End: Accessors & Mutators
-     */
 
     /*
      * Start: Scopes

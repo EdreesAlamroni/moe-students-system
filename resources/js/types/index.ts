@@ -209,11 +209,8 @@ export interface School {
     branch_type?: Enum;
     building_type?: Enum;
     name: string;
-    academic_period?: Enum;
-    students_gender?: Enum;
-    phone_number?: string;
-    whatsapp_phone_number?: string;
-    address?: string;
+    academic_period: Enum;
+    students_gender: Enum;
     is_public?: boolean;
     is_private?: boolean;
     is_morning_period?: boolean;

@@ -179,7 +179,7 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
                                         <TableHead scope="col" className="w-24">#</TableHead>
                                         <TableHead scope="col">الرقم التسلسلي</TableHead>
                                         <TableHead scope="col">اسم المدرسة</TableHead>
-                                        <TableHead scope="col">نوع المدرسة</TableHead>
+                                        <TableHead scope="col">الفترة الدراسية</TableHead>
                                         <TableHead scope="col">المُراقبة</TableHead>
                                         <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
                                         <TableHead scope="col" />
@@ -190,8 +190,13 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
                                         <TableRow key={school.uuid}>
                                             <TableCell className="font-mono">{index + 1}</TableCell>
                                             <TableCell className="font-mono">{school.serial_number}</TableCell>
-                                            <TableCell>{school.name}</TableCell>
-                                            <TableCell>{school.type?.name}</TableCell>
+                                            <TableCell>
+                                                <div>{school.name}</div>
+                                                <div className="mt-2 text-xs text-muted-foreground">
+                                                    {`مدرسة ${school.type.name}`}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>{school.academic_period.name}</TableCell>
                                             <TableCell>{school.monitor?.name}</TableCell>
                                             <TableCell className="text-center">
                                                 <TableCellNullableValue className="font-mono" value={school.students_count} fallback={0} />

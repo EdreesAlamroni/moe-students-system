@@ -10,7 +10,6 @@ use App\Enums\SchoolType;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
-use App\Support\Helpers\FakeDataGenerator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,8 +24,6 @@ class SchoolFactory extends Factory
      */
     public function definition(): array
     {
-        $phoneNumber = FakeDataGenerator::libyanMobile(fake());
-
         return [
             'education_monitor_id' => EducationMonitor::factory(),
             'education_services_office_id' => function (array $attributes) {
@@ -36,8 +33,6 @@ class SchoolFactory extends Factory
             'name' => fake()->unique()->company(),
             'academic_period' => fake()->randomElement(SchoolAcademicPeriod::getPrimaryValues()),
             'students_gender' => fake()->randomElement(SchoolStudentsGender::cases()),
-            'phone_number' => $phoneNumber,
-            'whatsapp_phone_number' => $phoneNumber,
         ];
     }
 

@@ -207,6 +207,58 @@ test('authenticated users can store a dual-period school as two records', functi
     expect(SchoolEducationalStage::query()->count())->toBe(2);
 });
 
+test('authenticated users can store a dual-period school sharing the same name', function () {
+    $user = createSchoolAdminUser();
+    $monitor = EducationMonitor::factory()->create();
+
+    $payload = [
+        'education_monitor_id' => $monitor->id,
+        'type' => SchoolType::PUBLIC->value,
+        'academic_period' => SchoolAcademicPeriod::DUAL_PERIOD->value,
+        'same_school_name' => '1',
+        'name' => 'مدرسة الوحدة',
+        'students_gender_morning' => SchoolStudentsGender::BOYS->value,
+        'students_gender_evening' => SchoolStudentsGender::GIRLS->value,
+        'educational_stages_morning' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
+        'educational_stages_evening' => [SchoolEducationalStageEnum::SECONDARY_EDUCATION->value],
+    ];
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.schools.store'), $payload)
+        ->assertRedirect();
+
+    $this->assertDatabaseCount('schools', 2);
+
+    $this->assertDatabaseHas('schools', [
+        'name' => 'مدرسة الوحدة',
+        'academic_period' => SchoolAcademicPeriod::MORNING->value,
+        'students_gender' => SchoolStudentsGender::BOYS->value,
+    ]);
+    $this->assertDatabaseHas('schools', [
+        'name' => 'مدرسة الوحدة',
+        'academic_period' => SchoolAcademicPeriod::EVENING->value,
+        'students_gender' => SchoolStudentsGender::GIRLS->value,
+    ]);
+});
+
+test('dual-period school with shared name requires the single name field', function () {
+    $user = createSchoolAdminUser();
+    $monitor = EducationMonitor::factory()->create();
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.schools.store'), [
+            'education_monitor_id' => $monitor->id,
+            'type' => SchoolType::PUBLIC->value,
+            'academic_period' => SchoolAcademicPeriod::DUAL_PERIOD->value,
+            'same_school_name' => '1',
+            'students_gender_morning' => SchoolStudentsGender::BOYS->value,
+            'students_gender_evening' => SchoolStudentsGender::GIRLS->value,
+            'educational_stages_morning' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
+            'educational_stages_evening' => [SchoolEducationalStageEnum::SECONDARY_EDUCATION->value],
+        ])
+        ->assertSessionHasErrors('name');
+});
+
 test('education services office is required when the monitor has offices', function () {
     $user = createSchoolAdminUser();
     $monitor = EducationMonitor::factory()->create();

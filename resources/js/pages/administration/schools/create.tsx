@@ -15,6 +15,7 @@ import Field from "@/components/ui/controls/field";
 import { Label } from "@/components/ui/controls/label";
 import { Input } from "@/components/ui/controls/input";
 import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
+import { Checkbox } from "@/components/ui/controls/checkbox";
 import { MultiSelect } from "@/components/ui/controls/multi-select";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
 import InputError from "@/components/ui/controls/input-error";
@@ -59,6 +60,7 @@ export default function Create({
     const [selectedOfficeId, setSelectedOfficeId] = useState<string>();
     const [selectedType, setSelectedType] = useState<string>();
     const [selectedAcademicPeriod, setSelectedAcademicPeriod] = useState<string>();
+    const [sameSchoolName, setSameSchoolName] = useState<boolean>(false);
     const [selectedStages, setSelectedStages] = useState<string[]>([]);
     const [selectedStagesMorning, setSelectedStagesMorning] = useState<string[]>([]);
     const [selectedStagesEvening, setSelectedStagesEvening] = useState<string[]>([]);
@@ -94,6 +96,7 @@ export default function Create({
 
                             {isDualPeriod ? (
                                 <>
+                                    <input type="hidden" name="same_school_name" value={sameSchoolName ? "1" : "0"} />
                                     <input type="hidden" name="educational_stages_morning" value={JSON.stringify(selectedStagesMorning)} />
                                     <input type="hidden" name="educational_stages_evening" value={JSON.stringify(selectedStagesEvening)} />
                                 </>
@@ -356,37 +359,77 @@ export default function Create({
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Field>
-                                                        <Label htmlFor="name_morning" hasError={!!errors.name_morning} required>
-                                                            <span>اسم المدرسة</span>
-                                                            <span className="text-muted-foreground ms-1.5">( الفترة الصباحية )</span>
-                                                        </Label>
-                                                        <Input
-                                                            id="name_morning"
-                                                            type="text"
-                                                            name="name_morning"
-                                                            hasErrors={!!errors.name_morning}
-                                                            autoComplete="off"
-                                                            required
-                                                        />
-                                                        <InputError message={errors.name_morning} />
+                                                    <Field className="col-span-full">
+                                                        <div className="flex items-center gap-x-3">
+                                                            <Checkbox
+                                                                id="same_school_name"
+                                                                checked={sameSchoolName}
+                                                                onCheckedChange={(checked) => {
+                                                                    setSameSchoolName(checked === true);
+                                                                }}
+                                                            />
+
+                                                            <Label
+                                                                htmlFor="same_school_name"
+                                                                style={{ fontWeight: '500' }}
+                                                            >
+                                                                كلتا الفترتين تتبعان نفس المدرسة (استخدام نفس الاسم للفترتين)
+                                                            </Label>
+                                                        </div>
+
+                                                        <InputError message={errors.same_school_name} />
                                                     </Field>
 
-                                                    <Field>
-                                                        <Label htmlFor="name_evening" hasError={!!errors.name_evening} required>
-                                                            <span>اسم المدرسة</span>
-                                                            <span className="text-muted-foreground ms-1.5">( الفترة المسائية )</span>
-                                                        </Label>
-                                                        <Input
-                                                            id="name_evening"
-                                                            type="text"
-                                                            name="name_evening"
-                                                            hasErrors={!!errors.name_evening}
-                                                            autoComplete="off"
-                                                            required
-                                                        />
-                                                        <InputError message={errors.name_evening} />
-                                                    </Field>
+                                                    {sameSchoolName ? (
+                                                        <Field className="col-span-full">
+                                                            <Label htmlFor="name" hasError={!!errors.name} required>
+                                                                اسم المدرسة
+                                                            </Label>
+                                                            <Input
+                                                                id="name"
+                                                                type="text"
+                                                                name="name"
+                                                                hasErrors={!!errors.name}
+                                                                autoComplete="off"
+                                                                required
+                                                            />
+                                                            <InputError message={errors.name} />
+                                                        </Field>
+                                                    ) : (
+                                                        <>
+                                                            <Field>
+                                                                <Label htmlFor="name_morning" hasError={!!errors.name_morning} required>
+                                                                    <span>اسم المدرسة</span>
+                                                                    <span className="text-muted-foreground ms-1.5">( الفترة الصباحية )</span>
+                                                                </Label>
+                                                                <Input
+                                                                    id="name_morning"
+                                                                    type="text"
+                                                                    name="name_morning"
+                                                                    hasErrors={!!errors.name_morning}
+                                                                    autoComplete="off"
+                                                                    required
+                                                                />
+                                                                <InputError message={errors.name_morning} />
+                                                            </Field>
+
+                                                            <Field>
+                                                                <Label htmlFor="name_evening" hasError={!!errors.name_evening} required>
+                                                                    <span>اسم المدرسة</span>
+                                                                    <span className="text-muted-foreground ms-1.5">( الفترة المسائية )</span>
+                                                                </Label>
+                                                                <Input
+                                                                    id="name_evening"
+                                                                    type="text"
+                                                                    name="name_evening"
+                                                                    hasErrors={!!errors.name_evening}
+                                                                    autoComplete="off"
+                                                                    required
+                                                                />
+                                                                <InputError message={errors.name_evening} />
+                                                            </Field>
+                                                        </>
+                                                    )}
 
                                                     <Field>
                                                         <Label htmlFor="students_gender_morning" hasError={!!errors.students_gender_morning} required>

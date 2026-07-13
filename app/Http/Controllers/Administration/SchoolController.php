@@ -45,6 +45,7 @@ class SchoolController extends Controller
                 'schools.name',
                 'schools.serial_number',
                 'schools.type',
+                'schools.academic_period',
             ])
             ->with(['monitor:id,uuid,name'])
             ->withCount(['students'])
