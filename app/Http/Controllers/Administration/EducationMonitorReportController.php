@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class EducationMonitorReportController extends Controller
 {
@@ -52,11 +51,11 @@ class EducationMonitorReportController extends Controller
     }
 
     /**
-     * @return Builder<EducationMonitor>|QueryBuilder<EducationMonitor>
+     * @return Builder<EducationMonitor>
      */
-    private function query(): Builder|QueryBuilder
+    private function query(): Builder
     {
-        return QueryBuilder::for(EducationMonitor::class)
+        return EducationMonitor::query()
             ->select([
                 'id',
                 'uuid',

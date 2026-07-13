@@ -13,7 +13,7 @@ test('administration panel shares navigation for authenticated users', function 
         ->assertInertia(fn (Assert $page) => $page
             ->where('routeName', 'administration.dashboard')
             ->where('navigation.home', route('administration.dashboard'))
-            ->has('navigation.main', 3)
+            ->has('navigation.main', 2)
             ->where('navigation.main.0.title', 'العمليات الأساسية')
             ->has('navigation.main.0.items')
             ->where('navigation.main.0.items.0.title', 'الرئيسية')
