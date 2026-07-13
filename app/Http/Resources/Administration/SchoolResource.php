@@ -6,9 +6,9 @@ use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
-use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 
 class SchoolResource extends JsonResource
 {

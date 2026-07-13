@@ -4,9 +4,9 @@ namespace App\Http\Resources\Administration;
 
 use App\Models\EducationMonitor;
 use App\Models\Municipal;
-use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 
 class EducationMonitorResource extends JsonResource
 {
