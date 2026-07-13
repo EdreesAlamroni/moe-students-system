@@ -2,6 +2,9 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Authorization\Administration\EducationMonitorReport;
+use App\Authorization\Administration\EducationServicesOfficeReport;
+use App\Authorization\Administration\SchoolReport;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
@@ -110,24 +113,24 @@ class AdministrationNavigation extends NavigationPanel
         return [
             [
                 'title' => 'تقرير المُراقبات',
-                'href' => '#',
+                'href' => route('administration.reports.education-monitors.index'),
                 'icon' => 'ClipboardList',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.reports.education-monitors.*',
+                'can' => $this->user?->canAny(['view'], EducationMonitorReport::class),
             ],
             [
                 'title' => 'تقرير مكاتب الخدمات التعليمية',
-                'href' => '#',
+                'href' => route('administration.reports.education-services-offices.index'),
                 'icon' => 'ClipboardList',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.reports.education-services-offices.*',
+                'can' => $this->user?->canAny(['view'], EducationServicesOfficeReport::class),
             ],
             [
                 'title' => 'تقرير المدارس',
-                'href' => '#',
+                'href' => route('administration.reports.schools.index'),
                 'icon' => 'ClipboardList',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.reports.schools.*',
+                'can' => $this->user?->canAny(['view'], SchoolReport::class),
             ],
         ];
     }
@@ -135,13 +138,6 @@ class AdministrationNavigation extends NavigationPanel
     protected function settings(): array
     {
         return [
-            [
-                'title' => 'تصنيفات المقررات الدراسية',
-                'href' => '#',
-                'icon' => 'LibraryBigIcon',
-                'activeRoutes' => false,
-                'can' => true,
-            ],
             [
                 'title' => 'المُستخدمين',
                 'href' => route('administration.users.index'),

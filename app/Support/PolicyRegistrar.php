@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+use App\Authorization\Administration\EducationMonitorReport;
+use App\Authorization\Administration\EducationServicesOfficeReport;
+use App\Authorization\Administration\SchoolReport;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
@@ -11,9 +14,12 @@ use App\Models\Subject;
 use App\Models\User;
 use App\Policies\Administration\AcademicYearPolicy as AdministrationAcademicYearPolicy;
 use App\Policies\Administration\EducationMonitorPolicy as AdministrationEducationMonitorPolicy;
+use App\Policies\Administration\EducationMonitorReportPolicy as AdministrationEducationMonitorReportPolicy;
 use App\Policies\Administration\EducationServicesOfficePolicy as AdministrationEducationServicesOfficePolicy;
+use App\Policies\Administration\EducationServicesOfficeReportPolicy as AdministrationEducationServicesOfficeReportPolicy;
 use App\Policies\Administration\GradeLevelPolicy as AdministrationGradeLevelPolicy;
 use App\Policies\Administration\SchoolPolicy as AdministrationSchoolPolicy;
+use App\Policies\Administration\SchoolReportPolicy as AdministrationSchoolReportPolicy;
 use App\Policies\Administration\SubjectPolicy as AdministrationSubjectPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
 use Illuminate\Http\Request;
@@ -22,7 +28,11 @@ use InvalidArgumentException;
 
 final class PolicyRegistrar
 {
-    /** @var array<string, array<class-string, class-string>> */
+    /**
+     * Policies bound to Eloquent models.
+     *
+     * @var array<string, array<class-string, class-string>>
+     */
     private const MODEL_POLICIES = [
         'administration' => [
             User::class => AdministrationUserPolicy::class,
@@ -39,6 +49,23 @@ final class PolicyRegistrar
         'school' => [],
     ];
 
+    /**
+     * Policies bound to non-model authorization resources
+     *
+     * @var array<string, array<class-string, class-string>>
+     */
+    private const AUTHORIZATION_POLICIES = [
+        'administration' => [
+            EducationMonitorReport::class => AdministrationEducationMonitorReportPolicy::class,
+            EducationServicesOfficeReport::class => AdministrationEducationServicesOfficeReportPolicy::class,
+            SchoolReport::class => AdministrationSchoolReportPolicy::class,
+        ],
+        'warehouse' => [],
+        'education-monitor' => [],
+        'education-services-office' => [],
+        'school' => [],
+    ];
+
     public static function register(Request $request): void
     {
         $group = self::group($request);
@@ -47,13 +74,20 @@ final class PolicyRegistrar
             return;
         }
 
-        if (! isset(self::MODEL_POLICIES[$group])) {
+        self::registerGroupPolicies($group, self::MODEL_POLICIES);
+        self::registerGroupPolicies($group, self::AUTHORIZATION_POLICIES);
+    }
+
+    /**
+     * @param  array<string, array<class-string, class-string>>  $policies
+     */
+    private static function registerGroupPolicies(string $group, array $policies): void
+    {
+        if (! isset($policies[$group])) {
             throw new InvalidArgumentException("Policy group '{$group}' not found.");
         }
 
-        $policies = self::MODEL_POLICIES[$group];
-
-        foreach ($policies as $subject => $policy) {
+        foreach ($policies[$group] as $subject => $policy) {
             Gate::policy($subject, $policy);
         }
     }

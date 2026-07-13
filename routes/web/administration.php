@@ -5,10 +5,13 @@ use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\Administration\AcademicYearController;
 use App\Http\Controllers\Administration\DashboardController;
 use App\Http\Controllers\Administration\EducationMonitorController;
+use App\Http\Controllers\Administration\EducationMonitorReportController;
 use App\Http\Controllers\Administration\EducationServicesOfficeController;
+use App\Http\Controllers\Administration\EducationServicesOfficeReportController;
 use App\Http\Controllers\Administration\GradeLevelController;
 use App\Http\Controllers\Administration\MunicipalController;
 use App\Http\Controllers\Administration\SchoolController;
+use App\Http\Controllers\Administration\SchoolReportController;
 use App\Http\Controllers\Administration\SubjectController;
 use App\Http\Controllers\Administration\UserController;
 use App\Http\Controllers\Administration\UserStateController;
@@ -108,6 +111,18 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::patch('/{user}/state/update', [UserStateController::class, 'stateUpdate'])->name('users.state.update');
         Route::patch('/{user}/request-state/update', [UserStateController::class, 'requestStateUpdate'])->name('users.request-state.update');
+    });
+
+    // Reports
+    Route::prefix('reports')->group(function () {
+        Route::get('/education-monitors', [EducationMonitorReportController::class, 'index'])->name('reports.education-monitors.index');
+        Route::get('/education-monitors/print', [EducationMonitorReportController::class, 'print'])->name('reports.education-monitors.print');
+
+        Route::get('/education-services-offices', [EducationServicesOfficeReportController::class, 'index'])->name('reports.education-services-offices.index');
+        Route::get('/education-services-offices/print', [EducationServicesOfficeReportController::class, 'print'])->name('reports.education-services-offices.print');
+
+        Route::get('/schools', [SchoolReportController::class, 'index'])->name('reports.schools.index');
+        Route::get('/schools/print', [SchoolReportController::class, 'print'])->name('reports.schools.print');
     });
 
     // Account Settings

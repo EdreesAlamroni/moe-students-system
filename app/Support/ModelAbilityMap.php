@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Authorization\Contracts\AuthorizationResource;
 use App\Support\Auth\DashboardAuth;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -11,13 +12,16 @@ final class ModelAbilityMap
     private function __construct() {}
 
     /**
-     * Map each ability to whether the user is authorized.
+     * Resolve the user's authorization for each ability against the subject.
      *
-     * @param  Model|class-string<Model>  $model
+     * A class-string subject performs a class-level check through the bound
+     * policy, mirroring `$user->can($ability, SomeClass::class)`.
+     *
+     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>  $subject
      * @param  list<string>  $abilities
-     * @return array<string, bool>
+     * @return array<string, bool> Map of ability to authorization result.
      */
-    public static function can(Model|string $model, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
+    public static function can(Model|AuthorizationResource|string $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
     {
         $guard ??= DashboardAuth::resolve()?->guard;
 
@@ -25,7 +29,7 @@ final class ModelAbilityMap
 
         return collect($abilities)
             ->mapWithKeys(fn (string $ability): array => [
-                $ability => boolval($user?->can($ability, $model) ?? false),
+                $ability => boolval($user?->can($ability, $subject) ?? false),
             ])
             ->all();
     }
@@ -33,24 +37,26 @@ final class ModelAbilityMap
     /**
      * Determine whether the user is authorized for any of the given abilities.
      *
-     * @param  Model|class-string<Model>  $model
+     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>  $subject
      * @param  list<string>  $abilities
      */
-    public static function canAny(Model|string $model, array $abilities, ?Authenticatable $user = null, ?string $guard = null): bool
+    public static function canAny(Model|AuthorizationResource|string $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): bool
     {
-        return collect(self::can($model, $abilities, $user, $guard))->contains(true);
+        $can = self::can($subject, $abilities, $user, $guard);
+
+        return collect($can)->contains(true);
     }
 
     /**
      * Return both the ability map and whether any ability is granted.
      *
-     * @param  Model|class-string<Model>  $model
+     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>  $subject
      * @param  list<string>  $abilities
      * @return array{canAny: bool, can: array<string, bool>}
      */
-    public static function make(Model|string $model, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
+    public static function make(Model|AuthorizationResource|string $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
     {
-        $can = self::can($model, $abilities, $user, $guard);
+        $can = self::can($subject, $abilities, $user, $guard);
 
         return [
             'canAny' => collect($can)->contains(true),

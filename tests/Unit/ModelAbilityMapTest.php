@@ -1,7 +1,9 @@
 <?php
 
+use App\Authorization\Administration\EducationMonitorReport;
 use App\Models\Municipal;
 use App\Models\User;
+use App\Policies\Administration\EducationMonitorReportPolicy;
 use App\Support\ModelAbilityMap;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -108,6 +110,24 @@ it('returns canAny false from make when no abilities are granted', function () {
         'can' => [
             'create' => false,
             'viewAny' => false,
+        ],
+    ]);
+});
+
+it('maps abilities for an authorization resource class through its bound policy', function () {
+    /** @var User $user */
+    $user = User::factory()->makeOne();
+
+    Gate::policy(EducationMonitorReport::class, EducationMonitorReportPolicy::class);
+
+    Gate::define('report:education-monitor:view', fn () => true);
+    Gate::define('report:education-monitor:print', fn () => false);
+
+    expect(ModelAbilityMap::make(EducationMonitorReport::class, ['view', 'print'], user: $user))->toBe([
+        'canAny' => true,
+        'can' => [
+            'view' => true,
+            'print' => false,
         ],
     ]);
 });
