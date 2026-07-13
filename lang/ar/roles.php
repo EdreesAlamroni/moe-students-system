@@ -159,7 +159,6 @@ return [
             'class-schedule:role:update' => 'تعديل الجداول الدراسية',
             'class-schedule:role:delete' => 'حذف الجداول الدراسية',
             'class-schedule:role:print' => 'طباعة الجداول الدراسية',
-            'class-schedule:role:export' => 'تصدير الجداول الدراسية',
         ],
     ],
 
@@ -196,26 +195,21 @@ return [
         'values' => [
             'report:role:education-monitor:view' => 'عرض تقرير المُراقبات',
             'report:role:education-monitor:print' => 'طباعة تقرير المُراقبات',
-            'report:role:education-monitor:export' => 'تصدير تقرير المُراقبات',
 
             'report:role:education-services-office:view' => 'عرض تقرير مكاتب الخدمات التعليمية',
             'report:role:education-services-office:print' => 'طباعة تقرير مكاتب الخدمات التعليمية',
-            'report:role:education-services-office:export' => 'تصدير تقرير مكاتب الخدمات التعليمية',
 
             'report:role:school:view' => 'عرض تقرير المدارس',
             'report:role:school:print' => 'طباعة تقرير المدارس',
-            'report:role:school:export' => 'تصدير تقرير المدارس',
 
             'report:role:student-count-by-grade-level:view' => 'عرض تقرير إحصائية الطلاب حسب الصفوف الدراسية',
             'report:role:student-count-by-grade-level:print' => 'طباعة تقرير إحصائية الطلاب حسب الصفوف الدراسية',
-            'report:role:student-count-by-grade-level:export' => 'تصدير تقرير إحصائية الطلاب حسب الصفوف الدراسية',
 
             'report:role:student-by-grade-level:view' => 'عرض تقرير الطلاب حسب الصفوف الدراسية',
             'report:role:student-by-grade-level:print' => 'طباعة تقرير الطلاب حسب الصفوف الدراسية',
-            'report:role:student-by-grade-level:export' => 'تصدير تقرير الطلاب حسب الصفوف الدراسية',
+
             'report:role:student-by-classroom:view' => 'عرض تقرير الطلاب حسب الفصول الدراسية',
             'report:role:student-by-classroom:print' => 'طباعة تقرير الطلاب حسب الفصول الدراسية',
-            'report:role:student-by-classroom:export' => 'تصدير تقرير الطلاب حسب الفصول الدراسية',
 
             'report:role:attendance:view' => 'عرض تقرير الغياب',
             'report:role:attendance:print' => 'طباعة تقرير الغياب',

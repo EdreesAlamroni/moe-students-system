@@ -68,7 +68,6 @@ class SchoolPermissionSeeder extends Seeder
         $update = Permission::findOrCreate('class-schedule:update', $this->scope);
         $delete = Permission::findOrCreate('class-schedule:delete', $this->scope);
         $print = Permission::findOrCreate('class-schedule:print', $this->scope);
-        $export = Permission::findOrCreate('class-schedule:export', $this->scope);
 
         // Roles
         $viewRole = Role::findOrCreate('class-schedule:role:view', $this->scope);
@@ -76,7 +75,6 @@ class SchoolPermissionSeeder extends Seeder
         $updateRole = Role::findOrCreate('class-schedule:role:update', $this->scope);
         $deleteRole = Role::findOrCreate('class-schedule:role:delete', $this->scope);
         $printRole = Role::findOrCreate('class-schedule:role:print', $this->scope);
-        $exportRole = Role::findOrCreate('class-schedule:role:export', $this->scope);
 
         // Sync permissions with roles
         $viewRole->syncPermissions([$viewAny, $view]);
@@ -84,7 +82,6 @@ class SchoolPermissionSeeder extends Seeder
         $updateRole->syncPermissions([$viewAny, $view, $update]);
         $deleteRole->syncPermissions([$viewAny, $view, $delete]);
         $printRole->syncPermissions([$viewAny, $view, $print]);
-        $exportRole->syncPermissions([$viewAny, $view, $export]);
     }
 
     private function seedStudent(): void
@@ -251,17 +248,14 @@ class SchoolPermissionSeeder extends Seeder
             // Permissions
             $view = Permission::findOrCreate("report:{$group}:view", $this->scope);
             $print = Permission::findOrCreate("report:{$group}:print", $this->scope);
-            $export = Permission::findOrCreate("report:{$group}:export", $this->scope);
 
             // Roles
             $viewRole = Role::findOrCreate("report:role:{$group}:view", $this->scope);
             $printRole = Role::findOrCreate("report:role:{$group}:print", $this->scope);
-            $exportRole = Role::findOrCreate("report:role:{$group}:export", $this->scope);
 
             // Sync permissions with roles
             $viewRole->syncPermissions([$view]);
             $printRole->syncPermissions([$view, $print]);
-            $exportRole->syncPermissions([$view, $export]);
         }
 
         // Permissions

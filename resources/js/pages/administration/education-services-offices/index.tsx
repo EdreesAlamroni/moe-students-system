@@ -165,9 +165,9 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {data.map((office: OfficeProps, rowIndex: number) => (
+                                    {data.map((office: OfficeProps, index: number) => (
                                         <TableRow key={office.uuid}>
-                                            <TableCell className="font-mono">{rowIndex + 1}</TableCell>
+                                            <TableCell className="font-mono">{index + 1}</TableCell>
                                             <TableCell>{office.name}</TableCell>
                                             <TableCell>{office.monitor?.name}</TableCell>
                                             <TableCell className="text-center">

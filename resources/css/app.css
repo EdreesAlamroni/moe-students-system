@@ -9,6 +9,7 @@
 
 /* Local Imports */
 @import './fonts.css';
+@import './print.css';
 @import './state.css';
 @import 'leaflet/dist/leaflet.css';
 @import './maps.css';

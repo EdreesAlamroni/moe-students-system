@@ -175,9 +175,9 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {officesData.map((office: OfficeProps, rowIndex: number) => (
+                                    {officesData.map((office: OfficeProps, index: number) => (
                                         <TableRow key={office.uuid}>
-                                            <TableCell className="font-mono">{rowIndex + 1}</TableCell>
+                                            <TableCell className="font-mono">{index + 1}</TableCell>
                                             <TableCell>{office.name}</TableCell>
                                             <TableCell className="text-center">
                                                 <TableCellNullableValue className="font-mono" value={office.schools_count} fallback={0} />

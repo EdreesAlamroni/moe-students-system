@@ -138,9 +138,9 @@ export default function Index({ monitors, filter, canAny, can }: PageProps) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {data.map((monitor: MonitorProps, rowIndex: number) => (
+                                    {data.map((monitor: MonitorProps, index: number) => (
                                         <TableRow key={monitor.uuid}>
-                                            <TableCell className="font-mono">{rowIndex + 1}</TableCell>
+                                            <TableCell className="font-mono">{index + 1}</TableCell>
                                             <TableCell>{monitor.name}</TableCell>
                                             <TableCell className="text-center">
                                                 <TableCellNullableValue className="font-mono" value={monitor.offices_count} fallback={0} />

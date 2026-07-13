@@ -87,17 +87,14 @@ class EducationServicesOfficePermissionSeeder extends Seeder
             // Permissions
             $view = Permission::findOrCreate("report:{$group}:view", $this->scope);
             $print = Permission::findOrCreate("report:{$group}:print", $this->scope);
-            $export = Permission::findOrCreate("report:{$group}:export", $this->scope);
 
             // Roles
             $viewRole = Role::findOrCreate("report:role:{$group}:view", $this->scope);
             $printRole = Role::findOrCreate("report:role:{$group}:print", $this->scope);
-            $exportRole = Role::findOrCreate("report:role:{$group}:export", $this->scope);
 
             // Sync permissions with roles
             $viewRole->syncPermissions([$view]);
             $printRole->syncPermissions([$view, $print]);
-            $exportRole->syncPermissions([$view, $export]);
         }
     }
 }
