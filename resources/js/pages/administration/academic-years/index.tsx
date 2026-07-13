@@ -7,7 +7,7 @@ import type { CanPermissions, Paginated, AcademicYear } from "@/types";
 import MainContainer from "@/components/ui/structure/main-container";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
-import ActionsSection from "@/components/ui/display/actions-section";
+import ActionsSection from "@/components/ui/structure/actions-section";
 
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellActions } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";

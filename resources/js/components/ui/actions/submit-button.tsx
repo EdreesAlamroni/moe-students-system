@@ -57,7 +57,6 @@ export function SubmitButton({
             {...props}
         >
             {processing ? (
-                // <LoaderCircleIcon className="animate-spin" />
                 <Spinner />
             ) : (
                 <CheckCircleIcon />

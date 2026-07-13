@@ -5,7 +5,7 @@ import { Head, Link } from "@inertiajs/react";
 import type { CanPermissions, EducationMonitor, EducationServicesOffice, Paginated } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import ActionsSection from "@/components/ui/display/actions-section";
+import ActionsSection from "@/components/ui/structure/actions-section";
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 import { DetailField, DetailFields } from "@/components/ui/display/detail-field";
 import { DetailLabel } from "@/components/ui/display/detail-label";
