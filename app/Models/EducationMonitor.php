@@ -225,7 +225,7 @@ class EducationMonitor extends Model
                 return [
                     'id' => $monitor->id,
                     'name' => $monitor->name,
-                    'offices' => $monitor->offices->only(['id', 'name'])->all(),
+                    'offices' => $monitor->offices->map->only(['id', 'name'])->all(),
                 ];
             })->values();
     }
@@ -241,7 +241,7 @@ class EducationMonitor extends Model
                 return [
                     'id' => $monitor->id,
                     'name' => $monitor->name,
-                    'schools' => $monitor->schools->only(['id', 'name'])->all(),
+                    'schools' => $monitor->schools->map->only(['id', 'name'])->all(),
                 ];
             })->values();
     }
@@ -260,8 +260,8 @@ class EducationMonitor extends Model
                 return [
                     'id' => $monitor->id,
                     'name' => $monitor->name,
-                    'offices' => $monitor->offices->only(['id', 'name'])->all(),
-                    'schools' => $monitor->schools->only(['id', 'name'])->all(),
+                    'offices' => $monitor->offices->map->only(['id', 'name'])->all(),
+                    'schools' => $monitor->schools->map->only(['id', 'name'])->all(),
                 ];
             })->values();
     }

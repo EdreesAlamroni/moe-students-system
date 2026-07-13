@@ -4,9 +4,9 @@ namespace App\Http\Resources\Administration;
 
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 
 class EducationServicesOfficeResource extends JsonResource
 {
@@ -31,7 +31,7 @@ class EducationServicesOfficeResource extends JsonResource
             'longitude' => $office->longitude,
             'has_coordinates' => $office->hasCoordinates(),
             'schools' => $this->whenLoaded('schools', function (Collection $schools): array {
-                return $schools->only(['id', 'uuid', 'name'])->all();
+                return $schools->map->only(['id', 'uuid', 'name'])->all();
             }),
             'schools_count' => $this->whenHas('schools_count', (int) ($office->schools_count ?? 0), 0),
             'students_count' => $this->whenHas('students_count', (int) ($office->students_count ?? 0), 0),

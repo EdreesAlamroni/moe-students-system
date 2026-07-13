@@ -198,7 +198,7 @@ class EducationServicesOffice extends Model
                 return [
                     'id' => $office->id,
                     'name' => $office->name,
-                    'schools' => $office->schools->only(['id', 'name'])->all(),
+                    'schools' => $office->schools->map->only(['id', 'name'])->all(),
                 ];
             })->values();
     }

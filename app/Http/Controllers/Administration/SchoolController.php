@@ -77,6 +77,10 @@ class SchoolController extends Controller
     {
         Gate::authorize('create', School::class);
 
+        dd(
+            EducationMonitor::listWithOffices()
+        );
+
         return Inertia::render('administration/schools/create', [
             'monitors' => EducationMonitor::listWithOffices(),
             'types' => SchoolType::optionsArray(),
