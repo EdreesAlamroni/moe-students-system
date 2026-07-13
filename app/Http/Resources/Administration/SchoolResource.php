@@ -6,7 +6,7 @@ use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,7 +22,7 @@ class SchoolResource extends JsonResource
             'uuid' => $school->uuid,
             'serial_number' => $school->serial_number,
             'name' => $school->name,
-            'type' => $school->type?->toArray(),
+            'type' => $school->type->toArray(),
             'academic_period' => $school->academic_period?->toArray(),
             'students_gender' => $school->students_gender?->toArray(),
             'educational_company_name' => $school->educational_company_name,
@@ -43,11 +43,6 @@ class SchoolResource extends JsonResource
                         'stage' => $educationalStage->stage->toArray(),
                     ];
                 })->all();
-            }),
-            'educational_stages_labels' => $this->whenLoaded('educationalStages', function (Collection $educationalStages): string {
-                return $educationalStages
-                    ->map(fn (SchoolEducationalStage $educationalStage): string => $educationalStage->stage->label())
-                    ->implode('،');
             }),
             'grade_levels_count' => $this->whenHas('grade_levels_count', intval($school->grade_levels_count ?? 0), 0),
             'classrooms_count' => $this->whenHas('classrooms_count', intval($school->classrooms_count ?? 0), 0),

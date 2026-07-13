@@ -42,6 +42,8 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read EducationMonitor $monitor
+ * @property-read EducationServicesOffice|null $office
  */
 #[Guarded(['id'])]
 class School extends Model
@@ -139,7 +141,10 @@ class School extends Model
     #[Scope]
     protected function ordered(Builder $query): Builder
     {
-        if ($query->getConnection()->getDriverName() === 'sqlite') {
+        /** @var \Illuminate\Database\Connection $connection */
+        $connection = $query->getConnection();
+
+        if ($connection->getDriverName() === 'sqlite') {
             return $query->orderBy('name');
         }
 
@@ -302,7 +307,7 @@ class School extends Model
         }
 
         return $query
-            ->orderByName()
+            ->ordered()
             ->pluck('name', 'id')
             ->map(function (string $name, int $id): array {
                 return [

@@ -15,7 +15,7 @@ class SchoolCollection extends DirectModelCollection
             'uuid' => $school->uuid,
             'serial_number' => $school->serial_number,
             'name' => $school->name,
-            'type' => $school->type?->toArray(),
+            'type' => $school->type->toArray(),
             'monitor' => $school->relationLoaded('monitor')
                 ? $school->monitor->only(['id', 'uuid', 'name'])
                 : null,

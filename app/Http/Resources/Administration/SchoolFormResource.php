@@ -23,7 +23,7 @@ class SchoolFormResource extends JsonResource
                 return $monitor->only(['id', 'uuid', 'name']);
             }),
             'name' => $school->name,
-            'type' => $school->type?->toArray(),
+            'type' => $school->type->toArray(),
             'is_private' => $school->isPrivate(),
             'educational_company_name' => $school->educational_company_name,
             'branch_type' => $school->branch_type?->toArray(),
