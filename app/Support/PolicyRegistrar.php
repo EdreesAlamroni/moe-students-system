@@ -78,6 +78,17 @@ final class PolicyRegistrar
         self::registerGroupPolicies($group, self::AUTHORIZATION_POLICIES);
     }
 
+    public static function registerAll(): void
+    {
+        foreach (array_keys(self::MODEL_POLICIES) as $group) {
+            self::registerGroupPolicies($group, self::MODEL_POLICIES);
+        }
+
+        foreach (array_keys(self::AUTHORIZATION_POLICIES) as $group) {
+            self::registerGroupPolicies($group, self::AUTHORIZATION_POLICIES);
+        }
+    }
+
     /**
      * @param  array<string, array<class-string, class-string>>  $policies
      */
