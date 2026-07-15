@@ -22,7 +22,7 @@ trait EnumUtilities
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, string|int>
      */
     public function toOption(string $idKey = 'id', string $nameKey = 'name'): array
     {
@@ -33,7 +33,7 @@ trait EnumUtilities
     }
 
     /**
-     * @return array{id: string, name: string, key: string}
+     * @return array{id: string|int, name: string, key: string}
      */
     public function toArray(): array
     {
@@ -45,7 +45,7 @@ trait EnumUtilities
     }
 
     /**
-     * @return Collection<int, array<string, string>>
+     * @return Collection<int, array<string, string|int>>
      */
     public static function options(string $idKey = 'id', string $nameKey = 'name'): Collection
     {
@@ -55,7 +55,7 @@ trait EnumUtilities
     }
 
     /**
-     * @return list<array<string, string>>
+     * @return list<array<string, string|int>>
      */
     public static function optionsArray(string $idKey = 'id', string $nameKey = 'name'): array
     {
@@ -63,7 +63,7 @@ trait EnumUtilities
     }
 
     /**
-     * @return list<string>
+     * @return list<string|int>
      */
     public static function values(): array
     {
@@ -71,11 +71,11 @@ trait EnumUtilities
     }
 
     /**
-     * @return array{id: string, name: string, key: string}|array{}
+     * @return array{id: string|int, name: string, key: string}|array{}
      */
-    public static function toArrayFor(self|string $case): array
+    public static function toArrayFor(self|string|int $case): array
     {
-        if (is_string($case)) {
+        if (is_string($case) || is_int($case)) {
             $case = self::tryFrom($case);
         }
 

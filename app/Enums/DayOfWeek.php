@@ -9,13 +9,13 @@ enum DayOfWeek: int
 {
     use EnumUtilities;
 
-    case Sunday = 0;
-    case Monday = 1;
-    case Tuesday = 2;
-    case Wednesday = 3;
-    case Thursday = 4;
-    case Friday = 5;
-    case Saturday = 6;
+    case SUNDAY = 0;
+    case MONDAY = 1;
+    case TUESDAY = 2;
+    case WEDNESDAY = 3;
+    case THURSDAY = 4;
+    case FRIDAY = 5;
+    case SATURDAY = 6;
 
     protected function getTranslationKey(): string
     {
@@ -25,17 +25,17 @@ enum DayOfWeek: int
     public static function schoolDays(): Collection
     {
         return collect([
-            self::Sunday,
-            self::Monday,
-            self::Tuesday,
-            self::Wednesday,
-            self::Thursday,
+            self::SUNDAY,
+            self::MONDAY,
+            self::TUESDAY,
+            self::WEDNESDAY,
+            self::THURSDAY,
         ]);
     }
 
     public static function buildDays(): Collection
     {
-        return self::schoolDays()->map(function (self $day) {
+        return self::schoolDays()->map(function (self $day): array {
             return [
                 'id' => $day->value,
                 'name' => $day->label(),

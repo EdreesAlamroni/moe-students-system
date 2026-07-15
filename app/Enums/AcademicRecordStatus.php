@@ -26,9 +26,6 @@ enum AcademicRecordStatus: string
         };
     }
 
-    /**
-     * @return Collection<int, array{label: string, value: string}>
-     */
     public static function selectable(): Collection
     {
         return collect([self::PASSED, self::FAILED])->map(function (self $case): array {

@@ -50,7 +50,7 @@ class StudentPsychosocialCardSeeder extends Seeder
             'academic_year_id' => $academicYearId,
             'student_enrollment_id' => $enrollment->id,
         ], [
-            'guardian_name' => $student->fatherFullName,
+            'guardian_name' => $student->father_full_name,
             'guardian_date_of_birth' => '1978-06-12',
             'guardian_nationality_id' => $libyanNationalityId,
             'guardian_relationship' => 'أب',

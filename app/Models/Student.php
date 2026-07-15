@@ -44,15 +44,19 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property string $full_name
- * @property string $father_full_name
- * @property string $gender_label
- * @property bool $is_libyan
+ * @property-read string $full_name
+ * @property-read string $father_full_name
+ * @property-read string $gender_label
+ * @property-read bool $is_libyan
  * @property-read EducationMonitor|null $monitor
  * @property-read School|null $school
  * @property-read Nationality $nationality
  * @property-read Collection<int, StudentEnrollment> $enrollments
  * @property-read StudentEnrollment|null $enrollment
+ * @property-read Collection<int, StudentTransfer> $transfers
+ * @property-read StudentTransfer|null $transfer
+ * @property-read Collection<int, StudentPsychosocialCard> $psychosocialCards
+ * @property-read StudentPsychosocialCard|null $psychosocialCard
  */
 #[Guarded(['id'])]
 class Student extends Model
@@ -124,7 +128,7 @@ class Student extends Model
     public function isLibyan(): Attribute
     {
         return Attribute::get(function (): bool {
-            return $this->nationality?->isLibyan();
+            return $this->nationality->isLibyan();
         });
     }
 
@@ -193,7 +197,10 @@ class Student extends Model
     #[Scope]
     protected function orderByFullName(Builder $query): Builder
     {
-        if ($query->getConnection()->getDriverName() === 'sqlite') {
+        /** @var \Illuminate\Database\Connection $connection */
+        $connection = $query->getConnection();
+
+        if ($connection->getDriverName() === 'sqlite') {
             return $query
                 ->orderBy('first_name')
                 ->orderBy('father_name')
@@ -431,36 +438,36 @@ class Student extends Model
     /**
      * Get all transfers associated with the student across all academic years.
      */
-    // public function transfers(): HasMany
-    // {
-    //     return $this->hasMany(StudentTransfer::class);
-    // }
+    public function transfers(): HasMany
+    {
+        return $this->hasMany(StudentTransfer::class);
+    }
 
     /**
      * Get the transfer associated with the student for the current academic year.
      */
-    // public function transfer(): HasOne
-    // {
-    //     return $this->hasOne(StudentTransfer::class)->latestOfMany();
-    // }
+    public function transfer(): HasOne
+    {
+        return $this->hasOne(StudentTransfer::class)->latestOfMany();
+    }
 
     /**
      * Get all psychosocial cards associated with the student across all academic years.
      */
-    // public function psychosocialCards(): HasMany
-    // {
-    //     return $this->hasMany(StudentPsychosocialCard::class);
-    // }
+    public function psychosocialCards(): HasMany
+    {
+        return $this->hasMany(StudentPsychosocialCard::class);
+    }
 
     /**
      * Get the psychosocial card associated with the student for the current academic year.
      */
-    // public function psychosocialCard(): HasOne
-    // {
-    //     return $this
-    //         ->hasOne(StudentPsychosocialCard::class)
-    //         ->where('academic_year_id', '=', AcademicYear::currentId());
-    // }
+    public function psychosocialCard(): HasOne
+    {
+        return $this
+            ->hasOne(StudentPsychosocialCard::class)
+            ->where('academic_year_id', '=', AcademicYear::currentId());
+    }
 
     // public function academicRecords(): HasMany
     // {

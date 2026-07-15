@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\DayOfWeek;
 use App\Enums\UserRole;
 use Tests\TestCase;
 
@@ -48,4 +49,15 @@ it('resolves toArrayFor from a case or backed value', function () {
 
 it('returns backed values', function () {
     expect(UserRole::values())->toBe(['manager', 'employee']);
+});
+
+it('supports int-backed enums', function () {
+    expect(DayOfWeek::SUNDAY->toArray())->toBe([
+        'id' => 0,
+        'name' => DayOfWeek::SUNDAY->label(),
+        'key' => 'SUNDAY',
+    ])
+        ->and(DayOfWeek::values())->toBe([0, 1, 2, 3, 4, 5, 6])
+        ->and(DayOfWeek::toArrayFor(0))->toBe(DayOfWeek::SUNDAY->toArray())
+        ->and(DayOfWeek::toArrayFor(99))->toBe([]);
 });
