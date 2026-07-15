@@ -49,6 +49,7 @@ class WarehouseController extends Controller
                 $warehouses,
                 WarehouseCollection::make($warehouses),
                 ['view'],
+                $request,
             ),
             'filter' => $request->input('filter', []),
             ...ModelAbilityMap::make(Warehouse::class, ['create']),
@@ -117,6 +118,7 @@ class WarehouseController extends Controller
                 $monitors,
                 EducationMonitorCollection::make($monitors),
                 ['view'],
+                $request,
             ),
             ...ModelAbilityMap::make($warehouse, ['update', 'delete']),
         ]);

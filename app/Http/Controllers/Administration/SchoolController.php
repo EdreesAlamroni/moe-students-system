@@ -67,6 +67,7 @@ class SchoolController extends Controller
                 $schools,
                 SchoolCollection::make($schools),
                 ['view'],
+                $request,
             ),
             'monitors' => EducationMonitor::list(),
             'types' => SchoolType::optionsArray(),

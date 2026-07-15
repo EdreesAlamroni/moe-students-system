@@ -37,6 +37,7 @@ class UserController extends Controller
                 $users,
                 UserCollection::make($users),
                 ['view'],
+                $request,
             ),
             'filter' => $request->input('filter', []),
             'scopes' => UserScope::getCreationMenuItems(),

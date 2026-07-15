@@ -54,6 +54,7 @@ class EducationServicesOfficeController extends Controller
                 $offices,
                 EducationServicesOfficeCollection::make($offices),
                 ['view'],
+                $request,
             ),
             'monitors' => EducationMonitor::list(),
             'filter' => $request->input('filter', []),

@@ -12,6 +12,11 @@ trait EnumUtilities
 {
     abstract protected function getTranslationKey(): string;
 
+    public function id(): string|int
+    {
+        return $this->value;
+    }
+
     public function label(): string
     {
         return __(sprintf(
@@ -19,6 +24,11 @@ trait EnumUtilities
             $this->getTranslationKey(),
             $this->value,
         ));
+    }
+
+    public function name(): string
+    {
+        return $this->label();
     }
 
     /**

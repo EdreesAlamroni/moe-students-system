@@ -51,6 +51,7 @@ class SubjectController extends Controller
                 $subjects,
                 SubjectCollection::make($subjects),
                 ['view'],
+                $request,
             ),
             'gradeLevels' => GradeLevel::list(),
             'filter' => $request->input('filter', []),

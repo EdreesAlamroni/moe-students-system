@@ -49,6 +49,7 @@ class EducationMonitorController extends Controller
                 $monitors,
                 EducationMonitorCollection::make($monitors),
                 ['view'],
+                $request,
             ),
             'filter' => $request->input('filter', []),
             ...ModelAbilityMap::make(EducationMonitor::class, ['create']),
@@ -104,6 +105,7 @@ class EducationMonitorController extends Controller
                 $offices,
                 EducationServicesOfficeCollection::make($offices),
                 ['view'],
+                $request,
             ),
             ...ModelAbilityMap::make($monitor, ['update', 'delete']),
         ]);
