@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\Administration\AcademicYearController;
+use App\Http\Controllers\Administration\ClassPeriodController;
 use App\Http\Controllers\Administration\DashboardController;
 use App\Http\Controllers\Administration\EducationMonitorController;
 use App\Http\Controllers\Administration\EducationMonitorReportController;
@@ -54,6 +55,17 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
         Route::get('/{subject}/edit', [SubjectController::class, 'edit'])->name('subjects.edit');
         Route::put('/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
         Route::delete('/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
+    });
+
+    // Class Periods
+    Route::prefix('class-periods')->group(function () {
+        Route::get('/', [ClassPeriodController::class, 'index'])->name('class-periods.index');
+        Route::get('/create/{academicPeriod}', [ClassPeriodController::class, 'create'])->name('class-periods.create');
+        Route::post('/', [ClassPeriodController::class, 'store'])->name('class-periods.store');
+        Route::get('/{classPeriod}', [ClassPeriodController::class, 'show'])->name('class-periods.show');
+        Route::get('/{classPeriod}/edit', [ClassPeriodController::class, 'edit'])->name('class-periods.edit');
+        Route::put('/{classPeriod}', [ClassPeriodController::class, 'update'])->name('class-periods.update');
+        Route::delete('/{classPeriod}', [ClassPeriodController::class, 'destroy'])->name('class-periods.destroy');
     });
 
     // Warehouses

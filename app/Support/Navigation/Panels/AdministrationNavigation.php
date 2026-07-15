@@ -6,6 +6,7 @@ use App\Authorization\Administration\EducationMonitorReport;
 use App\Authorization\Administration\EducationServicesOfficeReport;
 use App\Authorization\Administration\SchoolReport;
 use App\Models\AcademicYear;
+use App\Models\ClassPeriod;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
@@ -50,10 +51,10 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'الحصص الدراسية',
-                'href' => '#',
+                'href' => route('administration.class-periods.index'),
                 'icon' => 'ClockIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.class-periods.*',
+                'can' => $this->user?->canAny(['viewAny'], ClassPeriod::class),
             ],
             [
                 'title' => 'المخازن',

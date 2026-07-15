@@ -6,13 +6,16 @@ use App\Authorization\Administration\EducationMonitorReport;
 use App\Authorization\Administration\EducationServicesOfficeReport;
 use App\Authorization\Administration\SchoolReport;
 use App\Models\AcademicYear;
+use App\Models\ClassPeriod;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
 use App\Models\Subject;
 use App\Models\User;
+use App\Models\Warehouse;
 use App\Policies\Administration\AcademicYearPolicy as AdministrationAcademicYearPolicy;
+use App\Policies\Administration\ClassPeriodPolicy as AdministrationClassPeriodPolicy;
 use App\Policies\Administration\EducationMonitorPolicy as AdministrationEducationMonitorPolicy;
 use App\Policies\Administration\EducationMonitorReportPolicy as AdministrationEducationMonitorReportPolicy;
 use App\Policies\Administration\EducationServicesOfficePolicy as AdministrationEducationServicesOfficePolicy;
@@ -22,6 +25,7 @@ use App\Policies\Administration\SchoolPolicy as AdministrationSchoolPolicy;
 use App\Policies\Administration\SchoolReportPolicy as AdministrationSchoolReportPolicy;
 use App\Policies\Administration\SubjectPolicy as AdministrationSubjectPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
+use App\Policies\Administration\WarehousePolicy as AdministrationWarehousePolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
@@ -39,6 +43,8 @@ final class PolicyRegistrar
             AcademicYear::class => AdministrationAcademicYearPolicy::class,
             GradeLevel::class => AdministrationGradeLevelPolicy::class,
             Subject::class => AdministrationSubjectPolicy::class,
+            ClassPeriod::class => AdministrationClassPeriodPolicy::class,
+            Warehouse::class => AdministrationWarehousePolicy::class,
             EducationMonitor::class => AdministrationEducationMonitorPolicy::class,
             EducationServicesOffice::class => AdministrationEducationServicesOfficePolicy::class,
             School::class => AdministrationSchoolPolicy::class,

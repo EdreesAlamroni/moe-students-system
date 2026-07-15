@@ -125,6 +125,22 @@ export type Subject = {
     [key: string]: unknown; // This allows for additional properties...
 }
 
+export type ClassPeriod = {
+    id: number;
+    uuid: string;
+    academic_period: Enum;
+    name: string;
+    start_time: string;
+    end_time: string;
+    order: number;
+    is_break?: boolean;
+    type?: string;
+    schedules_count?: number;
+    created_at?: string;
+    updated_at?: string;
+    [key: string]: unknown;
+}
+
 export type Warehouse = {
     id: number;
     uuid: string;
