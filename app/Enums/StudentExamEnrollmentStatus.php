@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use App\Concerns\EnumUtilities;
 
-enum ExamEnrollmentStatus: string
+enum StudentExamEnrollmentStatus: string
 {
     use EnumUtilities;
 
@@ -13,6 +13,6 @@ enum ExamEnrollmentStatus: string
 
     protected function getTranslationKey(): string
     {
-        return 'exam_enrollment_statuses';
+        return 'student_exam_enrollment_statuses';
     }
 }

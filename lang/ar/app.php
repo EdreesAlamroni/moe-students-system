@@ -98,9 +98,121 @@ return [
             'grade_12_literary' => 'الصف الثالث ثانوي - أدبي',
         ],
 
-        'exam_enrollment_statuses' => [
+        'student_registration_statuses' => [
+            'new' => 'مُستجد',
+            'repeater' => 'مُعيد',
+            'exceptional_year' => 'سنة استثنائية',
+            'complementary' => 'تكميلي',
+        ],
+
+        'student_exam_enrollment_statuses' => [
             'registered' => 'مُسجل',
             'deferred' => 'مُتعثر',
+        ],
+
+        'academic_record_statuses' => [
+            'passed' => 'ناجح',
+            'promoted' => 'مُرحل',
+            'failed' => 'راسب',
+        ],
+
+        'academic_record_ratings' => [
+            'excellent' => 'ممتاز',
+            'very_good' => 'جيد جداً',
+            'good' => 'جيد',
+            'satisfactory' => 'مقبول',
+        ],
+
+        'student_living_situations' => [
+            'with_parents' => 'مع والديه',
+            'with_father' => 'مع والده',
+            'with_mother' => 'مع والدته',
+            'with_relatives' => 'مع الأقارب',
+            'foster_family' => 'الأسرة البديلة',
+            'other' => 'أخرى',
+        ],
+
+        'student_family_situation_reasons' => [
+            'parents_separation' => 'انفصال الوالدين',
+            'mother_death' => 'وفاة الأم',
+            'father_death' => 'وفاة الأب',
+        ],
+
+        'health_levels' => [
+            'weak' => 'ضعيف',
+            'normal' => 'عادي',
+            'good' => 'جيد',
+            'excellent' => 'ممتاز',
+        ],
+
+        'family_incomes' => [
+            'weak' => 'ضعيف',
+            'average' => 'متوسط',
+            'above_average' => 'فوق المتوسط',
+        ],
+
+        'accommodation_types' => [
+            'owned' => 'ملك',
+            'rental' => 'إيجار',
+            'displaced' => 'نازح',
+            'other' => 'أخرى',
+        ],
+
+        'accommodation_forms' => [
+            'flat' => 'شقة',
+            'regular_house' => 'منزل عادي',
+            'villa' => 'فيلا',
+            'with_relatives' => 'مع الأقارب',
+            'other' => 'أخرى',
+        ],
+
+        'student_behavioral_problems' => [
+            'shyness' => 'الخجل',
+            'introversion_isolation' => 'الانطواء والعزلة',
+            'fear' => 'الخوف',
+            'lack_of_self_confidence' => 'عدم الثقة بالنفس',
+            'lying' => 'الكذب',
+            'sleep_disorders' => 'اضطرابات النوم',
+            'attention_deficit' => 'تشتت الانتباه',
+            'thumb_sucking' => 'مص الإبهام',
+            'nail_biting' => 'قضم الأظافر',
+            'involuntary_urination' => 'التبول اللاإرادي',
+            'distraction' => 'السرحان',
+            'lack_of_motivation' => 'ضعف الدافعية للمدرسة (عدم الرغبة)',
+            'aggressive_behavior' => 'السلوك العدواني',
+            'speech_problems' => 'مشاكل في النطق',
+            'hyperactivity' => 'الإفراط الحركي',
+            'other' => 'غير ذلك',
+        ],
+
+        'days_of_week' => [
+            0 => 'الأحد',
+            1 => 'الاثنين',
+            2 => 'الثلاثاء',
+            3 => 'الأربعاء',
+            4 => 'الخميس',
+            5 => 'الجمعة',
+            6 => 'السبت',
+        ],
+
+        'classroom_distribution_methods' => [
+            'manual' => 'توزيع يدوي',
+            'random' => 'توزيع عشوائي',
+
+            'description' => [
+                'random' => 'توزيع الطلاب تلقائياً على الفصول الدراسية حسب السعة المتاحة.',
+                'manual' => 'اختيار الطلاب وتعيينهم يدوياً في فصل دراسي محدد.',
+            ],
+        ],
+
+        'classroom_distribution_reset_scopes' => [
+            'all' => 'إعادة تعيين جميع الصفوف الدراسية',
+            'selected' => 'إعادة تعيين صفوف دراسية محددة',
+
+            'description' => [
+                'all' => 'إعادة تعيين توزيع الفصول لجميع الصفوف الدراسية في المدرسة.',
+                'selected' => 'إعادة تعيين توزيع الفصول للصفوف الدراسية المحددة فقط.',
+            ],
         ],
     ],
 

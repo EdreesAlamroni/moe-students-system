@@ -29,7 +29,7 @@ final class ModelAbilityMap
 
         return collect($abilities)
             ->mapWithKeys(fn (string $ability): array => [
-                $ability => boolval($user?->can($ability, $subject) ?? false),
+                $ability => (bool) ($user?->can($ability, $subject) ?? false),
             ])
             ->all();
     }

@@ -20,7 +20,7 @@ class SchoolCollection extends DirectModelCollection
             'monitor' => $school->relationLoaded('monitor')
                 ? $school->monitor->only(['id', 'uuid', 'name'])
                 : null,
-            'students_count' => intval($school->students_count ?? 0),
+            'students_count' => (int) ($school->students_count ?? 0),
         ])->all();
     }
 }

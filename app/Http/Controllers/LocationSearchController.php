@@ -36,10 +36,10 @@ class LocationSearchController extends Controller
 
         $results = collect($response->json())
             ->map(fn (array $item): array => [
-                'id' => intval($item['place_id']),
+                'id' => (int) $item['place_id'],
                 'label' => $this->locationLabel($item),
-                'latitude' => floatval($item['lat']),
-                'longitude' => floatval($item['lon']),
+                'latitude' => (float) $item['lat'],
+                'longitude' => (float) $item['lon'],
             ])
             ->filter(fn (array $item): bool => $item['label'] !== '')
             ->values()

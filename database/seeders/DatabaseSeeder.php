@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             EducationMonitorSeeder::class,
             EducationServicesOfficeSeeder::class,
             SchoolSeeder::class,
+            StudentSeeder::class,
             UserSeeder::class,
         ]);
 

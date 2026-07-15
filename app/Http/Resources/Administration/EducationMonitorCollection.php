@@ -14,9 +14,9 @@ class EducationMonitorCollection extends DirectModelCollection
             'id' => $monitor->id,
             'uuid' => $monitor->uuid,
             'name' => $monitor->name,
-            'offices_count' => intval($monitor->offices_count ?? 0),
-            'schools_count' => intval($monitor->schools_count ?? 0),
-            'students_count' => intval($monitor->students_count ?? 0),
+            'offices_count' => (int) ($monitor->offices_count ?? 0),
+            'schools_count' => (int) ($monitor->schools_count ?? 0),
+            'students_count' => (int) ($monitor->students_count ?? 0),
         ])->all();
     }
 }

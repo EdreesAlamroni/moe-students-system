@@ -65,7 +65,7 @@ class School extends Model
         parent::booted();
 
         static::creating(function (self $school) {
-            $count = strval(self::query()->withTrashed()->count() + 1);
+            $count = (string) (self::query()->withTrashed()->count() + 1);
             $serialNumber = Str::padLeft($count, 6, '0');
             $school->serial_number = $serialNumber;
         });

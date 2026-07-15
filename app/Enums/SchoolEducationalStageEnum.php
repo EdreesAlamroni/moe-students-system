@@ -16,4 +16,13 @@ enum SchoolEducationalStageEnum: string
     {
         return 'school_educational_stages';
     }
+
+    public static function orderedValues(): array
+    {
+        return [
+            self::KINDERGARTEN->value,
+            self::PRIMARY_EDUCATION->value,
+            self::SECONDARY_EDUCATION->value,
+        ];
+    }
 }
