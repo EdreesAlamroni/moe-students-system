@@ -203,7 +203,7 @@ export default function Create({
                                                 <InputError message={errors.username} />
                                             </Field>
 
-                                            <Field className="md:col-span-2">
+                                            <Field className="col-span-full">
                                                 <Label
                                                     htmlFor="email"
                                                     hasError={!!errors.email}

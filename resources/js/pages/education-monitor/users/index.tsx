@@ -68,7 +68,7 @@ export default function Index({ users, scopes, filter, canAny, can }: PageProps)
                                     <span>إضافة مُستخدم جديد</span>
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-52">
+                            <DropdownMenuContent align="end" className="min-w-52">
                                 {scopes.map((item, index) => (
                                     <>
                                         <DropdownMenuItem key={index} asChild>

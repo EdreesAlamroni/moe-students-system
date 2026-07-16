@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
+import { usernameInputConstraints } from "@/lib/input-constraints";
+
 import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
 
 import type { EducationMonitor, EducationServicesOffice, Enum, School, Warehouse } from "@/types";
@@ -394,9 +396,11 @@ export default function Create({
                                                     id="username"
                                                     type="text"
                                                     name="username"
+                                                    className="not-placeholder-shown:font-mono"
                                                     hasErrors={!!errors.username}
                                                     autoComplete="username"
                                                     required
+                                                    {...usernameInputConstraints()}
                                                 />
 
                                                 <InputError message={errors.username} />

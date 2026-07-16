@@ -2,9 +2,7 @@ import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
-import { usernameInputConstraints } from "@/lib/input-constraints";
-
-import type { CanPermissions, Paginated, User, UserScope } from "@/types";
+import type { CanPermissions, Paginated, User } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 
@@ -13,12 +11,8 @@ import ActionsSection from "@/components/ui/structure/actions-section";
 
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellActions } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
-import { Icon } from "@/components/ui/display/icon";
-
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/navigation/dropdown-menu";
 
 import { Input } from "@/components/ui/controls/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
 
 import { Button } from "@/components/ui/actions/button";
 import ViewDetailsLink from "@/components/ui/actions/view-details-link";
@@ -28,7 +22,7 @@ import { Paginator } from "@/components/ui/navigation/paginator";
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
 import { ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
-import { index, create, show } from "@/routes/education-services-office/users";
+import { create, index, show } from "@/routes/school/users";
 
 type UserProps = User & {
     canAny: boolean;
@@ -37,17 +31,15 @@ type UserProps = User & {
 
 type PageProps = {
     users: Paginated<UserProps>;
-    scopes: UserScope[];
     filter: {
-        scope?: string;
-        username?: string;
         name?: string;
+        username?: string;
     }
     canAny: boolean;
     can: CanPermissions;
 }
 
-export default function Index({ users, scopes, filter, canAny, can }: PageProps) {
+export default function Index({ users, filter, canAny, can }: PageProps) {
     const { data, links, ...meta } = users;
 
     const hasFilter = Object.values(filter).some((value) => value);
@@ -61,27 +53,12 @@ export default function Index({ users, scopes, filter, canAny, can }: PageProps)
             {canAny && (
                 <ActionsSection>
                     {can.create && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button>
-                                    <PlusIcon />
-                                    <span>إضافة مُستخدم جديد</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="min-w-52">
-                                {scopes.map((item, index) => (
-                                    <>
-                                        <DropdownMenuItem key={index} asChild>
-                                            <Link href={create.url({ scope: item.id })}>
-                                                <Icon iconNode={item.icon} className="text-foreground" />
-                                                <span>{item.name}</span>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        {(index !== (scopes.length - 1)) && <DropdownMenuSeparator />}
-                                    </>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Button asChild>
+                            <Link href={create.url()}>
+                                <PlusIcon />
+                                <span>إضافة مُستخدم جديد</span>
+                            </Link>
+                        </Button>
                     )}
                 </ActionsSection>
             )}
@@ -102,42 +79,18 @@ export default function Index({ users, scopes, filter, canAny, can }: PageProps)
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <Select
-                                    name="filter[scope]"
-                                    defaultValue={filter.scope || undefined}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="اختر النطاق" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {scopes.map((scope) => (
-                                                <SelectItem
-                                                    key={scope.id}
-                                                    value={scope.id.toString()}
-                                                >
-                                                    {scope.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
-                                <Input
-                                    type="text"
-                                    name="filter[username]"
-                                    defaultValue={filter.username}
-                                    placeholder="اسم المُستخدم"
-                                    className="not-placeholder-shown:font-mono"
-                                    {...usernameInputConstraints()}
-                                />
-
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Input
                                     type="text"
                                     name="filter[name]"
                                     value={filter.name}
                                     placeholder="الاسم"
+                                />
+                                <Input
+                                    type="text"
+                                    name="filter[username]"
+                                    value={filter.username}
+                                    placeholder="اسم المُستخدم"
                                 />
                             </div>
                         </CardContent>
@@ -182,7 +135,6 @@ export default function Index({ users, scopes, filter, canAny, can }: PageProps)
                                         <TableHead scope="col" className="font-mono w-24">#</TableHead>
                                         <TableHead scope="col">الاسم</TableHead>
                                         <TableHead scope="col">اسم المُستخدم</TableHead>
-                                        <TableHead scope="col">النطاق</TableHead>
                                         <TableHead scope="col" />
                                     </TableRow>
                                 </TableHeader>
@@ -192,7 +144,6 @@ export default function Index({ users, scopes, filter, canAny, can }: PageProps)
                                             <TableCell className="font-mono">{index + 1}</TableCell>
                                             <TableCell>{user.name}</TableCell>
                                             <TableCell>{user.username}</TableCell>
-                                            <TableCell>{user.scope.name}</TableCell>
                                             <TableCellActions>
                                                 {user.canAny && (
                                                     <>
