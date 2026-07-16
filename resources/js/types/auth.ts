@@ -56,11 +56,12 @@ export type User = {
     state: ModelState;
     request_state: ModelState;
     /** Raw morph key — mirrors `users.organization_id`. */
-    organization_id?: number | null;
+    organization_id?: number;
     /** Raw morph type — mirrors `users.organization_type`. */
-    organization_type?: UserOrganizationType | null;
+    organization_type?: UserOrganizationType;
     /** Resolved organization for the user's attached entity, when eager-loaded. */
     organization?: UserOrganizationContext;
+    role_ids: number[];
     avatar?: string;
     created_at: string;
     updated_at: string;
@@ -109,13 +110,3 @@ export type AuthPageProps = {
     routes: AuthRoutes;
     heading: AuthPageHeading;
 };
-
-/* @chisel-passkeys */
-export type Passkey = {
-    id: number;
-    name: string;
-    authenticator: string | null;
-    created_at_diff: string;
-    last_used_at_diff: string | null;
-};
-/* @end-chisel-passkeys */
