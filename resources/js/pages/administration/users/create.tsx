@@ -31,7 +31,7 @@ import { CreateButton } from "@/components/ui/actions/submit-button";
 
 import { ReplyIcon } from "lucide-react";
 
-import { create, index, store } from "@/routes/administration/users";
+import { index, create, store } from "@/routes/administration/users";
 
 type OrganizationOption = Pick<Warehouse | EducationMonitor | EducationServicesOffice | School, "id" | "name">;
 

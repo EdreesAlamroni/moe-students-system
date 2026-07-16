@@ -32,7 +32,7 @@ import { UpdateButton } from "@/components/ui/actions/submit-button";
 
 import { ReplyIcon } from "lucide-react";
 
-import { edit, index, show, update } from "@/routes/warehouse/users";
+import { edit, index, show, update } from "@/routes/education-services-office/users";
 
 type PageProps = {
     user: User;
@@ -90,10 +90,19 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                             </DetailField>
 
                                             {organization && (
-                                                <DetailField className="col-span-full">
-                                                    <DetailLabel>{organization.label}</DetailLabel>
-                                                    <DetailValue value={organization.name} />
-                                                </DetailField>
+                                                <>
+                                                    {organization.parent && (
+                                                        <DetailField>
+                                                            <DetailLabel>{organization.parent.label}</DetailLabel>
+                                                            <DetailValue value={organization.parent.name} />
+                                                        </DetailField>
+                                                    )}
+
+                                                    <DetailField className={organization.parent ? undefined : "col-span-full"}>
+                                                        <DetailLabel>{organization.label}</DetailLabel>
+                                                        <DetailValue value={organization.name} />
+                                                    </DetailField>
+                                                </>
                                             )}
 
                                             <Separator className="col-span-full" />
@@ -111,6 +120,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                                     id="name"
                                                     type="text"
                                                     name="name"
+                                                    className="not-placeholder-shown:font-mono"
                                                     defaultValue={user.name}
                                                     hasErrors={!!errors.name}
                                                     autoComplete="name"
@@ -173,9 +183,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                             </Link>
                                         </Button>
 
-                                        <UpdateButton
-                                            processing={processing}
-                                        />
+                                        <UpdateButton processing={processing} />
                                     </CardFooter>
                                 </Card>
                             </section>

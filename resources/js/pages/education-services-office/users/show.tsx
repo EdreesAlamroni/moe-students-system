@@ -23,7 +23,7 @@ import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action
 
 import { NotepadTextIcon, SquarePenIcon } from "lucide-react";
 
-import { destroy, edit, index, show } from "@/routes/education-monitor/users";
+import { destroy, edit, index, show } from "@/routes/education-services-office/users";
 
 type PageProps = {
     user: User;

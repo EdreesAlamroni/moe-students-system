@@ -44,7 +44,7 @@ export default function Show({ user, roles, canAny, can }: PageProps) {
                 <ActionsSection>
                     {can.update && (
                         <Button variant="outline" asChild>
-                            <Link href={edit.url({ user })}>
+                            <Link href={edit.url({ user: user })}>
                                 <SquarePenIcon />
                                 <span>تعديل بيانات المُستخدم</span>
                             </Link>
@@ -54,7 +54,7 @@ export default function Show({ user, roles, canAny, can }: PageProps) {
                     {can.delete && (
                         <ConfirmDeleteAction
                             title="حذف المُستخدم"
-                            href={destroy.url({ user })}
+                            href={destroy.url({ user: user })}
                         />
                     )}
                 </ActionsSection>

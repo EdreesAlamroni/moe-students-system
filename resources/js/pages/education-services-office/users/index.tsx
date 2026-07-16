@@ -28,7 +28,7 @@ import { Paginator } from "@/components/ui/navigation/paginator";
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
 import { ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
-import { index, create, show } from "@/routes/administration/users";
+import { index, create, show } from "@/routes/education-services-office/users";
 
 type UserProps = User & {
     canAny: boolean;
@@ -37,17 +37,17 @@ type UserProps = User & {
 
 type PageProps = {
     users: Paginated<UserProps>;
+    scopes: UserScope[];
     filter: {
         scope?: string;
         username?: string;
         name?: string;
     }
-    scopes: UserScope[];
     canAny: boolean;
     can: CanPermissions;
 }
 
-export default function Index({ users, filter, scopes, canAny, can }: PageProps) {
+export default function Index({ users, scopes, filter, canAny, can }: PageProps) {
     const { data, links, ...meta } = users;
 
     const hasFilter = Object.values(filter).some((value) => value);
@@ -102,7 +102,7 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <Select
                                     name="filter[scope]"
                                     defaultValue={filter.scope || undefined}

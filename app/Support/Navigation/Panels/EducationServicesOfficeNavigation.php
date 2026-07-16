@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
 class EducationServicesOfficeNavigation extends NavigationPanel
@@ -15,6 +16,19 @@ class EducationServicesOfficeNavigation extends NavigationPanel
                 'icon' => 'LayoutGridIcon',
                 'activeRoutes' => 'education-services-office.dashboard',
                 'can' => true,
+            ],
+        ];
+    }
+
+    protected function settings(): array
+    {
+        return [
+            [
+                'title' => 'المُستخدمين',
+                'href' => route('education-services-office.users.index'),
+                'icon' => 'UserRoundCogIcon',
+                'activeRoutes' => 'education-services-office.users.*',
+                'can' => $this->user?->canAny(['viewAny'], User::class),
             ],
         ];
     }

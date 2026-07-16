@@ -32,7 +32,7 @@ import { UpdateButton } from "@/components/ui/actions/submit-button";
 
 import { ReplyIcon } from "lucide-react";
 
-import { edit, index, show, update } from "@/routes/administration/users";
+import { index, show, edit, update } from "@/routes/administration/users";
 
 type EditableUser = {
     id: number;
@@ -70,7 +70,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
 
             <MainContainer>
                 <Form
-                    {...update.form({ user })}
+                    {...update.form({ user: user })}
                     disableWhileProcessing
                 >
                     {({ processing, errors }) => (
@@ -187,7 +187,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                             className="flex items-center gap-x-2"
                                             asChild
                                         >
-                                            <Link href={show.url({ user })}>
+                                            <Link href={show.url({ user: user })}>
                                                 <ReplyIcon />
                                                 <span>إلغاء الأمر</span>
                                             </Link>
