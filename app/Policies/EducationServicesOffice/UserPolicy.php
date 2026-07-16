@@ -49,6 +49,10 @@ class UserPolicy
             return false;
         }
 
+        if ($user->is($target)) {
+            return false;
+        }
+
         if ($target->hasAnyRelations()) {
             return false;
         }
