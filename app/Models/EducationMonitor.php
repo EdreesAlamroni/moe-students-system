@@ -90,7 +90,7 @@ class EducationMonitor extends Model
     #[Scope]
     protected function forCurrentWarehouse(Builder $query): Builder
     {
-        $id = auth('warehouse')->user()->model_id;
+        $id = auth('warehouse')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -115,7 +115,7 @@ class EducationMonitor extends Model
 
     public function users(): MorphMany
     {
-        return $this->morphMany(User::class, 'model', 'model_type', 'model_id');
+        return $this->morphMany(User::class, 'organization');
     }
 
     public function municipal(): BelongsTo

@@ -62,7 +62,7 @@ class Warehouse extends Model
 
     public function users(): MorphMany
     {
-        return $this->morphMany(User::class, 'model', 'model_type', 'model_id');
+        return $this->morphMany(User::class, 'organization');
     }
 
     public function monitors(): HasMany

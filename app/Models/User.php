@@ -29,8 +29,8 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @property int $id
  * @property string $uuid
- * @property int|null $model_id
- * @property string|null $model_type
+ * @property int|null $organization_id
+ * @property string|null $organization_type
  * @property string $name
  * @property string $username
  * @property string $email
@@ -56,7 +56,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'model_id' => 'integer',
+            'organization_id' => 'integer',
             'scope' => UserScope::class,
             'role' => UserRole::class,
             'state' => UserState::class,
@@ -155,7 +155,7 @@ class User extends Authenticatable
      * Start: Relations
      */
 
-    public function model(): MorphTo
+    public function organization(): MorphTo
     {
         return $this->morphTo();
     }
@@ -179,7 +179,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Typed organizational context for the attached morph model.
+     * Typed organizational context for the attached organization morph.
      *
      * @return array{
      *     type: string,
@@ -188,14 +188,14 @@ class User extends Authenticatable
      */
     public function resolvedOrganization(): ?array
     {
-        $this->loadMissing(match ($this->model_type) {
-            EducationServicesOffice::class, School::class => ['model.monitor'],
-            default => ['model'],
+        $this->loadMissing(match ($this->organization_type) {
+            EducationServicesOffice::class, School::class => ['organization.monitor'],
+            default => ['organization'],
         });
 
-        $model = $this->model;
+        $organization = $this->organization;
 
-        if ($model === null) {
+        if ($organization === null) {
             return null;
         }
 
@@ -205,30 +205,30 @@ class User extends Authenticatable
         ];
 
         return match (true) {
-            $this->scope === UserScope::WAREHOUSE && $model instanceof Warehouse => [
+            $this->scope === UserScope::WAREHOUSE && $organization instanceof Warehouse => [
                 'type' => 'warehouse',
                 'organization' => [
-                    'warehouse' => $reference($model),
+                    'warehouse' => $reference($organization),
                 ],
             ],
-            $this->scope === UserScope::EDUCATION_MONITOR && $model instanceof EducationMonitor => [
+            $this->scope === UserScope::EDUCATION_MONITOR && $organization instanceof EducationMonitor => [
                 'type' => 'education_monitor',
                 'organization' => [
-                    'education_monitor' => $reference($model),
+                    'education_monitor' => $reference($organization),
                 ],
             ],
-            $this->scope === UserScope::EDUCATION_SERVICES_OFFICE && $model instanceof EducationServicesOffice => [
+            $this->scope === UserScope::EDUCATION_SERVICES_OFFICE && $organization instanceof EducationServicesOffice => [
                 'type' => 'education_services_office',
                 'organization' => [
-                    'education_services_office' => $reference($model),
-                    'education_monitor' => $reference($model->monitor),
+                    'education_services_office' => $reference($organization),
+                    'education_monitor' => $reference($organization->monitor),
                 ],
             ],
-            $this->scope === UserScope::SCHOOL && $model instanceof School => [
+            $this->scope === UserScope::SCHOOL && $organization instanceof School => [
                 'type' => 'school',
                 'organization' => [
-                    'school' => $reference($model),
-                    'education_monitor' => $reference($model->monitor),
+                    'school' => $reference($organization),
+                    'education_monitor' => $reference($organization->monitor),
                 ],
             ],
             default => null,
@@ -250,11 +250,11 @@ class User extends Authenticatable
 
         return $query->where(function (Builder $query) use ($organizationId, $organizationClass, $descendants): void {
             $query
-                ->where('model_type', $organizationClass)
-                ->where('model_id', $organizationId);
+                ->where('organization_type', $organizationClass)
+                ->where('organization_id', $organizationId);
 
             if ($descendants !== []) {
-                $query->orWhereHasMorph('model', array_keys($descendants), function (Builder $query, string $type) use ($organizationId, $descendants): void {
+                $query->orWhereHasMorph('organization', array_keys($descendants), function (Builder $query, string $type) use ($organizationId, $descendants): void {
                     $query->where($descendants[$type], $organizationId);
                 });
             }
@@ -263,7 +263,7 @@ class User extends Authenticatable
 
     private function authenticatedOrganizationId(UserScope $scope): ?int
     {
-        return auth($scope->guard())->user()?->model_id;
+        return auth($scope->guard())->user()?->organization_id;
     }
 
     public function hasAnyRelations(): bool

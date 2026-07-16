@@ -79,7 +79,7 @@ class EducationServicesOffice extends Model
     #[Scope]
     protected function forCurrentEducationMonitor(Builder $query): Builder
     {
-        $id = auth('education_monitor')->user()->model_id;
+        $id = auth('education_monitor')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -115,7 +115,7 @@ class EducationServicesOffice extends Model
 
     public function users(): MorphMany
     {
-        return $this->morphMany(User::class, 'model', 'model_type', 'model_id');
+        return $this->morphMany(User::class, 'organization');
     }
 
     public function monitor(): BelongsTo

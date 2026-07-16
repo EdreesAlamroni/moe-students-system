@@ -6,8 +6,8 @@ export type EntityReference = {
     name: string;
 };
 
-/** Known Laravel morph class names for the user's `model` relationship. */
-export type UserModelType =
+/** Known Laravel morph class names for the user's `organization` relationship. */
+export type UserOrganizationType =
     | "App\\Models\\EducationMonitor"
     | "App\\Models\\Warehouse"
     | "App\\Models\\EducationServicesOffice"
@@ -55,10 +55,10 @@ export type User = {
     role?: Enum;
     state: ModelState;
     request_state: ModelState;
-    /** Raw morph key — mirrors `users.model_id`. */
-    model_id?: number | null;
-    /** Raw morph type — mirrors `users.model_type`. */
-    model_type?: UserModelType | null;
+    /** Raw morph key — mirrors `users.organization_id`. */
+    organization_id?: number | null;
+    /** Raw morph type — mirrors `users.organization_type`. */
+    organization_type?: UserOrganizationType | null;
     /** Resolved organization for the user's attached entity, when eager-loaded. */
     organization?: UserOrganizationContext;
     avatar?: string;

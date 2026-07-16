@@ -85,8 +85,8 @@ class UserSeeder extends Seeder
             'username' => 'warehouse',
             'email' => 'warehouse@example.com',
             'scope' => UserScope::WAREHOUSE,
-            'model_id' => $monitor->warehouse_id,
-            'model_type' => Warehouse::class,
+            'organization_id' => $monitor->warehouse_id,
+            'organization_type' => Warehouse::class,
         ];
     }
 
@@ -100,8 +100,8 @@ class UserSeeder extends Seeder
             'username' => 'monitor',
             'email' => 'monitor@example.com',
             'scope' => UserScope::EDUCATION_MONITOR,
-            'model_id' => $monitor->id,
-            'model_type' => EducationMonitor::class,
+            'organization_id' => $monitor->id,
+            'organization_type' => EducationMonitor::class,
         ];
     }
 
@@ -115,8 +115,8 @@ class UserSeeder extends Seeder
             'username' => 'office',
             'email' => 'office@example.com',
             'scope' => UserScope::EDUCATION_SERVICES_OFFICE,
-            'model_id' => $office->id,
-            'model_type' => EducationServicesOffice::class,
+            'organization_id' => $office->id,
+            'organization_type' => EducationServicesOffice::class,
         ];
     }
 
@@ -130,8 +130,8 @@ class UserSeeder extends Seeder
             'username' => 'school',
             'email' => 'school@example.com',
             'scope' => UserScope::SCHOOL,
-            'model_id' => $school->id,
-            'model_type' => School::class,
+            'organization_id' => $school->id,
+            'organization_type' => School::class,
         ];
     }
 

@@ -12,12 +12,12 @@ class UserPolicy
     // protected function sharesOrganizationWith(User $user, User $target): bool
     // {
     //     if ($target->isSchoolStaff()) {
-    //         return $user->model_id === $target->model_id;
+    //         return $user->organization_id === $target->organization_id;
     //     }
 
-    //     $schoolId = $target->model?->school_id;
+    //     $schoolId = $target->organization?->school_id;
 
-    //     return $schoolId !== null && $user->model_id === $schoolId;
+    //     return $schoolId !== null && $user->organization_id === $schoolId;
     // }
 
     public function viewAny(User $user): bool

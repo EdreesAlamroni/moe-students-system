@@ -143,7 +143,7 @@ class Student extends Model
     #[Scope]
     protected function forCurrentEducationMonitor(Builder $query): Builder
     {
-        $id = auth('education_monitor')->user()->model_id;
+        $id = auth('education_monitor')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -155,7 +155,7 @@ class Student extends Model
     #[Scope]
     protected function forCurrentEducationServicesOffice(Builder $query): Builder
     {
-        $id = auth('education_services_office')->user()->model_id;
+        $id = auth('education_services_office')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -169,7 +169,7 @@ class Student extends Model
     #[Scope]
     protected function forCurrentSchool(Builder $query): Builder
     {
-        $id = auth('school')->user()->model_id;
+        $id = auth('school')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;

@@ -127,7 +127,7 @@ class StoreRequest extends FormRequest
             'password_confirmation',
         ]);
 
-        [$modelId, $modelType] = match ($scope) {
+        [$organizationId, $organizationType] = match ($scope) {
             UserScope::ADMINISTRATION => [
                 null,
                 null,
@@ -151,8 +151,8 @@ class StoreRequest extends FormRequest
         };
 
         return Arr::merge($attributes, [
-            'model_id' => $modelId,
-            'model_type' => $modelType,
+            'organization_id' => $organizationId,
+            'organization_type' => $organizationType,
             'role' => UserRole::EMPLOYEE->value,
             'request_state' => Approved::class,
         ]);

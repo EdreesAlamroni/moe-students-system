@@ -170,8 +170,8 @@ test('authenticated users can store an administration user', function () {
         ->and($createdUser->scope)->toBe(UserScope::ADMINISTRATION)
         ->and($createdUser->role)->toBe(UserRole::EMPLOYEE)
         ->and($createdUser->request_state)->toBeInstanceOf(Approved::class)
-        ->and($createdUser->model_id)->toBeNull()
-        ->and($createdUser->model_type)->toBeNull()
+        ->and($createdUser->organization_id)->toBeNull()
+        ->and($createdUser->organization_type)->toBeNull()
         ->and($createdUser->hasRole($payload['roles'][0]))->toBeTrue();
 
     $response->assertRedirect(route('administration.users.show', ['user' => $createdUser]));
@@ -189,8 +189,8 @@ test('authenticated users can store a warehouse user', function () {
 
     expect($createdUser)->not->toBeNull()
         ->and($createdUser->scope)->toBe(UserScope::WAREHOUSE)
-        ->and($createdUser->model_id)->toBe($warehouse->id)
-        ->and($createdUser->model_type)->toBe(Warehouse::class)
+        ->and($createdUser->organization_id)->toBe($warehouse->id)
+        ->and($createdUser->organization_type)->toBe(Warehouse::class)
         ->and($createdUser->email)->toBeNull();
 
     $response->assertRedirect(route('administration.users.show', ['user' => $createdUser]));
@@ -280,8 +280,8 @@ test('show page resolves warehouse organization context', function () {
     $target = User::factory()->create([
         'scope' => UserScope::WAREHOUSE,
         'role' => UserRole::EMPLOYEE,
-        'model_type' => Warehouse::class,
-        'model_id' => $warehouse->id,
+        'organization_type' => Warehouse::class,
+        'organization_id' => $warehouse->id,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -301,8 +301,8 @@ test('show page resolves school organization with parent monitor', function () {
     $target = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'model_type' => School::class,
-        'model_id' => $school->id,
+        'organization_type' => School::class,
+        'organization_id' => $school->id,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -322,8 +322,8 @@ test('authenticated users can visit the edit user page', function () {
     $target = User::factory()->create([
         'scope' => UserScope::WAREHOUSE,
         'role' => UserRole::EMPLOYEE,
-        'model_type' => Warehouse::class,
-        'model_id' => $warehouse->id,
+        'organization_type' => Warehouse::class,
+        'organization_id' => $warehouse->id,
         'name' => 'Editable User',
         'username' => 'editable.user',
     ]);

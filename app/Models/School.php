@@ -78,7 +78,7 @@ class School extends Model
     #[Scope]
     protected function forCurrentEducationMonitor(Builder $query): Builder
     {
-        $id = auth('education_monitor')->user()->model_id;
+        $id = auth('education_monitor')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -90,7 +90,7 @@ class School extends Model
     #[Scope]
     protected function forCurrentEducationServicesOffice(Builder $query): Builder
     {
-        $id = auth('education_services_office')->user()->model_id;
+        $id = auth('education_services_office')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -102,7 +102,7 @@ class School extends Model
     #[Scope]
     protected function forCurrentWarehouse(Builder $query): Builder
     {
-        $id = auth('warehouse')->user()->model_id;
+        $id = auth('warehouse')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -147,7 +147,7 @@ class School extends Model
 
     public function users(): MorphMany
     {
-        return $this->morphMany(User::class, 'model', 'model_type', 'model_id');
+        return $this->morphMany(User::class, 'organization');
     }
 
     public function monitor(): BelongsTo

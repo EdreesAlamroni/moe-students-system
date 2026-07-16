@@ -167,13 +167,13 @@ class UserController extends Controller
 
     protected function loadOrganizationRelation(User $user): void
     {
-        if ($user->model_type === null) {
+        if ($user->organization_type === null) {
             return;
         }
 
-        $user->loadMissing(match ($user->model_type) {
-            EducationServicesOffice::class, School::class => ['model.monitor'],
-            default => ['model'],
+        $user->loadMissing(match ($user->organization_type) {
+            EducationServicesOffice::class, School::class => ['organization.monitor'],
+            default => ['organization'],
         });
     }
 

@@ -71,7 +71,7 @@ class ClassSchedule extends Model
     #[Scope]
     protected function forCurrentSchool(Builder $query): Builder
     {
-        $id = auth('school')->user()->model_id;
+        $id = auth('school')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -83,7 +83,7 @@ class ClassSchedule extends Model
     #[Scope]
     protected function forCurrentSchoolAndAcademicYear(Builder $query): Builder
     {
-        $id = auth('school')->user()->model_id;
+        $id = auth('school')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;

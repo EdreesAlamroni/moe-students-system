@@ -20,7 +20,7 @@ it('does not constrain the query when no user is authenticated', function () {
 });
 
 it('does not constrain the query when the authenticated user has no organization', function () {
-    $user = User::factory()->make(['model_id' => null]);
+    $user = User::factory()->make(['organization_id' => null]);
 
     $this->actingAs($user, UserScope::SCHOOL->guard());
 
@@ -28,7 +28,7 @@ it('does not constrain the query when the authenticated user has no organization
 });
 
 it('scopes users to the authenticated school organization', function () {
-    $user = User::factory()->make(['model_id' => 42]);
+    $user = User::factory()->make(['organization_id' => 42]);
 
     $this->actingAs($user, UserScope::SCHOOL->guard());
 
@@ -38,7 +38,7 @@ it('scopes users to the authenticated school organization', function () {
 });
 
 it('scopes users to the authenticated warehouse organization', function () {
-    $user = User::factory()->make(['model_id' => 7]);
+    $user = User::factory()->make(['organization_id' => 7]);
 
     $this->actingAs($user, UserScope::WAREHOUSE->guard());
 
@@ -48,7 +48,7 @@ it('scopes users to the authenticated warehouse organization', function () {
 });
 
 it('scopes users to the authenticated education monitor and its descendants', function () {
-    $user = User::factory()->make(['model_id' => 3]);
+    $user = User::factory()->make(['organization_id' => 3]);
 
     $this->actingAs($user, UserScope::EDUCATION_MONITOR->guard());
 
@@ -59,7 +59,7 @@ it('scopes users to the authenticated education monitor and its descendants', fu
 });
 
 it('scopes users to the authenticated education services office and its schools', function () {
-    $user = User::factory()->make(['model_id' => 11]);
+    $user = User::factory()->make(['organization_id' => 11]);
 
     $this->actingAs($user, UserScope::EDUCATION_SERVICES_OFFICE->guard());
 
