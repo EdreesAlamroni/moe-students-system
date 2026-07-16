@@ -44,6 +44,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property Warehouse|EducationMonitor|EducationServicesOffice|School|null $organization
  */
 #[Guarded(['id'])]
 #[Hidden(['password', 'remember_token'])]

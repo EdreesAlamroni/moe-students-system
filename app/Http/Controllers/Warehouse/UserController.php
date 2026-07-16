@@ -10,6 +10,7 @@ use App\Http\Resources\Warehouse\UserCollection;
 use App\Http\Resources\Warehouse\UserFormResource;
 use App\Http\Resources\Warehouse\UserResource;
 use App\Models\User;
+use App\Models\Warehouse;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,7 +32,7 @@ class UserController extends Controller
     {
         Gate::authorize('viewAny', User::class);
 
-        $users = QueryBuilder::for(User::query()->forCurrentWarehouse())
+        $users = QueryBuilder::for(User::class)
             ->select([
                 'id',
                 'uuid',
@@ -42,6 +43,7 @@ class UserController extends Controller
                 'created_at',
                 'deleted_at',
             ])
+            ->forCurrentWarehouse()
             ->allowedFilters(
                 'name',
                 'username',
@@ -72,14 +74,12 @@ class UserController extends Controller
         $user = auth('warehouse')->user();
         $user->loadMissing(['organization']);
 
+        /** @var Warehouse $warehouse */
+        $warehouse = $user->organization;
+
         return Inertia::render('warehouse/users/create', [
             'scope' => UserScope::WAREHOUSE->toArray(),
-            'warehouse' => $user->organization !== null
-                ? [
-                    'id' => $user->organization->id,
-                    'name' => $user->organization->name,
-                ]
-                : null,
+            'warehouse' => $warehouse->only(['id', 'name']),
             'groupedRoles' => $this->getGroupedRoles(),
         ]);
     }
