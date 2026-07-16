@@ -79,7 +79,7 @@ export default function Index({ users, filter, canAny, can }: PageProps) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Input
                                     type="text"
                                     name="filter[name]"

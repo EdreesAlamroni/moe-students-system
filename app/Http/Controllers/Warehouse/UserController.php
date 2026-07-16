@@ -36,6 +36,8 @@ class UserController extends Controller
             ->select([
                 'id',
                 'uuid',
+                'organization_id',
+                'organization_type',
                 'name',
                 'username',
                 'scope',
