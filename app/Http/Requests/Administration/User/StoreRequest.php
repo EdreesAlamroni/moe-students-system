@@ -97,7 +97,8 @@ class StoreRequest extends FormRequest
             ],
             'roles.*' => [
                 'required',
-                Rule::exists(Role::class, 'id'),
+                'integer',
+                Rule::exists(Role::class, 'id')->where('guard_name', $this->input('scope')),
             ],
         ];
     }
@@ -107,6 +108,7 @@ class StoreRequest extends FormRequest
         $roles = $this->input('roles', []);
 
         $this->merge([
+            'email' => $this->filled('email') ? $this->input('email') : null,
             'roles' => is_array($roles) ? $roles : json_decode($roles, true) ?? [],
         ]);
     }

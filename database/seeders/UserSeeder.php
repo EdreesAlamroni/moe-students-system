@@ -4,51 +4,142 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use App\Enums\UserScope;
+use App\Models\EducationMonitor;
+use App\Models\EducationServicesOffice;
+use App\Models\School;
 use App\Models\User;
+use App\Models\Warehouse;
+use App\ModelStates\User\RequestState\Approved;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->create([
+        $monitor = $this->benghaziEducationMonitor();
+        $office = $monitor->offices->firstOrFail();
+        $school = School::query()->firstOrFail();
+
+        foreach ($this->userDefinitions($monitor, $office, $school) as $attributes) {
+            $this->createUser($attributes);
+        }
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function userDefinitions(
+        EducationMonitor $monitor,
+        EducationServicesOffice $office,
+        School $school,
+    ): array {
+        return [
+            $this->administratorUser(),
+            $this->warehouseUser($monitor),
+            $this->educationMonitorUser($monitor),
+            $this->educationServicesOfficeUser($office),
+            $this->schoolUser($school),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    protected function createUser(array $attributes): void
+    {
+        User::factory()->create(array_merge($this->defaultUserAttributes(), $attributes));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function defaultUserAttributes(): array
+    {
+        return [
+            'role' => UserRole::MANAGER,
+            'request_state' => Approved::class,
+            'must_change_password' => false,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function administratorUser(): array
+    {
+        return [
             'name' => 'مدير النظام',
             'username' => 'administrator',
             'email' => 'info@example.com',
             'scope' => UserScope::ADMINISTRATION,
-            'role' => UserRole::MANAGER,
-        ]);
+        ];
+    }
 
-        User::factory()->create([
-            'name' => 'مدير المخزن',
+    /**
+     * @return array<string, mixed>
+     */
+    protected function warehouseUser(EducationMonitor $monitor): array
+    {
+        return [
+            'name' => 'مُستخدم مخزن',
             'username' => 'warehouse',
             'email' => 'warehouse@example.com',
             'scope' => UserScope::WAREHOUSE,
-            'role' => UserRole::MANAGER,
-        ]);
+            'model_id' => $monitor->warehouse_id,
+            'model_type' => Warehouse::class,
+        ];
+    }
 
-        User::factory()->create([
-            'name' => 'مدير المُراقبة',
+    /**
+     * @return array<string, mixed>
+     */
+    protected function educationMonitorUser(EducationMonitor $monitor): array
+    {
+        return [
+            'name' => 'مُستخدم مُراقبة',
             'username' => 'monitor',
             'email' => 'monitor@example.com',
             'scope' => UserScope::EDUCATION_MONITOR,
-            'role' => UserRole::MANAGER,
-        ]);
+            'model_id' => $monitor->id,
+            'model_type' => EducationMonitor::class,
+        ];
+    }
 
-        User::factory()->create([
-            'name' => 'مدير مكتب الخدمات التعليمية',
+    /**
+     * @return array<string, mixed>
+     */
+    protected function educationServicesOfficeUser(EducationServicesOffice $office): array
+    {
+        return [
+            'name' => 'مُستخدم مكتب خدمات تعليمية',
             'username' => 'office',
             'email' => 'office@example.com',
             'scope' => UserScope::EDUCATION_SERVICES_OFFICE,
-            'role' => UserRole::MANAGER,
-        ]);
+            'model_id' => $office->id,
+            'model_type' => EducationServicesOffice::class,
+        ];
+    }
 
-        User::factory()->create([
-            'name' => 'مدير المدرسة',
+    /**
+     * @return array<string, mixed>
+     */
+    protected function schoolUser(School $school): array
+    {
+        return [
+            'name' => 'مُستخدم مدرسة',
             'username' => 'school',
             'email' => 'school@example.com',
             'scope' => UserScope::SCHOOL,
-            'role' => UserRole::MANAGER,
-        ]);
+            'model_id' => $school->id,
+            'model_type' => School::class,
+        ];
+    }
+
+    protected function benghaziEducationMonitor(): EducationMonitor
+    {
+        return EducationMonitor::query()
+            ->whereRelation('municipal', 'name', '=', 'بنغازي')
+            ->with('offices')
+            ->firstOrFail();
     }
 }

@@ -7,6 +7,7 @@ use App\Concerns\ModelStateUtilities;
 use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\ModelStates\User\RequestState\Approved;
+use App\ModelStates\User\RequestState\Pending;
 use App\ModelStates\User\RequestState\UserRequestState;
 use App\ModelStates\User\State\Activated;
 use App\ModelStates\User\State\UserState;
@@ -177,6 +178,63 @@ class User extends Authenticatable
         return ! $this->request_state->equals(Approved::class);
     }
 
+    /**
+     * Typed organizational context for the attached morph model.
+     *
+     * @return array{
+     *     type: string,
+     *     organization: array<string, array{id: int, name: string}>
+     * }|null
+     */
+    public function resolvedOrganization(): ?array
+    {
+        $this->loadMissing(match ($this->model_type) {
+            EducationServicesOffice::class, School::class => ['model.monitor'],
+            default => ['model'],
+        });
+
+        $model = $this->model;
+
+        if ($model === null) {
+            return null;
+        }
+
+        $reference = static fn (Model $entity): array => [
+            'id' => (int) $entity->getKey(),
+            'name' => (string) $entity->getAttribute('name'),
+        ];
+
+        return match (true) {
+            $this->scope === UserScope::WAREHOUSE && $model instanceof Warehouse => [
+                'type' => 'warehouse',
+                'organization' => [
+                    'warehouse' => $reference($model),
+                ],
+            ],
+            $this->scope === UserScope::EDUCATION_MONITOR && $model instanceof EducationMonitor => [
+                'type' => 'education_monitor',
+                'organization' => [
+                    'education_monitor' => $reference($model),
+                ],
+            ],
+            $this->scope === UserScope::EDUCATION_SERVICES_OFFICE && $model instanceof EducationServicesOffice => [
+                'type' => 'education_services_office',
+                'organization' => [
+                    'education_services_office' => $reference($model),
+                    'education_monitor' => $reference($model->monitor),
+                ],
+            ],
+            $this->scope === UserScope::SCHOOL && $model instanceof School => [
+                'type' => 'school',
+                'organization' => [
+                    'school' => $reference($model),
+                    'education_monitor' => $reference($model->monitor),
+                ],
+            ],
+            default => null,
+        };
+    }
+
     /*
      * End: Custom Functions
      */
@@ -251,5 +309,10 @@ class User extends Authenticatable
     public function isRoleEmployee(): bool
     {
         return $this->role->isEmployee();
+    }
+
+    public function requestIsPending(): bool
+    {
+        return $this->request_state->equals(Pending::class);
     }
 }
