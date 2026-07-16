@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\Administration;
+namespace App\Policies\Warehouse;
 
 use App\Models\User;
 
@@ -13,10 +13,6 @@ class UserPolicy
 
     public function view(User $user, User $target): bool
     {
-        if ($target->isAdministrator()) {
-            return false;
-        }
-
         return $user->can('user:view');
     }
 
@@ -27,10 +23,6 @@ class UserPolicy
 
     public function update(User $user, User $target): bool
     {
-        if ($target->isAdministrator()) {
-            return false;
-        }
-
         if ($target->trashed()) {
             return false;
         }
@@ -44,10 +36,6 @@ class UserPolicy
             return false;
         }
 
-        if ($target->isAdministrator()) {
-            return false;
-        }
-
         if ($target->trashed()) {
             return false;
         }
@@ -57,10 +45,6 @@ class UserPolicy
 
     public function stateUpdate(User $user, User $target): bool
     {
-        if ($target->isAdministrator()) {
-            return false;
-        }
-
         if ($target->trashed()) {
             return false;
         }

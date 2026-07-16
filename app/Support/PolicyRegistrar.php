@@ -26,6 +26,7 @@ use App\Policies\Administration\SchoolReportPolicy as AdministrationSchoolReport
 use App\Policies\Administration\SubjectPolicy as AdministrationSubjectPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
 use App\Policies\Administration\WarehousePolicy as AdministrationWarehousePolicy;
+use App\Policies\Warehouse\UserPolicy as WarehouseUserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
@@ -49,7 +50,9 @@ final class PolicyRegistrar
             EducationServicesOffice::class => AdministrationEducationServicesOfficePolicy::class,
             School::class => AdministrationSchoolPolicy::class,
         ],
-        'warehouse' => [],
+        'warehouse' => [
+            User::class => WarehouseUserPolicy::class,
+        ],
         'education-monitor' => [],
         'education-services-office' => [],
         'school' => [],

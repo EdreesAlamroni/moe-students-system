@@ -1,19 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Administration;
+namespace App\Http\Controllers\Warehouse;
 
 use App\Enums\UserScope;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Administration\User\StoreRequest;
-use App\Http\Requests\Administration\User\UpdateRequest;
-use App\Http\Resources\Administration\UserCollection;
-use App\Http\Resources\Administration\UserFormResource;
-use App\Http\Resources\Administration\UserResource;
-use App\Models\EducationMonitor;
-use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Http\Requests\Warehouse\User\StoreRequest;
+use App\Http\Requests\Warehouse\User\UpdateRequest;
+use App\Http\Resources\Warehouse\UserCollection;
+use App\Http\Resources\Warehouse\UserFormResource;
+use App\Http\Resources\Warehouse\UserResource;
 use App\Models\User;
-use App\Models\Warehouse;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,7 +29,9 @@ class UserController extends Controller
 {
     public function index(Request $request): Response
     {
-        $users = QueryBuilder::for(User::class)
+        Gate::authorize('viewAny', User::class);
+
+        $users = QueryBuilder::for(User::query()->forCurrentWarehouse())
             ->select([
                 'id',
                 'uuid',
@@ -47,7 +45,6 @@ class UserController extends Controller
             ->allowedFilters(
                 'name',
                 'username',
-                'scope',
             )
             ->oldest()
             ->paginate()
@@ -55,7 +52,7 @@ class UserController extends Controller
             ->appends($request->query())
             ->onEachSide(0);
 
-        return Inertia::render('administration/users/index', [
+        return Inertia::render('warehouse/users/index', [
             'users' => ResourcePayloadBuilder::paginateWithAbilities(
                 $users,
                 UserCollection::make($users),
@@ -63,26 +60,27 @@ class UserController extends Controller
                 $request,
             ),
             'filter' => $request->input('filter', []),
-            'scopes' => UserScope::getCreationMenuItems(),
             ...ModelAbilityMap::make(User::class, ['create']),
         ]);
     }
 
-    public function create(UserScope $scope): Response
+    public function create(): Response
     {
         Gate::authorize('create', User::class);
 
-        return Inertia::render('administration/users/create', [
-            'scope' => $scope->toArray(),
-            'creationLabel' => $scope->getCreationLabel(),
-            'warehouses' => $scope->isWarehouse() ? Warehouse::list() : [],
-            'monitors' => match ($scope) {
-                UserScope::EDUCATION_MONITOR => EducationMonitor::list(),
-                UserScope::EDUCATION_SERVICES_OFFICE => EducationMonitor::listWithOffices(),
-                UserScope::SCHOOL => EducationMonitor::listWithSchools(),
-                default => [],
-            },
-            'groupedRoles' => $this->getGroupedRoles($scope),
+        /** @var User $user */
+        $user = auth('warehouse')->user();
+        $user->loadMissing(['organization']);
+
+        return Inertia::render('warehouse/users/create', [
+            'scope' => UserScope::WAREHOUSE->toArray(),
+            'warehouse' => $user->organization !== null
+                ? [
+                    'id' => $user->organization->id,
+                    'name' => $user->organization->name,
+                ]
+                : null,
+            'groupedRoles' => $this->getGroupedRoles(),
         ]);
     }
 
@@ -101,26 +99,23 @@ class UserController extends Controller
 
         flash_success('create');
 
-        return Redirect::route('administration.users.show', ['user' => $user]);
+        return Redirect::route('warehouse.users.show', ['user' => $user]);
     }
 
     public function show(User $user): Response
     {
         Gate::authorize('view', $user);
 
-        $this->loadOrganizationRelation($user);
-        $user->loadMissing('roles:id,name');
+        $user->loadMissing(['organization', 'roles:id,name']);
 
-        return Inertia::render('administration/users/show', [
+        return Inertia::render('warehouse/users/show', [
             'user' => ResourcePayloadBuilder::make(
                 UserResource::make($user),
             ),
             'roles' => $user->roles->isNotEmpty()
-                ? $this->getGroupedRoles($user->scope, $user->roles->pluck('id'))
+                ? $this->getGroupedRoles($user->roles->pluck('id'))
                 : [],
             'availableStates' => $user->getTransitionableStates(),
-            'availableRequestStates' => $user->getTransitionableStates('request_state'),
-            'isRequestPending' => $user->requestIsPending(),
             ...ModelAbilityMap::make($user, ['update', 'delete', 'stateUpdate']),
         ]);
     }
@@ -129,14 +124,13 @@ class UserController extends Controller
     {
         Gate::authorize('update', $user);
 
-        $this->loadOrganizationRelation($user);
-        $user->loadMissing('roles:id,name');
+        $user->loadMissing(['organization', 'roles:id,name']);
 
-        return Inertia::render('administration/users/edit', [
+        return Inertia::render('warehouse/users/edit', [
             'user' => ResourcePayloadBuilder::make(
                 UserFormResource::make($user),
             ),
-            'groupedRoles' => $this->getGroupedRoles($user->scope),
+            'groupedRoles' => $this->getGroupedRoles(),
         ]);
     }
 
@@ -152,7 +146,7 @@ class UserController extends Controller
 
         flash_success('update');
 
-        return Redirect::route('administration.users.show', ['user' => $user]);
+        return Redirect::route('warehouse.users.show', ['user' => $user]);
     }
 
     public function destroy(User $user): RedirectResponse
@@ -163,30 +157,16 @@ class UserController extends Controller
 
         flash_success('delete');
 
-        return Redirect::route('administration.users.index');
+        return Redirect::route('warehouse.users.index');
     }
 
-    protected function loadOrganizationRelation(User $user): void
-    {
-        if ($user->organization_type === null) {
-            return;
-        }
-
-        $user->loadMissing(match ($user->organization_type) {
-            EducationServicesOffice::class, School::class => ['organization.monitor'],
-            default => ['organization'],
-        });
-    }
-
-    protected function getGroupedRoles(UserScope|string $scope, Collection|array $ids = []): Collection
+    protected function getGroupedRoles(Collection|array $ids = []): Collection
     {
         $ids = $ids instanceof Collection ? $ids : collect($ids);
 
-        $scope = $scope instanceof UserScope ? $scope->value : $scope;
-
         return Role::query()
             ->select(['id', 'name', 'guard_name'])
-            ->where('guard_name', '=', $scope)
+            ->where('guard_name', '=', UserScope::WAREHOUSE->value)
             ->when($ids->isNotEmpty(), function (Builder $query) use ($ids) {
                 $query->whereIn('id', $ids->all());
             })
