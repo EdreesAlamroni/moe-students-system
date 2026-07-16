@@ -17,7 +17,9 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $monitor = $this->benghaziEducationMonitor();
-        $office = $monitor->offices->firstOrFail();
+        $office = EducationServicesOffice::query()
+            ->whereBelongsTo($monitor, 'monitor')
+            ->firstOrFail();
         $school = School::query()->firstOrFail();
 
         foreach ($this->userDefinitions($monitor, $office, $school) as $attributes) {
@@ -139,7 +141,6 @@ class UserSeeder extends Seeder
     {
         return EducationMonitor::query()
             ->whereRelation('municipal', 'name', '=', 'بنغازي')
-            ->with('offices')
             ->firstOrFail();
     }
 }
