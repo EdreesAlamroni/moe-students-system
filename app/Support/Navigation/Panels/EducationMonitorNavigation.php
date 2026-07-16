@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
 class EducationMonitorNavigation extends NavigationPanel
@@ -15,6 +16,19 @@ class EducationMonitorNavigation extends NavigationPanel
                 'icon' => 'LayoutGridIcon',
                 'activeRoutes' => 'education-monitor.dashboard',
                 'can' => true,
+            ],
+        ];
+    }
+
+    protected function settings(): array
+    {
+        return [
+            [
+                'title' => 'المُستخدمين',
+                'href' => route('education-monitor.users.index'),
+                'icon' => 'UserRoundCogIcon',
+                'activeRoutes' => 'education-monitor.users.*',
+                'can' => $this->user?->canAny(['viewAny'], User::class),
             ],
         ];
     }

@@ -45,6 +45,12 @@ export type UserOrganizationContext =
     | { type: "school"; organization: SchoolOrganization }
     | { type: "warehouse"; organization: WarehouseOrganization };
 
+export type UserScope = {
+    id: string | number;
+    name: string;
+    icon: string;
+};
+
 export type User = {
     id: number;
     uuid: string;

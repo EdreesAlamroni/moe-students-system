@@ -85,16 +85,15 @@ enum UserScope: string
         };
     }
 
-    public function toCreationMenuItem(): array
+    public function toCreationMenuItem(string $idKey = 'id', string $nameKey = 'name'): array
     {
         return [
-            'label' => $this->getCreationLabel(),
-            'value' => $this->value,
+            ...$this->toOption($idKey, $nameKey),
             'icon' => $this->icon(),
         ];
     }
 
-    public static function getCreationMenuItems(): Collection
+    public static function getCreationMenuItems(string $idKey = 'id', string $nameKey = 'name'): Collection
     {
         $user = Auth::user();
 
@@ -102,8 +101,8 @@ enum UserScope: string
             return collect([]);
         }
 
-        return $user->scope->getAccessibleScopes()->map(function (self $scope): array {
-            return $scope->toCreationMenuItem();
+        return $user->scope->getAccessibleScopes()->map(function (self $scope) use ($idKey, $nameKey): array {
+            return $scope->toCreationMenuItem($idKey, $nameKey);
         });
     }
 
