@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\Warehouse\DashboardController;
+use App\Http\Controllers\Warehouse\EducationMonitorController;
 use App\Http\Controllers\Warehouse\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -13,6 +14,12 @@ RegistersDashboardAuthRoutes::registerGuestRoutes(DashboardAuth::warehouse());
 
 Route::middleware(['auth:warehouse', 'ensure.password.changed'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    // Education Monitors
+    Route::prefix('education-monitors')->group(function () {
+        Route::get('/', [EducationMonitorController::class, 'index'])->name('education-monitors.index');
+        Route::get('/{monitor}', [EducationMonitorController::class, 'show'])->name('education-monitors.show');
+    });
 
     // Users
     Route::prefix('users')->group(function () {
