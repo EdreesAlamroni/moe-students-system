@@ -13,8 +13,6 @@ import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSep
 
 import type { NavItem, User } from '@/types';
 
-import { welcome } from "@/routes";
-
 type Props = {
     user: User;
 };
@@ -83,7 +81,6 @@ export function UserMenuContent({ user }: Props) {
                             as="button"
                             onClick={handleLogout}
                             data-test="logout-button"
-                            onSuccess={() => window.location.replace(welcome.url())}
                         >
                             <Icon iconNode={logoutItem.icon} className="ms-2" />
                             {logoutItem.title}
