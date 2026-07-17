@@ -32,6 +32,7 @@ use App\Policies\EducationMonitor\UserPolicy as EducationMonitorUserPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
 use App\Policies\Warehouse\EducationMonitorPolicy as WarehouseEducationMonitorPolicy;
+use App\Policies\Warehouse\SchoolPolicy as WarehouseSchoolPolicy;
 use App\Policies\Warehouse\UserPolicy as WarehouseUserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -60,6 +61,7 @@ final class PolicyRegistrar
         'warehouse' => [
             User::class => WarehouseUserPolicy::class,
             EducationMonitor::class => WarehouseEducationMonitorPolicy::class,
+            School::class => WarehouseSchoolPolicy::class,
         ],
         'education-monitor' => [
             User::class => EducationMonitorUserPolicy::class,

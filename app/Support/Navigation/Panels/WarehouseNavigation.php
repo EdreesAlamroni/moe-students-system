@@ -3,6 +3,7 @@
 namespace App\Support\Navigation\Panels;
 
 use App\Models\EducationMonitor;
+use App\Models\School;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
@@ -24,6 +25,13 @@ class WarehouseNavigation extends NavigationPanel
                 'icon' => 'LandmarkIcon',
                 'activeRoutes' => 'warehouse.education-monitors.*',
                 'can' => $this->user?->canAny(['viewAny'], EducationMonitor::class),
+            ],
+            [
+                'title' => 'المدارس',
+                'href' => route('warehouse.schools.index'),
+                'icon' => 'SchoolIcon',
+                'activeRoutes' => 'warehouse.schools.*',
+                'can' => $this->user?->canAny(['viewAny'], School::class),
             ],
         ];
     }

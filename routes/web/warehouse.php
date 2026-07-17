@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\Warehouse\DashboardController;
 use App\Http\Controllers\Warehouse\EducationMonitorController;
+use App\Http\Controllers\Warehouse\SchoolController;
 use App\Http\Controllers\Warehouse\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -19,6 +20,12 @@ Route::middleware(['auth:warehouse', 'ensure.password.changed'])->group(function
     Route::prefix('education-monitors')->group(function () {
         Route::get('/', [EducationMonitorController::class, 'index'])->name('education-monitors.index');
         Route::get('/{monitor}', [EducationMonitorController::class, 'show'])->name('education-monitors.show');
+    });
+
+    // Schools
+    Route::prefix('schools')->group(function () {
+        Route::get('/', [SchoolController::class, 'index'])->name('schools.index');
+        Route::get('/{school}', [SchoolController::class, 'show'])->name('schools.show');
     });
 
     // Users
