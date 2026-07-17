@@ -219,6 +219,12 @@ class Student extends Model
     }
 
     #[Scope]
+    protected function assignedToEducationMonitor(Builder $query): Builder
+    {
+        return $query->whereNotNull($query->qualifyColumn('education_monitor_id'));
+    }
+
+    #[Scope]
     protected function unassignedToEducationMonitor(Builder $query): Builder
     {
         return $query->whereNull($query->qualifyColumn('education_monitor_id'));

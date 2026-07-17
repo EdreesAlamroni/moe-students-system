@@ -102,10 +102,10 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'الطلاب غير المسجّلين في مدارس',
-                'href' => '#',
+                'href' => route('administration.students.unassigned-to-school.index'),
                 'icon' => 'UserXIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.students.unassigned-to-school.*',
+                'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
         ];
     }

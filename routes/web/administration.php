@@ -15,6 +15,7 @@ use App\Http\Controllers\Administration\SchoolController;
 use App\Http\Controllers\Administration\SchoolReportController;
 use App\Http\Controllers\Administration\StudentController;
 use App\Http\Controllers\Administration\StudentUnassignedToEducationMonitorController;
+use App\Http\Controllers\Administration\StudentUnassignedToSchoolController;
 use App\Http\Controllers\Administration\SubjectController;
 use App\Http\Controllers\Administration\UserController;
 use App\Http\Controllers\Administration\UserStateController;
@@ -107,6 +108,7 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
     Route::prefix('students')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
         Route::get('/unassigned-to-education-monitor', [StudentUnassignedToEducationMonitorController::class, 'index'])->name('students.unassigned-to-education-monitor.index');
+        Route::get('/unassigned-to-school', [StudentUnassignedToSchoolController::class, 'index'])->name('students.unassigned-to-school.index');
         Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
     });
 

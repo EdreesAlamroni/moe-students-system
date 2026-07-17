@@ -12,7 +12,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle 
 
 import { Table, TableBody, TableCell, TableCellActions, TableHead, TableHeader, TableRow } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
-import { LoadingData } from "@/components/ui/display/loading-data";
 
 import Field from "@/components/ui/controls/field";
 import { Label } from "@/components/ui/controls/label";
@@ -68,7 +67,7 @@ const visitOptions = {
 function StudentsSectionSkeleton() {
     return (
         <>
-            {/* <section aria-busy="true" aria-label="جارٍ تحميل فلاتر البحث">
+            <section aria-busy="true" aria-label="جارٍ تحميل فلاتر البحث">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-40" />
@@ -87,7 +86,7 @@ function StudentsSectionSkeleton() {
                         </div>
                     </CardFooter>
                 </Card>
-            </section> */}
+            </section>
 
             <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلاب">
                 <Card>
@@ -95,12 +94,11 @@ function StudentsSectionSkeleton() {
                         <Skeleton className="h-5 w-24" />
                     </CardHeader>
                     <CardContent>
-                        <LoadingData className="py-6" />
-                        {/* <div className="mt-6 space-y-3">
+                        <div className="space-y-3">
                             {Array.from({ length: 5 }).map((_, index) => (
                                 <Skeleton key={index} className="h-14 w-full" />
                             ))}
-                        </div> */}
+                        </div>
                     </CardContent>
                 </Card>
             </section>
@@ -302,9 +300,7 @@ export default function Index({
                     aria-busy={studentsReloading}
                 >
                     {studentsReloading && (
-                        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center pt-6">
-                            <LoadingData className="rounded-none bg-background/90 px-4 py-3 shadow-sm ring-1 ring-foreground/10" />
-                        </div>
+                        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center pt-6"></div>
                     )}
 
                     <section>
