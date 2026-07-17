@@ -103,26 +103,35 @@ final class PolicyRegistrar
 
     public static function registerAll(): void
     {
+        $registered = [];
+
         foreach (array_keys(self::MODEL_POLICIES) as $group) {
-            self::registerGroupPolicies($group, self::MODEL_POLICIES);
+            self::registerGroupPolicies($group, self::MODEL_POLICIES, $registered);
         }
 
         foreach (array_keys(self::AUTHORIZATION_POLICIES) as $group) {
-            self::registerGroupPolicies($group, self::AUTHORIZATION_POLICIES);
+            self::registerGroupPolicies($group, self::AUTHORIZATION_POLICIES, $registered);
         }
     }
 
     /**
      * @param  array<string, array<class-string, class-string>>  $policies
+     * @param  list<class-string>  $registered
      */
-    private static function registerGroupPolicies(string $group, array $policies): void
+    private static function registerGroupPolicies(string $group, array $policies, array &$registered = []): void
     {
         if (! isset($policies[$group])) {
             throw new InvalidArgumentException("Policy group '{$group}' not found.");
         }
 
         foreach ($policies[$group] as $subject => $policy) {
+            if (in_array($subject, $registered, true)) {
+                continue;
+            }
+
             Gate::policy($subject, $policy);
+
+            $registered[] = $subject;
         }
     }
 
