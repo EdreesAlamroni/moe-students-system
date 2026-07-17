@@ -6,6 +6,7 @@ use App\Enums\SchoolEducationalStageEnum;
 use App\Enums\SchoolType;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
+use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\GradeLevelSchool;
 use App\Models\School;
@@ -32,9 +33,13 @@ class SchoolSeeder extends Seeder
             return;
         }
 
+        $officeId = EducationServicesOffice::query()
+            ->where('education_monitor_id', '=', $monitor->id)
+            ->value('id') ?? null;
+
         $attributes = School::factory()->raw([
             'education_monitor_id' => $monitor->id,
-            'education_services_office_id' => null,
+            'education_services_office_id' => $officeId,
             'name' => 'مدرسة تجريبية',
             'type' => SchoolType::PUBLIC,
         ]);
@@ -42,6 +47,7 @@ class SchoolSeeder extends Seeder
         $school = School::query()->firstOrCreate(
             [
                 'education_monitor_id' => $monitor->id,
+                'education_services_office_id' => $officeId,
                 'name' => 'مدرسة تجريبية',
             ],
             [
