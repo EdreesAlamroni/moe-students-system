@@ -90,14 +90,15 @@ class AdministrationNavigation extends NavigationPanel
                 'href' => route('administration.students.index'),
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'administration.students.*',
+                'excludedRoutes' => ['administration.students.unassigned-to-education-monitor.*', 'administration.students.unassigned-to-school.*'],
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
                 'title' => 'الطلاب غير المسجّلين في مُراقبات',
-                'href' => '#',
+                'href' => route('administration.students.unassigned-to-education-monitor.index'),
                 'icon' => 'UserXIcon',
-                'activeRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.students.unassigned-to-education-monitor.*',
+                'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
                 'title' => 'الطلاب غير المسجّلين في مدارس',
