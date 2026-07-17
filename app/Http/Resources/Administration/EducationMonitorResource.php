@@ -33,9 +33,9 @@ class EducationMonitorResource extends JsonResource
             'offices' => $this->whenLoaded('offices', function (Collection $offices) {
                 return $offices->map->only(['id', 'uuid', 'name'])->all();
             }),
-            'offices_count' => $this->whenCounted('offices', $monitor->offices_count, 0),
-            'schools_count' => $this->whenHas('schools_count', (int) ($monitor->schools_count ?? 0), 0),
-            'students_count' => $this->whenHas('students_count', (int) ($monitor->students_count ?? 0), 0),
+            'offices_count' => (int) ($monitor->offices_count ?? 0),
+            'schools_count' => (int) ($monitor->schools_count ?? 0),
+            'students_count' => (int) ($monitor->students_count ?? 0),
         ];
     }
 }

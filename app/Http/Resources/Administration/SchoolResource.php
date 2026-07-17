@@ -44,9 +44,9 @@ class SchoolResource extends JsonResource
                     ];
                 })->all();
             }),
-            'grade_levels_count' => $this->whenHas('grade_levels_count', (int) ($school->grade_levels_count ?? 0), 0),
-            'classrooms_count' => $this->whenHas('classrooms_count', (int) ($school->classrooms_count ?? 0), 0),
-            'students_count' => $this->whenHas('students_count', (int) ($school->students_count ?? 0), 0),
+            'grade_levels_count' => (int) ($school->grade_levels_count ?? 0),
+            'classrooms_count' => (int) ($school->classrooms_count ?? 0),
+            'students_count' => (int) ($school->students_count ?? 0),
         ];
     }
 }

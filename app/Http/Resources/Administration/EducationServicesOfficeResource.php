@@ -33,8 +33,8 @@ class EducationServicesOfficeResource extends JsonResource
             'schools' => $this->whenLoaded('schools', function (Collection $schools): array {
                 return $schools->map->only(['id', 'uuid', 'name'])->all();
             }),
-            'schools_count' => $this->whenHas('schools_count', (int) ($office->schools_count ?? 0), 0),
-            'students_count' => $this->whenHas('students_count', (int) ($office->students_count ?? 0), 0),
+            'schools_count' => (int) ($office->schools_count ?? 0),
+            'students_count' => (int) ($office->students_count ?? 0),
         ];
     }
 }

@@ -25,8 +25,8 @@ class WarehouseResource extends JsonResource
             'monitors' => $this->whenLoaded('monitors', function (Collection $monitors) {
                 return $monitors->map->only(['id', 'uuid', 'name'])->all();
             }),
-            'monitors_count' => $this->whenCounted('monitors', $warehouse->monitors_count, 0),
-            'schools_count' => $this->whenCounted('schools', $warehouse->schools_count, 0),
+            'monitors_count' => (int) ($warehouse->monitors_count ?? 0),
+            'schools_count' => (int) ($warehouse->schools_count ?? 0),
         ];
     }
 }

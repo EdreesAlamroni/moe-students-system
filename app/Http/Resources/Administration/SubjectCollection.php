@@ -13,7 +13,6 @@ class SubjectCollection extends DirectModelCollection
         return $this->collection->map(fn (Subject $subject): array => [
             'id' => $subject->id,
             'uuid' => $subject->uuid,
-
             'grade_level' => $subject->relationLoaded('gradeLevel')
                 ? $subject->gradeLevel->only(['id', 'uuid', 'name'])
                 : null,
