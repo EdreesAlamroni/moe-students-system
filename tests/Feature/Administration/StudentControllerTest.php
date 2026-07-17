@@ -231,7 +231,10 @@ test('student show displays student details', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('administration/students/show')
             ->where('student.uuid', $student->uuid)
-            ->where('student.full_name', $student->full_name)
+            ->where('student.first_name', $student->first_name)
+            ->where('student.father_name', $student->father_name)
+            ->where('student.grandfather_name', $student->grandfather_name)
+            ->where('student.surname', $student->surname)
             ->where('student.monitor.name', $monitor->name)
             ->where('student.school.name', $school->name)
             ->where('student.nationality.name', $student->nationality->name)
