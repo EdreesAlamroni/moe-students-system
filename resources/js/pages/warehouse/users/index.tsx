@@ -65,8 +65,7 @@ export default function Index({ users, filter, canAny, can }: PageProps) {
 
             <section>
                 <Form
-                    action={index.url()}
-                    method="GET"
+                    {...index.form()}
                 >
                     <Card>
                         <CardHeader className="border-b">

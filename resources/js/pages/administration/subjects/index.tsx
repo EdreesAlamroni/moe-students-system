@@ -74,8 +74,7 @@ export default function Index({ subjects, gradeLevels, filter, canAny, can }: Pa
 
             <section>
                 <Form
-                    action={index.url()}
-                    method="GET"
+                    {...index.form()}
                 >
                     <Card>
                         <CardHeader className="border-b">

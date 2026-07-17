@@ -73,8 +73,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
 
             <section>
                 <Form
-                    action={index.url()}
-                    method="GET"
+                    {...index.form()}
                 >
                     <Card>
                         <CardHeader className="border-b">

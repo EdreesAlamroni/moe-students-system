@@ -46,8 +46,7 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
 
             <section>
                 <Form
-                    action={index.url()}
-                    method="GET"
+                    {...index.form()}
                 >
                     <Card>
                         <CardHeader className="border-b">

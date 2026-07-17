@@ -72,8 +72,7 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
 
             <section>
                 <Form
-                    action={index.url()}
-                    method="GET"
+                    {...index.form()}
                 >
                     <Card>
                         <CardHeader className="border-b">
