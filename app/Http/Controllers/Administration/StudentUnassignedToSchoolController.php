@@ -9,7 +9,6 @@ use App\Models\EducationMonitor;
 use App\Models\Nationality;
 use App\Models\Student;
 use App\Support\ResourcePayloadBuilder;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -52,7 +51,7 @@ class StudentUnassignedToSchoolController extends Controller
         ]);
     }
 
-    private function getPaginatedStudents(Request $request, ?int $monitorId): ?LengthAwarePaginator
+    private function getPaginatedStudents(Request $request, ?int $monitorId)
     {
         if ($monitorId === null) {
             return null;

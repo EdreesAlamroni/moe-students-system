@@ -11,7 +11,6 @@ use App\Models\Nationality;
 use App\Models\School;
 use App\Models\Student;
 use App\Support\ResourcePayloadBuilder;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -82,7 +81,7 @@ class StudentController extends Controller
         ]);
     }
 
-    private function getPaginatedStudents(Request $request, ?int $schoolId): ?LengthAwarePaginator
+    private function getPaginatedStudents(Request $request, ?int $schoolId)
     {
         if ($schoolId === null) {
             return null;
