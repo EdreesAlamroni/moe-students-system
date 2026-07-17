@@ -9,7 +9,6 @@ use App\Http\Resources\Warehouse\SchoolResource;
 use App\Models\EducationMonitor;
 use App\Models\School;
 use App\Support\ResourcePayloadBuilder;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -49,6 +48,10 @@ class SchoolController extends Controller
             ->appends($request->query())
             ->onEachSide(0);
 
+        $monitors = EducationMonitor::list(function ($query) {
+            return $query->forCurrentWarehouse();
+        }, ['warehouse_id']);
+
         return Inertia::render('warehouse/schools/index', [
             'schools' => ResourcePayloadBuilder::paginateWithAbilities(
                 $schools,
@@ -56,7 +59,7 @@ class SchoolController extends Controller
                 ['view'],
                 $request,
             ),
-            'monitors' => EducationMonitor::list(fn (Builder $query) => $query->forCurrentWarehouse(), ['warehouse_id']),
+            'monitors' => $monitors,
             'types' => SchoolType::optionsArray(),
             'filter' => $request->input('filter', []),
         ]);
