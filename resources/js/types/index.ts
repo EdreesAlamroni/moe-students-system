@@ -141,6 +141,41 @@ export type ClassPeriod = {
     [key: string]: unknown;
 }
 
+export interface ClassSchedule {
+    id: number;
+    uuid: string;
+    school_id: number;
+    school?: School;
+    academic_year_id: number;
+    academic_year?: AcademicYear;
+    classroom_id: number;
+    classroom?: Classroom;
+    class_period_id: number;
+    class_period?: ClassPeriod;
+    subject_id?: number;
+    subject?: Subject;
+    day_of_week: Enum;
+    notes?: string;
+    created_at?: string;
+    updated_at?: string;
+    [key: string]: unknown;
+}
+
+export interface ClassScheduleGridItem {
+    id: number;
+    uuid: string;
+    subject_id?: number;
+    subject?: Subject;
+    notes?: string;
+}
+
+export interface ClassScheduleGrid {
+    classroom: Classroom;
+    days: Enum[];
+    periods: ClassPeriod[];
+    grid: Record<number, Record<number, ClassScheduleGridItem | null>>;
+}
+
 export type Warehouse = {
     id: number;
     uuid: string;
@@ -151,6 +186,7 @@ export type Warehouse = {
     longitude?: string;
     has_coordinates: boolean;
     monitors: EducationMonitor[];
+    education_monitors: EducationMonitor[];
     monitors_count: number;
     schools_count: number;
     education_monitor_ids: number[];
@@ -174,6 +210,7 @@ export type EducationMonitor = {
     longitude?: string;
     has_coordinates?: boolean;
     offices?: EducationServicesOffice[];
+    education_services_offices?: EducationServicesOffice[];
     schools?: School[];
     offices_count?: number;
     schools_count?: number;
@@ -215,8 +252,10 @@ export interface School {
     uuid: string;
     education_monitor_id: number;
     monitor?: EducationMonitor;
+    education_monitor?: EducationMonitor;
     education_services_office_id?: number;
     office?: EducationServicesOffice;
+    education_services_office?: EducationServicesOffice;
     educational_stages?: SchoolEducationalStage[];
     educational_stages_labels?: string;
     serial_number: string;
@@ -239,6 +278,141 @@ export interface School {
     [key: string]: unknown; // This allows for additional properties...
 }
 
+export type Classroom = {
+    id: number;
+    uuid: string;
+    academic_year_id: number;
+    academic_year: AcademicYear;
+    school_id: number;
+    school: School;
+    grade_level_id: number;
+    grade_level: GradeLevel;
+    name: string;
+    capacity: number;
+    students_count?: number;
+    schedules_count?: number;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}
+
+export type StudentEnrollment = {
+    id: number;
+    uuid: string;
+    academic_year_id: number;
+    academic_year: AcademicYear;
+    grade_level_id: number;
+    grade_level: GradeLevel;
+    classroom_id?: number;
+    classroom?: Classroom;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}
+
+export type Student = {
+    id: number;
+    uuid: string;
+    education_monitor_id?: number;
+    monitor?: EducationMonitor;
+    education_monitor?: EducationMonitor;
+    school_id?: number;
+    school?: School;
+    nationality_id: number;
+    nationality: Nationality;
+    enrollment: StudentEnrollment;
+    has_enrollment: boolean;
+    grade_level: GradeLevel;
+    classroom?: Classroom;
+    number: string;
+    registration_status: Enum;
+    exam_enrollment_status: Enum
+    first_name: string;
+    father_name: string;
+    grandfather_name: string;
+    surname: string;
+    mother_name: string;
+    gender: Enum;
+    date_of_birth: string;
+    national_id?: string;
+    family_registration_number?: string;
+    passport_number?: string;
+    full_name: string;
+    father_full_name: string;
+    gender_label: string;
+    is_libyan?: boolean;
+    // transfer: StudentTransfer;
+    // psychosocial_card: PsychosocialCard;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}
+
+export type StudentTransfer = {
+    id: number;
+    uuid: string;
+    left_academic_year_id: number;
+    left_academic_year: AcademicYear;
+    joined_academic_year_id?: number;
+    joined_academic_year?: AcademicYear;
+    student_id: number;
+    student: Student;
+    from_school_id: number;
+    from_school: School;
+    to_school_id?: number;
+    to_school?: School;
+    left_school_at: string;
+    joined_school_at?: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}
+
+
+export type StudentPsychosocialCard = {
+    id?: number;
+    uuid?: string;
+    guardian_name?: string;
+    guardian_date_of_birth?: string;
+    guardian_nationality_id?: number;
+    guardian_nationality?: Nationality;
+    guardian_relationship?: string;
+    guardian_phone_number?: string;
+    guardian_education_level?: string;
+    guardian_job_title?: string;
+    guardian_work_place?: string;
+    mother_date_of_birth?: string;
+    mother_nationality_id?: number;
+    mother_nationality?: Nationality;
+    mother_phone_number?: string;
+    mother_education_level?: string;
+    mother_profession?: string;
+    mother_work_place?: string;
+    number_of_family_members?: number;
+    student_family_order?: number;
+    number_of_siblings?: number;
+    student_living_situation?: Enum;
+    family_situation_reason?: Enum;
+    residential_area?: string;
+    residential_street?: string;
+    nearest_landmark?: string;
+    previous_activities?: string;
+    talents?: string;
+    previous_diseases?: string;
+    physical_disability_type?: string;
+    vision_level?: Enum;
+    hearing_level?: Enum;
+    family_income?: Enum;
+    accommodation_type?: Enum;
+    accommodation_form?: Enum;
+    behavioral_problems?: Array<{ label?: string; behavior: string; has_problem: boolean; notes?: string }>;
+    guardian_representative_name?: string;
+    guardian_representative_relationship?: string;
+    guardian_representative_id_card_number?: string;
+    guardian_representative_phone_number?: string;
+    guardian_representative_work_place?: string;
+}
+
 export interface SchoolEducationalStage {
     id: number;
     school_id: number;
@@ -250,3 +424,24 @@ export interface SchoolEducationalStage {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 };
+
+export interface AcademicRecordAttempt {
+    id: number;
+    uuid: string;
+    academic_year?: AcademicYear;
+    status: Enum;
+    rating?: Enum | null;
+    created_at?: string;
+}
+
+export interface GroupedAcademicRecord {
+    grade_level: GradeLevel;
+    attempts: AcademicRecordAttempt[];
+    is_passed: boolean;
+    is_current?: boolean;
+}
+
+export interface AcademicRecordProgress {
+    completed: number;
+    total: number;
+}

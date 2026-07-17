@@ -11,6 +11,7 @@ use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
 use App\Models\Warehouse;
@@ -86,11 +87,10 @@ class AdministrationNavigation extends NavigationPanel
             ],
             [
                 'title' => 'الطلاب',
-                'href' => '#',
+                'href' => route('administration.students.index'),
                 'icon' => 'UsersIcon',
-                'activeRoutes' => false,
-                'excludedRoutes' => false,
-                'can' => true,
+                'activeRoutes' => 'administration.students.*',
+                'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
                 'title' => 'الطلاب غير المسجّلين في مُراقبات',

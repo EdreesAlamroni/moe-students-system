@@ -11,6 +11,7 @@ use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
 use App\Models\Warehouse;
@@ -23,6 +24,7 @@ use App\Policies\Administration\EducationServicesOfficeReportPolicy as Administr
 use App\Policies\Administration\GradeLevelPolicy as AdministrationGradeLevelPolicy;
 use App\Policies\Administration\SchoolPolicy as AdministrationSchoolPolicy;
 use App\Policies\Administration\SchoolReportPolicy as AdministrationSchoolReportPolicy;
+use App\Policies\Administration\StudentPolicy as AdministrationStudentPolicy;
 use App\Policies\Administration\SubjectPolicy as AdministrationSubjectPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
 use App\Policies\Administration\WarehousePolicy as AdministrationWarehousePolicy;
@@ -52,6 +54,7 @@ final class PolicyRegistrar
             EducationMonitor::class => AdministrationEducationMonitorPolicy::class,
             EducationServicesOffice::class => AdministrationEducationServicesOfficePolicy::class,
             School::class => AdministrationSchoolPolicy::class,
+            Student::class => AdministrationStudentPolicy::class,
         ],
         'warehouse' => [
             User::class => WarehouseUserPolicy::class,

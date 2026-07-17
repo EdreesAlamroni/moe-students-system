@@ -13,6 +13,7 @@ use App\Http\Controllers\Administration\GradeLevelController;
 use App\Http\Controllers\Administration\MunicipalController;
 use App\Http\Controllers\Administration\SchoolController;
 use App\Http\Controllers\Administration\SchoolReportController;
+use App\Http\Controllers\Administration\StudentController;
 use App\Http\Controllers\Administration\SubjectController;
 use App\Http\Controllers\Administration\UserController;
 use App\Http\Controllers\Administration\UserStateController;
@@ -99,6 +100,12 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
         Route::get('/{office}/edit', [EducationServicesOfficeController::class, 'edit'])->name('education-services-offices.edit');
         Route::put('/{office}', [EducationServicesOfficeController::class, 'update'])->name('education-services-offices.update');
         Route::delete('/{office}', [EducationServicesOfficeController::class, 'destroy'])->name('education-services-offices.destroy');
+    });
+
+    // Students
+    Route::prefix('students')->group(function () {
+        Route::get('/', [StudentController::class, 'index'])->name('students.index');
+        Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
     });
 
     // Schools

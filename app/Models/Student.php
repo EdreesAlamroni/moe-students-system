@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasUuid;
+use App\Enums\Gender;
 use App\Enums\SchoolEducationalStageEnum;
 use App\Enums\StudentExamEnrollmentStatus;
 use App\Enums\StudentRegistrationStatus;
@@ -29,14 +30,14 @@ use Illuminate\Support\Str;
  * @property int|null $school_id
  * @property int $nationality_id
  * @property string $number
- * @property string $registration_status
- * @property string $exam_enrollment_status
+ * @property StudentRegistrationStatus $registration_status
+ * @property StudentExamEnrollmentStatus $exam_enrollment_status
  * @property string $first_name
  * @property string $father_name
  * @property string $grandfather_name
  * @property string $surname
  * @property string $mother_name
- * @property string $gender
+ * @property Gender $gender
  * @property Carbon $date_of_birth
  * @property string|null $national_id
  * @property string|null $family_registration_number
@@ -72,6 +73,7 @@ class Student extends Model
             'nationality_id' => 'integer',
             'registration_status' => StudentRegistrationStatus::class,
             'exam_enrollment_status' => StudentExamEnrollmentStatus::class,
+            'gender' => Gender::class,
             'date_of_birth' => 'date',
         ];
     }
@@ -121,7 +123,7 @@ class Student extends Model
     public function genderLabel(): Attribute
     {
         return Attribute::get(function (): string {
-            return __("app.gender.{$this->gender}");
+            return __("app.common.gender.{$this->gender->value}");
         });
     }
 
@@ -200,7 +202,7 @@ class Student extends Model
         /** @var \Illuminate\Database\Connection $connection */
         $connection = $query->getConnection();
 
-        if ($connection->getDriverName() === 'sqlite') {
+        if (in_array($connection->getDriverName(), ['sqlite', 'pgsql'], true)) {
             return $query
                 ->orderBy('first_name')
                 ->orderBy('father_name')
