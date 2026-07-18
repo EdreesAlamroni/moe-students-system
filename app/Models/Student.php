@@ -49,6 +49,7 @@ use Illuminate\Support\Str;
  * @property-read string $father_full_name
  * @property-read string $gender_label
  * @property-read bool $is_libyan
+ * @property-read bool $already_distributed
  * @property-read EducationMonitor|null $monitor
  * @property-read School|null $school
  * @property-read Nationality $nationality

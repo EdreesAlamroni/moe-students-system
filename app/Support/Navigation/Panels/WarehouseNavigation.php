@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Models\BookDistribution;
 use App\Models\EducationMonitor;
 use App\Models\School;
 use App\Models\User;
@@ -32,6 +33,27 @@ class WarehouseNavigation extends NavigationPanel
                 'icon' => 'SchoolIcon',
                 'activeRoutes' => 'warehouse.schools.*',
                 'can' => $this->user?->canAny(['viewAny'], School::class),
+            ],
+            [
+                'title' => 'توزيع الكُتب المدرسية',
+                'href' => route('warehouse.book-distributions.index'),
+                'icon' => 'BookTextIcon',
+                'activeRoutes' => 'warehouse.book-distributions.*',
+                'can' => $this->user?->canAny(['view'], BookDistribution::class),
+            ],
+            [
+                'title' => 'إحصائيات توزيع الكُتب المدرسية',
+                'href' => route('warehouse.book-distributions.statistics'),
+                'icon' => 'BarChart3Icon',
+                'routeIs' => 'warehouse.book-distributions.statistics',
+                'can' => $this->user?->can('viewStatistics', BookDistribution::class),
+            ],
+            [
+                'title' => 'حالة توزيع الكُتب المدرسية للطلاب',
+                'href' => route('warehouse.book-distributions.students'),
+                'icon' => 'SearchIcon',
+                'routeIs' => 'warehouse.book-distributions.students',
+                'can' => $this->user?->can('view', BookDistribution::class),
             ],
         ];
     }

@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
+use App\Http\Controllers\Warehouse\BookDistributionController;
+use App\Http\Controllers\Warehouse\BookDistributionStatisticsController;
+use App\Http\Controllers\Warehouse\BookDistributionStudentStatusController;
 use App\Http\Controllers\Warehouse\DashboardController;
 use App\Http\Controllers\Warehouse\EducationMonitorController;
 use App\Http\Controllers\Warehouse\SchoolController;
@@ -26,6 +29,14 @@ Route::middleware(['auth:warehouse', 'ensure.password.changed'])->group(function
     Route::prefix('schools')->group(function () {
         Route::get('/', [SchoolController::class, 'index'])->name('schools.index');
         Route::get('/{school}', [SchoolController::class, 'show'])->name('schools.show');
+    });
+
+    // Book Distributions
+    Route::prefix('book-distributions')->group(function () {
+        Route::get('/', [BookDistributionController::class, 'index'])->name('book-distributions.index');
+        Route::post('/', [BookDistributionController::class, 'store'])->name('book-distributions.store');
+        Route::get('/statistics', [BookDistributionStatisticsController::class, 'index'])->name('book-distributions.statistics');
+        Route::get('/students', [BookDistributionStudentStatusController::class, 'index'])->name('book-distributions.students');
     });
 
     // Users

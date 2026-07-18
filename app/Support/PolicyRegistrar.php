@@ -6,6 +6,7 @@ use App\Authorization\Administration\EducationMonitorReport;
 use App\Authorization\Administration\EducationServicesOfficeReport;
 use App\Authorization\Administration\SchoolReport;
 use App\Models\AcademicYear;
+use App\Models\BookDistribution;
 use App\Models\ClassPeriod;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
@@ -31,6 +32,7 @@ use App\Policies\Administration\WarehousePolicy as AdministrationWarehousePolicy
 use App\Policies\EducationMonitor\UserPolicy as EducationMonitorUserPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
+use App\Policies\Warehouse\BookDistributionPolicy as WarehouseBookDistributionPolicy;
 use App\Policies\Warehouse\EducationMonitorPolicy as WarehouseEducationMonitorPolicy;
 use App\Policies\Warehouse\SchoolPolicy as WarehouseSchoolPolicy;
 use App\Policies\Warehouse\UserPolicy as WarehouseUserPolicy;
@@ -62,6 +64,7 @@ final class PolicyRegistrar
             User::class => WarehouseUserPolicy::class,
             EducationMonitor::class => WarehouseEducationMonitorPolicy::class,
             School::class => WarehouseSchoolPolicy::class,
+            BookDistribution::class => WarehouseBookDistributionPolicy::class,
         ],
         'education-monitor' => [
             User::class => EducationMonitorUserPolicy::class,
