@@ -419,6 +419,7 @@ test('update does not allow moving a school to another education monitor', funct
     $otherMonitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
     $school = School::factory()->for($monitor, 'monitor')->create([
+        'type' => SchoolType::PUBLIC->value,
         'name' => 'مدرسة قديمة',
     ]);
 
