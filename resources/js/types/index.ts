@@ -343,10 +343,10 @@ export type Student = {
     passport_number?: string;
     full_name: string;
     father_full_name: string;
-    gender_label: string;
     is_libyan?: boolean;
     // transfer: StudentTransfer;
     // psychosocial_card: PsychosocialCard;
+    already_distributed: boolean;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...

@@ -241,7 +241,9 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                                 </CardContent>
                             ) : gradeLevelStatistics.length === 0 ? (
                                 <CardContent>
-                                    <EmptyState text="لا توجد صفوف دراسية مُضافة لهذه المدرسة في السنة الدراسية الحالية." />
+                                    <EmptyState
+                                        text="لا توجد صفوف دراسية مُضافة لهذه المدرسة في السنة الدراسية الحالية."
+                                    />
                                 </CardContent>
                             ) : (
                                 <CardTableContent>

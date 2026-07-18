@@ -289,11 +289,13 @@ export default function Index({ monitors, schools, gradeLevels, selected, can }:
 
                             {isLoadingGrades ? (
                                 <CardContent>
-                                    <LoadingData className="py-6" />
+                                    <LoadingData className="pt-6 pb-3" />
                                 </CardContent>
                             ) : gradeLevels.length === 0 ? (
                                 <CardContent>
-                                    <EmptyState text="لا توجد صفوف دراسية مُضافة لهذه المدرسة في السنة الدراسية الحالية." />
+                                    <EmptyState
+                                        text="لا توجد صفوف دراسية مُضافة لهذه المدرسة في السنة الدراسية الحالية."
+                                    />
                                 </CardContent>
                             ) : (
                                 <CardContent className="p-0">

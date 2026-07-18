@@ -485,7 +485,9 @@ export default function Index({
                                 </CardTableContent>
                             ) : (
                                 <CardContent>
-                                    <EmptyState hasFilter={hasStudentFilter} />
+                                    <EmptyState
+                                        hasFilter={hasStudentFilter}
+                                    />
                                 </CardContent>
                             )}
                             {hasPagination && students && (
