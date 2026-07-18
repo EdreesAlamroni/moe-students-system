@@ -17,7 +17,7 @@ class BookDistributionStatisticsController extends Controller
     {
         Gate::authorize('viewStatistics', BookDistribution::class);
 
-        $organization = app(BookDistributionOrganizationSelection::class)->resolve($request);
+        $organization = app(BookDistributionOrganizationSelection::class)->resolve($request->getAttributes());
         $schoolId = $organization['schoolId'];
 
         $statistics = filled($schoolId)

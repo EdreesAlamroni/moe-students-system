@@ -7,9 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Warehouse\BookDistribution\IndexRequest;
 use App\Http\Requests\Warehouse\BookDistribution\StoreRequest;
 use App\Models\BookDistribution;
-use App\Models\EducationMonitor;
-use App\Models\School;
 use App\Services\Warehouse\BookDistributionGradeLevelStats;
+use App\Services\Warehouse\BookDistributionOrganizationSelection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
@@ -22,29 +21,18 @@ class BookDistributionController extends Controller
     {
         Gate::authorize('view', BookDistribution::class);
 
-        $selectedAttributes = $request->getAttributes();
-        $monitorId = $selectedAttributes['education_monitor_id'];
-        $schoolId = $selectedAttributes['school_id'];
-
-        $monitors = EducationMonitor::list(function ($query): void {
-            $query->forCurrentWarehouse();
-        }, ['warehouse_id']);
-
-        $schools = filled($monitorId)
-            ? School::list(function ($query) use ($monitorId): void {
-                $query->forCurrentWarehouse()->where('education_monitor_id', '=', $monitorId);
-            }, ['education_monitor_id'])
-            : collect([]);
+        $organization = app(BookDistributionOrganizationSelection::class)->resolve($request->getAttributes());
+        $schoolId = $organization['schoolId'];
 
         $gradeLevels = filled($schoolId)
             ? app(BookDistributionGradeLevelStats::class)->forDistribution($schoolId)
             : collect([]);
 
         return Inertia::render('warehouse/book-distributions/index', [
-            'monitors' => $monitors,
-            'schools' => $schools,
+            'monitors' => $organization['monitors'],
+            'schools' => $organization['schools'],
             'gradeLevels' => $gradeLevels,
-            'selected' => $selectedAttributes,
+            'selected' => $organization['selected'],
             'can' => [
                 'distribute' => Gate::allows('distribute', BookDistribution::class),
             ],

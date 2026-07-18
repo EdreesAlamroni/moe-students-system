@@ -2,7 +2,6 @@
 
 namespace App\Services\Warehouse;
 
-use App\Http\Requests\Warehouse\BookDistribution\IndexRequest;
 use App\Models\EducationMonitor;
 use App\Models\School;
 use Illuminate\Support\Collection;
@@ -10,17 +9,17 @@ use Illuminate\Support\Collection;
 class BookDistributionOrganizationSelection
 {
     /**
+     * @param  array{education_monitor_id: int|null, school_id: int|null, grade_level_id?: int|null}  $selectedAttributes
      * @return array{
      *     monitors: Collection<int, mixed>,
      *     schools: Collection<int, mixed>,
-     *     selected: array{education_monitor_id: int|null, school_id: int|null},
+     *     selected: array{education_monitor_id: int|null, school_id: int|null, grade_level_id?: int|null},
      *     monitorId: int|null,
      *     schoolId: int|null,
      * }
      */
-    public function resolve(IndexRequest $request): array
+    public function resolve(array $selectedAttributes): array
     {
-        $selectedAttributes = $request->getAttributes();
         $monitorId = $selectedAttributes['education_monitor_id'];
         $schoolId = $selectedAttributes['school_id'];
 
