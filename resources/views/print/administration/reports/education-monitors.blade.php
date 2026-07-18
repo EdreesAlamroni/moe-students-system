@@ -3,7 +3,7 @@
         <x-print.report-table :title="__('تقرير المُراقبات')" :colspan="5">
             <x-slot:headerRight>
                 <span>{{ __('إجمالي المُراقبات') }}:</span>
-                <span class="font-mono">{{ $count }}</span>
+                <span class="font-mono">{{ $count->count() }}</span>
             </x-slot:headerRight>
 
             <x-slot:columns>

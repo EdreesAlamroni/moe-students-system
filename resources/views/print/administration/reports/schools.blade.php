@@ -3,7 +3,7 @@
         <x-print.report-table :title="__('تقرير المدارس')" :colspan="6">
             <x-slot:headerRight>
                 <span>{{ __('إجمالي المدارس') }}:</span>
-                <span class="font-mono">{{ $count }}</span>
+                <span class="font-mono">{{ $schools->count() }}</span>
             </x-slot:headerRight>
 
             <x-slot:columns>

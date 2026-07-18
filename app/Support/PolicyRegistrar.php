@@ -3,8 +3,11 @@
 namespace App\Support;
 
 use App\Authorization\Administration\EducationMonitorReport;
-use App\Authorization\Administration\EducationServicesOfficeReport;
-use App\Authorization\Administration\SchoolReport;
+use App\Authorization\Administration\EducationServicesOfficeReport as AdministrationEducationServicesOfficeReport;
+use App\Authorization\Administration\SchoolReport as AdministrationSchoolReport;
+use App\Authorization\EducationMonitor\EducationServicesOfficeReport as EducationMonitorEducationServicesOfficeReport;
+use App\Authorization\EducationMonitor\SchoolReport as EducationMonitorSchoolReport;
+use App\Authorization\EducationMonitor\StudentCountByGradeLevelReport as EducationMonitorStudentCountByGradeLevelReport;
 use App\Models\AcademicYear;
 use App\Models\BookDistribution;
 use App\Models\ClassPeriod;
@@ -30,7 +33,10 @@ use App\Policies\Administration\SubjectPolicy as AdministrationSubjectPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
 use App\Policies\Administration\WarehousePolicy as AdministrationWarehousePolicy;
 use App\Policies\EducationMonitor\EducationServicesOfficePolicy as EducationMonitorEducationServicesOfficePolicy;
+use App\Policies\EducationMonitor\EducationServicesOfficeReportPolicy as EducationMonitorEducationServicesOfficeReportPolicy;
 use App\Policies\EducationMonitor\SchoolPolicy as EducationMonitorSchoolPolicy;
+use App\Policies\EducationMonitor\SchoolReportPolicy as EducationMonitorSchoolReportPolicy;
+use App\Policies\EducationMonitor\StudentCountByGradeLevelReportPolicy as EducationMonitorStudentCountByGradeLevelReportPolicy;
 use App\Policies\EducationMonitor\StudentPolicy as EducationMonitorStudentPolicy;
 use App\Policies\EducationMonitor\UserPolicy as EducationMonitorUserPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
@@ -91,11 +97,15 @@ final class PolicyRegistrar
     private const AUTHORIZATION_POLICIES = [
         'administration' => [
             EducationMonitorReport::class => AdministrationEducationMonitorReportPolicy::class,
-            EducationServicesOfficeReport::class => AdministrationEducationServicesOfficeReportPolicy::class,
-            SchoolReport::class => AdministrationSchoolReportPolicy::class,
+            AdministrationEducationServicesOfficeReport::class => AdministrationEducationServicesOfficeReportPolicy::class,
+            AdministrationSchoolReport::class => AdministrationSchoolReportPolicy::class,
         ],
         'warehouse' => [],
-        'education-monitor' => [],
+        'education-monitor' => [
+            EducationMonitorEducationServicesOfficeReport::class => EducationMonitorEducationServicesOfficeReportPolicy::class,
+            EducationMonitorSchoolReport::class => EducationMonitorSchoolReportPolicy::class,
+            EducationMonitorStudentCountByGradeLevelReport::class => EducationMonitorStudentCountByGradeLevelReportPolicy::class,
+        ],
         'education-services-office' => [],
         'school' => [],
     ];

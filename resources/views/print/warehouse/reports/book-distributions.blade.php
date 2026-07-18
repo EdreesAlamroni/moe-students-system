@@ -1,4 +1,4 @@
-<x-print-layout :title="__('تقرير إحصائيات توزيع الكُتب المدرسية')" :printed-by="$printedBy">
+<x-print-layout :title="__('تقرير إحصائيات توزيع الكُتب المدرسية')" :printed-by="auth('warehouse')->user()->name">
     <x-slot:content>
         <x-print.report-table
             :title="__('تقرير إحصائيات توزيع الكُتب المدرسية')"

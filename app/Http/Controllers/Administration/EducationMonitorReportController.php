@@ -45,8 +45,6 @@ class EducationMonitorReportController extends Controller
 
         return view('print.administration.reports.education-monitors', [
             'monitors' => $monitors,
-            'count' => $monitors->count(),
-            'printedBy' => auth('administration')->user()->name,
         ]);
     }
 

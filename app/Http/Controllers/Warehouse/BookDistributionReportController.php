@@ -53,7 +53,6 @@ class BookDistributionReportController extends Controller
             'statistics' => $statistics,
             'totals' => $statsService->totals($statistics),
             'school' => $school,
-            'printedBy' => auth('warehouse')->user()->name,
         ]);
     }
 }

@@ -52,8 +52,6 @@ class EducationServicesOfficeReportController extends Controller
 
         return view('print.administration.reports.education-services-offices', [
             'offices' => $offices,
-            'count' => $offices->count(),
-            'printedBy' => auth('administration')->user()->name,
         ]);
     }
 

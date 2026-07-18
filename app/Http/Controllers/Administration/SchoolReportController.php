@@ -55,8 +55,6 @@ class SchoolReportController extends Controller
 
         return view('print.administration.reports.schools', [
             'schools' => $schools,
-            'count' => $schools->count(),
-            'printedBy' => auth('administration')->user()->name,
         ]);
     }
 

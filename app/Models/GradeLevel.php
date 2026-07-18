@@ -93,7 +93,7 @@ class GradeLevel extends Model
     #[Scope]
     protected function forCurrentSchoolAndAcademicYear(Builder $query): Builder
     {
-        $id = auth('school')->user()->model_id;
+        $id = auth('school')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -109,7 +109,7 @@ class GradeLevel extends Model
     #[Scope]
     protected function forCurrentEducationMonitor(Builder $query): Builder
     {
-        $id = auth('education_monitor')->user()->model_id;
+        $id = auth('education_monitor')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -128,7 +128,7 @@ class GradeLevel extends Model
     #[Scope]
     protected function forCurrentEducationServicesOffice(Builder $query): Builder
     {
-        $id = auth('education_services_office')->user()->model_id;
+        $id = auth('education_services_office')->user()->organization_id;
 
         if (is_null($id)) {
             return $query;
@@ -149,7 +149,10 @@ class GradeLevel extends Model
     {
         $stages = SchoolEducationalStageEnum::orderedValues();
 
-        if ($query->getConnection()->getDriverName() === 'sqlite') {
+        /** @var \Illuminate\Database\Connection $connection */
+        $connection = $query->getConnection();
+
+        if (in_array($connection->getDriverName(), ['sqlite', 'pgsql'], true)) {
             return $query
                 ->orderBy('educational_stage')
                 ->orderBy('order', $direction);
@@ -196,7 +199,7 @@ class GradeLevel extends Model
      */
     public function currentSchool(): HasOneThrough
     {
-        $schoolId = auth('school')->user()->model_id;
+        $schoolId = auth('school')->user()->organization_id;
 
         return $this
             ->hasOneThrough(
