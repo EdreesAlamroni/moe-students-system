@@ -4,6 +4,7 @@ namespace App\Support\Navigation\Panels;
 
 use App\Models\EducationServicesOffice;
 use App\Models\School;
+use App\Models\Student;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
@@ -32,6 +33,13 @@ class EducationMonitorNavigation extends NavigationPanel
                 'icon' => 'SchoolIcon',
                 'activeRoutes' => 'education-monitor.schools.*',
                 'can' => $this->user?->canAny(['viewAny'], School::class),
+            ],
+            [
+                'title' => 'الطلاب',
+                'href' => route('education-monitor.students.index'),
+                'icon' => 'UsersIcon',
+                'activeRoutes' => 'education-monitor.students.*',
+                'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
         ];
     }
