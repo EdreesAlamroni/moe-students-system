@@ -143,18 +143,21 @@ test('selecting a school loads grade level statistics', function () {
         'school_id' => $school->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'student_id' => $confirmedStudent->id,
+        'classroom_id' => null,
     ]);
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
         'school_id' => $school->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'student_id' => $distributedStudent->id,
+        'classroom_id' => null,
     ]);
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
         'school_id' => $school->id,
         'grade_level_id' => $pendingGradeLevel->id,
         'student_id' => $pendingStudent->id,
+        'classroom_id' => null,
     ]);
 
     $bookDistribution = BookDistribution::factory()->create([

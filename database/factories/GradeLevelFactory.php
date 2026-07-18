@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\GradeLevelEnum;
 use App\Models\GradeLevel;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use OverflowException;
 
 /**
  * @extends Factory<GradeLevel>
@@ -18,29 +19,21 @@ class GradeLevelFactory extends Factory
      */
     public function definition(): array
     {
-        static $pool = null;
-        static $index = 0;
+        $existingCodes = GradeLevel::query()->pluck('code')->all();
 
-        if ($pool === null) {
-            $pool = GradeLevelEnum::cases();
-            shuffle($pool); // randomize once per process
-            $index = 0;
+        foreach (GradeLevelEnum::cases() as $grade) {
+            if (in_array($grade->value, $existingCodes, true)) {
+                continue;
+            }
+
+            return [
+                'code' => $grade->value,
+                'name' => $grade->label(),
+                'educational_stage' => $grade->stage(),
+                'order' => $grade->order(),
+            ];
         }
 
-        if ($index >= count($pool)) {
-            shuffle($pool);
-            $index = 0;
-        }
-
-        /** @var GradeLevelEnum $grade */
-        $grade = $pool[$index];
-        $index++;
-
-        return [
-            'code' => $grade->value,
-            'name' => $grade->label(),
-            'educational_stage' => $grade->stage(),
-            'order' => $grade->order(),
-        ];
+        throw new OverflowException('All grade level codes have already been created.');
     }
 }

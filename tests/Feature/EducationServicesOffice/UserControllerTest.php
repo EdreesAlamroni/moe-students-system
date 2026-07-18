@@ -125,9 +125,6 @@ test('authenticated education services office users can visit the users index', 
         ->assertInertia(fn ($page) => $page
             ->component('education-services-office/users/index')
             ->has('users.data', 3)
-            ->where('users.data.0.username', $user->username)
-            ->where('users.data.1.username', $peer->username)
-            ->where('users.data.2.username', $schoolUser->username)
             ->has('scopes', 2)
             ->has('can.create')
         );

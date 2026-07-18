@@ -50,7 +50,6 @@ class UserController extends Controller
                 'name',
                 'username',
             )
-            ->oldest()
             ->paginate()
             ->withQueryString()
             ->appends($request->query())

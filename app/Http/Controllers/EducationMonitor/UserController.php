@@ -53,7 +53,6 @@ class UserController extends Controller
                 'username',
                 'scope',
             )
-            ->oldest()
             ->paginate()
             ->withQueryString()
             ->appends($request->query())

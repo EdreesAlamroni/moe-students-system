@@ -145,18 +145,21 @@ test('selecting a school loads grade level statistics on the report page', funct
         'school_id' => $school->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'student_id' => $confirmedStudent->id,
+        'classroom_id' => null,
     ]);
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
         'school_id' => $school->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'student_id' => $distributedStudent->id,
+        'classroom_id' => null,
     ]);
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
         'school_id' => $school->id,
         'grade_level_id' => $pendingGradeLevel->id,
         'student_id' => $pendingStudent->id,
+        'classroom_id' => null,
     ]);
 
     $bookDistribution = BookDistribution::factory()->create([
@@ -263,6 +266,7 @@ test('authenticated warehouse users can print the book distribution report for a
         'school_id' => $school->id,
         'grade_level_id' => $gradeLevel->id,
         'student_id' => $student->id,
+        'classroom_id' => null,
     ]);
 
     BookDistribution::factory()->create([

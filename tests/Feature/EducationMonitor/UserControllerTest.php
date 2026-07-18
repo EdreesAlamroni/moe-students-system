@@ -123,9 +123,6 @@ test('authenticated education monitor users can visit the users index', function
         ->assertInertia(fn ($page) => $page
             ->component('education-monitor/users/index')
             ->has('users.data', 3)
-            ->where('users.data.0.username', $user->username)
-            ->where('users.data.1.username', $peer->username)
-            ->where('users.data.2.username', $officeUser->username)
             ->has('scopes', 3)
             ->has('can.create')
         );

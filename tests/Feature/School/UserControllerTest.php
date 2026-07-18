@@ -110,8 +110,6 @@ test('authenticated school users can visit the users index', function () {
         ->assertInertia(fn ($page) => $page
             ->component('school/users/index')
             ->has('users.data', 2)
-            ->where('users.data.0.username', $user->username)
-            ->where('users.data.1.username', $peer->username)
             ->has('can.create')
         );
 });

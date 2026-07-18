@@ -110,8 +110,6 @@ test('authenticated warehouse users can visit the users index', function () {
         ->assertInertia(fn ($page) => $page
             ->component('warehouse/users/index')
             ->has('users.data', 2)
-            ->where('users.data.0.username', $user->username)
-            ->where('users.data.1.username', $peer->username)
             ->has('can.create')
         );
 });
