@@ -30,6 +30,7 @@ use App\Policies\Administration\SubjectPolicy as AdministrationSubjectPolicy;
 use App\Policies\Administration\UserPolicy as AdministrationUserPolicy;
 use App\Policies\Administration\WarehousePolicy as AdministrationWarehousePolicy;
 use App\Policies\EducationMonitor\EducationServicesOfficePolicy as EducationMonitorEducationServicesOfficePolicy;
+use App\Policies\EducationMonitor\SchoolPolicy as EducationMonitorSchoolPolicy;
 use App\Policies\EducationMonitor\UserPolicy as EducationMonitorUserPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
@@ -70,6 +71,7 @@ final class PolicyRegistrar
         'education-monitor' => [
             User::class => EducationMonitorUserPolicy::class,
             EducationServicesOffice::class => EducationMonitorEducationServicesOfficePolicy::class,
+            School::class => EducationMonitorSchoolPolicy::class,
         ],
         'education-services-office' => [
             User::class => EducationServicesOfficeUserPolicy::class,
