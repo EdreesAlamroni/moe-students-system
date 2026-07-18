@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Administration;
+namespace App\Http\Resources\EducationMonitor;
 
 use App\Http\Resources\DirectModelCollection;
 use App\Models\EducationServicesOffice;

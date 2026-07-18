@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\EducationMonitor\DashboardController;
+use App\Http\Controllers\EducationMonitor\EducationServicesOfficeController;
 use App\Http\Controllers\EducationMonitor\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -13,6 +14,17 @@ RegistersDashboardAuthRoutes::registerGuestRoutes(DashboardAuth::educationMonito
 
 Route::middleware(['auth:education_monitor', 'ensure.password.changed'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    // Education Services Offices
+    Route::prefix('education-services-offices')->group(function () {
+        Route::get('/', [EducationServicesOfficeController::class, 'index'])->name('education-services-offices.index');
+        Route::get('/create', [EducationServicesOfficeController::class, 'create'])->name('education-services-offices.create');
+        Route::post('/', [EducationServicesOfficeController::class, 'store'])->name('education-services-offices.store');
+        Route::get('/{office}', [EducationServicesOfficeController::class, 'show'])->name('education-services-offices.show');
+        Route::get('/{office}/edit', [EducationServicesOfficeController::class, 'edit'])->name('education-services-offices.edit');
+        Route::put('/{office}', [EducationServicesOfficeController::class, 'update'])->name('education-services-offices.update');
+        Route::delete('/{office}', [EducationServicesOfficeController::class, 'destroy'])->name('education-services-offices.destroy');
+    });
 
     // Users
     Route::prefix('users')->group(function () {
