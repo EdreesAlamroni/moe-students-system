@@ -39,20 +39,21 @@ class WarehouseNavigation extends NavigationPanel
                 'href' => route('warehouse.book-distributions.index'),
                 'icon' => 'BookTextIcon',
                 'activeRoutes' => 'warehouse.book-distributions.*',
+                'excludedRoutes' => ['warehouse.book-distributions.statistics', 'warehouse.book-distributions.students'],
                 'can' => $this->user?->canAny(['view'], BookDistribution::class),
             ],
             [
                 'title' => 'إحصائيات توزيع الكُتب المدرسية',
                 'href' => route('warehouse.book-distributions.statistics'),
                 'icon' => 'BarChart3Icon',
-                'routeIs' => 'warehouse.book-distributions.statistics',
+                'activeRoutes' => 'warehouse.book-distributions.statistics',
                 'can' => $this->user?->can('viewStatistics', BookDistribution::class),
             ],
             [
                 'title' => 'حالة توزيع الكُتب المدرسية للطلاب',
                 'href' => route('warehouse.book-distributions.students'),
                 'icon' => 'SearchIcon',
-                'routeIs' => 'warehouse.book-distributions.students',
+                'activeRoutes' => 'warehouse.book-distributions.students',
                 'can' => $this->user?->can('view', BookDistribution::class),
             ],
         ];

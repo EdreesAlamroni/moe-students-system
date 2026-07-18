@@ -105,8 +105,10 @@ export type GradeLevel = {
     order: number;
     created_at: string,
     updated_at: string;
-    students_count: number;
     already_distributed: boolean;
+    students_count: number;
+    distributed_count: number;
+    pending_count: number;
     [key: string]: unknown; // This allows for additional properties...
 }
 
