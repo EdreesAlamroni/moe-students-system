@@ -4,8 +4,11 @@ use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\EducationMonitor\DashboardController;
 use App\Http\Controllers\EducationMonitor\EducationServicesOfficeController;
+use App\Http\Controllers\EducationMonitor\EducationServicesOfficeReportController;
 use App\Http\Controllers\EducationMonitor\SchoolController;
+use App\Http\Controllers\EducationMonitor\SchoolReportController;
 use App\Http\Controllers\EducationMonitor\StudentController;
+use App\Http\Controllers\EducationMonitor\StudentCountByGradeLevelReportController;
 use App\Http\Controllers\EducationMonitor\StudentUnassignedToSchoolController;
 use App\Http\Controllers\EducationMonitor\UserController;
 use App\Support\Auth\DashboardAuth;
@@ -56,6 +59,18 @@ Route::middleware(['auth:education_monitor', 'ensure.password.changed'])->group(
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
+
+    // Reports
+    Route::prefix('reports')->group(function () {
+        Route::get('/education-services-offices', [EducationServicesOfficeReportController::class, 'index'])->name('reports.education-services-offices.index');
+        Route::get('/education-services-offices/print', [EducationServicesOfficeReportController::class, 'print'])->name('reports.education-services-offices.print');
+
+        Route::get('/schools', [SchoolReportController::class, 'index'])->name('reports.schools.index');
+        Route::get('/schools/print', [SchoolReportController::class, 'print'])->name('reports.schools.print');
+
+        Route::get('/student-count-by-grade-level', [StudentCountByGradeLevelReportController::class, 'index'])->name('reports.student-count-by-grade-level.index');
+        Route::get('/student-count-by-grade-level/print', [StudentCountByGradeLevelReportController::class, 'print'])->name('reports.student-count-by-grade-level.print');
     });
 
     Route::prefix('/account-settings')->group(function () {

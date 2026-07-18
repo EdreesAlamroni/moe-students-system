@@ -2,6 +2,9 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Authorization\EducationMonitor\EducationServicesOfficeReport;
+use App\Authorization\EducationMonitor\SchoolReport;
+use App\Authorization\EducationMonitor\StudentCountByGradeLevelReport;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
 use App\Models\Student;
@@ -48,6 +51,33 @@ class EducationMonitorNavigation extends NavigationPanel
                 'icon' => 'UserXIcon',
                 'activeRoutes' => 'education-monitor.students.unassigned-to-school.*',
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
+            ],
+        ];
+    }
+
+    protected function reports(): array
+    {
+        return [
+            [
+                'title' => 'تقرير مكاتب الخدمات التعليمية',
+                'href' => route('education-monitor.reports.education-services-offices.index'),
+                'icon' => 'ClipboardList',
+                'activeRoutes' => 'education-monitor.reports.education-services-offices.*',
+                'can' => $this->user?->canAny(['view'], EducationServicesOfficeReport::class),
+            ],
+            [
+                'title' => 'تقرير المدارس',
+                'href' => route('education-monitor.reports.schools.index'),
+                'icon' => 'ClipboardList',
+                'activeRoutes' => 'education-monitor.reports.schools.*',
+                'can' => $this->user?->canAny(['view'], SchoolReport::class),
+            ],
+            [
+                'title' => 'إحصائية الطلاب حسب الصفوف الدراسية',
+                'href' => route('education-monitor.reports.student-count-by-grade-level.index'),
+                'icon' => 'ClipboardList',
+                'activeRoutes' => 'education-monitor.reports.student-count-by-grade-level.*',
+                'can' => $this->user?->canAny(['view'], StudentCountByGradeLevelReport::class),
             ],
         ];
     }
