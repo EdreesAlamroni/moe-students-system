@@ -81,7 +81,7 @@ class StudentCountByGradeLevelReportController extends Controller
             ])
             ->forCurrentEducationMonitor()
             ->withCount([
-                'students' => function (Builder $query): void {
+                'students' => function ($query): void {
                     $query->forCurrentEducationMonitor();
                 },
             ])
