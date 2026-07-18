@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Query\JoinClause;
@@ -47,7 +49,6 @@ use Illuminate\Support\Str;
  * @property Carbon|null $deleted_at
  * @property-read string $full_name
  * @property-read string $father_full_name
- * @property-read string $gender_label
  * @property-read bool $is_libyan
  * @property-read bool $already_distributed
  * @property-read EducationMonitor|null $monitor
@@ -118,13 +119,6 @@ class Student extends Model
             );
 
             return trim($fullName);
-        });
-    }
-
-    public function genderLabel(): Attribute
-    {
-        return Attribute::get(function (): string {
-            return __("app.common.gender.{$this->gender->value}");
         });
     }
 
@@ -486,50 +480,50 @@ class Student extends Model
     /**
      * Get all book distribution sessions that include this student across all academic years.
      */
-    // public function bookDistributions(): HasManyThrough
-    // {
-    //     return $this->hasManyThrough(
-    //         BookDistribution::class,
-    //         BookDistributionItem::class,
-    //         'student_id',
-    //         'id',
-    //         'id',
-    //         'book_distribution_id',
-    //     );
-    // }
+    public function bookDistributions(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            BookDistribution::class,
+            BookDistributionItem::class,
+            'student_id',
+            'id',
+            'id',
+            'book_distribution_id',
+        );
+    }
 
     /**
      * Get the book distribution session associated with the student for the current academic year.
      */
-    // public function bookDistribution(): HasOneThrough
-    // {
-    //     return $this->hasOneThrough(
-    //         BookDistribution::class,
-    //         BookDistributionItem::class,
-    //         'student_id',
-    //         'id',
-    //         'id',
-    //         'book_distribution_id',
-    //     )->where('book_distribution_items.academic_year_id', '=', AcademicYear::currentId());
-    // }
+    public function bookDistribution(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            BookDistribution::class,
+            BookDistributionItem::class,
+            'student_id',
+            'id',
+            'id',
+            'book_distribution_id',
+        )->where('book_distribution_items.academic_year_id', '=', AcademicYear::currentId());
+    }
 
     /**
      * Get all book distribution items associated with the student across all academic years.
      */
-    // public function bookDistributionItems(): HasMany
-    // {
-    //     return $this->hasMany(BookDistributionItem::class);
-    // }
+    public function bookDistributionItems(): HasMany
+    {
+        return $this->hasMany(BookDistributionItem::class);
+    }
 
     /**
      * Get the book distribution item associated with the student for the current academic year.
      */
-    // public function bookDistributionItem(): HasOne
-    // {
-    //     return $this
-    //         ->hasOne(BookDistributionItem::class)
-    //         ->where('academic_year_id', '=', AcademicYear::currentId());
-    // }
+    public function bookDistributionItem(): HasOne
+    {
+        return $this
+            ->hasOne(BookDistributionItem::class)
+            ->where('academic_year_id', '=', AcademicYear::currentId());
+    }
 
     /*
      * End: Relations

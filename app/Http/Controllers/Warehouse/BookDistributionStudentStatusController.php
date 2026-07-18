@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Warehouse;
 use App\Enums\StudentRegistrationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Warehouse\BookDistribution\StudentStatusRequest;
+use App\Models\AcademicYear;
 use App\Models\BookDistribution;
 use App\Models\EducationMonitor;
 use App\Models\GradeLevel;
@@ -13,6 +14,8 @@ use App\Models\School;
 use App\Models\Student;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -43,9 +46,7 @@ class BookDistributionStudentStatusController extends Controller
             : collect([]);
 
         $gradeLevels = filled($schoolId)
-            ? GradeLevel::list(function ($query) use ($schoolId): void {
-                $query->where('grade_levels.school_id', '=', $schoolId);
-            }, ['grade_levels.school_id'])
+            ? $this->gradeLevelsForSchool($schoolId)
             : collect([]);
 
         return Inertia::render('warehouse/book-distributions/student-status', [
@@ -53,22 +54,33 @@ class BookDistributionStudentStatusController extends Controller
             'schools' => $schools,
             'gradeLevels' => $gradeLevels,
             'selected' => $selectedAttributes,
-            'students' => function () use ($request, $hasCompleteSelection, $schoolId, $gradeLevelId) {
-                return $hasCompleteSelection
-                    ? $this->getPaginatedStudents($request, $schoolId, $gradeLevelId)
-                    : null;
-            },
-            'registrationStatuses' => function () use ($hasCompleteSelection) {
-                return $hasCompleteSelection ? StudentRegistrationStatus::optionsArray() : [];
-            },
-            'nationalities' => function () use ($hasCompleteSelection) {
-                return $hasCompleteSelection ? Nationality::list() : [];
-            },
             'filter' => $request->input('filter', []),
+            ...($hasCompleteSelection ? [
+                'students' => $this->getPaginatedStudents($request, $schoolId, $gradeLevelId),
+                'registrationStatuses' => StudentRegistrationStatus::optionsArray(),
+                'nationalities' => Nationality::list(),
+            ] : []),
         ]);
     }
 
-    private function getPaginatedStudents(StudentStatusRequest $request, int $schoolId, int $gradeLevelId): ?LengthAwarePaginator
+    private function gradeLevelsForSchool(int $schoolId): Collection
+    {
+        $academicYearId = AcademicYear::currentId();
+
+        if (is_null($academicYearId)) {
+            return collect([]);
+        }
+
+        return GradeLevel::list(function ($query) use ($schoolId, $academicYearId): void {
+            $query->join('grade_level_school', function (JoinClause $join) use ($schoolId, $academicYearId): void {
+                $join->on('grade_levels.id', '=', 'grade_level_school.grade_level_id')
+                    ->where('grade_level_school.school_id', '=', $schoolId)
+                    ->where('grade_level_school.academic_year_id', '=', $academicYearId);
+            });
+        });
+    }
+
+    private function getPaginatedStudents(StudentStatusRequest $request, int $schoolId, int $gradeLevelId): LengthAwarePaginator
     {
         return QueryBuilder::for(Student::class)
             ->select([
@@ -82,8 +94,11 @@ class BookDistributionStudentStatusController extends Controller
                 'students.gender',
             ])
             ->where('school_id', '=', $schoolId)
-            ->whereHas('enrollments', function (Builder $query) use ($gradeLevelId): void {
-                $query->where('grade_level_id', '=', $gradeLevelId);
+            ->whereHas('enrollments', function (Builder $query) use ($gradeLevelId, $schoolId): void {
+                $query
+                    ->where('grade_level_id', '=', $gradeLevelId)
+                    ->where('school_id', '=', $schoolId)
+                    ->where('academic_year_id', '=', AcademicYear::currentId());
             })
             ->withExists(['bookDistributionItem as already_distributed'])
             ->allowedFilters(
@@ -98,11 +113,12 @@ class BookDistributionStudentStatusController extends Controller
             ->paginate()
             ->through(function (Student $student): array {
                 return [
+                    'id' => $student->id,
                     'uuid' => $student->uuid,
                     'number' => $student->number,
                     'full_name' => $student->full_name,
                     'gender' => $student->gender->toArray(),
-                    'already_distributed' => (bool) $student->already_distributed,
+                    'already_distributed' => $student->already_distributed,
                 ];
             })
             ->withQueryString()
