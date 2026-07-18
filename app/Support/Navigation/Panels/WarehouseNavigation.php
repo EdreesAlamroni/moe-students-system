@@ -59,6 +59,19 @@ class WarehouseNavigation extends NavigationPanel
         ];
     }
 
+    protected function reports(): array
+    {
+        return [
+            [
+                'title' => 'تقرير إحصائيات توزيع الكُتب المدرسية',
+                'href' => route('warehouse.reports.book-distributions.index'),
+                'icon' => 'ClipboardList',
+                'activeRoutes' => 'warehouse.reports.book-distributions.*',
+                'can' => $this->user?->can('viewStatistics', BookDistribution::class),
+            ],
+        ];
+    }
+
     protected function settings(): array
     {
         return [

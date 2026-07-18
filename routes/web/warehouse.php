@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\Warehouse\BookDistributionController;
+use App\Http\Controllers\Warehouse\BookDistributionReportController;
 use App\Http\Controllers\Warehouse\BookDistributionStatisticsController;
 use App\Http\Controllers\Warehouse\BookDistributionStudentStatusController;
 use App\Http\Controllers\Warehouse\DashboardController;
@@ -37,6 +38,12 @@ Route::middleware(['auth:warehouse', 'ensure.password.changed'])->group(function
         Route::post('/', [BookDistributionController::class, 'store'])->name('book-distributions.store');
         Route::get('/statistics', [BookDistributionStatisticsController::class, 'index'])->name('book-distributions.statistics');
         Route::get('/students', [BookDistributionStudentStatusController::class, 'index'])->name('book-distributions.students');
+    });
+
+    // Reports
+    Route::prefix('reports')->group(function () {
+        Route::get('/book-distributions', [BookDistributionReportController::class, 'index'])->name('reports.book-distributions.index');
+        Route::get('/book-distributions/print', [BookDistributionReportController::class, 'print'])->name('reports.book-distributions.print');
     });
 
     // Users

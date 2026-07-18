@@ -3,7 +3,7 @@
 
     Standardized, print-optimized styles shared by every report
     rendered through `resources/views/print/layout.blade.php`.
-    ========================================================== 
+    ==========================================================
 */
 
 @layer base {
@@ -27,7 +27,7 @@
     }
 
     .print-header-meta {
-        @apply flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded border border-black px-1.5 py-1.5 text-center text-[11px] leading-tight;
+        @apply flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded-none border border-black px-1.5 py-1.5 text-center text-[11px] leading-tight;
     }
 
     .print-header .print-header-center {

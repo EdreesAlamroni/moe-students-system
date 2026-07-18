@@ -123,6 +123,33 @@ class BookDistributionGradeLevelStats
         })->values();
     }
 
+    /**
+     * @param  iterable<int, array{
+     *     id: int,
+     *     name: string,
+     *     educational_stage: array{name: string, value: string|null, label: string|null}|null,
+     *     students_count: int,
+     *     distributed_count: int,
+     *     pending_count: int,
+     *     already_distributed: bool,
+     * }>  $statistics
+     * @return array{students_count: int, distributed_count: int, pending_count: int}
+     */
+    public function totals(iterable $statistics): array
+    {
+        $statistics = collect($statistics);
+
+        $confirmedStatistics = $statistics->filter(function (array $statistic): bool {
+            return $statistic['already_distributed'];
+        });
+
+        return [
+            'students_count' => (int) $statistics->sum('students_count'),
+            'distributed_count' => (int) $confirmedStatistics->sum('distributed_count'),
+            'pending_count' => (int) $confirmedStatistics->sum('pending_count'),
+        ];
+    }
+
     private function distributedStudentCounts(int $academicYearId, int $schoolId, array $gradeLevelIds): Collection
     {
         return BookDistributionItem::query()
