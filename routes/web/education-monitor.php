@@ -6,6 +6,7 @@ use App\Http\Controllers\EducationMonitor\DashboardController;
 use App\Http\Controllers\EducationMonitor\EducationServicesOfficeController;
 use App\Http\Controllers\EducationMonitor\SchoolController;
 use App\Http\Controllers\EducationMonitor\StudentController;
+use App\Http\Controllers\EducationMonitor\StudentUnassignedToSchoolController;
 use App\Http\Controllers\EducationMonitor\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -42,6 +43,7 @@ Route::middleware(['auth:education_monitor', 'ensure.password.changed'])->group(
     // Students
     Route::prefix('students')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
+        Route::get('/unassigned-to-school', [StudentUnassignedToSchoolController::class, 'index'])->name('students.unassigned-to-school.index');
         Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
     });
 

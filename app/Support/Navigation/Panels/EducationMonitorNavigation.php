@@ -39,6 +39,14 @@ class EducationMonitorNavigation extends NavigationPanel
                 'href' => route('education-monitor.students.index'),
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'education-monitor.students.*',
+                'excludedRoutes' => ['education-monitor.students.unassigned-to-school.*'],
+                'can' => $this->user?->canAny(['viewAny'], Student::class),
+            ],
+            [
+                'title' => 'الطلاب غير المسجّلين في مدارس',
+                'href' => route('education-monitor.students.unassigned-to-school.index'),
+                'icon' => 'UserXIcon',
+                'activeRoutes' => 'education-monitor.students.unassigned-to-school.*',
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
         ];
