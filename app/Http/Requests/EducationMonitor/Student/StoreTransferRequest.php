@@ -93,13 +93,13 @@ class StoreTransferRequest extends FormRequest
     {
         if (! is_null($student->school_id)) {
             return __('validation.custom.student_transfer.already_in_school', [
-                'name' => $student->fullName,
+                'name' => $student->full_name,
             ]);
         }
 
         if (! is_null($student->education_monitor_id)) {
             return __('validation.custom.education_monitor_student_transfer.already_in_monitor', [
-                'name' => $student->fullName,
+                'name' => $student->full_name,
             ]);
         }
 
