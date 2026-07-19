@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\School\DashboardController;
+use App\Http\Controllers\School\GradeLevelController;
 use App\Http\Controllers\School\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -13,6 +14,11 @@ RegistersDashboardAuthRoutes::registerGuestRoutes(DashboardAuth::school());
 
 Route::middleware(['auth:school', 'ensure.password.changed'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    // Users
+    Route::prefix('grade-levels')->group(function () {
+        Route::get('/', [GradeLevelController::class, 'index'])->name('grade-levels.index');
+    });
 
     // Users
     Route::prefix('users')->group(function () {

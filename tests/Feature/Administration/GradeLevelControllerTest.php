@@ -46,7 +46,7 @@ test('grade levels page can be filtered by educational stage', function () {
         ]))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->has('gradeLevels.data', $kindergartenGrades)
+            ->has('gradeLevels', $kindergartenGrades)
             ->where('filter.educational_stage', SchoolEducationalStageEnum::KINDERGARTEN->value)
         );
 });

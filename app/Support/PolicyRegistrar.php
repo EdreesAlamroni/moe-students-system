@@ -46,6 +46,7 @@ use App\Policies\EducationServicesOffice\SchoolReportPolicy as EducationServices
 use App\Policies\EducationServicesOffice\StudentCountByGradeLevelReportPolicy as EducationServicesOfficeStudentCountByGradeLevelReportPolicy;
 use App\Policies\EducationServicesOffice\StudentPolicy as EducationServicesOfficeStudentPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
+use App\Policies\School\GradeLevelPolicy as SchoolGradeLevelPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
 use App\Policies\Warehouse\BookDistributionPolicy as WarehouseBookDistributionPolicy;
 use App\Policies\Warehouse\EducationMonitorPolicy as WarehouseEducationMonitorPolicy;
@@ -94,6 +95,7 @@ final class PolicyRegistrar
         ],
         'school' => [
             User::class => SchoolUserPolicy::class,
+            GradeLevel::class => SchoolGradeLevelPolicy::class,
         ],
     ];
 

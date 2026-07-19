@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -29,6 +30,14 @@ use Illuminate\Support\Collection;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read string|null $current_academic_year_name
+ * @property-read EloquentCollection<int, School> $allSchools
+ * @property-read EloquentCollection<int, School> $schools
+ * @property-read School|null $currentSchool
+ * @property-read EloquentCollection<int, Classroom> $allClassrooms
+ * @property-read EloquentCollection<int, Classroom> $classrooms
+ * @property-read EloquentCollection<int, Student> $allStudents
+ * @property-read EloquentCollection<int, Student> $students
  * @property-read int|null $student_count
  */
 #[Guarded(['id'])]
@@ -62,7 +71,7 @@ class GradeLevel extends Model
      *
      * Use this accessor in your controllers or transformers as:
      * ```php
-     *  $gradeLevel->currentAcademicYearName;
+     *  $gradeLevel->current_academic_year_name;
      * ```
      */
     public function currentAcademicYearName(): Attribute

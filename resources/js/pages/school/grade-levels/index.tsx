@@ -8,7 +8,7 @@ import type { Enum, GradeLevel } from "@/types";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/display/table";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellNullableValue } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
 
 import { Input } from "@/components/ui/controls/input";
@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/actions/button";
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
 import { ListIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
-import { index } from "@/routes/administration/grade-levels";
+import { index } from "@/routes/school/grade-levels";
 
 type PageProps = {
     gradeLevels: GradeLevel[];
@@ -31,8 +31,6 @@ type PageProps = {
 }
 
 export default function Index({ gradeLevels, educationalStages, filter }: PageProps) {
-    const hasFilter = Object.values(filter).some((value) => value);
-
     return (
         <MainContainer>
             <Head title="الصفوف الدراسية" />
@@ -124,6 +122,7 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                                         <TableHead scope="col" className="font-mono w-24">#</TableHead>
                                         <TableHead scope="col">الاسم</TableHead>
                                         <TableHead scope="col">المرحلة الدراسية</TableHead>
+                                        <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -132,6 +131,9 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                                             <TableCell className="font-mono">{index + 1}</TableCell>
                                             <TableCell>{gradeLevel.name}</TableCell>
                                             <TableCell>{gradeLevel.educational_stage.name}</TableCell>
+                                            <TableCell className="text-center">
+                                                <TableCellNullableValue value={gradeLevel.students_count} fallback="0" />
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -139,9 +141,7 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                         </CardTableContent>
                     ) : (
                         <CardContent>
-                            <EmptyState
-                                hasFilter={hasFilter}
-                            />
+                            <EmptyState />
                         </CardContent>
                     )}
                 </Card>

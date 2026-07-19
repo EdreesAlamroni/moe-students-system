@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Models\GradeLevel;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
@@ -16,6 +17,13 @@ class SchoolNavigation extends NavigationPanel
                 'icon' => 'LayoutGridIcon',
                 'activeRoutes' => 'school.dashboard',
                 'can' => true,
+            ],
+            [
+                'title' => 'الصفوف الدراسية',
+                'href' => route('school.grade-levels.index'),
+                'icon' => 'GraduationCapIcon',
+                'activeRoutes' => 'school.grade-levels.*',
+                'can' => $this->user?->canAny(['viewAny'], GradeLevel::class),
             ],
         ];
     }
