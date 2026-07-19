@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Models\School;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
@@ -16,6 +17,13 @@ class EducationServicesOfficeNavigation extends NavigationPanel
                 'icon' => 'LayoutGridIcon',
                 'activeRoutes' => 'education-services-office.dashboard',
                 'can' => true,
+            ],
+            [
+                'title' => 'المدارس',
+                'href' => route('education-services-office.schools.index'),
+                'icon' => 'SchoolIcon',
+                'activeRoutes' => 'education-services-office.schools.*',
+                'can' => $this->user?->canAny(['viewAny'], School::class),
             ],
         ];
     }
