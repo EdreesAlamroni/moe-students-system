@@ -4,7 +4,9 @@ use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\EducationServicesOffice\DashboardController;
 use App\Http\Controllers\EducationServicesOffice\SchoolController;
+use App\Http\Controllers\EducationServicesOffice\SchoolReportController;
 use App\Http\Controllers\EducationServicesOffice\StudentController;
+use App\Http\Controllers\EducationServicesOffice\StudentCountByGradeLevelReportController;
 use App\Http\Controllers\EducationServicesOffice\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -31,6 +33,15 @@ Route::middleware(['auth:education_services_office', 'ensure.password.changed'])
     Route::prefix('students')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
         Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
+    });
+
+    // Reports
+    Route::prefix('reports')->group(function () {
+        Route::get('/schools', [SchoolReportController::class, 'index'])->name('reports.schools.index');
+        Route::get('/schools/print', [SchoolReportController::class, 'print'])->name('reports.schools.print');
+
+        Route::get('/student-count-by-grade-level', [StudentCountByGradeLevelReportController::class, 'index'])->name('reports.student-count-by-grade-level.index');
+        Route::get('/student-count-by-grade-level/print', [StudentCountByGradeLevelReportController::class, 'print'])->name('reports.student-count-by-grade-level.print');
     });
 
     // Users

@@ -8,6 +8,8 @@ use App\Authorization\Administration\SchoolReport as AdministrationSchoolReport;
 use App\Authorization\EducationMonitor\EducationServicesOfficeReport as EducationMonitorEducationServicesOfficeReport;
 use App\Authorization\EducationMonitor\SchoolReport as EducationMonitorSchoolReport;
 use App\Authorization\EducationMonitor\StudentCountByGradeLevelReport as EducationMonitorStudentCountByGradeLevelReport;
+use App\Authorization\EducationServicesOffice\SchoolReport as EducationServicesOfficeSchoolReport;
+use App\Authorization\EducationServicesOffice\StudentCountByGradeLevelReport as EducationServicesOfficeStudentCountByGradeLevelReport;
 use App\Models\AcademicYear;
 use App\Models\BookDistribution;
 use App\Models\ClassPeriod;
@@ -40,6 +42,8 @@ use App\Policies\EducationMonitor\StudentCountByGradeLevelReportPolicy as Educat
 use App\Policies\EducationMonitor\StudentPolicy as EducationMonitorStudentPolicy;
 use App\Policies\EducationMonitor\UserPolicy as EducationMonitorUserPolicy;
 use App\Policies\EducationServicesOffice\SchoolPolicy as EducationServicesOfficeSchoolPolicy;
+use App\Policies\EducationServicesOffice\SchoolReportPolicy as EducationServicesOfficeSchoolReportPolicy;
+use App\Policies\EducationServicesOffice\StudentCountByGradeLevelReportPolicy as EducationServicesOfficeStudentCountByGradeLevelReportPolicy;
 use App\Policies\EducationServicesOffice\StudentPolicy as EducationServicesOfficeStudentPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
@@ -110,7 +114,10 @@ final class PolicyRegistrar
             EducationMonitorSchoolReport::class => EducationMonitorSchoolReportPolicy::class,
             EducationMonitorStudentCountByGradeLevelReport::class => EducationMonitorStudentCountByGradeLevelReportPolicy::class,
         ],
-        'education-services-office' => [],
+        'education-services-office' => [
+            EducationServicesOfficeSchoolReport::class => EducationServicesOfficeSchoolReportPolicy::class,
+            EducationServicesOfficeStudentCountByGradeLevelReport::class => EducationServicesOfficeStudentCountByGradeLevelReportPolicy::class,
+        ],
         'school' => [],
     ];
 

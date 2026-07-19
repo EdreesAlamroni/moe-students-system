@@ -2,6 +2,8 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Authorization\EducationServicesOffice\SchoolReport;
+use App\Authorization\EducationServicesOffice\StudentCountByGradeLevelReport;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\User;
@@ -32,6 +34,26 @@ class EducationServicesOfficeNavigation extends NavigationPanel
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'education-services-office.students.*',
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
+            ],
+        ];
+    }
+
+    protected function reports(): array
+    {
+        return [
+            [
+                'title' => 'تقرير المدارس',
+                'href' => route('education-services-office.reports.schools.index'),
+                'icon' => 'ClipboardList',
+                'activeRoutes' => 'education-services-office.reports.schools.*',
+                'can' => $this->user?->canAny(['view'], SchoolReport::class),
+            ],
+            [
+                'title' => 'إحصائية الطلاب حسب الصفوف الدراسية',
+                'href' => route('education-services-office.reports.student-count-by-grade-level.index'),
+                'icon' => 'ClipboardList',
+                'activeRoutes' => 'education-services-office.reports.student-count-by-grade-level.*',
+                'can' => $this->user?->canAny(['view'], StudentCountByGradeLevelReport::class),
             ],
         ];
     }
