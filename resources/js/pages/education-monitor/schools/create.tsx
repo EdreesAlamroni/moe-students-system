@@ -184,7 +184,7 @@ export default function Create({
                                                             id="educational_company_name"
                                                             type="text"
                                                             name="educational_company_name"
-                                                            hasErrors={!!errors.educational_company_name}
+                                                            hasError={!!errors.educational_company_name}
                                                             autoComplete="off"
                                                             required
                                                         />
@@ -247,7 +247,7 @@ export default function Create({
                                                             id="name"
                                                             type="text"
                                                             name="name"
-                                                            hasErrors={!!errors.name}
+                                                            hasError={!!errors.name}
                                                             autoComplete="off"
                                                             required
                                                         />
@@ -322,7 +322,7 @@ export default function Create({
                                                                 id="name"
                                                                 type="text"
                                                                 name="name"
-                                                                hasErrors={!!errors.name}
+                                                                hasError={!!errors.name}
                                                                 autoComplete="off"
                                                                 required
                                                             />
@@ -339,7 +339,7 @@ export default function Create({
                                                                     id="name_morning"
                                                                     type="text"
                                                                     name="name_morning"
-                                                                    hasErrors={!!errors.name_morning}
+                                                                    hasError={!!errors.name_morning}
                                                                     autoComplete="off"
                                                                     required
                                                                 />
@@ -355,7 +355,7 @@ export default function Create({
                                                                     id="name_evening"
                                                                     type="text"
                                                                     name="name_evening"
-                                                                    hasErrors={!!errors.name_evening}
+                                                                    hasError={!!errors.name_evening}
                                                                     autoComplete="off"
                                                                     required
                                                                 />

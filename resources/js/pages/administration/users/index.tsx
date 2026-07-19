@@ -135,7 +135,7 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
                                 <Input
                                     type="text"
                                     name="filter[name]"
-                                    value={filter.name}
+                                    defaultValue={filter.name}
                                     placeholder="الاسم"
                                 />
                             </div>

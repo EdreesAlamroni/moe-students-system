@@ -65,7 +65,7 @@ export function ResetPasswordForm({ routes, token, email, passwordRules }: Props
                             placeholder="كلمة المرور الجديدة"
                             autoFocus
                             passwordrules={passwordRules}
-                            hasErrors={!!errors.password}
+                            hasError={!!errors.password}
                             required
                         />
 
@@ -83,7 +83,7 @@ export function ResetPasswordForm({ routes, token, email, passwordRules }: Props
                             autoComplete="new-password"
                             placeholder="تأكيد كلمة المرور الجديدة"
                             passwordrules={passwordRules}
-                            hasErrors={!!errors.password_confirmation}
+                            hasError={!!errors.password_confirmation}
                             required
                         />
 

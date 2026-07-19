@@ -39,7 +39,7 @@ export function LoginForm({ routes }: Props) {
                             name="username"
                             autoComplete="username"
                             placeholder="اسم المُستخدم"
-                            hasErrors={!!errors.username}
+                            hasError={!!errors.username}
                             autoFocus
                             tabIndex={1}
                             required

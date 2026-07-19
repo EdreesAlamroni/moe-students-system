@@ -10,13 +10,13 @@ import { Eye, EyeOff } from 'lucide-react';
 
 type PasswordInputProps = Omit<ComponentProps<'input'>, 'type'> & {
     ref?: Ref<HTMLInputElement>;
-    hasErrors?: boolean;
+    hasError?: boolean;
 }
 
 export default function PasswordInput({
     className,
     ref,
-    hasErrors = false,
+    hasError = false,
     ...props
 }: PasswordInputProps) {
     const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +27,7 @@ export default function PasswordInput({
                 type={showPassword ? 'text' : 'password'}
                 className={cn('pe-10', className)}
                 ref={ref}
-                hasErrors={hasErrors}
+                hasError={hasError}
                 {...props}
             />
             <button

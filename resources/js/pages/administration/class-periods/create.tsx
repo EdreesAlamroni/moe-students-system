@@ -90,7 +90,7 @@ export default function Create({ academicPeriod, nextOrder }: PageProps) {
                                                     id="name"
                                                     type="text"
                                                     name="name"
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     placeholder="مثال: الحصة الأولى"
                                                     autoComplete="off"
                                                     required
@@ -113,7 +113,7 @@ export default function Create({ academicPeriod, nextOrder }: PageProps) {
                                                     type="time"
                                                     name="start_time"
                                                     className="font-mono"
-                                                    hasErrors={!!errors.start_time}
+                                                    hasError={!!errors.start_time}
                                                     autoComplete="off"
                                                     required
                                                 />
@@ -135,7 +135,7 @@ export default function Create({ academicPeriod, nextOrder }: PageProps) {
                                                     type="time"
                                                     name="end_time"
                                                     className="font-mono"
-                                                    hasErrors={!!errors.end_time}
+                                                    hasError={!!errors.end_time}
                                                     autoComplete="off"
                                                     required
                                                 />
@@ -157,7 +157,7 @@ export default function Create({ academicPeriod, nextOrder }: PageProps) {
                                                     type="number"
                                                     name="order"
                                                     defaultValue={nextOrder}
-                                                    hasErrors={!!errors.order}
+                                                    hasError={!!errors.order}
                                                     min={0}
                                                     className="font-mono"
                                                     autoComplete="off"

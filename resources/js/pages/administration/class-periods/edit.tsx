@@ -110,7 +110,7 @@ export default function Edit({ classPeriod, academicPeriods }: PageProps) {
                                                     type="text"
                                                     name="name"
                                                     defaultValue={classPeriod.name}
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     placeholder="مثال: الحصة الأولى"
                                                     autoComplete="off"
                                                     required
@@ -134,7 +134,7 @@ export default function Edit({ classPeriod, academicPeriods }: PageProps) {
                                                     name="start_time"
                                                     className="font-mono"
                                                     defaultValue={classPeriod.start_time}
-                                                    hasErrors={!!errors.start_time}
+                                                    hasError={!!errors.start_time}
                                                     autoComplete="off"
                                                     required
                                                 />
@@ -157,7 +157,7 @@ export default function Edit({ classPeriod, academicPeriods }: PageProps) {
                                                     name="end_time"
                                                     className="font-mono"
                                                     defaultValue={classPeriod.end_time}
-                                                    hasErrors={!!errors.end_time}
+                                                    hasError={!!errors.end_time}
                                                     autoComplete="off"
                                                     required
                                                 />
@@ -180,7 +180,7 @@ export default function Edit({ classPeriod, academicPeriods }: PageProps) {
                                                     name="order"
                                                     className="font-mono"
                                                     defaultValue={classPeriod.order}
-                                                    hasErrors={!!errors.order}
+                                                    hasError={!!errors.order}
                                                     min={0}
                                                     autoComplete="off"
                                                     required

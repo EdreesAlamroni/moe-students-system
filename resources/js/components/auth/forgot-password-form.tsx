@@ -40,7 +40,7 @@ export function ForgotPasswordForm({ routes }: Props) {
                                 autoComplete="email"
                                 placeholder="البريد الإلكتروني"
                                 autoFocus
-                                hasErrors={!!errors.email}
+                                hasError={!!errors.email}
                                 required
                             />
 

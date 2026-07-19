@@ -91,7 +91,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                                     type="text"
                                                     name="name"
                                                     defaultValue={warehouse.name}
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     autoComplete="off"
                                                     required
                                                 />
@@ -142,7 +142,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                                     type="text"
                                                     name="address"
                                                     defaultValue={warehouse.address ?? ""}
-                                                    hasErrors={!!errors.address}
+                                                    hasError={!!errors.address}
                                                     autoComplete="off"
                                                 />
 
@@ -198,7 +198,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                                             type="text"
                                                             name="latitude"
                                                             defaultValue={warehouse.latitude ?? ""}
-                                                            hasErrors={!!errors.latitude}
+                                                            hasError={!!errors.latitude}
                                                             className="font-mono"
                                                             autoComplete="off"
                                                             required
@@ -222,7 +222,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                                             type="text"
                                                             name="longitude"
                                                             defaultValue={warehouse.longitude ?? ""}
-                                                            hasErrors={!!errors.longitude}
+                                                            hasError={!!errors.longitude}
                                                             className="font-mono"
                                                             autoComplete="off"
                                                             required

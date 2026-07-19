@@ -112,7 +112,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                                     type="text"
                                                     name="name"
                                                     defaultValue={user.name}
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     autoComplete="name"
                                                     required
                                                 />
@@ -133,7 +133,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                                     type="email"
                                                     name="email"
                                                     defaultValue={user.email ?? ""}
-                                                    hasErrors={!!errors.email}
+                                                    hasError={!!errors.email}
                                                     autoComplete="email"
                                                 />
 

@@ -158,7 +158,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                     type="text"
                                                     name="phone_number"
                                                     defaultValue={monitor.phone_number ?? ""}
-                                                    hasErrors={!!errors.phone_number}
+                                                    hasError={!!errors.phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
                                                     autoComplete="off"
@@ -181,7 +181,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                     type="text"
                                                     name="whatsapp_phone_number"
                                                     defaultValue={monitor.whatsapp_phone_number ?? ""}
-                                                    hasErrors={!!errors.whatsapp_phone_number}
+                                                    hasError={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
                                                     autoComplete="off"
@@ -204,7 +204,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                     type="text"
                                                     name="address"
                                                     defaultValue={monitor.address ?? ""}
-                                                    hasErrors={!!errors.address}
+                                                    hasError={!!errors.address}
                                                     autoComplete="off"
                                                 />
 
@@ -260,7 +260,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                             type="text"
                                                             name="latitude"
                                                             defaultValue={monitor.latitude ?? ""}
-                                                            hasErrors={!!errors.latitude}
+                                                            hasError={!!errors.latitude}
                                                             className="font-mono"
                                                             autoComplete="off"
                                                             required
@@ -284,7 +284,7 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                             type="text"
                                                             name="longitude"
                                                             defaultValue={monitor.longitude ?? ""}
-                                                            hasErrors={!!errors.longitude}
+                                                            hasError={!!errors.longitude}
                                                             className="font-mono"
                                                             autoComplete="off"
                                                             required

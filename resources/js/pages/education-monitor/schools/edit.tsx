@@ -104,7 +104,7 @@ export default function Edit({ school, branchTypes, buildingTypes }: PageProps) 
                                                     type="text"
                                                     name="name"
                                                     defaultValue={school.name}
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     autoComplete="off"
                                                     required
                                                 />
@@ -123,7 +123,7 @@ export default function Edit({ school, branchTypes, buildingTypes }: PageProps) 
                                                             name="educational_company_name"
                                                             defaultValue={school.educational_company_name ?? ""}
                                                             autoComplete="off"
-                                                            hasErrors={!!errors.educational_company_name}
+                                                            hasError={!!errors.educational_company_name}
                                                             required
                                                         />
                                                         <InputError message={errors.educational_company_name} />

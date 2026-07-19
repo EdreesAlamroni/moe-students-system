@@ -133,7 +133,7 @@ export default function Edit({ office, monitors }: PageProps) {
                                                     type="text"
                                                     name="name"
                                                     defaultValue={office.name}
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     required
                                                 />
 
@@ -153,7 +153,7 @@ export default function Edit({ office, monitors }: PageProps) {
                                                     type="text"
                                                     name="phone_number"
                                                     defaultValue={office.phone_number ?? ""}
-                                                    hasErrors={!!errors.phone_number}
+                                                    hasError={!!errors.phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
                                                     {...libyanPhoneNumberInputConstraints()}
@@ -175,7 +175,7 @@ export default function Edit({ office, monitors }: PageProps) {
                                                     type="text"
                                                     name="whatsapp_phone_number"
                                                     defaultValue={office.whatsapp_phone_number ?? ""}
-                                                    hasErrors={!!errors.whatsapp_phone_number}
+                                                    hasError={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
                                                     {...libyanPhoneNumberInputConstraints()}
@@ -197,7 +197,7 @@ export default function Edit({ office, monitors }: PageProps) {
                                                     type="text"
                                                     name="address"
                                                     defaultValue={office.address ?? ""}
-                                                    hasErrors={!!errors.address}
+                                                    hasError={!!errors.address}
                                                 />
 
                                                 <InputError message={errors.address} />
@@ -252,7 +252,7 @@ export default function Edit({ office, monitors }: PageProps) {
                                                             type="text"
                                                             name="latitude"
                                                             defaultValue={office.latitude ?? ""}
-                                                            hasErrors={!!errors.latitude}
+                                                            hasError={!!errors.latitude}
                                                             className="font-mono"
                                                             required
                                                             {...latitudeInputConstraints()}
@@ -275,7 +275,7 @@ export default function Edit({ office, monitors }: PageProps) {
                                                             type="text"
                                                             name="longitude"
                                                             defaultValue={office.longitude ?? ""}
-                                                            hasErrors={!!errors.longitude}
+                                                            hasError={!!errors.longitude}
                                                             className="font-mono"
                                                             required
                                                             {...longitudeInputConstraints()}

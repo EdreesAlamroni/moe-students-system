@@ -125,18 +125,19 @@ export default function Index({ users, scopes, filter, canAny, can }: PageProps)
 
                                 <Input
                                     type="text"
+                                    name="filter[name]"
+                                    defaultValue={filter.name}
+                                    placeholder="الاسم"
+                                    autoComplete="off"
+                                />
+
+                                <Input
+                                    type="text"
                                     name="filter[username]"
                                     defaultValue={filter.username}
                                     placeholder="اسم المُستخدم"
                                     className="not-placeholder-shown:font-mono"
                                     {...usernameInputConstraints()}
-                                />
-
-                                <Input
-                                    type="text"
-                                    name="filter[name]"
-                                    value={filter.name}
-                                    placeholder="الاسم"
                                 />
                             </div>
                         </CardContent>

@@ -2,6 +2,8 @@ import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
+import { usernameInputConstraints } from "@/lib/input-constraints";
+
 import type { CanPermissions, Paginated, User } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
@@ -82,14 +84,19 @@ export default function Index({ users, filter, canAny, can }: PageProps) {
                                 <Input
                                     type="text"
                                     name="filter[name]"
-                                    value={filter.name}
+                                    defaultValue={filter.name}
                                     placeholder="الاسم"
+                                    autoComplete="off"
                                 />
+
                                 <Input
                                     type="text"
                                     name="filter[username]"
-                                    value={filter.username}
+                                    defaultValue={filter.username}
                                     placeholder="اسم المُستخدم"
+                                    className="not-placeholder-shown:font-mono"
+                                    autoComplete="off"
+                                    {...usernameInputConstraints()}
                                 />
                             </div>
                         </CardContent>

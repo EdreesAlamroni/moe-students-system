@@ -73,7 +73,7 @@ export default function Create() {
                                                     id="name"
                                                     type="text"
                                                     name="name"
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     autoComplete="off"
                                                     required
                                                 />
@@ -93,7 +93,7 @@ export default function Create() {
                                                     id="phone_number"
                                                     type="text"
                                                     name="phone_number"
-                                                    hasErrors={!!errors.phone_number}
+                                                    hasError={!!errors.phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
                                                     autoComplete="off"
@@ -115,7 +115,7 @@ export default function Create() {
                                                     id="whatsapp_phone_number"
                                                     type="text"
                                                     name="whatsapp_phone_number"
-                                                    hasErrors={!!errors.whatsapp_phone_number}
+                                                    hasError={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
                                                     placeholder="0912345678"
                                                     autoComplete="off"
@@ -137,7 +137,7 @@ export default function Create() {
                                                     id="address"
                                                     type="text"
                                                     name="address"
-                                                    hasErrors={!!errors.address}
+                                                    hasError={!!errors.address}
                                                     autoComplete="off"
                                                 />
 
@@ -193,7 +193,7 @@ export default function Create() {
                                                             id="latitude"
                                                             type="text"
                                                             name="latitude"
-                                                            hasErrors={!!errors.latitude}
+                                                            hasError={!!errors.latitude}
                                                             className="font-mono"
                                                             required
                                                             autoComplete="off"
@@ -216,7 +216,7 @@ export default function Create() {
                                                             id="longitude"
                                                             type="text"
                                                             name="longitude"
-                                                            hasErrors={!!errors.longitude}
+                                                            hasError={!!errors.longitude}
                                                             className="font-mono"
                                                             required
                                                             autoComplete="off"

@@ -55,7 +55,7 @@ export function SecurityForm() {
                             name="current_password"
                             autoComplete="current-password"
                             placeholder="كلمة المرور الحالية"
-                            hasErrors={!!errors.current_password}
+                            hasError={!!errors.current_password}
                         />
 
                         <InputError message={errors.current_password} />
@@ -71,7 +71,7 @@ export function SecurityForm() {
                             autoComplete="new-password"
                             placeholder="كلمة المرور الجديدة"
                             passwordrules={passwordRules}
-                            hasErrors={!!errors.password}
+                            hasError={!!errors.password}
                         />
 
                         <InputError message={errors.password} />
@@ -86,7 +86,7 @@ export function SecurityForm() {
                             autoComplete="new-password"
                             placeholder="تأكيد كلمة المرور"
                             passwordrules={passwordRules}
-                            hasErrors={!!errors.password_confirmation}
+                            hasError={!!errors.password_confirmation}
                         />
 
                         <InputError message={errors.password_confirmation} />

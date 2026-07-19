@@ -172,7 +172,7 @@ export default function Create({
                                                     id="name"
                                                     type="text"
                                                     name="name"
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     autoComplete="name"
                                                     required
                                                 />
@@ -194,7 +194,7 @@ export default function Create({
                                                     type="text"
                                                     name="username"
                                                     className="not-placeholder-shown:font-mono"
-                                                    hasErrors={!!errors.username}
+                                                    hasError={!!errors.username}
                                                     autoComplete="username"
                                                     required
                                                     {...usernameInputConstraints()}
@@ -215,7 +215,7 @@ export default function Create({
                                                     id="email"
                                                     type="email"
                                                     name="email"
-                                                    hasErrors={!!errors.email}
+                                                    hasError={!!errors.email}
                                                     autoComplete="email"
                                                 />
 
@@ -235,7 +235,7 @@ export default function Create({
                                                     id="password"
                                                     name="password"
                                                     autoComplete="new-password"
-                                                    hasErrors={!!errors.password}
+                                                    hasError={!!errors.password}
                                                     required
                                                 />
 
@@ -255,7 +255,7 @@ export default function Create({
                                                     id="password_confirmation"
                                                     name="password_confirmation"
                                                     autoComplete="new-password"
-                                                    hasErrors={!!errors.password_confirmation}
+                                                    hasError={!!errors.password_confirmation}
                                                     required
                                                 />
 

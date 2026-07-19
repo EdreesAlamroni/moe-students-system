@@ -111,7 +111,7 @@ export default function Create({ gradeLevels }: PageProps) {
                                                     id="name"
                                                     type="text"
                                                     name="name"
-                                                    hasErrors={!!errors.name}
+                                                    hasError={!!errors.name}
                                                     autoComplete="off"
                                                     required
                                                 />
@@ -132,7 +132,7 @@ export default function Create({ gradeLevels }: PageProps) {
                                                     id="code"
                                                     type="text"
                                                     name="code"
-                                                    hasErrors={!!errors.code}
+                                                    hasError={!!errors.code}
                                                     className="font-mono"
                                                     autoComplete="off"
                                                     required

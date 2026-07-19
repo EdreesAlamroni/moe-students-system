@@ -43,7 +43,7 @@ export function ProfileForm() {
                             name="name"
                             defaultValue={auth.user?.name ?? ''}
                             autoComplete="name"
-                            hasErrors={!!errors.name}
+                            hasError={!!errors.name}
                             required
                         />
 
@@ -61,7 +61,7 @@ export function ProfileForm() {
                             name="email"
                             defaultValue={auth.user?.email ?? ''}
                             autoComplete="username"
-                            hasErrors={!!errors.email}
+                            hasError={!!errors.email}
                             required
                         />
 

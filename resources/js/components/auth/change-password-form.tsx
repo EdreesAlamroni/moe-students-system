@@ -51,7 +51,7 @@ export function ChangePasswordForm({ routes, passwordRules }: Props) {
                             name="current_password"
                             autoComplete="current-password"
                             placeholder="كلمة المرور الحالية"
-                            hasErrors={!!errors.current_password}
+                            hasError={!!errors.current_password}
                             autoFocus
                             required
                         />
@@ -69,7 +69,7 @@ export function ChangePasswordForm({ routes, passwordRules }: Props) {
                             autoComplete="new-password"
                             placeholder="كلمة المرور الجديدة"
                             passwordrules={passwordRules}
-                            hasErrors={!!errors.password}
+                            hasError={!!errors.password}
                             required
                         />
 
@@ -85,7 +85,7 @@ export function ChangePasswordForm({ routes, passwordRules }: Props) {
                             autoComplete="new-password"
                             placeholder="تأكيد كلمة المرور"
                             passwordrules={passwordRules}
-                            hasErrors={!!errors.password_confirmation}
+                            hasError={!!errors.password_confirmation}
                             required
                         />
 
