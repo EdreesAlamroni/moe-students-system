@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -224,37 +225,35 @@ class School extends Model
         return $this->hasMany(Student::class);
     }
 
-    // TODO: Add enrollments relationship when the model and migration are implemented.
     /**
      * Get all enrollments associated with the school across all academic years.
      */
-    // public function allEnrollments(): HasManyThrough
-    // {
-    //     return $this->hasManyThrough(
-    //         StudentEnrollment::class,
-    //         Student::class,
-    //         'school_id',
-    //         'student_id',
-    //         'id',
-    //         'id',
-    //     );
-    // }
+    public function allEnrollments(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            StudentEnrollment::class,
+            Student::class,
+            'school_id',
+            'student_id',
+            'id',
+            'id',
+        );
+    }
 
-    // TODO: Add enrollments relationship when the model and migration are implemented.
     /**
      * Get the enrollments associated with the school for the current academic year.
      */
-    // public function enrollments(): HasManyThrough
-    // {
-    //     return $this->hasManyThrough(
-    //         StudentEnrollment::class,
-    //         Student::class,
-    //         'school_id',
-    //         'student_id',
-    //         'id',
-    //         'id',
-    //     )->where('academic_year_id', '=', AcademicYear::currentId());
-    // }
+    public function enrollments(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            StudentEnrollment::class,
+            Student::class,
+            'school_id',
+            'student_id',
+            'id',
+            'id',
+        )->where('academic_year_id', '=', AcademicYear::currentId());
+    }
 
     /*
      * End: Relations

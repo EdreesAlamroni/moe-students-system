@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 
@@ -80,43 +82,40 @@ class Classroom extends Model
         return $this->belongsTo(School::class);
     }
 
-    // TODO: Add schedules relationship when the model and migration are implemented.
-    // public function schedules(): HasMany
-    // {
-    //     return $this->hasMany(ClassSchedule::class);
-    // }
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(ClassSchedule::class);
+    }
 
-    // TODO: Add students relationship when the model and migration are implemented.
     /**
      * Get all students associated with the classroom across all academic years.
      */
-    // public function allStudents(): HasManyThrough
-    // {
-    //     return $this->hasManyThrough(
-    //         Student::class,
-    //         StudentEnrollment::class,
-    //         'classroom_id',
-    //         'id',
-    //         'id',
-    //         'student_id',
-    //     );
-    // }
+    public function allStudents(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Student::class,
+            StudentEnrollment::class,
+            'classroom_id',
+            'id',
+            'id',
+            'student_id',
+        );
+    }
 
-    // TODO: Add students relationship when the model and migration are implemented.
     /**
      * Get the students associated with the classroom for the current academic year.
      */
-    // public function students(): HasManyThrough
-    // {
-    //     return $this->hasManyThrough(
-    //         Student::class,
-    //         StudentEnrollment::class,
-    //         'classroom_id',
-    //         'id',
-    //         'id',
-    //         'student_id',
-    //     )->where('academic_year_id', '=', AcademicYear::currentId());
-    // }
+    public function students(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Student::class,
+            StudentEnrollment::class,
+            'classroom_id',
+            'id',
+            'id',
+            'student_id',
+        )->where('academic_year_id', '=', AcademicYear::currentId());
+    }
 
     /*
      * End: Relations
@@ -153,26 +152,26 @@ class Classroom extends Model
     }
 
     // TODO: Remove this function if not needed
-    // public static function listForCurrentSchool(?int $gradeLevelId = null): Collection
-    // {
-    //     return self::query()
-    //         ->select([
-    //             'classrooms.id',
-    //             'classrooms.name',
-    //             'classrooms.grade_level_id',
-    //         ])
-    //         ->forCurrentSchoolAndAcademicYear()
-    //         ->when(filled($gradeLevelId), function (Builder $query) use ($gradeLevelId) {
-    //             $query->where('grade_level_id', '=', $gradeLevelId);
-    //         })
-    //         ->pluck('classrooms.name', 'classrooms.id')
-    //         ->map(function (string $name, int $id): array {
-    //             return [
-    //                 'id' => $id,
-    //                 'name' => sprintf('الفصل الدراسي: %s', $name),
-    //             ];
-    //         })->values();
-    // }
+    public static function listForCurrentSchool(?int $gradeLevelId = null): Collection
+    {
+        return self::query()
+            ->select([
+                'classrooms.id',
+                'classrooms.name',
+                'classrooms.grade_level_id',
+            ])
+            ->forCurrentSchoolAndAcademicYear()
+            ->when(filled($gradeLevelId), function (Builder $query) use ($gradeLevelId) {
+                $query->where('grade_level_id', '=', $gradeLevelId);
+            })
+            ->pluck('classrooms.name', 'classrooms.id')
+            ->map(function (string $name, int $id): array {
+                return [
+                    'id' => $id,
+                    'name' => sprintf('الفصل الدراسي: %s', $name),
+                ];
+            })->values();
+    }
 
     /*
      * End: Custom Functions

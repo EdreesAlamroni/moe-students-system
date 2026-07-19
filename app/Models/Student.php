@@ -472,6 +472,7 @@ class Student extends Model
             ->where('academic_year_id', '=', AcademicYear::currentId());
     }
 
+    // TODO: Add academic records relationship when the model and migration are implemented.
     // public function academicRecords(): HasMany
     // {
     //     return $this->hasMany(AcademicRecord::class);
