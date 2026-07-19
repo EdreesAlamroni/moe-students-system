@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\EducationServicesOffice\DashboardController;
 use App\Http\Controllers\EducationServicesOffice\SchoolController;
+use App\Http\Controllers\EducationServicesOffice\StudentController;
 use App\Http\Controllers\EducationServicesOffice\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -24,6 +25,12 @@ Route::middleware(['auth:education_services_office', 'ensure.password.changed'])
         Route::get('/{school}/edit', [SchoolController::class, 'edit'])->name('schools.edit');
         Route::put('/{school}', [SchoolController::class, 'update'])->name('schools.update');
         Route::delete('/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy');
+    });
+
+    // Students
+    Route::prefix('students')->group(function () {
+        Route::get('/', [StudentController::class, 'index'])->name('students.index');
+        Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
     });
 
     // Users

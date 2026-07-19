@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -48,6 +49,21 @@ class UserController extends Controller
                 'deleted_at',
             ])
             ->forCurrentEducationMonitor()
+            ->with([
+                'organization' => function (MorphTo $morphTo): void {
+                    $morphTo->constrain([
+                        EducationServicesOffice::class => function (Builder $query): void {
+                            $query->select(['id', 'education_monitor_id']);
+                        },
+                        School::class => function (Builder $query): void {
+                            $query->select(['id', 'education_monitor_id']);
+                        },
+                        EducationMonitor::class => function (Builder $query): void {
+                            $query->select(['id']);
+                        },
+                    ]);
+                },
+            ])
             ->allowedFilters(
                 'name',
                 'username',

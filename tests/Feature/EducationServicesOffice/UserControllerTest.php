@@ -8,6 +8,7 @@ use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -400,4 +401,44 @@ test('education services office users cannot delete users from another office', 
         ->assertForbidden();
 
     $this->assertNotSoftDeleted($target);
+});
+
+test('users index does not query schools per user when resolving view abilities', function () {
+    $office = EducationServicesOffice::factory()->create();
+    $user = createEducationServicesOfficeManager($office);
+
+    $schools = School::factory()->count(5)->create([
+        'education_monitor_id' => $office->education_monitor_id,
+        'education_services_office_id' => $office->id,
+    ]);
+
+    foreach ($schools as $index => $school) {
+        User::factory()->create([
+            'scope' => UserScope::SCHOOL,
+            'role' => UserRole::EMPLOYEE,
+            'organization_type' => School::class,
+            'organization_id' => $school->id,
+            'name' => "School User {$index}",
+            'username' => "school.user.{$index}",
+        ]);
+    }
+
+    $schoolEagerLoadQueries = 0;
+
+    DB::listen(function ($query) use (&$schoolEagerLoadQueries): void {
+        if (preg_match('/^select\b.+\bfrom\s+[`"]?schools[`"]?\s+where\s+[`"]?schools[`"]?[.][`"]?id[`"]?\s+in\s*\(/i', $query->sql) === 1) {
+            $schoolEagerLoadQueries++;
+        }
+    });
+
+    $this->actingAs($user, 'education_services_office')
+        ->get(route('education-services-office.users.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('users.data', 6)
+            ->where('users.data', fn ($data) => collect($data)->every(fn ($row) => $row['can']['view'] === true))
+        );
+
+    // Morph eager-load should issue a single schools lookup, not one per school user.
+    expect($schoolEagerLoadQueries)->toBe(1);
 });

@@ -3,6 +3,8 @@
 namespace App\Policies\EducationMonitor;
 
 use App\Enums\UserScope;
+use App\Models\EducationServicesOffice;
+use App\Models\School;
 use App\Models\User;
 
 class UserPolicy
@@ -83,7 +85,20 @@ class UserPolicy
             return $user->organization_id === $target->organization_id;
         }
 
-        $targetMonitorId = $target->organization?->education_monitor_id;
+        if ($target->organization_id === null) {
+            return false;
+        }
+
+        $targetMonitorId = match (true) {
+            $target->relationLoaded('organization') => $target->organization?->education_monitor_id,
+            $target->isEducationServicesOfficeStaff() => EducationServicesOffice::query()
+                ->whereKey($target->organization_id)
+                ->value('education_monitor_id'),
+            $target->isSchoolStaff() => School::query()
+                ->whereKey($target->organization_id)
+                ->value('education_monitor_id'),
+            default => null,
+        };
 
         if (is_null($targetMonitorId)) {
             return false;

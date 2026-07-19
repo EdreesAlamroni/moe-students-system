@@ -40,6 +40,7 @@ use App\Policies\EducationMonitor\StudentCountByGradeLevelReportPolicy as Educat
 use App\Policies\EducationMonitor\StudentPolicy as EducationMonitorStudentPolicy;
 use App\Policies\EducationMonitor\UserPolicy as EducationMonitorUserPolicy;
 use App\Policies\EducationServicesOffice\SchoolPolicy as EducationServicesOfficeSchoolPolicy;
+use App\Policies\EducationServicesOffice\StudentPolicy as EducationServicesOfficeStudentPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
 use App\Policies\Warehouse\BookDistributionPolicy as WarehouseBookDistributionPolicy;
@@ -85,6 +86,7 @@ final class PolicyRegistrar
         'education-services-office' => [
             User::class => EducationServicesOfficeUserPolicy::class,
             School::class => EducationServicesOfficeSchoolPolicy::class,
+            Student::class => EducationServicesOfficeStudentPolicy::class,
         ],
         'school' => [
             User::class => SchoolUserPolicy::class,

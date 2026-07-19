@@ -3,6 +3,7 @@
 namespace App\Policies\EducationServicesOffice;
 
 use App\Enums\UserScope;
+use App\Models\School;
 use App\Models\User;
 
 class UserPolicy
@@ -83,7 +84,15 @@ class UserPolicy
             return $user->organization_id === $target->organization_id;
         }
 
-        $targetOfficeId = $target->organization?->education_services_office_id;
+        if (! $target->isSchoolStaff() || $target->organization_id === null) {
+            return false;
+        }
+
+        $targetOfficeId = $target->relationLoaded('organization')
+            ? $target->organization?->education_services_office_id
+            : School::query()
+                ->whereKey($target->organization_id)
+                ->value('education_services_office_id');
 
         if (is_null($targetOfficeId)) {
             return false;

@@ -9,6 +9,7 @@ use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -398,4 +399,63 @@ test('education monitor users cannot delete users from another monitor', functio
         ->assertForbidden();
 
     $this->assertNotSoftDeleted($target);
+});
+
+test('users index does not query organizations per user when resolving view abilities', function () {
+    $monitor = EducationMonitor::factory()->create();
+    $user = createEducationMonitorManager($monitor);
+
+    $offices = EducationServicesOffice::factory()->count(3)->for($monitor, 'monitor')->create();
+
+    foreach ($offices as $index => $office) {
+        User::factory()->create([
+            'scope' => UserScope::EDUCATION_SERVICES_OFFICE,
+            'role' => UserRole::EMPLOYEE,
+            'organization_type' => EducationServicesOffice::class,
+            'organization_id' => $office->id,
+            'name' => "Office User {$index}",
+            'username' => "office.user.{$index}",
+        ]);
+    }
+
+    $schools = School::factory()->count(3)->create([
+        'education_monitor_id' => $monitor->id,
+        'education_services_office_id' => $offices->first()->id,
+    ]);
+
+    foreach ($schools as $index => $school) {
+        User::factory()->create([
+            'scope' => UserScope::SCHOOL,
+            'role' => UserRole::EMPLOYEE,
+            'organization_type' => School::class,
+            'organization_id' => $school->id,
+            'name' => "School User {$index}",
+            'username' => "school.user.{$index}",
+        ]);
+    }
+
+    $officeEagerLoadQueries = 0;
+    $schoolEagerLoadQueries = 0;
+
+    DB::listen(function ($query) use (&$officeEagerLoadQueries, &$schoolEagerLoadQueries): void {
+        if (preg_match('/^select\b.+\bfrom\s+[`"]?education_services_offices[`"]?\s+where\s+[`"]?education_services_offices[`"]?[.][`"]?id[`"]?\s+in\s*\(/i', $query->sql) === 1) {
+            $officeEagerLoadQueries++;
+        }
+
+        if (preg_match('/^select\b.+\bfrom\s+[`"]?schools[`"]?\s+where\s+[`"]?schools[`"]?[.][`"]?id[`"]?\s+in\s*\(/i', $query->sql) === 1) {
+            $schoolEagerLoadQueries++;
+        }
+    });
+
+    $this->actingAs($user, 'education_monitor')
+        ->get(route('education-monitor.users.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('users.data', 7)
+            ->where('users.data', fn ($data) => collect($data)->every(fn ($row) => $row['can']['view'] === true))
+        );
+
+    // Morph eager-load should issue one lookup per organization type, not one per user.
+    expect($officeEagerLoadQueries)->toBe(1)
+        ->and($schoolEagerLoadQueries)->toBe(1);
 });
