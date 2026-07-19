@@ -17,6 +17,7 @@ use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -50,7 +51,9 @@ class UserController extends Controller
             ])
             ->forCurrentEducationMonitor()
             ->with([
-                'organization' => function (MorphTo $morphTo): void {
+                'organization' => function (Relation $morphTo): void {
+                    assert($morphTo instanceof MorphTo);
+
                     $morphTo->constrain([
                         EducationServicesOffice::class => function (Builder $query): void {
                             $query->select(['id', 'education_monitor_id']);
