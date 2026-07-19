@@ -9,6 +9,7 @@ use App\Http\Controllers\EducationMonitor\SchoolController;
 use App\Http\Controllers\EducationMonitor\SchoolReportController;
 use App\Http\Controllers\EducationMonitor\StudentController;
 use App\Http\Controllers\EducationMonitor\StudentCountByGradeLevelReportController;
+use App\Http\Controllers\EducationMonitor\StudentTransferController;
 use App\Http\Controllers\EducationMonitor\StudentUnassignedToSchoolController;
 use App\Http\Controllers\EducationMonitor\UserController;
 use App\Support\Auth\DashboardAuth;
@@ -48,6 +49,11 @@ Route::middleware(['auth:education_monitor', 'ensure.password.changed'])->group(
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
         Route::get('/unassigned-to-school', [StudentUnassignedToSchoolController::class, 'index'])->name('students.unassigned-to-school.index');
         Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
+
+        // Student Transfers
+        Route::get('/transfers/create', [StudentTransferController::class, 'create'])->name('students.transfers.create');
+        Route::post('/transfers', [StudentTransferController::class, 'store'])->name('students.transfers.store');
+        Route::delete('/transfers/{student}', [StudentTransferController::class, 'destroy'])->name('students.transfers.destroy');
     });
 
     // Users
@@ -73,6 +79,7 @@ Route::middleware(['auth:education_monitor', 'ensure.password.changed'])->group(
         Route::get('/student-count-by-grade-level/print', [StudentCountByGradeLevelReportController::class, 'print'])->name('reports.student-count-by-grade-level.print');
     });
 
+    // Account Settings
     Route::prefix('/account-settings')->group(function () {
         Route::redirect('/', '/education-monitor/account-settings/profile');
 

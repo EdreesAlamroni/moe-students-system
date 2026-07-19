@@ -2,15 +2,18 @@ import React from 'react'
 
 import { Head } from "@inertiajs/react";
 
-import type { Student } from "@/types";
+import type { CanPermissions, Student } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
+import ActionsSection from "@/components/ui/structure/actions-section";
+
 import { DetailField, DetailFields } from "@/components/ui/display/detail-field";
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
 
 import { StudentClassroomField, StudentGradeLevelField } from "@/components/shared/students/student-enrollment-fields";
+import TransferStudentOut from "@/components/shared/students/transfer-student-out";
 
 import { NotepadTextIcon } from "lucide-react";
 
@@ -18,106 +21,121 @@ import { index, show } from "@/routes/education-monitor/students";
 
 type PageProps = {
     student: Student;
+    canAny: boolean;
+    can: CanPermissions;
 };
 
-export default function Show({ student }: PageProps) {
+export default function Show({ student, canAny, can }: PageProps) {
     return (
-        <MainContainer>
+        <>
             <Head title="عرض بيانات الطالب" />
 
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <NotepadTextIcon />
-                            <span>عرض بيانات الطالب</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-6">
-                        <DetailFields columns={2}>
-                            <DetailField>
-                                <DetailLabel>المُراقبة</DetailLabel>
-                                <DetailValue value={student.monitor?.name} />
-                            </DetailField>
+            <MainContainer>
+                {canAny && (
+                    <ActionsSection>
+                        {(can.transferStudentOut) && (
+                            <TransferStudentOut
+                                student={student}
+                                context="education-monitor"
+                            />
+                        )}
+                    </ActionsSection>
+                )}
 
-                            <DetailField>
-                                <DetailLabel>المدرسة</DetailLabel>
-                                <DetailValue value={student.school?.name} />
-                            </DetailField>
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <NotepadTextIcon />
+                                <span>عرض بيانات الطالب</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-6">
+                            <DetailFields columns={2}>
+                                <DetailField>
+                                    <DetailLabel>المُراقبة</DetailLabel>
+                                    <DetailValue value={student.monitor?.name} />
+                                </DetailField>
 
-                            <StudentGradeLevelField student={student} />
+                                <DetailField>
+                                    <DetailLabel>المدرسة</DetailLabel>
+                                    <DetailValue value={student.school?.name} />
+                                </DetailField>
 
-                            <StudentClassroomField student={student} />
+                                <StudentGradeLevelField student={student} />
 
-                            <DetailField>
-                                <DetailLabel>صفة القيد</DetailLabel>
-                                <DetailValue value={student.registration_status.name} />
-                            </DetailField>
+                                <StudentClassroomField student={student} />
 
-                            <DetailField>
-                                <DetailLabel>صفة قيد الإمتحانات</DetailLabel>
-                                <DetailValue value={student.exam_enrollment_status?.name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>صفة القيد</DetailLabel>
+                                    <DetailValue value={student.registration_status.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الاسم الأول للطالب</DetailLabel>
-                                <DetailValue value={student.first_name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>صفة قيد الإمتحانات</DetailLabel>
+                                    <DetailValue value={student.exam_enrollment_status?.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الاسم الأب للطالب</DetailLabel>
-                                <DetailValue value={student.father_name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الاسم الأول للطالب</DetailLabel>
+                                    <DetailValue value={student.first_name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>اسم الجد للطالب</DetailLabel>
-                                <DetailValue value={student.grandfather_name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الاسم الأب للطالب</DetailLabel>
+                                    <DetailValue value={student.father_name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>اللقب للطالب</DetailLabel>
-                                <DetailValue value={student.surname} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>اسم الجد للطالب</DetailLabel>
+                                    <DetailValue value={student.grandfather_name} />
+                                </DetailField>
 
-                            <DetailField className="col-span-full">
-                                <DetailLabel>اسم الأم</DetailLabel>
-                                <DetailValue value={student.mother_name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>اللقب للطالب</DetailLabel>
+                                    <DetailValue value={student.surname} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الجنسية</DetailLabel>
-                                <DetailValue value={student.nationality?.name} />
-                            </DetailField>
+                                <DetailField className="col-span-full">
+                                    <DetailLabel>اسم الأم</DetailLabel>
+                                    <DetailValue value={student.mother_name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>رقم جواز السفر</DetailLabel>
-                                <DetailValue value={student.passport_number} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الجنسية</DetailLabel>
+                                    <DetailValue value={student.nationality?.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الجنس</DetailLabel>
-                                <DetailValue value={student.gender.name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>رقم جواز السفر</DetailLabel>
+                                    <DetailValue value={student.passport_number} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>تاريخ الميلاد</DetailLabel>
-                                <DetailValue value={student.date_of_birth} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الجنس</DetailLabel>
+                                    <DetailValue value={student.gender.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الرقم الوطني</DetailLabel>
-                                <DetailValue value={student.national_id} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>تاريخ الميلاد</DetailLabel>
+                                    <DetailValue value={student.date_of_birth} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>رقم القيد</DetailLabel>
-                                <DetailValue value={student.family_registration_number} className="font-mono" />
-                            </DetailField>
-                        </DetailFields>
-                    </CardContent>
-                </Card>
-            </section>
-        </MainContainer>
+                                <DetailField>
+                                    <DetailLabel>الرقم الوطني</DetailLabel>
+                                    <DetailValue value={student.national_id} className="font-mono" />
+                                </DetailField>
+
+                                <DetailField>
+                                    <DetailLabel>رقم القيد</DetailLabel>
+                                    <DetailValue value={student.family_registration_number} className="font-mono" />
+                                </DetailField>
+                            </DetailFields>
+                        </CardContent>
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     );
 }
 

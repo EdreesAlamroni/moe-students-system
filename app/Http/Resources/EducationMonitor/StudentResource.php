@@ -22,6 +22,7 @@ class StudentResource extends JsonResource
             'number' => $student->number,
             'registration_status' => $student->registration_status->toArray(),
             'exam_enrollment_status' => $student->exam_enrollment_status->toArray(),
+            'full_name' => $student->full_name,
             'first_name' => $student->first_name,
             'father_name' => $student->father_name,
             'grandfather_name' => $student->grandfather_name,

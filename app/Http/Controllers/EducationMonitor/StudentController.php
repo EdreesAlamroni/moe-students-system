@@ -9,6 +9,7 @@ use App\Http\Resources\EducationMonitor\StudentResource;
 use App\Models\Nationality;
 use App\Models\School;
 use App\Models\Student;
+use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -51,6 +52,7 @@ class StudentController extends Controller
                     $request,
                 ),
             ] : []),
+            ...ModelAbilityMap::make(Student::class, ['addTransferredStudent']),
         ]);
     }
 
@@ -68,6 +70,7 @@ class StudentController extends Controller
             'student' => ResourcePayloadBuilder::make(
                 StudentResource::make($student),
             ),
+            ...ModelAbilityMap::make($student, ['transferStudentOut']),
         ]);
     }
 
