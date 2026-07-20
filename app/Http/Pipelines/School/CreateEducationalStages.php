@@ -2,7 +2,7 @@
 
 namespace App\Http\Pipelines\School;
 
-use App\Actions\Administration\School\CreateEducationalStages as CreateEducationalStagesAction;
+use App\Actions\School\CreateEducationalStages as CreateEducationalStagesAction;
 use App\Http\Requests\Administration\School\StoreRequest as AdministrationStoreRequest;
 use App\Http\Requests\EducationMonitor\School\StoreRequest as EducationMonitorStoreRequest;
 use App\Http\Requests\EducationServicesOffice\School\StoreRequest as EducationServicesOfficeStoreRequest;

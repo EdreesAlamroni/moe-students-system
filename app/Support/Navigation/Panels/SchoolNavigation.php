@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Models\Classroom;
 use App\Models\GradeLevel;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
@@ -27,10 +28,10 @@ class SchoolNavigation extends NavigationPanel
             ],
             [
                 'title' => 'الفصول الدراسية',
-                'href' => '#',
+                'href' => route('school.classrooms.index'),
                 'icon' => 'PresentationIcon',
                 'activeRoutes' => 'school.classrooms.*',
-                'can' => true,
+                'can' => $this->user?->canAny(['viewAny'], Classroom::class),
             ],
             [
                 'title' => 'الطلاب',

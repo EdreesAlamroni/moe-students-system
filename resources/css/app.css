@@ -192,6 +192,17 @@
     html {
         @apply font-sans;
     }
+
+    #nprogress .spinner {
+        right: unset !important;
+        left: 1.25rem !important;
+        top: 1.25rem !important;
+    }
+
+    [data-sonner-toast][data-styled='true'] [data-close-button] {
+        left: -15px !important;
+        right: unset !important;
+    }
 }
 
 @theme inline {

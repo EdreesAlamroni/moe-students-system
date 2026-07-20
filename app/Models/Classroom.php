@@ -3,17 +3,41 @@
 namespace App\Models;
 
 use App\Concerns\HasUuid;
+use App\Enums\SchoolEducationalStageEnum;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $academic_year_id
+ * @property int $school_id
+ * @property int $grade_level_id
+ * @property string $name
+ * @property int $capacity
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $deleted_at
+ * @property-read AcademicYear $academicYear
+ * @property-read GradeLevel $gradeLevel
+ * @property-read School $school
+ * @property-read EloquentCollection<ClassSchedule> $schedules
+ * @property-read int|null $schedules_count
+ * @property-read EloquentCollection<Student> $allStudents
+ * @property-read EloquentCollection<Student> $students
+ * @property-read int $students_count
+ */
 #[Guarded(['id'])]
 class Classroom extends Model
 {
@@ -42,7 +66,9 @@ class Classroom extends Model
             return $query;
         }
 
-        return $query->where('school_id', '=', $id);
+        $table = $query->getModel()->getTable();
+
+        return $query->where("{$table}.school_id", '=', $id);
     }
 
     #[Scope]
@@ -54,9 +80,57 @@ class Classroom extends Model
             return $query;
         }
 
+        $table = $query->getModel()->getTable();
+
         return $query
-            ->where('academic_year_id', '=', AcademicYear::currentId())
-            ->where('school_id', '=', $id);
+            ->where("{$table}.academic_year_id", '=', AcademicYear::currentId())
+            ->where("{$table}.school_id", '=', $id);
+    }
+
+    #[Scope]
+    protected function ordered(Builder $query, string $direction = 'asc'): Builder
+    {
+        $table = $query->getModel()->getTable();
+
+        $query->join('grade_levels', function (JoinClause $join) use ($table): void {
+            $join
+                ->on('grade_levels.id', '=', "{$table}.grade_level_id")
+                ->whereNull('grade_levels.deleted_at');
+        });
+
+        $columns = $query->getQuery()->columns;
+
+        if ($columns === null) {
+            $query->select("{$table}.*");
+        } else {
+            $qualifiedColumns = [];
+
+            foreach ($columns as $column) {
+                if (is_string($column) && ! str_contains($column, '.')) {
+                    $qualifiedColumns[] = "{$table}.{$column}";
+                } else {
+                    $qualifiedColumns[] = $column;
+                }
+            }
+
+            $query->select($qualifiedColumns);
+        }
+
+        /** @var \Illuminate\Database\Connection $connection */
+        $connection = $query->getConnection();
+        $stages = SchoolEducationalStageEnum::orderedValues();
+
+        if (in_array($connection->getDriverName(), ['sqlite', 'pgsql'], true)) {
+            return $query
+                ->orderBy('grade_levels.educational_stage')
+                ->orderBy('grade_levels.order', $direction)
+                ->orderBy("{$table}.name", $direction);
+        }
+
+        return $query
+            ->orderByRaw('FIELD(grade_levels.educational_stage, ?, ?, ?)', $stages)
+            ->orderBy('grade_levels.order', $direction)
+            ->orderByRaw("{$table}.name COLLATE utf8mb4_unicode_ci {$direction}");
     }
 
     /*
@@ -107,6 +181,8 @@ class Classroom extends Model
      */
     public function students(): HasManyThrough
     {
+        $table = $this->getTable();
+
         return $this->hasManyThrough(
             Student::class,
             StudentEnrollment::class,
@@ -114,7 +190,7 @@ class Classroom extends Model
             'id',
             'id',
             'student_id',
-        )->where('academic_year_id', '=', AcademicYear::currentId());
+        )->whereColumn('student_enrollments.academic_year_id', "{$table}.academic_year_id");
     }
 
     /*
