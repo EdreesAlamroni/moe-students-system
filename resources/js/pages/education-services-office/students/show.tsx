@@ -26,7 +26,7 @@ export default function Show({ student }: PageProps) {
         <>
             <Head title="عرض بيانات الطالب" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 <section>
                     <Card>
                         <CardHeader className="border-b">

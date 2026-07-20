@@ -44,7 +44,7 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
         <>
             <Head title="تقرير المدارس" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
                         {can.print && (

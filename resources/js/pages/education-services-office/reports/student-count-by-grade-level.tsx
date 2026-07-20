@@ -38,7 +38,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
         <>
             <Head title="إحصائية الطلاب حسب الصفوف الدراسية" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
                         {can.print && (

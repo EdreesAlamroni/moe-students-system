@@ -32,7 +32,7 @@ export default function Show({ school, canAny, can }: PageProps) {
         <>
             <Head title="عرض بيانات المدرسة" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
                         {can.update && (

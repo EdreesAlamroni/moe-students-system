@@ -145,7 +145,7 @@ export default function Index({
         <>
             <Head title="الطلاب" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 <section>
                     <Card>
                         <CardHeader className="border-b">

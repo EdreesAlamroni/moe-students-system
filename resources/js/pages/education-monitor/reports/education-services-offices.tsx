@@ -41,7 +41,7 @@ export default function Index({ offices, filter, canAny, can }: PageProps) {
         <>
             <Head title="تقرير مكاتب الخدمات التعليمية" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
                         {can.print && (

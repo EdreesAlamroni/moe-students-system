@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 
 import type { CanPermissions, Student } from "@/types";
 
@@ -26,12 +26,14 @@ type PageProps = {
 };
 
 export default function Show({ student, canAny, can }: PageProps) {
+    const { currentAcademicYear } = usePage().props;
+
     return (
         <>
             <Head title="عرض بيانات الطالب" />
 
-            <MainContainer>
-                {canAny && (
+            <MainContainer changeAcademicYearNotice>
+                {(canAny && currentAcademicYear?.is_active) && (
                     <ActionsSection>
                         {(can.transferStudentOut) && (
                             <TransferStudentOut

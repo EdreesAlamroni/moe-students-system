@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { Form, Head, Link, router } from "@inertiajs/react";
+import { Form, Head, Link, router, usePage } from "@inertiajs/react";
 
 import type { CanPermissions, Enum, Nationality, Paginated, School, Student } from "@/types";
 
@@ -113,6 +113,8 @@ export default function Index({
     canAny,
     can,
 }: PageProps) {
+    const { currentAcademicYear } = usePage().props;
+
     const [pendingSchoolId, setPendingSchoolId] = useState<string | undefined>();
     const [isNavigating, setIsNavigating] = useState(false);
 
@@ -151,8 +153,8 @@ export default function Index({
         <>
             <Head title="الطلاب" />
 
-            <MainContainer>
-                {canAny && (
+            <MainContainer changeAcademicYearNotice>
+                {(canAny && currentAcademicYear?.is_active) && (
                     <ActionsSection>
                         {can.addTransferredStudent && (
                             <Button
@@ -167,6 +169,7 @@ export default function Index({
                         )}
                     </ActionsSection>
                 )}
+
                 <section>
                     <Card>
                         <CardHeader className="border-b">
