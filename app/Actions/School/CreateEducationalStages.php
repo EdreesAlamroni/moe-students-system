@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Administration\School;
+namespace App\Actions\School;
 
 use App\Models\School;
 

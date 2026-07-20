@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
+use App\Http\Controllers\School\ClassroomController;
+use App\Http\Controllers\School\ClassScheduleController;
 use App\Http\Controllers\School\DashboardController;
 use App\Http\Controllers\School\GradeLevelController;
 use App\Http\Controllers\School\UserController;
@@ -15,9 +17,25 @@ RegistersDashboardAuthRoutes::registerGuestRoutes(DashboardAuth::school());
 Route::middleware(['auth:school', 'ensure.password.changed'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-    // Users
+    // Grade Levels
     Route::prefix('grade-levels')->group(function () {
         Route::get('/', [GradeLevelController::class, 'index'])->name('grade-levels.index');
+    });
+
+    // Classrooms
+    Route::prefix('classrooms')->group(function () {
+        Route::get('/', [ClassroomController::class, 'index'])->name('classrooms.index');
+        Route::get('/create', [ClassroomController::class, 'create'])->name('classrooms.create');
+        Route::post('/', [ClassroomController::class, 'store'])->name('classrooms.store');
+        Route::get('/{classroom}', [ClassroomController::class, 'show'])->name('classrooms.show');
+        Route::get('/{classroom}/edit', [ClassroomController::class, 'edit'])->name('classrooms.edit');
+        Route::put('/{classroom}', [ClassroomController::class, 'update'])->name('classrooms.update');
+
+        // Class Schedules
+        Route::get('/{classroom}/schedule', [ClassScheduleController::class, 'show'])->name('classrooms.class-schedules.show');
+        Route::get('/{classroom}/schedule/edit', [ClassScheduleController::class, 'edit'])->name('classrooms.class-schedules.edit');
+        Route::put('/{classroom}/schedule', [ClassScheduleController::class, 'update'])->name('classrooms.class-schedules.update');
+        Route::get('/{classroom}/schedule/print', [ClassScheduleController::class, 'print'])->name('classrooms.class-schedules.print');
     });
 
     // Users
