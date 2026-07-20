@@ -146,7 +146,7 @@ export default function Index({
         <>
             <Head title="الطلاب غير المسجّلين في مدارس" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 <section>
                     <Card>
                         <CardHeader className="border-b">

@@ -47,176 +47,178 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
     const hasPagination = officesData.length > 0 && officesMeta.last_page > 1;
 
     return (
-        <MainContainer>
+        <>
             <Head title="عرض بيانات المُراقبة" />
 
-            {canAny && (
-                <ActionsSection>
-                    {can.update && (
-                        <Button
-                            variant="outline"
-                            asChild
-                        >
-                            <Link href={edit.url({ monitor: monitor })}>
-                                <SquarePenIcon />
-                                <span>تعديل بيانات المُراقبة</span>
-                            </Link>
-                        </Button>
-                    )}
-
-                    {can.delete && (
-                        <ConfirmDeleteAction
-                            title="حذف المُراقبة"
-                            href={destroy.url({ monitor: monitor })}
-                        />
-                    )}
-                </ActionsSection>
-            )}
-
-            <StatCardsSection
-                items={[
-                    { label: "مكاتب الخدمات التعليمية", value: monitor.offices_count || 0, icon: BuildingIcon },
-                    { label: "المدارس", value: monitor.schools_count || 0, icon: SchoolIcon },
-                    { label: "الطلاب", value: monitor.students_count || 0, icon: UsersIcon },
-                ]}
-                columns={3}
-            />
-
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <NotepadTextIcon />
-                            <span>عرض بيانات المُراقبة</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-6">
-                        <DetailFields columns={2}>
-                            <DetailField>
-                                <DetailLabel>اسم المُراقبة</DetailLabel>
-                                <DetailValue value={monitor.name} />
-                            </DetailField>
-
-                            <DetailField>
-                                <DetailLabel>البلدية</DetailLabel>
-                                <DetailValue value={monitor.municipal?.name} />
-                            </DetailField>
-
-                            <DetailField>
-                                <DetailLabel>رقم الهاتف</DetailLabel>
-                                <DetailValue>
-                                    <PhoneNumberLink value={monitor.phone_number} />
-                                </DetailValue>
-                            </DetailField>
-
-                            <DetailField>
-                                <DetailLabel>رقم هاتف الواتساب</DetailLabel>
-                                <DetailValue>
-                                    <WhatsappLink value={monitor.formatted_whatsapp_phone_number} />
-                                </DetailValue>
-                            </DetailField>
-
-                            <DetailField className="col-span-full">
-                                <DetailLabel>العنوان</DetailLabel>
-                                <DetailValue value={monitor.address} />
-                            </DetailField>
-                        </DetailFields>
-
-                        {monitor.has_coordinates && (
-                            <>
-                                <DetailFields columns={2}>
-                                    <DetailField>
-                                        <DetailLabel>خط العرض</DetailLabel>
-                                        <DetailValue value={monitor.latitude} className="font-mono" />
-                                    </DetailField>
-
-                                    <DetailField>
-                                        <DetailLabel>خط الطول</DetailLabel>
-                                        <DetailValue value={monitor.longitude} className="font-mono" />
-                                    </DetailField>
-                                </DetailFields>
-
-                                <DetailFields columns={1}>
-                                    <DetailField className="col-span-full">
-                                        <DetailLabel>الموقع على الخريطة</DetailLabel>
-                                        <LocationShowMap
-                                            latitude={monitor.latitude}
-                                            longitude={monitor.longitude}
-                                        />
-                                    </DetailField>
-                                </DetailFields>
-                            </>
+            <MainContainer showAcademicYearNotice>
+                {canAny && (
+                    <ActionsSection>
+                        {can.update && (
+                            <Button
+                                variant="outline"
+                                asChild
+                            >
+                                <Link href={edit.url({ monitor: monitor })}>
+                                    <SquarePenIcon />
+                                    <span>تعديل بيانات المُراقبة</span>
+                                </Link>
+                            </Button>
                         )}
-                    </CardContent>
-                </Card>
-            </section>
 
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <ListIcon />
-                            <div className="flex items-center gap-x-1.5">
-                                <span>مكاتب الخدمات التعليمية</span>
-                                <span className="font-mono">({officesMeta.total})</span>
-                            </div>
-                        </CardTitle>
-                    </CardHeader>
-                    {officesData.length > 0 ? (
-                        <CardTableContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead scope="col" className="font-mono w-24">#</TableHead>
-                                        <TableHead scope="col">اسم مكتب الخدمات التعليمية</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
-                                        <TableHead scope="col" />
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {officesData.map((office: OfficeProps, index: number) => (
-                                        <TableRow key={office.uuid}>
-                                            <TableCell className="font-mono">{index + 1}</TableCell>
-                                            <TableCell>{office.name}</TableCell>
-                                            <TableCell className="text-center">
-                                                <TableCellNullableValue className="font-mono" value={office.schools_count} fallback={0} />
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                <TableCellNullableValue className="font-mono" value={office.students_count} fallback={0} />
-                                            </TableCell>
-                                            <TableCellActions>
-                                                {office.canAny && (
-                                                    <>
-                                                        {office.can.view && (
-                                                            <ViewDetailsLink
-                                                                href={showOffice.url({ office: office })}
-                                                            />
-                                                        )}
-                                                    </>
-                                                )}
-                                            </TableCellActions>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardTableContent>
-                    ) : (
-                        <CardContent>
-                            <EmptyState />
-                        </CardContent>
-                    )}
-                    {hasPagination && (
-                        <CardFooter className="border-t">
-                            <Paginator
-                                links={officesLinks}
-                                meta={officesMeta}
+                        {can.delete && (
+                            <ConfirmDeleteAction
+                                title="حذف المُراقبة"
+                                href={destroy.url({ monitor: monitor })}
                             />
-                        </CardFooter>
-                    )}
-                </Card>
-            </section>
-        </MainContainer>
+                        )}
+                    </ActionsSection>
+                )}
+
+                <StatCardsSection
+                    items={[
+                        { label: "مكاتب الخدمات التعليمية", value: monitor.offices_count || 0, icon: BuildingIcon },
+                        { label: "المدارس", value: monitor.schools_count || 0, icon: SchoolIcon },
+                        { label: "الطلاب", value: monitor.students_count || 0, icon: UsersIcon },
+                    ]}
+                    columns={3}
+                />
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <NotepadTextIcon />
+                                <span>عرض بيانات المُراقبة</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-6">
+                            <DetailFields columns={2}>
+                                <DetailField>
+                                    <DetailLabel>اسم المُراقبة</DetailLabel>
+                                    <DetailValue value={monitor.name} />
+                                </DetailField>
+
+                                <DetailField>
+                                    <DetailLabel>البلدية</DetailLabel>
+                                    <DetailValue value={monitor.municipal?.name} />
+                                </DetailField>
+
+                                <DetailField>
+                                    <DetailLabel>رقم الهاتف</DetailLabel>
+                                    <DetailValue>
+                                        <PhoneNumberLink value={monitor.phone_number} />
+                                    </DetailValue>
+                                </DetailField>
+
+                                <DetailField>
+                                    <DetailLabel>رقم هاتف الواتساب</DetailLabel>
+                                    <DetailValue>
+                                        <WhatsappLink value={monitor.formatted_whatsapp_phone_number} />
+                                    </DetailValue>
+                                </DetailField>
+
+                                <DetailField className="col-span-full">
+                                    <DetailLabel>العنوان</DetailLabel>
+                                    <DetailValue value={monitor.address} />
+                                </DetailField>
+                            </DetailFields>
+
+                            {monitor.has_coordinates && (
+                                <>
+                                    <DetailFields columns={2}>
+                                        <DetailField>
+                                            <DetailLabel>خط العرض</DetailLabel>
+                                            <DetailValue value={monitor.latitude} className="font-mono" />
+                                        </DetailField>
+
+                                        <DetailField>
+                                            <DetailLabel>خط الطول</DetailLabel>
+                                            <DetailValue value={monitor.longitude} className="font-mono" />
+                                        </DetailField>
+                                    </DetailFields>
+
+                                    <DetailFields columns={1}>
+                                        <DetailField className="col-span-full">
+                                            <DetailLabel>الموقع على الخريطة</DetailLabel>
+                                            <LocationShowMap
+                                                latitude={monitor.latitude}
+                                                longitude={monitor.longitude}
+                                            />
+                                        </DetailField>
+                                    </DetailFields>
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+                </section>
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <ListIcon />
+                                <div className="flex items-center gap-x-1.5">
+                                    <span>مكاتب الخدمات التعليمية</span>
+                                    <span className="font-mono">({officesMeta.total})</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        {officesData.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">اسم مكتب الخدمات التعليمية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" />
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {officesData.map((office: OfficeProps, index: number) => (
+                                            <TableRow key={office.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{office.name}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue className="font-mono" value={office.schools_count} fallback={0} />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue className="font-mono" value={office.students_count} fallback={0} />
+                                                </TableCell>
+                                                <TableCellActions>
+                                                    {office.canAny && (
+                                                        <>
+                                                            {office.can.view && (
+                                                                <ViewDetailsLink
+                                                                    href={showOffice.url({ office: office })}
+                                                                />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </TableCellActions>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState />
+                            </CardContent>
+                        )}
+                        {hasPagination && (
+                            <CardFooter className="border-t">
+                                <Paginator
+                                    links={officesLinks}
+                                    meta={officesMeta}
+                                />
+                            </CardFooter>
+                        )}
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     )
 }
 

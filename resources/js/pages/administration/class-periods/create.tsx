@@ -37,7 +37,7 @@ export default function Create({ academicPeriod, nextOrder }: PageProps) {
         <>
             <Head title="إضافة حصة جديدة" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 <Form
                     {...store.form()}
                     disableWhileProcessing

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 
 import type { CanPermissions, ClassPeriod } from "@/types";
 
@@ -25,84 +25,88 @@ type PageProps = {
 }
 
 export default function Show({ classPeriod, canAny, can }: PageProps) {
+    const { currentAcademicYear } = usePage().props;
+
     return (
-        <MainContainer>
+        <>
             <Head title="عرض بيانات الحصة" />
 
-            {canAny && (
-                <ActionsSection>
-                    {can.update && (
-                        <Button
-                            variant="outline"
-                            asChild
-                        >
-                            <Link href={edit.url({ classPeriod: classPeriod })}>
-                                <SquarePenIcon />
-                                <span>تعديل بيانات الحصة</span>
-                            </Link>
-                        </Button>
-                    )}
+            <MainContainer showAcademicYearNotice>
+                {(canAny && currentAcademicYear?.is_active) && (
+                    <ActionsSection>
+                        {can.update && (
+                            <Button
+                                variant="outline"
+                                asChild
+                            >
+                                <Link href={edit.url({ classPeriod: classPeriod })}>
+                                    <SquarePenIcon />
+                                    <span>تعديل بيانات الحصة</span>
+                                </Link>
+                            </Button>
+                        )}
 
-                    {can.delete && (
-                        <ConfirmDeleteAction
-                            title="حذف الحصة الدراسية"
-                            href={destroy.url({ classPeriod: classPeriod })}
-                        />
-                    )}
-                </ActionsSection>
-            )}
+                        {can.delete && (
+                            <ConfirmDeleteAction
+                                title="حذف الحصة الدراسية"
+                                href={destroy.url({ classPeriod: classPeriod })}
+                            />
+                        )}
+                    </ActionsSection>
+                )}
 
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <NotepadTextIcon />
-                            <span>عرض بيانات الحصة</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-6">
-                        <DetailFields columns={2}>
-                            <DetailField>
-                                <DetailLabel>اسم الحصة</DetailLabel>
-                                <DetailValue value={classPeriod.name} />
-                            </DetailField>
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <NotepadTextIcon />
+                                <span>عرض بيانات الحصة</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-6">
+                            <DetailFields columns={2}>
+                                <DetailField>
+                                    <DetailLabel>اسم الحصة</DetailLabel>
+                                    <DetailValue value={classPeriod.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الفترة الدراسية</DetailLabel>
-                                <DetailValue value={classPeriod.academic_period.name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الفترة الدراسية</DetailLabel>
+                                    <DetailValue value={classPeriod.academic_period.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>وقت البداية</DetailLabel>
-                                <DetailValue value={classPeriod.start_time} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>وقت البداية</DetailLabel>
+                                    <DetailValue value={classPeriod.start_time} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>وقت النهاية</DetailLabel>
-                                <DetailValue value={classPeriod.end_time} className="font-mono" />
-                            </DetailField>
-                        </DetailFields>
+                                <DetailField>
+                                    <DetailLabel>وقت النهاية</DetailLabel>
+                                    <DetailValue value={classPeriod.end_time} className="font-mono" />
+                                </DetailField>
+                            </DetailFields>
 
-                        <DetailFields columns={3}>
-                            <DetailField>
-                                <DetailLabel>الترتيب</DetailLabel>
-                                <DetailValue value={classPeriod.order} className="font-mono" />
-                            </DetailField>
+                            <DetailFields columns={3}>
+                                <DetailField>
+                                    <DetailLabel>الترتيب</DetailLabel>
+                                    <DetailValue value={classPeriod.order} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>النوع</DetailLabel>
-                                <DetailValue value={classPeriod.type} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>النوع</DetailLabel>
+                                    <DetailValue value={classPeriod.type} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>عدد الجداول المرتبطة</DetailLabel>
-                                <DetailValue value={classPeriod.schedules_count} className="font-mono" />
-                            </DetailField>
-                        </DetailFields>
-                    </CardContent>
-                </Card>
-            </section>
-        </MainContainer>
+                                <DetailField>
+                                    <DetailLabel>عدد الجداول المرتبطة</DetailLabel>
+                                    <DetailValue value={classPeriod.schedules_count} className="font-mono" />
+                                </DetailField>
+                            </DetailFields>
+                        </CardContent>
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     )
 }
 

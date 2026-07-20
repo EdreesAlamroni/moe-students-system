@@ -52,163 +52,165 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
     const hasPagination = data.length > 0 && meta.last_page > 1;
 
     return (
-        <MainContainer>
+        <>
             <Head title="مكاتب الخدمات التعليمية" />
 
-            {canAny && (
-                <ActionsSection>
-                    {can.create && (
-                        <Button
-                            variant="default"
-                            asChild
-                        >
-                            <Link href={create.url()}>
-                                <PlusIcon />
-                                <span>إضافة مكتب خدمات تعليمية جديد</span>
-                            </Link>
-                        </Button>
-                    )}
-                </ActionsSection>
-            )}
+            <MainContainer showAcademicYearNotice>
+                {canAny && (
+                    <ActionsSection>
+                        {can.create && (
+                            <Button
+                                variant="default"
+                                asChild
+                            >
+                                <Link href={create.url()}>
+                                    <PlusIcon />
+                                    <span>إضافة مكتب خدمات تعليمية جديد</span>
+                                </Link>
+                            </Button>
+                        )}
+                    </ActionsSection>
+                )}
 
-            <section>
-                <Form
-                    {...index.form()}
-                >
+                <section>
+                    <Form
+                        {...index.form()}
+                    >
+                        <Card>
+                            <CardHeader className="border-b">
+                                <CardTitle>
+                                    <FunnelIcon />
+                                    <div className="flex items-center gap-x-1.5">
+                                        <span>فرز النتائج</span>
+                                        <span className="font-mono">({meta.total})</span>
+                                    </div>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <Select
+                                        name="filter[education_monitor_id]"
+                                        defaultValue={filter.education_monitor_id || undefined}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="اختر المُراقبة" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {monitors.map((monitor) => (
+                                                    <SelectItem
+                                                        key={monitor.id}
+                                                        value={monitor.id.toString()}
+                                                    >
+                                                        {monitor.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+
+                                    <Input
+                                        type="text"
+                                        name="filter[name]"
+                                        defaultValue={filter.name}
+                                        placeholder="اسم مكتب الخدمات التعليمية"
+                                        autoComplete="off"
+                                    />
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t">
+                                <div className="flex items-center gap-x-3">
+                                    <Button
+                                        type="submit"
+                                        variant="default"
+                                    >
+                                        <SearchIcon />
+                                        <span>بحث</span>
+                                    </Button>
+                                    <Button
+                                        type="reset"
+                                        variant="outline"
+                                        asChild
+                                    >
+                                        <Link href={index.url()}>
+                                            <RefreshCcwIcon />
+                                            <span>مسح حقول الفلتر</span>
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </Form>
+                </section>
+
+                <section>
                     <Card>
                         <CardHeader className="border-b">
                             <CardTitle>
-                                <FunnelIcon />
-                                <div className="flex items-center gap-x-1.5">
-                                    <span>فرز النتائج</span>
-                                    <span className="font-mono">({meta.total})</span>
-                                </div>
+                                <ListIcon />
+                                <span>مكاتب الخدمات التعليمية</span>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <Select
-                                    name="filter[education_monitor_id]"
-                                    defaultValue={filter.education_monitor_id || undefined}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="اختر المُراقبة" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {monitors.map((monitor) => (
-                                                <SelectItem
-                                                    key={monitor.id}
-                                                    value={monitor.id.toString()}
-                                                >
-                                                    {monitor.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
-                                <Input
-                                    type="text"
-                                    name="filter[name]"
-                                    defaultValue={filter.name}
-                                    placeholder="اسم مكتب الخدمات التعليمية"
-                                    autoComplete="off"
-                                />
-                            </div>
-                        </CardContent>
-                        <CardFooter className="border-t">
-                            <div className="flex items-center gap-x-3">
-                                <Button
-                                    type="submit"
-                                    variant="default"
-                                >
-                                    <SearchIcon />
-                                    <span>بحث</span>
-                                </Button>
-                                <Button
-                                    type="reset"
-                                    variant="outline"
-                                    asChild
-                                >
-                                    <Link href={index.url()}>
-                                        <RefreshCcwIcon />
-                                        <span>مسح حقول الفلتر</span>
-                                    </Link>
-                                </Button>
-                            </div>
-                        </CardFooter>
-                    </Card>
-                </Form>
-            </section>
-
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <ListIcon />
-                            <span>مكاتب الخدمات التعليمية</span>
-                        </CardTitle>
-                    </CardHeader>
-                    {data.length > 0 ? (
-                        <CardTableContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead scope="col" className="font-mono w-24">#</TableHead>
-                                        <TableHead scope="col">اسم مكتب الخدمات التعليمية</TableHead>
-                                        <TableHead scope="col">المُراقبة</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
-                                        <TableHead scope="col" />
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {data.map((office: OfficeProps, index: number) => (
-                                        <TableRow key={office.uuid}>
-                                            <TableCell className="font-mono">{index + 1}</TableCell>
-                                            <TableCell>{office.name}</TableCell>
-                                            <TableCell>{office.monitor?.name}</TableCell>
-                                            <TableCell className="text-center">
-                                                <TableCellNullableValue className="font-mono" value={office.schools_count} fallback={0} />
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                <TableCellNullableValue className="font-mono" value={office.students_count} fallback={0} />
-                                            </TableCell>
-                                            <TableCellActions>
-                                                {office.canAny && (
-                                                    <>
-                                                        {office.can.view && (
-                                                            <ViewDetailsLink
-                                                                href={show.url({ office: office })}
-                                                            />
-                                                        )}
-                                                    </>
-                                                )}
-                                            </TableCellActions>
+                        {data.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">اسم مكتب الخدمات التعليمية</TableHead>
+                                            <TableHead scope="col">المُراقبة</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" />
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardTableContent>
-                    ) : (
-                        <CardContent>
-                            <EmptyState
-                                hasFilter={hasFilter}
-                            />
-                        </CardContent>
-                    )}
-                    {hasPagination && (
-                        <CardFooter className="border-t">
-                            <Paginator
-                                links={links}
-                                meta={meta}
-                            />
-                        </CardFooter>
-                    )}
-                </Card>
-            </section>
-        </MainContainer>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {data.map((office: OfficeProps, index: number) => (
+                                            <TableRow key={office.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{office.name}</TableCell>
+                                                <TableCell>{office.monitor?.name}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue className="font-mono" value={office.schools_count} fallback={0} />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue className="font-mono" value={office.students_count} fallback={0} />
+                                                </TableCell>
+                                                <TableCellActions>
+                                                    {office.canAny && (
+                                                        <>
+                                                            {office.can.view && (
+                                                                <ViewDetailsLink
+                                                                    href={show.url({ office: office })}
+                                                                />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </TableCellActions>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState
+                                    hasFilter={hasFilter}
+                                />
+                            </CardContent>
+                        )}
+                        {hasPagination && (
+                            <CardFooter className="border-t">
+                                <Paginator
+                                    links={links}
+                                    meta={meta}
+                                />
+                            </CardFooter>
+                        )}
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     )
 }
 

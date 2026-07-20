@@ -49,7 +49,7 @@ export default function Index({ academicYears, filter, canAny, can }: PageProps)
     const hasPagination = data.length > 0 && meta.last_page > 1;
 
     return (
-        <MainContainer>
+        <MainContainer showAcademicYearNotice>
             <Head title="السنوات الدراسية" />
 
             {canAny && (

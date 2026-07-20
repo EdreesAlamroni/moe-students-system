@@ -24,10 +24,12 @@ import { select as selectAcademicYear } from "@/routes/academic-year";
 
 type MainContainerProps = React.ComponentProps<"main"> & {
     showAcademicYearNotice?: boolean;
+    changeAcademicYearNotice?: boolean;
 };
 
 export default function MainContainer({
     showAcademicYearNotice = false,
+    changeAcademicYearNotice = false,
     children,
     className,
     ...props
@@ -37,13 +39,28 @@ export default function MainContainer({
             className={cn("flex flex-col gap-6 p-4", className)}
             {...props}
         >
-            {showAcademicYearNotice && <AcademicYearNotice />}
+            {(showAcademicYearNotice && !changeAcademicYearNotice) && <ShowAcademicYearNotice />}
+            {changeAcademicYearNotice && <ChangeAcademicYearNotice />}
             {children}
         </main>
     );
 }
 
-function AcademicYearNotice() {
+function ShowAcademicYearNotice() {
+    const { currentAcademicYear } = usePage().props;
+
+    return (
+        <Alert aria-live="polite" aria-atomic="true">
+            <InfoIcon className="mt-px" />
+            <AlertTitle className="flex flex-wrap items-center gap-2">
+                <span>يتم حالياً عرض بيانات السنة الدراسية</span>
+                <span className="font-mono">{currentAcademicYear?.name}</span>
+            </AlertTitle>
+        </Alert>
+    );
+}
+
+function ChangeAcademicYearNotice() {
     const { currentAcademicYear, availableAcademicYears } = usePage().props;
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);

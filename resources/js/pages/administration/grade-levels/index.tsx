@@ -34,119 +34,121 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
     const hasFilter = Object.values(filter).some((value) => value);
 
     return (
-        <MainContainer>
+        <>
             <Head title="الصفوف الدراسية" />
 
-            <section>
-                <Form
-                    {...index.form()}
-                >
+            <MainContainer showAcademicYearNotice>
+                <section>
+                    <Form
+                        {...index.form()}
+                    >
+                        <Card>
+                            <CardHeader className="border-b">
+                                <CardTitle className="flex items-center text-sm gap-x-1.5">
+                                    <div className="flex items-center gap-x-3">
+                                        <FunnelIcon />
+                                        <span>فرز النتائج</span>
+                                    </div>
+                                    <span className="font-mono">({gradeLevels.length})</span>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <Input
+                                        type="text"
+                                        name="filter[name]"
+                                        value={filter.name}
+                                        placeholder="الاسم"
+                                        autoComplete="off"
+                                    />
+
+                                    <Select
+                                        name="filter[educational_stage]"
+                                        defaultValue={filter.educational_stage || undefined}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="اختر المرحلة الدراسية" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {educationalStages.map((stage: Enum) => (
+                                                    <SelectItem
+                                                        key={stage.id}
+                                                        value={stage.id}
+                                                    >
+                                                        {stage.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t">
+                                <div className="flex items-center gap-x-3">
+                                    <Button
+                                        type="submit"
+                                        variant="default"
+                                    >
+                                        <SearchIcon />
+                                        <span>بحث</span>
+                                    </Button>
+                                    <Button
+                                        type="reset"
+                                        variant="outline"
+                                        asChild
+                                    >
+                                        <Link href={index.url()}>
+                                            <RefreshCcwIcon />
+                                            <span>مسح حقول الفلتر</span>
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </Form>
+                </section>
+
+                <section>
                     <Card>
                         <CardHeader className="border-b">
-                            <CardTitle className="flex items-center text-sm gap-x-1.5">
-                                <div className="flex items-center gap-x-3">
-                                    <FunnelIcon />
-                                    <span>فرز النتائج</span>
-                                </div>
-                                <span className="font-mono">({gradeLevels.length})</span>
+                            <CardTitle>
+                                <ListIcon />
+                                <span>الصفوف الدراسية</span>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <Input
-                                    type="text"
-                                    name="filter[name]"
-                                    value={filter.name}
-                                    placeholder="الاسم"
-                                    autoComplete="off"
-                                />
-
-                                <Select
-                                    name="filter[educational_stage]"
-                                    defaultValue={filter.educational_stage || undefined}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="اختر المرحلة الدراسية" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {educationalStages.map((stage: Enum) => (
-                                                <SelectItem
-                                                    key={stage.id}
-                                                    value={stage.id}
-                                                >
-                                                    {stage.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="border-t">
-                            <div className="flex items-center gap-x-3">
-                                <Button
-                                    type="submit"
-                                    variant="default"
-                                >
-                                    <SearchIcon />
-                                    <span>بحث</span>
-                                </Button>
-                                <Button
-                                    type="reset"
-                                    variant="outline"
-                                    asChild
-                                >
-                                    <Link href={index.url()}>
-                                        <RefreshCcwIcon />
-                                        <span>مسح حقول الفلتر</span>
-                                    </Link>
-                                </Button>
-                            </div>
-                        </CardFooter>
-                    </Card>
-                </Form>
-            </section>
-
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <ListIcon />
-                            <span>الصفوف الدراسية</span>
-                        </CardTitle>
-                    </CardHeader>
-                    {gradeLevels.length > 0 ? (
-                        <CardTableContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead scope="col" className="font-mono w-24">#</TableHead>
-                                        <TableHead scope="col">الاسم</TableHead>
-                                        <TableHead scope="col">المرحلة الدراسية</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {gradeLevels.map((gradeLevel: GradeLevel, index: number) => (
-                                        <TableRow key={gradeLevel.uuid}>
-                                            <TableCell className="font-mono">{index + 1}</TableCell>
-                                            <TableCell>{gradeLevel.name}</TableCell>
-                                            <TableCell>{gradeLevel.educational_stage.name}</TableCell>
+                        {gradeLevels.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">الاسم</TableHead>
+                                            <TableHead scope="col">المرحلة الدراسية</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardTableContent>
-                    ) : (
-                        <CardContent>
-                            <EmptyState
-                                hasFilter={hasFilter}
-                            />
-                        </CardContent>
-                    )}
-                </Card>
-            </section>
-        </MainContainer>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {gradeLevels.map((gradeLevel: GradeLevel, index: number) => (
+                                            <TableRow key={gradeLevel.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{gradeLevel.name}</TableCell>
+                                                <TableCell>{gradeLevel.educational_stage.name}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState
+                                    hasFilter={hasFilter}
+                                />
+                            </CardContent>
+                        )}
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     )
 }
 

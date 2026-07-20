@@ -46,7 +46,7 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
         <>
             <Head title="تقرير المدارس" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
                         {can.print && (

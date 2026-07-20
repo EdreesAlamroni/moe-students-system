@@ -46,175 +46,177 @@ export default function Show({ warehouse, monitors, canAny, can }: PageProps) {
     const hasPagination = monitorsData.length > 0 && monitorsMeta.last_page > 1;
 
     return (
-        <MainContainer>
+        <>
             <Head title="عرض بيانات المخزن" />
 
-            {canAny && (
-                <ActionsSection>
-                    {can.update && (
-                        <Button
-                            variant="outline"
-                            asChild
-                        >
-                            <Link href={edit.url({ warehouse: warehouse })}>
-                                <SquarePenIcon />
-                                <span>تعديل بيانات المخزن</span>
-                            </Link>
-                        </Button>
-                    )}
-
-                    {can.delete && (
-                        <ConfirmDeleteAction
-                            title="حذف المخزن"
-                            href={destroy.url({ warehouse: warehouse })}
-                        />
-                    )}
-                </ActionsSection>
-            )}
-
-
-            <StatCardsSection
-                items={[
-                    { label: "المُراقبات", value: warehouse.monitors_count || 0, icon: LandmarkIcon },
-                    { label: "المدارس", value: warehouse.schools_count || 0, icon: SchoolIcon },
-                ]}
-                columns={2}
-            />
-
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <NotepadTextIcon />
-                            <span>عرض بيانات المخزن</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-6">
-                        <DetailFields columns={2}>
-                            <DetailField>
-                                <DetailLabel>اسم المخزن</DetailLabel>
-                                <DetailValue value={warehouse.name} />
-                            </DetailField>
-
-                            <DetailField>
-                                <DetailLabel>العنوان</DetailLabel>
-                                <DetailValue value={warehouse.address} />
-                            </DetailField>
-                        </DetailFields>
-
-                        {/* <DetailFields columns={1}>
-                            <DetailField className="col-span-full">
-                                <DetailLabel>المُراقبات</DetailLabel>
-                                <DetailValue variant="default">
-                                    {warehouse.monitors && warehouse.monitors.length > 0 ? (
-                                        <ul className="flex flex-col gap-3 list-disc list-inside">
-                                            {warehouse.monitors.map((monitor) => (
-                                                <li key={monitor.uuid}>{monitor.name}</li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        "-"
-                                    )}
-                                </DetailValue>
-                            </DetailField>
-                        </DetailFields> */}
-
-                        {warehouse.has_coordinates && (
-                            <>
-                                <DetailFields columns={2}>
-                                    <DetailField>
-                                        <DetailLabel>خط العرض</DetailLabel>
-                                        <DetailValue value={warehouse.latitude} className="font-mono" />
-                                    </DetailField>
-
-                                    <DetailField>
-                                        <DetailLabel>خط الطول</DetailLabel>
-                                        <DetailValue value={warehouse.longitude} className="font-mono" />
-                                    </DetailField>
-                                </DetailFields>
-
-                                <DetailFields columns={1}>
-                                    <DetailField className="col-span-full">
-                                        <DetailLabel>الموقع على الخريطة</DetailLabel>
-                                        <LocationShowMap
-                                            latitude={warehouse.latitude}
-                                            longitude={warehouse.longitude}
-                                        />
-                                    </DetailField>
-                                </DetailFields>
-                            </>
+            <MainContainer showAcademicYearNotice>
+                {canAny && (
+                    <ActionsSection>
+                        {can.update && (
+                            <Button
+                                variant="outline"
+                                asChild
+                            >
+                                <Link href={edit.url({ warehouse: warehouse })}>
+                                    <SquarePenIcon />
+                                    <span>تعديل بيانات المخزن</span>
+                                </Link>
+                            </Button>
                         )}
-                    </CardContent>
-                </Card>
-            </section>
 
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <ListIcon />
-                            <span>المُراقبات</span>
-                        </CardTitle>
-                    </CardHeader>
-                    {monitorsData.length > 0 ? (
-                        <CardTableContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead scope="col" className="font-mono w-24">#</TableHead>
-                                        <TableHead scope="col">اسم المُراقبة</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد مكاتب الخدمات التعليمية</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
-                                        <TableHead scope="col" />
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {monitorsData.map((monitor: MonitorProps, index: number) => (
-                                        <TableRow key={monitor.uuid}>
-                                            <TableCell className="font-mono">{index + 1}</TableCell>
-                                            <TableCell>{monitor.name}</TableCell>
-                                            <TableCell className="text-center">
-                                                <TableCellNullableValue className="font-mono" value={monitor.offices_count} fallback={0} />
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                <TableCellNullableValue className="font-mono" value={monitor.schools_count} fallback={0} />
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                <TableCellNullableValue className="font-mono" value={monitor.students_count} fallback={0} />
-                                            </TableCell>
-                                            <TableCellActions>
-                                                {monitor.canAny && (
-                                                    <>
-                                                        {monitor.can.view && (
-                                                            <ViewDetailsLink
-                                                                href={showMonitor.url({ monitor: monitor })}
-                                                            />
-                                                        )}
-                                                    </>
-                                                )}
-                                            </TableCellActions>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardTableContent>
-                    ) : (
-                        <CardContent>
-                            <EmptyState />
-                        </CardContent>
-                    )}
-                    {hasPagination && (
-                        <CardFooter className="border-t">
-                            <Paginator
-                                links={monitorsLinks}
-                                meta={monitorsMeta}
+                        {can.delete && (
+                            <ConfirmDeleteAction
+                                title="حذف المخزن"
+                                href={destroy.url({ warehouse: warehouse })}
                             />
-                        </CardFooter>
-                    )}
-                </Card>
-            </section>
-        </MainContainer>
+                        )}
+                    </ActionsSection>
+                )}
+
+
+                <StatCardsSection
+                    items={[
+                        { label: "المُراقبات", value: warehouse.monitors_count || 0, icon: LandmarkIcon },
+                        { label: "المدارس", value: warehouse.schools_count || 0, icon: SchoolIcon },
+                    ]}
+                    columns={2}
+                />
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <NotepadTextIcon />
+                                <span>عرض بيانات المخزن</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-6">
+                            <DetailFields columns={2}>
+                                <DetailField>
+                                    <DetailLabel>اسم المخزن</DetailLabel>
+                                    <DetailValue value={warehouse.name} />
+                                </DetailField>
+
+                                <DetailField>
+                                    <DetailLabel>العنوان</DetailLabel>
+                                    <DetailValue value={warehouse.address} />
+                                </DetailField>
+                            </DetailFields>
+
+                            {/* <DetailFields columns={1}>
+                                <DetailField className="col-span-full">
+                                    <DetailLabel>المُراقبات</DetailLabel>
+                                    <DetailValue variant="default">
+                                        {warehouse.monitors && warehouse.monitors.length > 0 ? (
+                                            <ul className="flex flex-col gap-3 list-disc list-inside">
+                                                {warehouse.monitors.map((monitor) => (
+                                                    <li key={monitor.uuid}>{monitor.name}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            "-"
+                                        )}
+                                    </DetailValue>
+                                </DetailField>
+                            </DetailFields> */}
+
+                            {warehouse.has_coordinates && (
+                                <>
+                                    <DetailFields columns={2}>
+                                        <DetailField>
+                                            <DetailLabel>خط العرض</DetailLabel>
+                                            <DetailValue value={warehouse.latitude} className="font-mono" />
+                                        </DetailField>
+
+                                        <DetailField>
+                                            <DetailLabel>خط الطول</DetailLabel>
+                                            <DetailValue value={warehouse.longitude} className="font-mono" />
+                                        </DetailField>
+                                    </DetailFields>
+
+                                    <DetailFields columns={1}>
+                                        <DetailField className="col-span-full">
+                                            <DetailLabel>الموقع على الخريطة</DetailLabel>
+                                            <LocationShowMap
+                                                latitude={warehouse.latitude}
+                                                longitude={warehouse.longitude}
+                                            />
+                                        </DetailField>
+                                    </DetailFields>
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+                </section>
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <ListIcon />
+                                <span>المُراقبات</span>
+                            </CardTitle>
+                        </CardHeader>
+                        {monitorsData.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">اسم المُراقبة</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد مكاتب الخدمات التعليمية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" />
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {monitorsData.map((monitor: MonitorProps, index: number) => (
+                                            <TableRow key={monitor.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{monitor.name}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue className="font-mono" value={monitor.offices_count} fallback={0} />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue className="font-mono" value={monitor.schools_count} fallback={0} />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue className="font-mono" value={monitor.students_count} fallback={0} />
+                                                </TableCell>
+                                                <TableCellActions>
+                                                    {monitor.canAny && (
+                                                        <>
+                                                            {monitor.can.view && (
+                                                                <ViewDetailsLink
+                                                                    href={showMonitor.url({ monitor: monitor })}
+                                                                />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </TableCellActions>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState />
+                            </CardContent>
+                        )}
+                        {hasPagination && (
+                            <CardFooter className="border-t">
+                                <Paginator
+                                    links={monitorsLinks}
+                                    meta={monitorsMeta}
+                                />
+                            </CardFooter>
+                        )}
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     )
 }
 

@@ -139,7 +139,7 @@ export default function Index({ monitors, schools, gradeLevels, selected, can }:
         <>
             <Head title="توزيع الكُتب المدرسية" />
 
-            <MainContainer showAcademicYearNotice>
+            <MainContainer changeAcademicYearNotice>
                 <Alert>
                     <BookTextIcon />
                     <AlertTitle>توزيع الكُتب المدرسية</AlertTitle>

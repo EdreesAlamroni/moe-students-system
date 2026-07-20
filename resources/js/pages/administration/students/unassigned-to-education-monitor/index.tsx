@@ -58,7 +58,7 @@ export default function Index({
         <>
             <Head title="الطلاب غير المسجّلين في مُراقبات" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 <section>
                     <Form
                         {...index.form()}

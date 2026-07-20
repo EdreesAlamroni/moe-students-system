@@ -38,7 +38,7 @@ export default function Edit({ classPeriod, academicPeriods }: PageProps) {
         <>
             <Head title="تعديل بيانات الحصة" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 <Form
                     {...update.form({ classPeriod: classPeriod })}
                     disableWhileProcessing

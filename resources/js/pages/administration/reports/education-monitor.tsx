@@ -35,7 +35,7 @@ export default function Index({ monitors, canAny, can }: PageProps) {
         <>
             <Head title="تقرير المُراقبات" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
                         {can.print && (

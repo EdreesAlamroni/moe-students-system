@@ -22,102 +22,104 @@ type PageProps = {
 
 export default function Show({ student }: PageProps) {
     return (
-        <MainContainer>
+        <>
             <Head title="عرض بيانات الطالب" />
 
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <NotepadTextIcon />
-                            <span>عرض بيانات الطالب</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-6">
-                        <DetailFields columns={2}>
-                            <DetailField>
-                                <DetailLabel>المُراقبة</DetailLabel>
-                                <DetailValue value={student.monitor?.name} />
-                            </DetailField>
+            <MainContainer showAcademicYearNotice>
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <NotepadTextIcon />
+                                <span>عرض بيانات الطالب</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-6">
+                            <DetailFields columns={2}>
+                                <DetailField>
+                                    <DetailLabel>المُراقبة</DetailLabel>
+                                    <DetailValue value={student.monitor?.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>المدرسة</DetailLabel>
-                                <DetailValue value={student.school?.name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>المدرسة</DetailLabel>
+                                    <DetailValue value={student.school?.name} />
+                                </DetailField>
 
-                            <StudentGradeLevelField student={student} />
+                                <StudentGradeLevelField student={student} />
 
-                            <StudentClassroomField student={student} />
+                                <StudentClassroomField student={student} />
 
-                            <DetailField>
-                                <DetailLabel>صفة القيد</DetailLabel>
-                                <DetailValue value={student.registration_status.name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>صفة القيد</DetailLabel>
+                                    <DetailValue value={student.registration_status.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>صفة قيد الإمتحانات</DetailLabel>
-                                <DetailValue value={student.exam_enrollment_status?.name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>صفة قيد الإمتحانات</DetailLabel>
+                                    <DetailValue value={student.exam_enrollment_status?.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الاسم الأول للطالب</DetailLabel>
-                                <DetailValue value={student.first_name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الاسم الأول للطالب</DetailLabel>
+                                    <DetailValue value={student.first_name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الاسم الأب للطالب</DetailLabel>
-                                <DetailValue value={student.father_name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الاسم الأب للطالب</DetailLabel>
+                                    <DetailValue value={student.father_name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>اسم الجد للطالب</DetailLabel>
-                                <DetailValue value={student.grandfather_name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>اسم الجد للطالب</DetailLabel>
+                                    <DetailValue value={student.grandfather_name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>اللقب للطالب</DetailLabel>
-                                <DetailValue value={student.surname} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>اللقب للطالب</DetailLabel>
+                                    <DetailValue value={student.surname} />
+                                </DetailField>
 
-                            <DetailField className="col-span-full">
-                                <DetailLabel>اسم الأم</DetailLabel>
-                                <DetailValue value={student.mother_name} />
-                            </DetailField>
+                                <DetailField className="col-span-full">
+                                    <DetailLabel>اسم الأم</DetailLabel>
+                                    <DetailValue value={student.mother_name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الجنسية</DetailLabel>
-                                <DetailValue value={student.nationality?.name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الجنسية</DetailLabel>
+                                    <DetailValue value={student.nationality?.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>رقم جواز السفر</DetailLabel>
-                                <DetailValue value={student.passport_number} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>رقم جواز السفر</DetailLabel>
+                                    <DetailValue value={student.passport_number} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الجنس</DetailLabel>
-                                <DetailValue value={student.gender.name} />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الجنس</DetailLabel>
+                                    <DetailValue value={student.gender.name} />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>تاريخ الميلاد</DetailLabel>
-                                <DetailValue value={student.date_of_birth} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>تاريخ الميلاد</DetailLabel>
+                                    <DetailValue value={student.date_of_birth} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الرقم الوطني</DetailLabel>
-                                <DetailValue value={student.national_id} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>الرقم الوطني</DetailLabel>
+                                    <DetailValue value={student.national_id} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>رقم القيد</DetailLabel>
-                                <DetailValue value={student.family_registration_number} className="font-mono" />
-                            </DetailField>
-                        </DetailFields>
-                    </CardContent>
-                </Card>
-            </section>
-        </MainContainer>
+                                <DetailField>
+                                    <DetailLabel>رقم القيد</DetailLabel>
+                                    <DetailValue value={student.family_registration_number} className="font-mono" />
+                                </DetailField>
+                            </DetailFields>
+                        </CardContent>
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     );
 }
 

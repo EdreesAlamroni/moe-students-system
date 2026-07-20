@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Form, Head, Link } from "@inertiajs/react";
+import { Form, Head, Link, usePage } from "@inertiajs/react";
 
 import type { CanPermissions, ClassPeriod, Enum, Paginated } from "@/types";
 
@@ -49,6 +49,8 @@ type PageProps = {
 }
 
 export default function Index({ classPeriods, academicPeriods, filter, canAny, can }: PageProps) {
+    const { currentAcademicYear } = usePage().props;
+
     const { data, links, ...meta } = classPeriods;
 
     const hasFilter = Object.values(filter).some((value) => value);
@@ -59,9 +61,8 @@ export default function Index({ classPeriods, academicPeriods, filter, canAny, c
         <>
             <Head title="الحصص الدراسية" />
 
-            <MainContainer showAcademicYearNotice>
-
-                {canAny && (
+            <MainContainer changeAcademicYearNotice>
+                {(canAny && currentAcademicYear?.is_active) && (
                     <ActionsSection>
                         {can.create && (
                             <DropdownMenu>
