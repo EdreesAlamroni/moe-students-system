@@ -8,7 +8,7 @@ import type { Enum, GradeLevel } from "@/types";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/display/table";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellNullableValue } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
 
 import { Input } from "@/components/ui/controls/input";
@@ -125,6 +125,7 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
                                             <TableHead scope="col">الاسم</TableHead>
                                             <TableHead scope="col">المرحلة الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -133,6 +134,9 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
                                                 <TableCell>{gradeLevel.name}</TableCell>
                                                 <TableCell>{gradeLevel.educational_stage.name}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={gradeLevel.students_count} className="font-mono" fallback="0" />
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
