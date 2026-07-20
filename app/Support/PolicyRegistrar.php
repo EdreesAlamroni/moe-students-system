@@ -14,6 +14,7 @@ use App\Models\AcademicYear;
 use App\Models\BookDistribution;
 use App\Models\ClassPeriod;
 use App\Models\Classroom;
+use App\Models\ClassSchedule;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
@@ -48,6 +49,7 @@ use App\Policies\EducationServicesOffice\StudentCountByGradeLevelReportPolicy as
 use App\Policies\EducationServicesOffice\StudentPolicy as EducationServicesOfficeStudentPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
 use App\Policies\School\ClassroomPolicy as SchoolClassroomPolicy;
+use App\Policies\School\ClassSchedulePolicy as SchoolClassSchedulePolicy;
 use App\Policies\School\GradeLevelPolicy as SchoolGradeLevelPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
 use App\Policies\Warehouse\BookDistributionPolicy as WarehouseBookDistributionPolicy;
@@ -99,6 +101,7 @@ final class PolicyRegistrar
             User::class => SchoolUserPolicy::class,
             GradeLevel::class => SchoolGradeLevelPolicy::class,
             Classroom::class => SchoolClassroomPolicy::class,
+            ClassSchedule::class => SchoolClassSchedulePolicy::class,
         ],
     ];
 

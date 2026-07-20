@@ -12,16 +12,13 @@ final class ModelAbilityMap
     private function __construct() {}
 
     /**
-     * Resolve the user's authorization for each ability against the subject.
+     * Evaluate each ability against the given subject.
      *
-     * A class-string subject performs a class-level check through the bound
-     * policy, mirroring `$user->can($ability, SomeClass::class)`.
-     *
-     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>  $subject
+     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>|array<int, mixed>  $subject
      * @param  list<string>  $abilities
-     * @return array<string, bool> Map of ability to authorization result.
+     * @return array<string, bool>
      */
-    public static function can(Model|AuthorizationResource|string $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
+    public static function can(Model|AuthorizationResource|string|array $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
     {
         $guard ??= DashboardAuth::resolve()?->guard;
 
@@ -35,12 +32,12 @@ final class ModelAbilityMap
     }
 
     /**
-     * Determine whether the user is authorized for any of the given abilities.
+     * Determine whether any of the given abilities are authorized.
      *
-     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>  $subject
+     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>|array<int, mixed>  $subject
      * @param  list<string>  $abilities
      */
-    public static function canAny(Model|AuthorizationResource|string $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): bool
+    public static function canAny(Model|AuthorizationResource|string|array $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): bool
     {
         $can = self::can($subject, $abilities, $user, $guard);
 
@@ -48,13 +45,13 @@ final class ModelAbilityMap
     }
 
     /**
-     * Return both the ability map and whether any ability is granted.
+     * Build an authorization payload for Inertia responses.
      *
-     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>  $subject
+     * @param  Model|AuthorizationResource|class-string<Model>|class-string<AuthorizationResource>|array<int, mixed>  $subject
      * @param  list<string>  $abilities
      * @return array{canAny: bool, can: array<string, bool>}
      */
-    public static function make(Model|AuthorizationResource|string $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
+    public static function make(Model|AuthorizationResource|string|array $subject, array $abilities, ?Authenticatable $user = null, ?string $guard = null): array
     {
         $can = self::can($subject, $abilities, $user, $guard);
 

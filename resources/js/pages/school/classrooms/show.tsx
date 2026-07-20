@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/actions/button";
 import { CalendarDaysIcon, NotepadTextIcon, SquarePenIcon } from "lucide-react";
 
 import { index, show, edit } from "@/routes/school/classrooms";
+import { show as classScheduleShow } from "@/routes/school/classrooms/class-schedules";
 
 type PageProps = {
     classroom: Classroom;
@@ -36,6 +37,18 @@ export default function Show({ classroom, canViewSchedule, canAny, can }: PagePr
 
                 {canAny && (
                     <ActionsSection>
+                        {canViewSchedule && (
+                            <Button
+                                variant="outline"
+                                asChild
+                            >
+                                <Link href={classScheduleShow.url({ classroom: classroom })}>
+                                    <CalendarDaysIcon />
+                                    <span>جدول الحصص الدراسية</span>
+                                </Link>
+                            </Button>
+                        )}
+
                         {(can.update && currentAcademicYear?.is_active) && (
                             <Button
                                 variant="outline"
@@ -44,18 +57,6 @@ export default function Show({ classroom, canViewSchedule, canAny, can }: PagePr
                                 <Link href={edit.url({ classroom: classroom })}>
                                     <SquarePenIcon />
                                     <span>تعديل بيانات الفصل الدراسي</span>
-                                </Link>
-                            </Button>
-                        )}
-
-                        {canViewSchedule && (
-                            <Button
-                                variant="outline"
-                                asChild
-                            >
-                                <Link href="#">
-                                    <CalendarDaysIcon />
-                                    <span>جدول الحصص الدراسية</span>
                                 </Link>
                             </Button>
                         )}

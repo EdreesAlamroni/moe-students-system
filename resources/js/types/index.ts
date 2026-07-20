@@ -177,7 +177,7 @@ export interface ClassScheduleGrid {
     classroom: Classroom;
     days: Enum[];
     periods: ClassPeriod[];
-    grid: Record<number, Record<number, ClassScheduleGridItem | null>>;
+    grid: Record<number, Record<number, ClassScheduleGridItem | null | 'break'>>;
 }
 
 export type Warehouse = {

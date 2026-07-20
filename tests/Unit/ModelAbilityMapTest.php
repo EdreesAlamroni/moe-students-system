@@ -1,6 +1,8 @@
 <?php
 
 use App\Authorization\Administration\EducationMonitorReport;
+use App\Models\Classroom;
+use App\Models\ClassSchedule;
 use App\Models\Municipal;
 use App\Models\User;
 use App\Policies\Administration\EducationMonitorReportPolicy;
@@ -114,6 +116,23 @@ it('returns canAny false from make when no abilities are granted', function () {
     ]);
 });
 
+it('maps abilities for multiple subject arguments through the bound policy', function () {
+    /** @var User $user */
+    $user = User::factory()->makeOne();
+
+    $classroom = Classroom::factory()->makeOne();
+
+    Gate::policy(ClassSchedule::class, ModelAbilityMapMultiSubjectPolicy::class);
+
+    expect(ModelAbilityMap::make([ClassSchedule::class, $classroom], ['update', 'print'], user: $user))->toBe([
+        'canAny' => true,
+        'can' => [
+            'update' => true,
+            'print' => false,
+        ],
+    ]);
+});
+
 it('maps abilities for an authorization resource class through its bound policy', function () {
     /** @var User $user */
     $user = User::factory()->makeOne();
@@ -131,3 +150,16 @@ it('maps abilities for an authorization resource class through its bound policy'
         ],
     ]);
 });
+
+class ModelAbilityMapMultiSubjectPolicy
+{
+    public function update(User $user, Classroom $classroom): bool
+    {
+        return true;
+    }
+
+    public function print(User $user, Classroom $classroom): bool
+    {
+        return false;
+    }
+}

@@ -64,23 +64,17 @@ class SchoolPermissionSeeder extends Seeder
         // Permissions
         $viewAny = Permission::findOrCreate('class-schedule:view-any', $this->scope);
         $view = Permission::findOrCreate('class-schedule:view', $this->scope);
-        $create = Permission::findOrCreate('class-schedule:create', $this->scope);
         $update = Permission::findOrCreate('class-schedule:update', $this->scope);
-        $delete = Permission::findOrCreate('class-schedule:delete', $this->scope);
         $print = Permission::findOrCreate('class-schedule:print', $this->scope);
 
         // Roles
         $viewRole = Role::findOrCreate('class-schedule:role:view', $this->scope);
-        $createRole = Role::findOrCreate('class-schedule:role:create', $this->scope);
         $updateRole = Role::findOrCreate('class-schedule:role:update', $this->scope);
-        $deleteRole = Role::findOrCreate('class-schedule:role:delete', $this->scope);
         $printRole = Role::findOrCreate('class-schedule:role:print', $this->scope);
 
         // Sync permissions with roles
         $viewRole->syncPermissions([$viewAny, $view]);
-        $createRole->syncPermissions([$viewAny, $create]);
         $updateRole->syncPermissions([$viewAny, $view, $update]);
-        $deleteRole->syncPermissions([$viewAny, $view, $delete]);
         $printRole->syncPermissions([$viewAny, $view, $print]);
     }
 
