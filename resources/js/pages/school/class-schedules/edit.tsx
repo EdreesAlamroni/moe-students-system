@@ -16,62 +16,38 @@ import ValidationErrors from '@/components/ui/alerts/validation-errors';
 import { Button } from '@/components/ui/actions/button';
 import { UpdateButton } from '@/components/ui/actions/submit-button';
 
-import { formatClassroomName, ScheduleGridTable } from '@/components/features/school/class-schedules/schedule-grid-table';
+import {
+    formatClassroomName,
+    isScheduleGridItem,
+    ScheduleGridTable,
+} from '@/components/features/school/class-schedules/schedule-grid-table';
 
-import { AlertTriangleIcon, CalendarDaysIcon, ReplyIcon } from 'lucide-react';
+import { AlertTriangleIcon, CalendarDaysIcon, LoaderIcon, ReplyIcon } from 'lucide-react';
 
 import { index as classroomIndex, show as classroomShow } from '@/routes/school/classrooms';
 import { show, edit, update } from '@/routes/school/classrooms/class-schedules';
 
-type ScheduleCell = {
-    subject_id: number | null;
-};
-
-type ScheduleItem = {
-    class_period_id: number;
-    day_of_week: number;
-    subject_id: number;
-};
-
 type PageProps = {
     schedule: ClassScheduleGrid;
-    subjects: Subject[];
+    subjects?: Subject[];
     days: Enum[];
 };
 
 export default function Edit({ schedule, subjects, days }: PageProps) {
     const classroomName = formatClassroomName(schedule.classroom);
+    const subjectsLoading = subjects === undefined;
+    const canEdit = schedule.periods.length > 0 && !subjectsLoading && (subjects?.length ?? 0) > 0;
 
-    const hasSubjects = subjects.length > 0;
-    const hasPeriods = schedule.periods.length > 0;
-    const canEditSchedule = hasSubjects && hasPeriods;
+    const [grid, setGrid] = React.useState(() => initializeGrid(schedule, days));
 
-    const [gridState, setGridState] = React.useState<Record<string, ScheduleCell>>(() =>
-        initializeGridState(schedule, days),
-    );
-
-    const items = React.useMemo(
-        () => buildScheduleItems(schedule, days, gridState),
-        [schedule, days, gridState],
-    );
-
-    function handleSubjectChange(periodId: number, dayValue: string, value: string): void {
-        const key = gridStateKey(periodId, dayValue);
-
-        setGridState((prev) => ({
-            ...prev,
-            [key]: {
-                subject_id: value ? parseInt(value, 10) : null,
-            },
-        }));
-    }
+    const items = React.useMemo(() => buildScheduleItems(schedule, days, grid), [schedule, days, grid]);
 
     return (
         <>
             <Head title="تعديل الجدول الدراسي" />
 
             <MainContainer showAcademicYearNotice>
-                {!hasSubjects && (
+                {!subjectsLoading && subjects.length === 0 && (
                     <section>
                         <Alert variant="warning">
                             <AlertTriangleIcon />
@@ -110,38 +86,33 @@ export default function Edit({ schedule, subjects, days }: PageProps) {
                                             periods={schedule.periods}
                                             days={days}
                                             renderCell={(period, day) => {
-                                                const cell = gridState[gridStateKey(period.id, day.id)];
-
                                                 if (period.is_break) {
                                                     return (
                                                         <span className="text-sm text-muted-foreground">استراحة</span>
                                                     );
                                                 }
 
+                                                const key = `${period.id}-${day.id}`;
+                                                const gridItem = schedule.grid[period.id]?.[parseInt(day.id, 10)];
+                                                const subjectId = grid[key] ?? null;
+                                                const label = subjectId !== null
+                                                    ? subjects?.find((subject) => subject.id === subjectId)?.name ?? (isScheduleGridItem(gridItem) ? gridItem.subject?.name : undefined)
+                                                    : undefined;
+
                                                 return (
-                                                    <Select
-                                                        value={cell?.subject_id?.toString() ?? ''}
-                                                        disabled={!canEditSchedule}
-                                                        onValueChange={(value) =>
-                                                            handleSubjectChange(period.id, day.id, value)
-                                                        }
-                                                    >
-                                                        <SelectTrigger className="h-8 text-xs">
-                                                            <SelectValue placeholder="المادة الدراسية" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectGroup>
-                                                                {subjects.map((subject) => (
-                                                                    <SelectItem
-                                                                        key={subject.id}
-                                                                        value={subject.id.toString()}
-                                                                    >
-                                                                        {subject.name}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectGroup>
-                                                        </SelectContent>
-                                                    </Select>
+                                                    <SubjectScheduleSelect
+                                                        value={subjectId}
+                                                        label={label}
+                                                        subjects={subjects}
+                                                        loading={subjectsLoading}
+                                                        disabled={!canEdit}
+                                                        onValueChange={(value) => {
+                                                            setGrid((current) => ({
+                                                                ...current,
+                                                                [key]: value ? parseInt(value, 10) : null,
+                                                            }));
+                                                        }}
+                                                    />
                                                 );
                                             }}
                                         />
@@ -155,7 +126,7 @@ export default function Edit({ schedule, subjects, days }: PageProps) {
                                             </Link>
                                         </Button>
 
-                                        <UpdateButton processing={processing} disabled={!canEditSchedule || processing} />
+                                        <UpdateButton processing={processing} disabled={!canEdit || processing} />
                                     </CardFooter>
                                 </Card>
                             </section>
@@ -188,33 +159,79 @@ Edit.layout = (props: PageProps) => ({
     ],
 });
 
-function gridStateKey(periodId: number, dayValue: string): string {
-    return `${periodId}-${dayValue}`;
+function SubjectScheduleSelect({
+    value,
+    label,
+    subjects,
+    loading,
+    disabled,
+    onValueChange,
+}: {
+    value: number | null;
+    label?: string;
+    subjects?: Subject[];
+    loading: boolean;
+    disabled: boolean;
+    onValueChange: (value: string) => void;
+}) {
+    if (loading && value === null) {
+        return (
+            <Select disabled open={false}>
+                <SelectTrigger className="h-8 text-xs" aria-busy="true">
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                        <LoaderIcon className="size-3.5 shrink-0 animate-spin" />
+                        <span>جارٍ تحميل المواد…</span>
+                    </span>
+                </SelectTrigger>
+            </Select>
+        );
+    }
+
+    return (
+        <Select
+            value={value?.toString()}
+            disabled={disabled}
+            onValueChange={onValueChange}
+        >
+            <SelectTrigger className="h-8 text-xs">
+                {label ? (
+                    <span className="truncate">{label}</span>
+                ) : (
+                    <SelectValue placeholder="المادة الدراسية" />
+                )}
+            </SelectTrigger>
+            <SelectContent>
+                <SelectGroup>
+                    {(subjects ?? []).map((subject) => (
+                        <SelectItem key={subject.id} value={subject.id.toString()}>
+                            {subject.name}
+                        </SelectItem>
+                    ))}
+                </SelectGroup>
+            </SelectContent>
+        </Select>
+    );
 }
 
-function initializeGridState(schedule: ClassScheduleGrid, days: Enum[]): Record<string, ScheduleCell> {
-    const state: Record<string, ScheduleCell> = {};
+function initializeGrid(schedule: ClassScheduleGrid, days: Enum[]) {
+    const grid: Record<string, number | null> = {};
 
     for (const period of schedule.periods) {
         for (const day of days) {
             const item = schedule.grid[period.id]?.[parseInt(day.id, 10)];
-            const key = gridStateKey(period.id, day.id);
-
-            state[key] = {
-                subject_id: item && item !== 'break' ? (item.subject_id ?? null) : null,
-            };
+            grid[`${period.id}-${day.id}`] = isScheduleGridItem(item) ? (item.subject_id ?? null) : null;
         }
     }
 
-    return state;
+    return grid;
 }
 
 function buildScheduleItems(
     schedule: ClassScheduleGrid,
     days: Enum[],
-    gridState: Record<string, ScheduleCell>,
-): ScheduleItem[] {
-    const items: ScheduleItem[] = [];
+    grid: Record<string, number | null>,
+) {
+    const items = [];
 
     for (const period of schedule.periods) {
         if (period.is_break) {
@@ -222,13 +239,13 @@ function buildScheduleItems(
         }
 
         for (const day of days) {
-            const cell = gridState[gridStateKey(period.id, day.id)];
+            const subjectId = grid[`${period.id}-${day.id}`];
 
-            if (cell?.subject_id) {
+            if (subjectId) {
                 items.push({
                     class_period_id: period.id,
                     day_of_week: parseInt(day.id, 10),
-                    subject_id: cell.subject_id,
+                    subject_id: subjectId,
                 });
             }
         }

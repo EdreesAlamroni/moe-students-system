@@ -106,3 +106,94 @@ test('authenticated school users can view a class schedule with empty grid cells
             ->where("schedule.grid.{$breakPeriod->id}.".DayOfWeek::SUNDAY->value, 'break')
         );
 });
+
+test('authenticated school users can edit a class schedule with deferred subjects', function () {
+    $school = School::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
+    $user = createSchoolClassScheduleViewer($school);
+    $gradeLevel = GradeLevel::factory()->create();
+    $academicYearId = AcademicYear::currentId();
+
+    $classroom = Classroom::factory()->create([
+        'school_id' => $school->id,
+        'academic_year_id' => $academicYearId,
+        'grade_level_id' => $gradeLevel->id,
+    ]);
+
+    $period = ClassPeriod::factory()->create([
+        'academic_year_id' => $academicYearId,
+        'academic_period' => SchoolAcademicPeriod::EVENING,
+        'order' => 1,
+        'is_break' => false,
+    ]);
+
+    $subject = Subject::factory()->create([
+        'grade_level_id' => $gradeLevel->id,
+        'name' => 'Mathematics',
+    ]);
+
+    ClassSchedule::factory()->create([
+        'school_id' => $school->id,
+        'academic_year_id' => $academicYearId,
+        'classroom_id' => $classroom->id,
+        'class_period_id' => $period->id,
+        'subject_id' => $subject->id,
+        'day_of_week' => DayOfWeek::SUNDAY,
+    ]);
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.classrooms.class-schedules.edit', $classroom))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('school/class-schedules/edit')
+            ->has('schedule.grid')
+            ->missing('subjects')
+            ->where("schedule.grid.{$period->id}.".DayOfWeek::SUNDAY->value.'.subject.name', 'Mathematics')
+            ->loadDeferredProps(fn (Assert $reload) => $reload
+                ->has('subjects', 1)
+                ->where('subjects.0.name', 'Mathematics')
+            )
+        );
+});
+
+test('authenticated school users can update a class schedule', function () {
+    $school = School::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
+    $user = createSchoolClassScheduleViewer($school);
+    $gradeLevel = GradeLevel::factory()->create();
+    $academicYearId = AcademicYear::currentId();
+
+    $classroom = Classroom::factory()->create([
+        'school_id' => $school->id,
+        'academic_year_id' => $academicYearId,
+        'grade_level_id' => $gradeLevel->id,
+    ]);
+
+    $period = ClassPeriod::factory()->create([
+        'academic_year_id' => $academicYearId,
+        'academic_period' => SchoolAcademicPeriod::EVENING,
+        'order' => 1,
+        'is_break' => false,
+    ]);
+
+    $subject = Subject::factory()->create(['grade_level_id' => $gradeLevel->id]);
+
+    $this->actingAs($user, 'school')
+        ->put(route('school.classrooms.class-schedules.update', $classroom), [
+            'items' => json_encode([
+                [
+                    'class_period_id' => $period->id,
+                    'day_of_week' => DayOfWeek::SUNDAY->value,
+                    'subject_id' => $subject->id,
+                ],
+            ]),
+        ])
+        ->assertRedirect(route('school.classrooms.class-schedules.show', $classroom));
+
+    $this->assertDatabaseHas('class_schedules', [
+        'school_id' => $school->id,
+        'academic_year_id' => $academicYearId,
+        'classroom_id' => $classroom->id,
+        'class_period_id' => $period->id,
+        'day_of_week' => DayOfWeek::SUNDAY->value,
+        'subject_id' => $subject->id,
+    ]);
+});

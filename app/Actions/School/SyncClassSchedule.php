@@ -22,11 +22,11 @@ class SyncClassSchedule
                     'classroom_id' => $classroom->id,
                     'class_period_id' => $item['class_period_id'],
                     'day_of_week' => $item['day_of_week'],
-                    'academic_year_id' => $item['academic_year_id'],
-                    'school_id' => $item['school_id'],
+                    'academic_year_id' => $classroom->academic_year_id,
+                    'school_id' => $classroom->school_id,
                 ], [
                     'subject_id' => $item['subject_id'],
-                    'notes' => $item['notes'],
+                    'notes' => $item['notes'] ?? null,
                 ]);
 
                 $keepIds[] = $schedule->id;

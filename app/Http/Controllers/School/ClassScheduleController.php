@@ -57,7 +57,7 @@ class ClassScheduleController extends Controller
 
         return Inertia::render('school/class-schedules/edit', [
             'schedule' => $scheduleGrid,
-            'subjects' => $this->getSubjects($classroom),
+            'subjects' => Inertia::defer(fn () => $this->getSubjects($classroom)),
             'days' => DayOfWeek::buildDays(),
         ]);
     }

@@ -102,9 +102,6 @@ class BulkUpdateRequest extends FormRequest
 
         foreach ($this->input('items', []) as $item) {
             $items[] = [
-                'academic_year_id' => AcademicYear::currentId(),
-                'school_id' => auth('school')->user()->model_id,
-                'classroom_id' => $this->route('classroom.id'),
                 'class_period_id' => (int) $item['class_period_id'],
                 'day_of_week' => DayOfWeek::from((int) $item['day_of_week']),
                 'subject_id' => (int) $item['subject_id'],
