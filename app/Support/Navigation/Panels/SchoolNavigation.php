@@ -25,6 +25,76 @@ class SchoolNavigation extends NavigationPanel
                 'activeRoutes' => 'school.grade-levels.*',
                 'can' => $this->user?->canAny(['viewAny'], GradeLevel::class),
             ],
+            [
+                'title' => 'الفصول الدراسية',
+                'href' => '#',
+                'icon' => 'PresentationIcon',
+                'activeRoutes' => 'school.classrooms.*',
+                'can' => true,
+            ],
+            [
+                'title' => 'الطلاب',
+                'href' => '#',
+                'icon' => 'UsersIcon',
+                'activeRoutes' => 'school.students.*',
+                'excludedRoutes' => 'school.students.unenrolled-from-*',
+                'can' => true,
+            ],
+            [
+                'title' => 'الطلاب غير المسجّلين في صفوف دراسية',
+                'href' => '#',
+                'icon' => 'UserXIcon',
+                'activeRoutes' => 'school.students.unenrolled-from-grade-level.*',
+                'can' => true,
+            ],
+            [
+                'title' => 'الطلاب غير المسجّلين في فصول دراسية',
+                'href' => '#',
+                'icon' => 'UserXIcon',
+                'activeRoutes' => 'school.students.unenrolled-from-classroom.*',
+                'can' => true,
+            ],
+            [
+                'title' => 'توزيع الطلاب على الفصول',
+                'href' => '#',
+                'icon' => 'TableOfContentsIcon',
+                'activeRoutes' => 'school.classroom-distribution.*',
+                'can' => true,
+            ],
+            [
+                'title' => 'توزيع الكُتب المدرسية',
+                'href' => '#',
+                'icon' => 'BookTextIcon',
+                'activeRoutes' => 'school.book-distributions.*',
+                'can' => true,
+            ],
+        ];
+    }
+
+    protected function reports(): array
+    {
+        return [
+            [
+                'title' => 'تقرير الطلاب حسب الصفوف',
+                'href' => '#',
+                'icon' => 'ClipboardList',
+                'routeIs' => 'school.reports.students-by-grade-level.*',
+                'can' => true,
+            ],
+            [
+                'title' => 'تقرير الطلاب حسب الفصول',
+                'href' => '#',
+                'icon' => 'ClipboardList',
+                'routeIs' => 'school.reports.students-by-classroom.*',
+                'can' => true,
+            ],
+            [
+                'title' => 'تقرير الغياب',
+                'href' => '#',
+                'icon' => 'ClipboardList',
+                'routeIs' => 'school.reports.attendance.*',
+                'can' => true,
+            ],
         ];
     }
 
@@ -36,7 +106,7 @@ class SchoolNavigation extends NavigationPanel
                 'href' => route('school.users.index'),
                 'icon' => 'UserRoundCogIcon',
                 'activeRoutes' => 'school.users.*',
-                'can' => $this->user?->canAny(['viewAny'], User::class),
+                'can' => $this->user?->can(['viewAny'], User::class),
             ],
         ];
     }
