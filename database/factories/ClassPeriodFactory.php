@@ -25,18 +25,29 @@ class ClassPeriodFactory extends Factory
      */
     public function definition(): array
     {
-        $order = ++self::$sequence;
-        $startHour = self::BASE_HOUR + $order;
-
         return [
             'academic_year_id' => AcademicYear::currentId(),
             'academic_period' => SchoolAcademicPeriod::MORNING,
-            'name' => sprintf('الحصة %d', $order),
-            'start_time' => sprintf('%02d:00', $startHour),
-            'end_time' => sprintf('%02d:%02d', $startHour, self::PERIOD_DURATION_MINUTES),
-            'order' => $order,
+            'order' => fn () => ++self::$sequence,
+            'name' => fn (array $attributes) => sprintf('الحصة %d', $attributes['order']),
+            'start_time' => fn (array $attributes) => sprintf(
+                '%02d:00',
+                self::startHourForOrder($attributes['order']),
+            ),
+            'end_time' => fn (array $attributes) => sprintf(
+                '%02d:%02d',
+                self::startHourForOrder($attributes['order']),
+                self::PERIOD_DURATION_MINUTES,
+            ),
             'is_break' => false,
         ];
+    }
+
+    private static function startHourForOrder(int $order): int
+    {
+        $maxPeriods = 24 - self::BASE_HOUR;
+
+        return self::BASE_HOUR + (($order - 1) % $maxPeriods);
     }
 
     public function asBreak(): static
