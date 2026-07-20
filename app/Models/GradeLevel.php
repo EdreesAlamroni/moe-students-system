@@ -59,35 +59,21 @@ class GradeLevel extends Model
      */
 
     /**
-     * Returns the current academic year name for this grade level within the current school context.
+     * Get the current academic year name from preloaded data without querying the database.
      *
-     * This accessor behaves as follows:
-     * 1. If the `schools` relation is **eager-loaded** with an academic_year join
-     *    (i.e., selecting `academic_years.name AS academic_year_name`),
-     *    it returns the `academic_year_name` from the first loaded record.
-     * 2. Otherwise, if the model already has an `academic_year_name` attribute
-     *    (e.g. selected via a custom query), it returns that.
-     * 3. If neither condition is met, it gracefully returns `null`.
-     *
-     * Use this accessor in your controllers or transformers as:
-     * ```php
-     *  $gradeLevel->current_academic_year_name;
-     * ```
+     * Resolves from the eager-loaded `schools` relation when present, otherwise from an
+     * `academic_year_name` attribute selected on the query.
      */
     public function currentAcademicYearName(): Attribute
     {
         return Attribute::get(function (): ?string {
             if ($this->relationLoaded('schools')) {
-                // If the relation is loaded, return the academic_year_name from the first related school
                 return $this->schools->value('academic_year_name');
             }
 
-            if ($this->hasAttribute('academic_year_name')) {
-                // If the attribute is already set on the model, return it
-                return $this->getAttribute('academic_year_name');
-            }
-
-            return null;
+            return $this->hasAttribute('academic_year_name')
+                ? $this->getAttribute('academic_year_name')
+                : null;
         });
     }
 

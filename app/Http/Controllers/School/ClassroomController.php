@@ -136,15 +136,14 @@ class ClassroomController extends Controller
 
     private function gradeLevels(): array
     {
-        return auth('school')->user()
-            ->organization
-            ->gradeLevels()
+        return GradeLevel::query()
             ->select([
                 'grade_levels.id',
                 'grade_levels.name',
                 'grade_levels.educational_stage',
                 'grade_levels.order',
             ])
+            ->forCurrentSchoolAndAcademicYear()
             ->ordered()
             ->get()
             ->map(function (GradeLevel $gradeLevel): array {
