@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { libyanNationalIdInputConstraints } from "@/lib/input-constraints";
+import { decimalInputConstraints, libyanNationalIdInputConstraints, passportNumberInputConstraints } from "@/lib/input-constraints";
 
 import { Form, Head, Link, router, usePage } from "@inertiajs/react";
 
@@ -332,16 +332,23 @@ export default function Index({
                                                 type="text"
                                                 name="filter[family_registration_number]"
                                                 defaultValue={filter.family_registration_number}
+                                                className="not-placeholder-shown:font-mono"
                                                 placeholder="رقم القيد"
                                                 autoComplete="off"
+                                                {...decimalInputConstraints({
+                                                    allowDecimal: false,
+                                                    allowNegative: false,
+                                                })}
                                             />
 
                                             <Input
                                                 type="text"
                                                 name="filter[passport_number]"
                                                 defaultValue={filter.passport_number}
+                                                className="not-placeholder-shown:font-mono"
                                                 placeholder="رقم جواز السفر"
                                                 autoComplete="off"
+                                                {...passportNumberInputConstraints()}
                                             />
                                         </div>
                                     </CardContent>

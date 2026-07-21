@@ -625,6 +625,10 @@ function decimalInputConstraints(
     });
 }
 
+/** Uppercase English letters and digits. Rejects Arabic numerals, symbols, and whitespace. */
+function passportNumberInputConstraints(): InputConstraintProps {
+    return createCharacterClassConstraints('A-Za-z0-9', { uppercase: true });
+}
 
 export {
     createInputConstraints,
@@ -633,6 +637,7 @@ export {
     usernameInputConstraints,
     libyanPhoneNumberInputConstraints,
     libyanNationalIdInputConstraints,
+    passportNumberInputConstraints,
     latitudeInputConstraints,
     longitudeInputConstraints,
     decimalInputConstraints,

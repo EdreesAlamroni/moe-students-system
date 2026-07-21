@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Form, Head, Link, router } from "@inertiajs/react";
 
-import { libyanNationalIdInputConstraints } from "@/lib/input-constraints";
+import { decimalInputConstraints, libyanNationalIdInputConstraints, passportNumberInputConstraints } from "@/lib/input-constraints";
 
 import type { CanPermissions, EducationMonitor, Enum, Nationality, Paginated, School, Student } from "@/types";
 
@@ -388,16 +388,23 @@ export default function Index({
                                                 type="text"
                                                 name="filter[family_registration_number]"
                                                 defaultValue={filter.family_registration_number}
+                                                className="not-placeholder-shown:font-mono"
                                                 placeholder="رقم القيد"
                                                 autoComplete="off"
+                                                {...decimalInputConstraints({
+                                                    allowDecimal: false,
+                                                    allowNegative: false,
+                                                })}
                                             />
 
                                             <Input
                                                 type="text"
                                                 name="filter[passport_number]"
                                                 defaultValue={filter.passport_number}
+                                                className="not-placeholder-shown:font-mono"
                                                 placeholder="رقم جواز السفر"
                                                 autoComplete="off"
+                                                {...passportNumberInputConstraints()}
                                             />
                                         </div>
                                     </CardContent>
