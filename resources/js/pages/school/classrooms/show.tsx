@@ -44,7 +44,7 @@ export default function Show({ classroom, canViewSchedule, canAny, can }: PagePr
                             >
                                 <Link href={classScheduleShow.url({ classroom: classroom })}>
                                     <CalendarDaysIcon />
-                                    <span>جدول الحصص الدراسية</span>
+                                    <span>الجدول الدراسي</span>
                                 </Link>
                             </Button>
                         )}
