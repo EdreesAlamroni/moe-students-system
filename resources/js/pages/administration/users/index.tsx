@@ -55,177 +55,179 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
     const hasPagination = data.length > 0 && meta.last_page > 1;
 
     return (
-        <MainContainer>
+        <>
             <Head title="المُستخدمين" />
 
-            {canAny && (
-                <ActionsSection>
-                    {can.create && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button>
-                                    <PlusIcon />
-                                    <span>إضافة مُستخدم جديد</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="min-w-52">
-                                {scopes.map((item, index) => (
-                                    <>
-                                        <DropdownMenuItem key={index} asChild>
-                                            <Link href={create.url({ scope: item.id })}>
-                                                <Icon iconNode={item.icon} className="text-foreground" />
-                                                <span>{item.name}</span>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        {(index !== (scopes.length - 1)) && <DropdownMenuSeparator />}
-                                    </>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    )}
-                </ActionsSection>
-            )}
+            <MainContainer>
+                {canAny && (
+                    <ActionsSection>
+                        {can.create && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button>
+                                        <PlusIcon />
+                                        <span>إضافة مُستخدم جديد</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="min-w-52">
+                                    {scopes.map((item, index) => (
+                                        <>
+                                            <DropdownMenuItem key={index} asChild>
+                                                <Link href={create.url({ scope: item.id })}>
+                                                    <Icon iconNode={item.icon} className="text-foreground" />
+                                                    <span>{item.name}</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            {(index !== (scopes.length - 1)) && <DropdownMenuSeparator />}
+                                        </>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
+                    </ActionsSection>
+                )}
 
-            <section>
-                <Form
-                    {...index.form()}
-                >
+                <section>
+                    <Form
+                        {...index.form()}
+                    >
+                        <Card>
+                            <CardHeader className="border-b">
+                                <CardTitle className="flex items-center text-sm gap-x-1.5">
+                                    <div className="flex items-center gap-x-3">
+                                        <FunnelIcon />
+                                        <span>فرز النتائج</span>
+                                    </div>
+                                    <span className="font-mono">({meta.total})</span>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <Select
+                                        name="filter[scope]"
+                                        defaultValue={filter.scope || undefined}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="اختر النطاق" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {scopes.map((scope) => (
+                                                    <SelectItem
+                                                        key={scope.id}
+                                                        value={scope.id.toString()}
+                                                    >
+                                                        {scope.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+
+                                    <Input
+                                        type="text"
+                                        name="filter[username]"
+                                        defaultValue={filter.username}
+                                        placeholder="اسم المُستخدم"
+                                        className="not-placeholder-shown:font-mono"
+                                        {...usernameInputConstraints()}
+                                    />
+
+                                    <Input
+                                        type="text"
+                                        name="filter[name]"
+                                        defaultValue={filter.name}
+                                        placeholder="الاسم"
+                                    />
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t">
+                                <div className="flex items-center gap-x-3">
+                                    <Button
+                                        type="submit"
+                                        variant="default"
+                                    >
+                                        <SearchIcon />
+                                        <span>بحث</span>
+                                    </Button>
+                                    <Button
+                                        type="reset"
+                                        variant="outline"
+                                        asChild
+                                    >
+                                        <Link href={index.url()}>
+                                            <RefreshCcwIcon />
+                                            <span>مسح حقول الفلتر</span>
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </Form>
+                </section>
+
+                <section>
                     <Card>
                         <CardHeader className="border-b">
-                            <CardTitle className="flex items-center text-sm gap-x-1.5">
-                                <div className="flex items-center gap-x-3">
-                                    <FunnelIcon />
-                                    <span>فرز النتائج</span>
-                                </div>
-                                <span className="font-mono">({meta.total})</span>
+                            <CardTitle>
+                                <ListIcon />
+                                <span>المُستخدمين</span>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <Select
-                                    name="filter[scope]"
-                                    defaultValue={filter.scope || undefined}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="اختر النطاق" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {scopes.map((scope) => (
-                                                <SelectItem
-                                                    key={scope.id}
-                                                    value={scope.id.toString()}
-                                                >
-                                                    {scope.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-
-                                <Input
-                                    type="text"
-                                    name="filter[username]"
-                                    defaultValue={filter.username}
-                                    placeholder="اسم المُستخدم"
-                                    className="not-placeholder-shown:font-mono"
-                                    {...usernameInputConstraints()}
-                                />
-
-                                <Input
-                                    type="text"
-                                    name="filter[name]"
-                                    defaultValue={filter.name}
-                                    placeholder="الاسم"
-                                />
-                            </div>
-                        </CardContent>
-                        <CardFooter className="border-t">
-                            <div className="flex items-center gap-x-3">
-                                <Button
-                                    type="submit"
-                                    variant="default"
-                                >
-                                    <SearchIcon />
-                                    <span>بحث</span>
-                                </Button>
-                                <Button
-                                    type="reset"
-                                    variant="outline"
-                                    asChild
-                                >
-                                    <Link href={index.url()}>
-                                        <RefreshCcwIcon />
-                                        <span>مسح حقول الفلتر</span>
-                                    </Link>
-                                </Button>
-                            </div>
-                        </CardFooter>
-                    </Card>
-                </Form>
-            </section>
-
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <ListIcon />
-                            <span>المُستخدمين</span>
-                        </CardTitle>
-                    </CardHeader>
-                    {data.length > 0 ? (
-                        <CardTableContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead scope="col" className="font-mono w-24">#</TableHead>
-                                        <TableHead scope="col">الاسم</TableHead>
-                                        <TableHead scope="col">اسم المُستخدم</TableHead>
-                                        <TableHead scope="col">النطاق</TableHead>
-                                        <TableHead scope="col" />
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {data.map((user: UserProps, index: number) => (
-                                        <TableRow key={user.uuid}>
-                                            <TableCell className="font-mono">{index + 1}</TableCell>
-                                            <TableCell>{user.name}</TableCell>
-                                            <TableCell>{user.username}</TableCell>
-                                            <TableCell>{user.scope.name}</TableCell>
-                                            <TableCellActions>
-                                                {user.canAny && (
-                                                    <>
-                                                        {user.can.view && (
-                                                            <ViewDetailsLink
-                                                                href={show.url({ user: user })}
-                                                            />
-                                                        )}
-                                                    </>
-                                                )}
-                                            </TableCellActions>
+                        {data.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">الاسم</TableHead>
+                                            <TableHead scope="col">اسم المُستخدم</TableHead>
+                                            <TableHead scope="col">النطاق</TableHead>
+                                            <TableHead scope="col" />
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardTableContent>
-                    ) : (
-                        <CardContent>
-                            <EmptyState
-                                hasFilter={hasFilter}
-                            />
-                        </CardContent>
-                    )}
-                    {hasPagination && (
-                        <CardFooter className="border-t">
-                            <Paginator
-                                links={links}
-                                meta={meta}
-                            />
-                        </CardFooter>
-                    )}
-                </Card>
-            </section>
-        </MainContainer>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {data.map((user: UserProps, index: number) => (
+                                            <TableRow key={user.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{user.name}</TableCell>
+                                                <TableCell>{user.username}</TableCell>
+                                                <TableCell>{user.scope.name}</TableCell>
+                                                <TableCellActions>
+                                                    {user.canAny && (
+                                                        <>
+                                                            {user.can.view && (
+                                                                <ViewDetailsLink
+                                                                    href={show.url({ user: user })}
+                                                                />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </TableCellActions>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState
+                                    hasFilter={hasFilter}
+                                />
+                            </CardContent>
+                        )}
+                        {hasPagination && (
+                            <CardFooter className="border-t">
+                                <Paginator
+                                    links={links}
+                                    meta={meta}
+                                />
+                            </CardFooter>
+                        )}
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     )
 }
 

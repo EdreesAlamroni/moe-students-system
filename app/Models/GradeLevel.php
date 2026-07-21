@@ -292,6 +292,17 @@ class GradeLevel extends Model
             })->values();
     }
 
+    public static function listForCurrentSchool(): Collection
+    {
+        return self::list(function ($query) {
+            $query->forCurrentSchoolAndAcademicYear();
+        }, [
+            'grade_level_school.grade_level_id',
+            'grade_level_school.school_id',
+            'grade_level_school.academic_year_id',
+        ]);
+    }
+
     /*
      * End: Custom Functions
      */

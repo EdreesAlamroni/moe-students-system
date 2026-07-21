@@ -37,86 +37,88 @@ export default function Show({ user, roles, canAny, can }: PageProps) {
     const organization = resolveOrganizationDisplay(user.organization);
 
     return (
-        <MainContainer>
+        <>
             <Head title="عرض بيانات المُستخدم" />
 
-            {canAny && (
-                <ActionsSection>
-                    {can.update && (
-                        <Button variant="outline" asChild>
-                            <Link href={edit.url({ user: user })}>
-                                <SquarePenIcon />
-                                <span>تعديل بيانات المُستخدم</span>
-                            </Link>
-                        </Button>
-                    )}
+            <MainContainer>
+                {canAny && (
+                    <ActionsSection>
+                        {can.update && (
+                            <Button variant="outline" asChild>
+                                <Link href={edit.url({ user: user })}>
+                                    <SquarePenIcon />
+                                    <span>تعديل بيانات المُستخدم</span>
+                                </Link>
+                            </Button>
+                        )}
 
-                    {can.delete && (
-                        <ConfirmDeleteAction
-                            title="حذف المُستخدم"
-                            href={destroy.url({ user: user })}
-                        />
-                    )}
-                </ActionsSection>
-            )}
+                        {can.delete && (
+                            <ConfirmDeleteAction
+                                title="حذف المُستخدم"
+                                href={destroy.url({ user: user })}
+                            />
+                        )}
+                    </ActionsSection>
+                )}
 
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <NotepadTextIcon />
-                            <span>عرض بيانات المُستخدم</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-6">
-                        <DetailFields columns={2}>
-                            <DetailField>
-                                <DetailLabel>الاسم</DetailLabel>
-                                <DetailValue value={user.name} />
-                            </DetailField>
-
-                            <DetailField>
-                                <DetailLabel>اسم المُستخدم</DetailLabel>
-                                <DetailValue value={user.username} className="font-mono" />
-                            </DetailField>
-
-                            <DetailField>
-                                <DetailLabel>البريد الإلكتروني</DetailLabel>
-                                <DetailValue value={user.email} />
-                            </DetailField>
-
-                            <DetailField>
-                                <DetailLabel>النطاق</DetailLabel>
-                                <DetailValue value={user.scope.name} />
-                            </DetailField>
-
-                            {organization && (
-                                <DetailField className="col-span-full">
-                                    <DetailLabel>{organization.label}</DetailLabel>
-                                    <DetailValue value={organization.name} />
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <NotepadTextIcon />
+                                <span>عرض بيانات المُستخدم</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-6">
+                            <DetailFields columns={2}>
+                                <DetailField>
+                                    <DetailLabel>الاسم</DetailLabel>
+                                    <DetailValue value={user.name} />
                                 </DetailField>
-                            )}
 
-                            <DetailField>
-                                <DetailLabel>حالة الحساب</DetailLabel>
-                                <DetailValue variant="plain">
-                                    <StatePill state={user.state} />
-                                </DetailValue>
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>اسم المُستخدم</DetailLabel>
+                                    <DetailValue value={user.username} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>حالة الطلب</DetailLabel>
-                                <DetailValue variant="plain">
-                                    <StatePill state={user.request_state} />
-                                </DetailValue>
-                            </DetailField>
-                        </DetailFields>
-                    </CardContent>
-                </Card>
-            </section>
+                                <DetailField>
+                                    <DetailLabel>البريد الإلكتروني</DetailLabel>
+                                    <DetailValue value={user.email} />
+                                </DetailField>
 
-            <GroupedRolesShowCard roles={roles} />
-        </MainContainer>
+                                <DetailField>
+                                    <DetailLabel>النطاق</DetailLabel>
+                                    <DetailValue value={user.scope.name} />
+                                </DetailField>
+
+                                {organization && (
+                                    <DetailField className="col-span-full">
+                                        <DetailLabel>{organization.label}</DetailLabel>
+                                        <DetailValue value={organization.name} />
+                                    </DetailField>
+                                )}
+
+                                <DetailField>
+                                    <DetailLabel>حالة الحساب</DetailLabel>
+                                    <DetailValue variant="plain">
+                                        <StatePill state={user.state} />
+                                    </DetailValue>
+                                </DetailField>
+
+                                <DetailField>
+                                    <DetailLabel>حالة الطلب</DetailLabel>
+                                    <DetailValue variant="plain">
+                                        <StatePill state={user.request_state} />
+                                    </DetailValue>
+                                </DetailField>
+                            </DetailFields>
+                        </CardContent>
+                    </Card>
+                </section>
+
+                <GroupedRolesShowCard roles={roles} />
+            </MainContainer>
+        </>
     )
 }
 

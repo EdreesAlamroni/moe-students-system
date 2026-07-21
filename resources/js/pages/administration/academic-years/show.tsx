@@ -32,65 +32,67 @@ type PageProps = {
 
 export default function Show({ academicYear, canAny, can }: PageProps) {
     return (
-        <MainContainer>
+        <>
             <Head title="عرض بيانات السنة الدراسية" />
 
-            {canAny && (
-                <ActionsSection>
-                    {can.close && (
-                        <Button
-                            variant="destructive"
-                        >
-                            <CircleXIcon />
-                            <span>إغلاق السنة الدراسية</span>
-                        </Button>
-                    )}
-                </ActionsSection>
-            )}
+            <MainContainer>
+                {canAny && (
+                    <ActionsSection>
+                        {can.close && (
+                            <Button
+                                variant="destructive"
+                            >
+                                <CircleXIcon />
+                                <span>إغلاق السنة الدراسية</span>
+                            </Button>
+                        )}
+                    </ActionsSection>
+                )}
 
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <NotepadTextIcon />
-                            <span>عرض بيانات السنة الدراسية</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <DetailFields columns={3}>
-                            <DetailField>
-                                <DetailLabel>السنة الدراسية</DetailLabel>
-                                <DetailValue value={academicYear.name} className="font-mono" />
-                            </DetailField>
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <NotepadTextIcon />
+                                <span>عرض بيانات السنة الدراسية</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <DetailFields columns={3}>
+                                <DetailField>
+                                    <DetailLabel>السنة الدراسية</DetailLabel>
+                                    <DetailValue value={academicYear.name} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>تاريخ بداية العام الدراسي</DetailLabel>
-                                <DetailValue value={academicYear.start_date} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>تاريخ بداية العام الدراسي</DetailLabel>
+                                    <DetailValue value={academicYear.start_date} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>تاريخ انتهاء العام الدراسي</DetailLabel>
-                                <DetailValue value={academicYear.end_date} className="font-mono" />
-                            </DetailField>
+                                <DetailField>
+                                    <DetailLabel>تاريخ انتهاء العام الدراسي</DetailLabel>
+                                    <DetailValue value={academicYear.end_date} className="font-mono" />
+                                </DetailField>
 
-                            <DetailField>
-                                <DetailLabel>الحالة</DetailLabel>
-                                <DetailValue variant="plain">
-                                    <span
-                                        className={cn(
-                                            "pill",
-                                            academicYear.is_active ? "pill-green" : "pill-orange",
-                                        )}
-                                    >
-                                        {academicYear.status}
-                                    </span>
-                                </DetailValue>
-                            </DetailField>
-                        </DetailFields>
-                    </CardContent>
-                </Card>
-            </section>
-        </MainContainer>
+                                <DetailField>
+                                    <DetailLabel>الحالة</DetailLabel>
+                                    <DetailValue variant="plain">
+                                        <span
+                                            className={cn(
+                                                "pill",
+                                                academicYear.is_active ? "pill-green" : "pill-orange",
+                                            )}
+                                        >
+                                            {academicYear.status}
+                                        </span>
+                                    </DetailValue>
+                                </DetailField>
+                            </DetailFields>
+                        </CardContent>
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     )
 }
 

@@ -38,108 +38,110 @@ export default function Index({ municipals, filter }: PageProps) {
     const hasPagination = data.length > 0 && meta.last_page > 1;
 
     return (
-        <MainContainer>
+        <>
             <Head title="البلديات" />
 
-            <section>
-                <Form
-                    {...index.form()}
-                >
+            <MainContainer>
+                <section>
+                    <Form
+                        {...index.form()}
+                    >
+                        <Card>
+                            <CardHeader className="border-b">
+                                <CardTitle className="flex items-center text-sm gap-x-1.5">
+                                    <div className="flex items-center gap-x-3">
+                                        <FunnelIcon />
+                                        <span>فرز النتائج</span>
+                                    </div>
+                                    <span className="font-mono">({meta.total})</span>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <Input
+                                        type="text"
+                                        name="filter[name]"
+                                        value={filter.name}
+                                        placeholder="الاسم"
+                                        autoComplete="off"
+                                    />
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t">
+                                <div className="flex items-center gap-x-3">
+                                    <Button
+                                        type="submit"
+                                        variant="default"
+                                    >
+                                        <SearchIcon />
+                                        <span>بحث</span>
+                                    </Button>
+                                    <Button
+                                        type="reset"
+                                        variant="outline"
+                                        asChild
+                                    >
+                                        <Link href={index.url()}>
+                                            <RefreshCcwIcon />
+                                            <span>مسح حقول الفلتر</span>
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </Form>
+                </section>
+
+                <section>
                     <Card>
                         <CardHeader className="border-b">
-                            <CardTitle className="flex items-center text-sm gap-x-1.5">
-                                <div className="flex items-center gap-x-3">
-                                    <FunnelIcon />
-                                    <span>فرز النتائج</span>
-                                </div>
-                                <span className="font-mono">({meta.total})</span>
+                            <CardTitle>
+                                <ListIcon />
+                                <span>البلديات</span>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <Input
-                                    type="text"
-                                    name="filter[name]"
-                                    value={filter.name}
-                                    placeholder="الاسم"
-                                    autoComplete="off"
-                                />
-                            </div>
-                        </CardContent>
-                        <CardFooter className="border-t">
-                            <div className="flex items-center gap-x-3">
-                                <Button
-                                    type="submit"
-                                    variant="default"
-                                >
-                                    <SearchIcon />
-                                    <span>بحث</span>
-                                </Button>
-                                <Button
-                                    type="reset"
-                                    variant="outline"
-                                    asChild
-                                >
-                                    <Link href={index.url()}>
-                                        <RefreshCcwIcon />
-                                        <span>مسح حقول الفلتر</span>
-                                    </Link>
-                                </Button>
-                            </div>
-                        </CardFooter>
-                    </Card>
-                </Form>
-            </section>
-
-            <section>
-                <Card>
-                    <CardHeader className="border-b">
-                        <CardTitle>
-                            <ListIcon />
-                            <span>البلديات</span>
-                        </CardTitle>
-                    </CardHeader>
-                    {data.length > 0 ? (
-                        <CardTableContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead scope="col" className="font-mono w-24">#</TableHead>
-                                        <TableHead scope="col" className="text-center">الاسم</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {data.map((municipal: Municipal, index: number) => (
-                                        <TableRow key={municipal.uuid}>
-                                            <TableCell className="font-mono">{index + 1}</TableCell>
-                                            <TableCell className="text-center">{municipal.name}</TableCell>
-                                            <TableCell className="text-center">
-                                                <TableCellNullableValue className="font-mono" value={municipal.schools_count} fallback={0} />
-                                            </TableCell>
+                        {data.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col" className="text-center">الاسم</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardTableContent>
-                    ) : (
-                        <CardContent>
-                            <EmptyState
-                                hasFilter={hasFilter}
-                            />
-                        </CardContent>
-                    )}
-                    {hasPagination && (
-                        <CardFooter className="border-t">
-                            <Paginator
-                                links={links}
-                                meta={meta}
-                            />
-                        </CardFooter>
-                    )}
-                </Card>
-            </section>
-        </MainContainer>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {data.map((municipal: Municipal, index: number) => (
+                                            <TableRow key={municipal.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell className="text-center">{municipal.name}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue className="font-mono" value={municipal.schools_count} fallback={0} />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState
+                                    hasFilter={hasFilter}
+                                />
+                            </CardContent>
+                        )}
+                        {hasPagination && (
+                            <CardFooter className="border-t">
+                                <Paginator
+                                    links={links}
+                                    meta={meta}
+                                />
+                            </CardFooter>
+                        )}
+                    </Card>
+                </section>
+            </MainContainer>
+        </>
     )
 }
 

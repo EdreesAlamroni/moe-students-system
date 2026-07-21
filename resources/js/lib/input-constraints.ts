@@ -316,7 +316,7 @@ function normalizeLibyanPhoneDigits(digits: string): string {
     return digits.slice(0, 10);
 }
 
-export function createInputConstraints(options: InputConstraintOptions): InputConstraintProps {
+function createInputConstraints(options: InputConstraintOptions): InputConstraintProps {
     const { inputMode, pattern, isAllowedChar, sanitizeValue, transformBeforeInput } = options;
 
     let composing = false;
@@ -429,22 +429,22 @@ export function createInputConstraints(options: InputConstraintOptions): InputCo
 }
 
 /** Letters, digits, hyphens, and underscores. */
-export function codeSlugInputConstraints(): InputConstraintProps {
+function codeSlugInputConstraints(): InputConstraintProps {
     return createCharacterClassConstraints('A-Za-z0-9-_');
 }
 
 /** Letters, digits, and underscores. Values are uppercased on paste. */
-export function codeInputConstraints(): InputConstraintProps {
+function codeInputConstraints(): InputConstraintProps {
     return createCharacterClassConstraints('A-Za-z0-9_', { uppercase: true });
 }
 
 /** Letters, digits, and underscores. */
-export function usernameInputConstraints(): InputConstraintProps {
+function usernameInputConstraints(): InputConstraintProps {
     return createCharacterClassConstraints('A-Za-z0-9_');
 }
 
 /** Libyan mobile number: `0(91|92|93|94|95)` followed by seven digits. */
-export function libyanPhoneNumberInputConstraints(): InputConstraintProps {
+function libyanPhoneNumberInputConstraints(): InputConstraintProps {
     return createInputConstraints({
         inputMode: 'tel',
         pattern: '^0(?:91|92|93|94|95)\\d{7}$',
@@ -463,7 +463,7 @@ export function libyanPhoneNumberInputConstraints(): InputConstraintProps {
 }
 
 /** Twelve-digit Libyan national ID starting with `1` or `2`. */
-export function libyanNationalIdInputConstraints(): InputConstraintProps {
+function libyanNationalIdInputConstraints(): InputConstraintProps {
     return createInputConstraints({
         inputMode: 'numeric',
         pattern: '^[12]\\d{11}$',
@@ -500,7 +500,7 @@ export function libyanNationalIdInputConstraints(): InputConstraintProps {
 }
 
 /** Latitude between -90 and 90 with optional decimals. */
-export function latitudeInputConstraints(): InputConstraintProps {
+function latitudeInputConstraints(): InputConstraintProps {
     return createSignedDecimalInputConstraints(
         90,
         '^-?(?:[0-8]?\\d(?:\\.\\d+)?|90(?:\\.0+)?)$',
@@ -508,7 +508,7 @@ export function latitudeInputConstraints(): InputConstraintProps {
 }
 
 /** Longitude between -180 and 180 with optional decimals. */
-export function longitudeInputConstraints(): InputConstraintProps {
+function longitudeInputConstraints(): InputConstraintProps {
     return createSignedDecimalInputConstraints(
         180,
         '^-?(?:(?:[0-9]?\\d|1[0-7]\\d)(?:\\.\\d+)?|180(?:\\.0+)?)$',
@@ -523,7 +523,7 @@ export function longitudeInputConstraints(): InputConstraintProps {
  * @example `decimalInputConstraints({ decimals: 3, min: 0 })`
  * @example `decimalInputConstraints({ min: 0, max: 100 })` — percentage
  */
-export function decimalInputConstraints(
+function decimalInputConstraints(
     options?: number | DecimalInputConstraintOptions,
 ): InputConstraintProps {
     const resolvedOptions = typeof options === 'number' ? { decimals: options } : (options ?? {});
@@ -623,4 +623,17 @@ export function decimalInputConstraints(
             return isLeadingMinus ? '-0.' : '0.';
         },
     });
+}
+
+
+export {
+    createInputConstraints,
+    codeSlugInputConstraints,
+    codeInputConstraints,
+    usernameInputConstraints,
+    libyanPhoneNumberInputConstraints,
+    libyanNationalIdInputConstraints,
+    latitudeInputConstraints,
+    longitudeInputConstraints,
+    decimalInputConstraints,
 }

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
+import { libyanNationalIdInputConstraints } from "@/lib/input-constraints";
+
 import { Form, Head, Link, router, usePage } from "@inertiajs/react";
 
 import type { CanPermissions, Enum, Nationality, Paginated, School, Student } from "@/types";
@@ -320,8 +322,10 @@ export default function Index({
                                                 type="text"
                                                 name="filter[national_id]"
                                                 defaultValue={filter.national_id}
+                                                className="not-placeholder-shown:font-mono"
                                                 placeholder="الرقم الوطني"
                                                 autoComplete="off"
+                                                {...libyanNationalIdInputConstraints()}
                                             />
 
                                             <Input
