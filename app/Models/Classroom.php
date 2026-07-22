@@ -227,7 +227,6 @@ class Classroom extends Model
             })->values();
     }
 
-    // TODO: Remove this function if not needed
     public static function listForCurrentSchool(?int $gradeLevelId = null): Collection
     {
         return self::query()

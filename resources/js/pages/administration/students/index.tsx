@@ -471,13 +471,13 @@ export default function Index({
                                                             )}
 
                                                             {student.is_libyan ? (
-                                                                <div className="mt-1.5 text-xs text-muted-foreground">
+                                                                <div className="mt-2 text-xs text-muted-foreground">
                                                                     <span>رقم القيد:</span>
                                                                     <span className="font-mono ms-1">{student.family_registration_number}</span>
                                                                 </div>
                                                             ) : (
                                                                 student.passport_number && (
-                                                                    <div className="mt-1.5 text-xs text-muted-foreground">
+                                                                    <div className="mt-2 text-xs text-muted-foreground">
                                                                         <span>رقم جواز السفر:</span>
                                                                         <span className="font-mono ms-1">{student.passport_number}</span>
                                                                     </div>

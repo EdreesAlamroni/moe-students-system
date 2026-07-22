@@ -176,7 +176,7 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead scope="col" className="w-24">#</TableHead>
+                                            <TableHead scope="col" className="w-24 font-mono">#</TableHead>
                                             <TableHead scope="col">الرقم التسلسلي</TableHead>
                                             <TableHead scope="col">اسم المدرسة</TableHead>
                                             <TableHead scope="col">الفترة الدراسية</TableHead>

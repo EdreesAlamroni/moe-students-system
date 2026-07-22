@@ -25,19 +25,29 @@ import type React from 'react';
 
 type TextInputElement = HTMLInputElement | HTMLTextAreaElement;
 
-export type InputConstraintProps = Pick<
-    React.InputHTMLAttributes<TextInputElement>,
+type ManagedInputConstraintKey =
     | 'inputMode'
     | 'pattern'
     | 'onKeyDown'
     | 'onPaste'
     | 'onBeforeInput'
     | 'onCompositionStart'
-    | 'onCompositionEnd'
+    | 'onCompositionEnd';
+
+/** Passthrough input attributes managed outside constraint logic. */
+export type InputConstraintAttributeProps = Omit<
+    React.InputHTMLAttributes<TextInputElement>,
+    ManagedInputConstraintKey
 >;
+
+export type InputConstraintProps = Pick<
+    React.InputHTMLAttributes<TextInputElement>,
+    ManagedInputConstraintKey
+> & Partial<InputConstraintAttributeProps>;
 
 export type InputConstraintOptions = {
     inputMode: NonNullable<React.InputHTMLAttributes<TextInputElement>['inputMode']>;
+    attrs?: InputConstraintAttributeProps;
     /** HTML pattern attribute. Use full-string anchors, e.g. `^\\d*$`. */
     pattern: string;
     /** Return `true` to allow a single character at the current selection. */
@@ -234,15 +244,22 @@ function uppercaseAllowedCharacters(
     return transformed !== value ? transformed : null;
 }
 
+export type CharacterClassConstraintOptions = {
+    uppercase?: boolean;
+    inputMode?: NonNullable<React.InputHTMLAttributes<TextInputElement>['inputMode']>;
+    attrs?: InputConstraintAttributeProps;
+};
+
 function createCharacterClassConstraints(
     characterClass: string,
-    options?: { uppercase?: boolean },
+    options?: CharacterClassConstraintOptions,
 ): InputConstraintProps {
     const allowedCharacter = new RegExp(`^[${characterClass}]$`);
     const disallowedCharacters = new RegExp(`[^${characterClass}]+`, 'g');
 
     return createInputConstraints({
-        inputMode: 'text',
+        inputMode: options?.inputMode ?? 'text',
+        attrs: options?.attrs,
         pattern: `^[${characterClass}]*$`,
         isAllowedChar: (char) => allowedCharacter.test(char),
         sanitizeValue: (value) => {
@@ -317,7 +334,7 @@ function normalizeLibyanPhoneDigits(digits: string): string {
 }
 
 function createInputConstraints(options: InputConstraintOptions): InputConstraintProps {
-    const { inputMode, pattern, isAllowedChar, sanitizeValue, transformBeforeInput } = options;
+    const { inputMode, attrs, pattern, isAllowedChar, sanitizeValue, transformBeforeInput } = options;
 
     let composing = false;
 
@@ -420,6 +437,7 @@ function createInputConstraints(options: InputConstraintOptions): InputConstrain
     return {
         inputMode,
         pattern,
+        ...attrs,
         onKeyDown,
         onPaste,
         onBeforeInput,
@@ -429,18 +447,18 @@ function createInputConstraints(options: InputConstraintOptions): InputConstrain
 }
 
 /** Letters, digits, hyphens, and underscores. */
-function codeSlugInputConstraints(): InputConstraintProps {
-    return createCharacterClassConstraints('A-Za-z0-9-_');
+function codeSlugInputConstraints(options?: CharacterClassConstraintOptions): InputConstraintProps {
+    return createCharacterClassConstraints('A-Za-z0-9-_', options);
 }
 
 /** Letters, digits, and underscores. Values are uppercased on paste. */
-function codeInputConstraints(): InputConstraintProps {
-    return createCharacterClassConstraints('A-Za-z0-9_', { uppercase: true });
+function codeInputConstraints(options?: CharacterClassConstraintOptions): InputConstraintProps {
+    return createCharacterClassConstraints('A-Za-z0-9_', { uppercase: true, ...options });
 }
 
 /** Letters, digits, and underscores. */
-function usernameInputConstraints(): InputConstraintProps {
-    return createCharacterClassConstraints('A-Za-z0-9_');
+function usernameInputConstraints(options?: CharacterClassConstraintOptions): InputConstraintProps {
+    return createCharacterClassConstraints('A-Za-z0-9_', options);
 }
 
 /** Libyan mobile number: `0(91|92|93|94|95)` followed by seven digits. */
@@ -626,8 +644,18 @@ function decimalInputConstraints(
 }
 
 /** Uppercase English letters and digits. Rejects Arabic numerals, symbols, and whitespace. */
-function passportNumberInputConstraints(): InputConstraintProps {
-    return createCharacterClassConstraints('A-Za-z0-9', { uppercase: true });
+function passportNumberInputConstraints(options?: CharacterClassConstraintOptions): InputConstraintProps {
+    return createCharacterClassConstraints('A-Za-z0-9', {
+        uppercase: true,
+        inputMode: 'text',
+        ...options,
+        attrs: {
+            lang: 'en',
+            autoComplete: 'off',
+            spellCheck: false,
+            ...options?.attrs,
+        },
+    });
 }
 
 export {
@@ -641,4 +669,4 @@ export {
     latitudeInputConstraints,
     longitudeInputConstraints,
     decimalInputConstraints,
-}
+};

@@ -45,7 +45,7 @@ export default function Create({ educationalStages, gradeLevels, classroomNames 
 
     return (
         <>
-            <Head title="إضافة فصل دراسي" />
+            <Head title="إضافة فصل دراسي جديد" />
 
             <MainContainer showAcademicYearNotice>
                 <Form
@@ -59,7 +59,7 @@ export default function Create({ educationalStages, gradeLevels, classroomNames 
                             <section>
                                 <Card>
                                     <CardHeader className="border-b">
-                                        <CardTitle>إضافة فصل دراسي</CardTitle>
+                                        <CardTitle>إضافة فصل دراسي جديد</CardTitle>
                                         <CardDescription>
                                             <RequiredFieldsNote />
                                         </CardDescription>
@@ -224,7 +224,7 @@ Create.layout = () => ({
             href: index.url(),
         },
         {
-            title: 'إضافة فصل دراسي',
+            title: 'إضافة فصل دراسي جديد',
             href: create.url(),
         },
     ],

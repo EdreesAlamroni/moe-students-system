@@ -44,12 +44,12 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                     >
                         <Card>
                             <CardHeader className="border-b">
-                                <CardTitle className="flex items-center text-sm gap-x-1.5">
-                                    <div className="flex items-center gap-x-3">
-                                        <FunnelIcon />
+                                <CardTitle>
+                                    <FunnelIcon />
+                                    <div className="flex items-center gap-x-1.5">
                                         <span>فرز النتائج</span>
+                                        <span className="font-mono">({gradeLevels.length})</span>
                                     </div>
-                                    <span className="font-mono">({gradeLevels.length})</span>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
