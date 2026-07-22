@@ -4,7 +4,7 @@ namespace App\Http\Controllers\EducationMonitor;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EducationMonitor\Student\StoreTransferRequest;
-use App\Http\Resources\EducationMonitor\StudentTransferCollection;
+use App\Http\Resources\EducationMonitor\TransferableStudentCollection;
 use App\Models\Student;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +34,7 @@ class StudentTransferController extends Controller
             $students = QueryBuilder::for(Student::class)
                 ->whereNull('students.education_monitor_id')
                 ->whereNull('students.school_id')
-                // ->awaitingSchoolTransfer()
+                ->awaitingSchoolTransfer()
                 ->with(['nationality', 'enrollment.gradeLevel'])
                 ->allowedFilters(
                     AllowedFilter::scope('name', 'byFullName'),
@@ -48,7 +48,7 @@ class StudentTransferController extends Controller
 
         return Inertia::render('education-monitor/students/transfers/create', [
             'students' => ResourcePayloadBuilder::make(
-                StudentTransferCollection::make($students),
+                TransferableStudentCollection::make($students),
             ),
             'filter' => $request->input('filter', []),
         ]);

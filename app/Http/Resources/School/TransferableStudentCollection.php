@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources\EducationMonitor;
+namespace App\Http\Resources\School;
 
 use App\Http\Resources\DirectModelCollection;
 use App\Models\Student;
 use Illuminate\Http\Request;
 
-class StudentTransferCollection extends DirectModelCollection
+class TransferableStudentCollection extends DirectModelCollection
 {
     public function toArray(Request $request): array
     {

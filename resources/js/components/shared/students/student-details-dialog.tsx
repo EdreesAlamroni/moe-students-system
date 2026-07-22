@@ -44,19 +44,27 @@ export default function StudentDetailsDialog({ student, context }: StudentDetail
 
     return (
         <Dialog>
-            <DialogTrigger asChild>
-                <Button type="button" variant="link" className="group h-auto cursor-pointer p-0 text-xs no-underline">
+            <DialogTrigger
+                asChild
+            >
+                <Button
+                    type="button"
+                    variant="link"
+                    className="group h-auto cursor-pointer p-0 text-xs no-underline"
+                >
                     <EyeIcon className="h-4 w-4 group-hover:animate-pulse" />
                     <span>عرض التفاصيل</span>
                 </Button>
             </DialogTrigger>
+
             <DialogContent className="sm:max-w-3xl">
                 <DialogHeader>
                     <DialogTitle>تفاصيل الطالب</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
+
                 <DialogBody className="mb-4 max-h-[70vh] overflow-y-auto">
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <DetailField className="col-span-full">
                             <DetailLabel>
                                 الصف الدراسي الحالي
@@ -146,9 +154,13 @@ export default function StudentDetailsDialog({ student, context }: StudentDetail
                         )}
                     </div>
                 </DialogBody>
+
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button type="button" variant="outline">
+                        <Button
+                            type="button"
+                            variant="outline"
+                        >
                             <span>إغلاق</span>
                         </Button>
                     </DialogClose>

@@ -11,23 +11,26 @@ type EmptyOptionsInputProps = Omit<
     "type" | "value" | "defaultValue" | "disabled" | "readOnly" | "placeholder"
 > & {
     placeholder?: string
+    hasError?: boolean
 }
 
 function EmptyOptionsInput({
     placeholder = "لا توجد خيارات متاحة",
     className,
+    hasError = false,
     ...props
 }: EmptyOptionsInputProps) {
     return (
         <div className="relative opacity-50">
             <Input
                 type="text"
+                className={cn("pe-8 disabled:opacity-100", className)}
                 placeholder={placeholder}
+                hasError={hasError}
                 disabled
                 readOnly
                 tabIndex={-1}
                 aria-disabled="true"
-                className={cn("pe-8 disabled:opacity-100", className)}
                 {...props}
             />
             <div

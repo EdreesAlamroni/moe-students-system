@@ -23,6 +23,7 @@ import {
 import { CheckCircleIcon, LogOutIcon } from 'lucide-react';
 
 import { destroy as destroyEducationMonitorTransfer } from '@/routes/education-monitor/students/transfers';
+import { destroy as destroySchoolTransfer } from '@/routes/school/students/transfers';
 
 type TransferStudentOutContext = 'school' | 'education-monitor';
 
@@ -43,9 +44,9 @@ const config: Record<TransferStudentOutContext, {
 function resolveDestroyUrl(context: TransferStudentOutContext, student: Student): string {
     switch (context) {
         case 'education-monitor':
-            return destroyEducationMonitorTransfer.url({ student });
+            return destroyEducationMonitorTransfer.url({ student: student });
         case 'school':
-            throw new Error('School student transfer out route is not yet implemented.');
+            return destroySchoolTransfer.url({ student: student });
     }
 }
 
@@ -59,8 +60,13 @@ export default function TransferStudentOut({ student, context }: TransferStudent
 
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button type="button" variant="destructive">
+            <AlertDialogTrigger
+                asChild
+            >
+                <Button
+                    type="button"
+                    variant="destructive"
+                >
                     <Icon iconNode={LogOutIcon} />
                     <span>{buttonLabel}</span>
                 </Button>

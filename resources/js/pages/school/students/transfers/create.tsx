@@ -4,8 +4,8 @@ import type { Student } from '@/types';
 
 import AddTransferredStudent from '@/components/shared/students/add-transferred-student';
 
-import { index as studentsIndex } from '@/routes/education-monitor/students';
-import { create } from '@/routes/education-monitor/students/transfers';
+import { index as studentsIndex } from '@/routes/school/students';
+import { create } from '@/routes/school/students/transfers';
 
 type PageProps = {
     students: Student[];
@@ -27,7 +27,7 @@ export default function Create({ students, filter }: PageProps) {
             <AddTransferredStudent
                 students={students}
                 filter={filter}
-                context="education-monitor"
+                context="school"
             />
         </>
     );

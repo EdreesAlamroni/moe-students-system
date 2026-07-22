@@ -4,6 +4,7 @@ namespace App\Support\Navigation\Panels;
 
 use App\Models\Classroom;
 use App\Models\GradeLevel;
+use App\Models\Student;
 use App\Models\User;
 use App\Support\Navigation\NavigationPanel;
 
@@ -35,11 +36,11 @@ class SchoolNavigation extends NavigationPanel
             ],
             [
                 'title' => 'الطلاب',
-                'href' => '#',
+                'href' => route('school.students.index'),
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'school.students.*',
                 'excludedRoutes' => 'school.students.unenrolled-from-*',
-                'can' => true,
+                'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
                 'title' => 'الطلاب غير المسجّلين في صفوف دراسية',

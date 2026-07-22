@@ -6,6 +6,10 @@ use App\Http\Controllers\School\ClassroomController;
 use App\Http\Controllers\School\ClassScheduleController;
 use App\Http\Controllers\School\DashboardController;
 use App\Http\Controllers\School\GradeLevelController;
+use App\Http\Controllers\School\StudentClassroomEnrollmentController;
+use App\Http\Controllers\School\StudentController;
+use App\Http\Controllers\School\StudentGradeLevelEnrollmentController;
+use App\Http\Controllers\School\StudentTransferController;
 use App\Http\Controllers\School\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -36,6 +40,38 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         Route::get('/{classroom}/schedule/edit', [ClassScheduleController::class, 'edit'])->name('classrooms.class-schedules.edit');
         Route::put('/{classroom}/schedule', [ClassScheduleController::class, 'update'])->name('classrooms.class-schedules.update');
         Route::get('/{classroom}/schedule/print', [ClassScheduleController::class, 'print'])->name('classrooms.class-schedules.print');
+    });
+
+    // Students
+    Route::prefix('students')->group(function () {
+        Route::get('/', [StudentController::class, 'index'])->name('students.index');
+        // Route::get('/unenrolled-from-grade-level', [StudentUnenrolledFromGradeLevelController::class, 'index'])->name('students.unenrolled-from-grade-level.index');
+        // Route::get('/unenrolled-from-classroom', [StudentUnenrolledFromClassroomController::class, 'index'])->name('students.unenrolled-from-classroom.index');
+        Route::get('/create', [StudentController::class, 'create'])->name('students.create');
+        Route::post('/', [StudentController::class, 'store'])->name('students.store');
+        Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
+        Route::get('/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
+        Route::put('/{student}', [StudentController::class, 'update'])->name('students.update');
+
+        // Grade Level Enrollments
+        Route::post('/{student}/grade-level-enrollments', [StudentGradeLevelEnrollmentController::class, 'store'])->name('students.grade-level-enrollments.store');
+        Route::post('/{student}/classroom-enrollments', [StudentClassroomEnrollmentController::class, 'store'])->name('students.classroom-enrollments.store');
+
+        // Student Psychosocial Card
+        // Route::get('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'show'])->name('students.psychosocial-card.show');
+        // Route::get('/{student}/psychosocial-card/edit', [StudentPsychosocialCardController::class, 'edit'])->name('students.psychosocial-card.edit');
+        // Route::put('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'update'])->name('students.psychosocial-card.update');
+        // Route::get('/{student}/psychosocial-card/print', [StudentPsychosocialCardController::class, 'print'])->name('students.psychosocial-card.print');
+
+        // Student Transfers
+        Route::get('/transfers/create', [StudentTransferController::class, 'create'])->name('students.transfers.create');
+        Route::post('/transfers', [StudentTransferController::class, 'store'])->name('students.transfers.store');
+        Route::delete('/transfers/{student}', [StudentTransferController::class, 'destroy'])->name('students.transfers.destroy');
+
+        // Academic Records
+        // Route::get('/{student}/academic-record', [StudentAcademicRecordController::class, 'show'])->name('students.academic-record.show');
+        // Route::get('/{student}/academic-record/create', [StudentAcademicRecordController::class, 'create'])->name('students.academic-record.create');
+        // Route::post('/{student}/academic-record', [StudentAcademicRecordController::class, 'store'])->name('students.academic-record.store');
     });
 
     // Users

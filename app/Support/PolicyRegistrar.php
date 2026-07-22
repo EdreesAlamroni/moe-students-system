@@ -51,6 +51,7 @@ use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUs
 use App\Policies\School\ClassroomPolicy as SchoolClassroomPolicy;
 use App\Policies\School\ClassSchedulePolicy as SchoolClassSchedulePolicy;
 use App\Policies\School\GradeLevelPolicy as SchoolGradeLevelPolicy;
+use App\Policies\School\StudentPolicy as SchoolStudentPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
 use App\Policies\Warehouse\BookDistributionPolicy as WarehouseBookDistributionPolicy;
 use App\Policies\Warehouse\EducationMonitorPolicy as WarehouseEducationMonitorPolicy;
@@ -62,6 +63,8 @@ use InvalidArgumentException;
 
 final class PolicyRegistrar
 {
+    // TODO: Improve this class by separating the policies into smaller classes for each group and segment.
+
     /**
      * Policies bound to Eloquent models.
      *
@@ -102,6 +105,7 @@ final class PolicyRegistrar
             GradeLevel::class => SchoolGradeLevelPolicy::class,
             Classroom::class => SchoolClassroomPolicy::class,
             ClassSchedule::class => SchoolClassSchedulePolicy::class,
+            Student::class => SchoolStudentPolicy::class,
         ],
     ];
 

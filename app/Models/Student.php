@@ -85,7 +85,10 @@ class Student extends Model
         static::created(function (self $student) {
             $id = (string) $student->id;
             $number = Str::padLeft($id, 7, '0');
-            $student->updateQuietly(['number' => $number]);
+            $student->updateQuietly([
+                'number' => $number,
+                'exam_enrollment_status' => StudentExamEnrollmentStatus::REGISTERED,
+            ]);
         });
     }
 
