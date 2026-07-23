@@ -85,7 +85,7 @@ class StudentAcademicRecordController extends Controller
                 return;
             }
 
-            $student->refresh(['enrollment.gradeLevel']);
+            $student->refresh()->load(['enrollment.gradeLevel']);
 
             if (! $this->academicRecordService->isComplete($student)) {
                 return;
@@ -96,7 +96,7 @@ class StudentAcademicRecordController extends Controller
             ]);
         });
 
-        $student->refresh(['enrollment.gradeLevel']);
+        $student->refresh()->load(['enrollment.gradeLevel']);
 
         if ($this->academicRecordService->isComplete($student)) {
             flash_success('academic-record-created');

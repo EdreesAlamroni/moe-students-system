@@ -20,9 +20,9 @@ use Illuminate\Support\Carbon;
  * @property int $academic_year_id
  * @property AcademicRecordStatus $status
  * @property AcademicRecordRating|null $rating
- * @property Carbon $created_at
- * @property Carbon $updated_at
- * @property Carbon $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property AcademicYear $academicYear
  * @property GradeLevel $gradeLevel
  * @property Student $student

@@ -39,7 +39,13 @@ class AcademicRecordService
             ->with(['gradeLevel', 'academicYear'])
             ->orderBy('id')
             ->get()
-            ->groupBy('grade_level_id');
+            ->mapToGroups(function (AcademicRecord $record): array {
+                return [$record->grade_level_id => $record];
+            })
+            ->toBase()
+            ->map(function (Collection $records): Collection {
+                return $records->toBase();
+            });
     }
 
     /**
@@ -419,7 +425,7 @@ class AcademicRecordService
         return [
             'id' => $record->id,
             'uuid' => $record->uuid,
-            'academic_year' => $record->academicYear?->only(['id', 'name']),
+            'academic_year' => $record->academicYear->only(['id', 'name']),
             'status' => $record->status->toArray(),
             'rating' => $record->rating?->toArray(),
             'created_at' => $record->created_at?->toISOString(),
