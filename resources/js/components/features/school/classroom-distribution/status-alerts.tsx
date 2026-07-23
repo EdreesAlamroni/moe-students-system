@@ -6,7 +6,7 @@ import {
 
 import type { EnrollmentSummary } from '@/types/classroom-distribution';
 
-import { AlertTriangleIcon, InfoIcon } from 'lucide-react';
+import { AlertTriangleIcon, CheckCircle2Icon, InfoIcon } from 'lucide-react';
 
 interface StatusAlertsProps {
     isDistributionCompleted: boolean;
@@ -109,7 +109,7 @@ export default function StatusAlerts({
 
             {isAcademicYearActive && isDistributionCompleted && (
                 <Alert>
-                    <InfoIcon />
+                    <CheckCircle2Icon />
                     <AlertTitle>تم إتمام التوزيع</AlertTitle>
                     <AlertDescription>
                         تم إنهاء عملية توزيع الطلاب على الفصول للسنة الدراسية
