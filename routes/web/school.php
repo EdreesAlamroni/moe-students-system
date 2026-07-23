@@ -6,6 +6,7 @@ use App\Http\Controllers\School\ClassroomController;
 use App\Http\Controllers\School\ClassScheduleController;
 use App\Http\Controllers\School\DashboardController;
 use App\Http\Controllers\School\GradeLevelController;
+use App\Http\Controllers\School\StudentAcademicRecordController;
 use App\Http\Controllers\School\StudentClassroomEnrollmentController;
 use App\Http\Controllers\School\StudentController;
 use App\Http\Controllers\School\StudentGradeLevelEnrollmentController;
@@ -71,9 +72,9 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         Route::delete('/transfers/{student}', [StudentTransferController::class, 'destroy'])->name('students.transfers.destroy');
 
         // Academic Records
-        // Route::get('/{student}/academic-record', [StudentAcademicRecordController::class, 'show'])->name('students.academic-record.show');
-        // Route::get('/{student}/academic-record/create', [StudentAcademicRecordController::class, 'create'])->name('students.academic-record.create');
-        // Route::post('/{student}/academic-record', [StudentAcademicRecordController::class, 'store'])->name('students.academic-record.store');
+        Route::get('/{student}/academic-record', [StudentAcademicRecordController::class, 'show'])->name('students.academic-record.show');
+        Route::get('/{student}/academic-record/create', [StudentAcademicRecordController::class, 'create'])->name('students.academic-record.create');
+        Route::post('/{student}/academic-record', [StudentAcademicRecordController::class, 'store'])->name('students.academic-record.store');
     });
 
     // Users

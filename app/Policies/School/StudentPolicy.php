@@ -5,6 +5,7 @@ namespace App\Policies\School;
 use App\Models\AcademicYear;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\School\AcademicRecordService;
 
 class StudentPolicy
 {
@@ -215,35 +216,34 @@ class StudentPolicy
         return $user->can('student:view-academic-record');
     }
 
-    // TODO: Remove comments after implementing the academic record feature.
-    // public function createAcademicRecord(User $user, Student $student): bool
-    // {
-    //     if (AcademicYear::isCurrentYearInactive()) {
-    //         return false;
-    //     }
+    public function createAcademicRecord(User $user, Student $student): bool
+    {
+        if (AcademicYear::isCurrentYearInactive()) {
+            return false;
+        }
 
-    //     if ($student->doesntHaveEnrollment()) {
-    //         return false;
-    //     }
+        if ($student->doesntHaveEnrollment()) {
+            return false;
+        }
 
-    //     if ($student->school_id !== $user->organization_id) {
-    //         return false;
-    //     }
+        if ($student->school_id !== $user->organization_id) {
+            return false;
+        }
 
-    //     $academicRecordService = app(AcademicRecordService::class);
+        $academicRecordService = app(AcademicRecordService::class);
 
-    //     if (! $academicRecordService->requiresAcademicRecord($student)) {
-    //         return false;
-    //     }
+        if (! $academicRecordService->requiresAcademicRecord($student)) {
+            return false;
+        }
 
-    //     if ($academicRecordService->isComplete($student)) {
-    //         return false;
-    //     }
+        if ($academicRecordService->isComplete($student)) {
+            return false;
+        }
 
-    //     if ($student->trashed()) {
-    //         return false;
-    //     }
+        if ($student->trashed()) {
+            return false;
+        }
 
-    //     return $user->can('student:create-academic-record');
-    // }
+        return $user->can('student:create-academic-record');
+    }
 }

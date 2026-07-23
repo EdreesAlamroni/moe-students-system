@@ -275,6 +275,9 @@ return [
         'items.*.day_of_week' => 'يوم الأسبوع',
         'items.*.subject_id' => 'المادة الدراسية',
         'items.*.notes' => 'الملاحظات',
+        'academic_year_id' => 'السنة الدراسية',
+        'status' => 'الحالة',
+        'rating' => 'التقدير',
     ],
 
     'values' => [],

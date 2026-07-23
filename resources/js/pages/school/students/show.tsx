@@ -29,6 +29,7 @@ import { ArrowRightLeftIcon, BookUserIcon, CircleAlertIcon, FileTextIcon, Notepa
 
 import { index, show, edit } from "@/routes/school/students";
 import { show as showPsychosocialCard } from "@/routes/school/students/psychosocial-card";
+import { show as showAcademicRecord } from "@/routes/school/students/academic-record";
 
 type PageProps = {
     student: Student;
@@ -93,7 +94,7 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
                                 variant="outline"
                                 asChild
                             >
-                                <Link href="#">
+                                <Link href={showAcademicRecord.url({ student: student })}>
                                     <FileTextIcon />
                                     <span>السجل الدراسي</span>
                                 </Link>

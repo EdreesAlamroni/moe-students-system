@@ -86,6 +86,9 @@ return [
 
         'classroom-students-not-found' => 'لا يوجد طلاب في هذا الفصل الدراسي.',
 
+        'academic-record-created' => 'تم إنشاء السجل الدراسي بنجاح.',
+        'academic-record-updated' => 'تم تحديث السجل الدراسي بنجاح.',
+
         'book-distribution-completed' => 'تم تسليم الكُتب لـ :count طالب/طالبة بنجاح. لا يمكن التراجع عن هذا الإجراء.',
         'book-distribution-no-eligible-students' => 'لا يوجد طلاب مؤهلون لاستلام الكُتب من بين الطلاب المحددين.',
         'book-distribution-grade-levels-confirmed' => 'تم تأكيد استلام الكُتب لـ :count صف/صفوف دراسية بنجاح. لا يمكن التراجع عن هذا الإجراء.',
