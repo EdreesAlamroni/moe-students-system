@@ -23,9 +23,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property AcademicYear $academicYear
- * @property GradeLevel $gradeLevel
- * @property Student $student
+ * @property-read AcademicYear $academicYear
+ * @property-read GradeLevel $gradeLevel
+ * @property-read Student $student
  */
 #[Guarded(['id'])]
 class AcademicRecord extends Model
