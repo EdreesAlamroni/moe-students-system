@@ -9,6 +9,7 @@ use App\Http\Controllers\School\GradeLevelController;
 use App\Http\Controllers\School\StudentClassroomEnrollmentController;
 use App\Http\Controllers\School\StudentController;
 use App\Http\Controllers\School\StudentGradeLevelEnrollmentController;
+use App\Http\Controllers\School\StudentPsychosocialCardController;
 use App\Http\Controllers\School\StudentTransferController;
 use App\Http\Controllers\School\UserController;
 use App\Support\Auth\DashboardAuth;
@@ -58,10 +59,10 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         Route::post('/{student}/classroom-enrollments', [StudentClassroomEnrollmentController::class, 'store'])->name('students.classroom-enrollments.store');
 
         // Student Psychosocial Card
-        // Route::get('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'show'])->name('students.psychosocial-card.show');
-        // Route::get('/{student}/psychosocial-card/edit', [StudentPsychosocialCardController::class, 'edit'])->name('students.psychosocial-card.edit');
-        // Route::put('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'update'])->name('students.psychosocial-card.update');
-        // Route::get('/{student}/psychosocial-card/print', [StudentPsychosocialCardController::class, 'print'])->name('students.psychosocial-card.print');
+        Route::get('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'show'])->name('students.psychosocial-card.show');
+        Route::get('/{student}/psychosocial-card/edit', [StudentPsychosocialCardController::class, 'edit'])->name('students.psychosocial-card.edit');
+        Route::put('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'update'])->name('students.psychosocial-card.update');
+        Route::get('/{student}/psychosocial-card/print', [StudentPsychosocialCardController::class, 'print'])->name('students.psychosocial-card.print');
 
         // Student Transfers
         Route::get('/transfers/create', [StudentTransferController::class, 'create'])->name('students.transfers.create');

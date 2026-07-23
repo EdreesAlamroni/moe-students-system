@@ -28,6 +28,7 @@ import TransferStudentOut from "@/components/shared/students/transfer-student-ou
 import { ArrowRightLeftIcon, BookUserIcon, CircleAlertIcon, FileTextIcon, NotepadTextIcon, SquarePenIcon } from "lucide-react";
 
 import { index, show, edit } from "@/routes/school/students";
+import { show as showPsychosocialCard } from "@/routes/school/students/psychosocial-card";
 
 type PageProps = {
     student: Student;
@@ -98,7 +99,7 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
                                 variant="outline"
                                 asChild
                             >
-                                <Link href="#">
+                                <Link href={showPsychosocialCard.url({ student: student })}>
                                     <BookUserIcon />
                                     <span>البطاقة الإجتماعية والنفسية</span>
                                 </Link>
@@ -197,7 +198,6 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
 
                                 {student.is_libyan && (
                                     <>
-
                                         <DetailField>
                                             <DetailLabel>الرقم الوطني</DetailLabel>
                                             <DetailValue value={student.national_id} className="font-mono" />

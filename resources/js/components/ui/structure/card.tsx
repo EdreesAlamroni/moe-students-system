@@ -115,6 +115,20 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     )
 }
 
+function CardFormFooter({ className, ...props }: React.ComponentProps<"div">) {
+    return (
+        <div
+            data-slot="card-form-footer"
+            className={cn(
+                "flex items-center px-(--card-spacing) [.border-t]:pt-(--card-spacing)",
+                "justify-end gap-x-4 border-t",
+                className
+            )}
+            {...props}
+        />
+    )
+}
+
 export {
     Card,
     CardHeader,
@@ -125,4 +139,5 @@ export {
     CardContent,
     CardTableContent,
     CardFormContent,
+    CardFormFooter,
 }

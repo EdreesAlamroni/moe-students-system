@@ -9,7 +9,7 @@ import type { User } from "@/types";
 import type { RoleGroup } from "@/types/auth";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
+import { Card, CardDescription, CardFormContent, CardFormFooter, CardHeader, CardTitle } from "@/components/ui/structure/card";
 import { FormLayout } from "@/components/ui/structure/form-layout";
 import { Separator } from "@/components/ui/structure/separator";
 
@@ -161,7 +161,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                         </div>
                                     </CardFormContent>
 
-                                    <CardFooter className="justify-end gap-x-4 border-t">
+                                    <CardFormFooter>
                                         <Button
                                             variant="outline"
                                             className="flex items-center gap-x-2"
@@ -176,7 +176,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                         <UpdateButton
                                             processing={processing}
                                         />
-                                    </CardFooter>
+                                    </CardFormFooter>
                                 </Card>
                             </section>
                         </FormLayout>
