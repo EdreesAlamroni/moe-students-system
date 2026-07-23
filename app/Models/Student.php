@@ -348,7 +348,7 @@ class Student extends Model
         /** @var \Illuminate\Database\Connection $connection */
         $connection = $query->getConnection();
 
-        if ($connection->getDriverName() === 'sqlite') {
+        if (in_array($connection->getDriverName(), ['sqlite', 'pgsql'], true)) {
             return $query
                 ->orderBy('grade_levels.educational_stage')
                 ->orderBy('grade_levels.order', $direction);

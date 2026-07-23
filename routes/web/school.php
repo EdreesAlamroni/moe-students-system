@@ -12,6 +12,7 @@ use App\Http\Controllers\School\StudentController;
 use App\Http\Controllers\School\StudentGradeLevelEnrollmentController;
 use App\Http\Controllers\School\StudentPsychosocialCardController;
 use App\Http\Controllers\School\StudentTransferController;
+use App\Http\Controllers\School\StudentUnenrolledFromClassroomController;
 use App\Http\Controllers\School\StudentUnenrolledFromGradeLevelController;
 use App\Http\Controllers\School\UserController;
 use App\Support\Auth\DashboardAuth;
@@ -49,7 +50,7 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
     Route::prefix('students')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
         Route::get('/unenrolled-from-grade-level', [StudentUnenrolledFromGradeLevelController::class, 'index'])->name('students.unenrolled-from-grade-level.index');
-        // Route::get('/unenrolled-from-classroom', [StudentUnenrolledFromClassroomController::class, 'index'])->name('students.unenrolled-from-classroom.index');
+        Route::get('/unenrolled-from-classroom', [StudentUnenrolledFromClassroomController::class, 'index'])->name('students.unenrolled-from-classroom.index');
         Route::get('/create', [StudentController::class, 'create'])->name('students.create');
         Route::post('/', [StudentController::class, 'store'])->name('students.store');
         Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');

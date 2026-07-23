@@ -25,7 +25,7 @@ class StudentCollection extends DirectModelCollection
             'family_registration_number' => $student->family_registration_number,
             'passport_number' => $student->passport_number,
             'is_libyan' => $student->is_libyan,
-            'grade_level' => $this->whenEnrollmentRelationLoaded('gradeLevel', ['id', 'name']),
+            'grade_level' => $this->whenEnrollmentRelationLoaded($student, 'gradeLevel', ['id', 'name']),
         ])->all();
     }
 
@@ -33,11 +33,8 @@ class StudentCollection extends DirectModelCollection
      * @param  list<string>  $columns
      * @return MissingValue|array<string, mixed>|null
      */
-    private function whenEnrollmentRelationLoaded(string $relation, array $columns): MissingValue|array|null
+    private function whenEnrollmentRelationLoaded(Student $student, string $relation, array $columns): MissingValue|array|null
     {
-        /** @var Student $student */
-        $student = $this->resource;
-
         if (! $student->relationLoaded('enrollment') || ! $student->enrollment?->relationLoaded($relation)) {
             return new MissingValue;
         }

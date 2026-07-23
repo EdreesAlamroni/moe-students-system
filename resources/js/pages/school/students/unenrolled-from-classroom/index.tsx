@@ -4,13 +4,13 @@ import { Form, Head, Link } from "@inertiajs/react";
 
 import { decimalInputConstraints, libyanNationalIdInputConstraints, passportNumberInputConstraints } from "@/lib/input-constraints";
 
-import type { CanPermissions, Enum, Nationality, Paginated, Student } from "@/types";
+import type { CanPermissions, Enum, GradeLevel, Nationality, Paginated, Student } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellActions } from "@/components/ui/display/table";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellActions, TableCellNullableValue } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
 
 import { Input } from "@/components/ui/controls/input";
@@ -25,7 +25,7 @@ import FunnelIcon from "@/components/ui/icons/funnel-icon";
 import { ListIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
 import { show } from "@/routes/school/students";
-import { index } from "@/routes/school/students/unenrolled-from-grade-level";
+import { index } from "@/routes/school/students/unenrolled-from-classroom";
 
 type StudentProps = Student & {
     canAny: boolean;
@@ -34,19 +34,21 @@ type StudentProps = Student & {
 
 type PageProps = {
     students: Paginated<StudentProps>;
+    gradeLevels: GradeLevel[];
     registrationStatuses: Enum[];
     nationalities: Nationality[];
     filter: {
         name?: string;
         registration_status?: string;
         nationality_id?: string;
+        grade_level_id?: string;
         national_id?: string;
         family_registration_number?: string;
         passport_number?: string;
     };
 }
 
-export default function Index({ students, nationalities, registrationStatuses, filter }: PageProps) {
+export default function Index({ students, nationalities, registrationStatuses, gradeLevels, filter }: PageProps) {
     const { data, links, ...meta } = students;
 
     const hasFilter = Object.values(filter).some((value) => value);
@@ -55,7 +57,7 @@ export default function Index({ students, nationalities, registrationStatuses, f
 
     return (
         <>
-            <Head title="الطلاب غير المسجّلين في صفوف دراسية" />
+            <Head title="الطلاب غير المسجّلين في فصول دراسية" />
 
             <MainContainer showAcademicYearNotice>
                 <section>
@@ -73,7 +75,28 @@ export default function Index({ students, nationalities, registrationStatuses, f
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                    <Select
+                                        name="filter[grade_level_id]"
+                                        defaultValue={filter.grade_level_id || undefined}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="الصف الدراسي" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {gradeLevels.map((gradeLevel) => (
+                                                    <SelectItem
+                                                        key={gradeLevel.id}
+                                                        value={gradeLevel.id.toString()}
+                                                    >
+                                                        {gradeLevel.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+
                                     <Input
                                         type="text"
                                         name="filter[name]"
@@ -195,6 +218,7 @@ export default function Index({ students, nationalities, registrationStatuses, f
                                         <TableRow>
                                             <TableHead scope="col">رقم الطالب</TableHead>
                                             <TableHead scope="col">اسم الطالب</TableHead>
+                                            <TableHead scope="col">الصف الدراسي</TableHead>
                                             <TableHead scope="col">الرقم الوطني</TableHead>
                                             <TableHead scope="col">صفة القيد</TableHead>
                                             <TableHead scope="col" />
@@ -210,6 +234,9 @@ export default function Index({ students, nationalities, registrationStatuses, f
                                                         <span>الجنس:</span>
                                                         <span className="ms-1">{student.gender.name}</span>
                                                     </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={student.grade_level?.name} />
                                                 </TableCell>
                                                 <TableCell>
                                                     {student.is_libyan ? (
@@ -268,7 +295,7 @@ export default function Index({ students, nationalities, registrationStatuses, f
 Index.layout = () => ({
     breadcrumbs: [
         {
-            title: 'الطلاب غير المسجّلين في صفوف دراسية',
+            title: 'الطلاب غير المسجّلين في فصول دراسية',
             href: index.url(),
         },
     ],

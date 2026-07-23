@@ -51,10 +51,10 @@ class SchoolNavigation extends NavigationPanel
             ],
             [
                 'title' => 'الطلاب غير المسجّلين في فصول دراسية',
-                'href' => '#',
+                'href' => route('school.students.unenrolled-from-classroom.index'),
                 'icon' => 'UserXIcon',
                 'activeRoutes' => 'school.students.unenrolled-from-classroom.*',
-                'can' => true,
+                'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
                 'title' => 'توزيع الطلاب على الفصول',
