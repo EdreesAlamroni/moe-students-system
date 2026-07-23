@@ -94,6 +94,7 @@ class SchoolPermissionSeeder extends Seeder
         // Enrollment permissions
         $enrollInGradeLevel = Permission::findOrCreate('student:enroll-in-grade-level', $this->scope);
         $enrollInClassroom = Permission::findOrCreate('student:enroll-in-classroom', $this->scope);
+        $transferClassroom = Permission::findOrCreate('student:transfer-classroom', $this->scope);
 
         // Psychosocial card permissions
         $viewPsychosocialCard = Permission::findOrCreate('student:view-psychosocial-card', $this->scope);
@@ -117,6 +118,7 @@ class SchoolPermissionSeeder extends Seeder
         // Enrollment roles
         $enrollInGradeLevelRole = Role::findOrCreate('student:role:enroll-in-grade-level', $this->scope);
         $enrollInClassroomRole = Role::findOrCreate('student:role:enroll-in-classroom', $this->scope);
+        $transferClassroomRole = Role::findOrCreate('student:role:transfer-classroom', $this->scope);
 
         // Psychosocial card roles
         $viewPsychosocialCardRole = Role::findOrCreate('student:role:view-psychosocial-card', $this->scope);
@@ -140,6 +142,7 @@ class SchoolPermissionSeeder extends Seeder
         // Sync enrollment permissions with roles
         $enrollInGradeLevelRole->syncPermissions([$viewAny, $view, $enrollInGradeLevel]);
         $enrollInClassroomRole->syncPermissions([$viewAny, $view, $enrollInClassroom]);
+        $transferClassroomRole->syncPermissions([$viewAny, $view, $transferClassroom]);
 
         // Sync psychosocial card permissions with roles
         $viewPsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard]);

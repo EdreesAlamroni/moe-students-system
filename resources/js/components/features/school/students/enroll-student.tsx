@@ -18,7 +18,7 @@ import {
 import InputError from '@/components/ui/controls/input-error';
 
 import { Button } from '@/components/ui/actions/button';
-import { CreateButton } from '@/components/ui/actions/submit-button';
+import { CreateButton, ConfirmButton } from '@/components/ui/actions/submit-button';
 
 import {
     Dialog,
@@ -33,10 +33,10 @@ import {
     DialogTrigger,
 } from '@/components/ui/overlay/dialog';
 
-import { GraduationCapIcon, PresentationIcon } from 'lucide-react';
+import { GraduationCapIcon, PresentationIcon, ArrowRightLeftIcon } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-import { store as storeClassroomEnrollment } from '@/routes/school/students/classroom-enrollments';
+import { store as storeClassroomEnrollment, update as updateClassroomEnrollment } from '@/routes/school/students/classroom-enrollments';
 import { store as storeGradeLevelEnrollment } from '@/routes/school/students/grade-level-enrollments';
 
 type EnrollmentOption = {
@@ -57,9 +57,11 @@ type EnrollmentDialogConfig = {
     fetchErrorMessage: string;
     icon: LucideIcon;
     resolveForm: (student: Student) => ReturnType<typeof storeGradeLevelEnrollment.form>;
+    submitTitle?: string;
+    submitMode?: 'create' | 'confirm';
 };
 
-const gradeLevelConfig: EnrollmentDialogConfig = {
+const enrollGradeLevelConfig: EnrollmentDialogConfig = {
     propName: 'gradeLevels',
     fieldName: 'grade_level_id',
     buttonLabel: 'تسجيل في صف دراسي',
@@ -72,9 +74,10 @@ const gradeLevelConfig: EnrollmentDialogConfig = {
     fetchErrorMessage: 'تعذر تحميل الصفوف الدراسية حالياً. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.',
     icon: GraduationCapIcon,
     resolveForm: (student) => storeGradeLevelEnrollment.form({ student }),
+    submitTitle: 'تسجيل',
 };
 
-const classroomConfig: EnrollmentDialogConfig = {
+const enrollClassroomConfig: EnrollmentDialogConfig = {
     propName: 'classrooms',
     fieldName: 'classroom_id',
     buttonLabel: 'تسجيل في فصل دراسي',
@@ -87,6 +90,24 @@ const classroomConfig: EnrollmentDialogConfig = {
     fetchErrorMessage: 'تعذر تحميل الفصول الدراسية حالياً. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.',
     icon: PresentationIcon,
     resolveForm: (student) => storeClassroomEnrollment.form({ student }),
+    submitTitle: 'تسجيل',
+};
+
+const transferClassroomConfig: EnrollmentDialogConfig = {
+    propName: 'classrooms',
+    fieldName: 'classroom_id',
+    buttonLabel: 'نقل إلى فصل دراسي آخر',
+    title: 'نقل إلى فصل دراسي آخر',
+    description: 'يرجى اختيار الفصل الدراسي الجديد ضمن نفس الصف الدراسي.',
+    label: 'الفصل الدراسي الجديد',
+    selectPlaceholder: 'اختر الفصل الدراسي الجديد',
+    loadingPlaceholder: 'جاري تحميل الفصول الدراسية ...',
+    emptyPlaceholder: 'لا توجد فصول دراسية أخرى متاحة حالياً',
+    fetchErrorMessage: 'تعذر تحميل الفصول الدراسية حالياً. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.',
+    icon: ArrowRightLeftIcon,
+    resolveForm: (student) => updateClassroomEnrollment.form({ student }),
+    submitTitle: 'نقل',
+    submitMode: 'confirm',
 };
 
 type EnrollmentDialogProps = {
@@ -96,6 +117,7 @@ type EnrollmentDialogProps = {
 };
 
 function EnrollmentDialog({ student, options, config }: EnrollmentDialogProps) {
+    const [isOpen, setIsOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [fetchError, setFetchError] = React.useState<string | undefined>(undefined);
     const [selectedOptionId, setSelectedOptionId] = React.useState<string | undefined>(undefined);
@@ -118,12 +140,17 @@ function EnrollmentDialog({ student, options, config }: EnrollmentDialogProps) {
     };
 
     const handleOpenChange = (open: boolean): void => {
+        setIsOpen(open);
         setFetchError(undefined);
         setSelectedOptionId(undefined);
 
         if (open) {
             reloadOptions();
         }
+    };
+
+    const handleSuccess = (): void => {
+        setIsOpen(false);
     };
 
     const renderOptionsControl = (fieldError?: string) => {
@@ -180,6 +207,7 @@ function EnrollmentDialog({ student, options, config }: EnrollmentDialogProps) {
 
     return (
         <Dialog
+            open={isOpen}
             onOpenChange={handleOpenChange}
         >
             <DialogTrigger
@@ -199,17 +227,19 @@ function EnrollmentDialog({ student, options, config }: EnrollmentDialogProps) {
                     {...config.resolveForm(student)}
                     disableWhileProcessing
                     resetOnError={[config.fieldName]}
+                    onSuccess={handleSuccess}
                     onError={() => {
                         setSelectedOptionId(undefined);
                         reloadOptions();
                     }}
                     options={{
                         preserveScroll: true,
-                        preserveState: true,
+                        preserveState: false,
                     }}
                 >
                     {({ processing, errors }) => {
                         const fieldError = errors[config.fieldName];
+                        const SubmitButton = config.submitMode === 'confirm' ? ConfirmButton : CreateButton;
 
                         return (
                             <DialogFormLayout>
@@ -241,8 +271,8 @@ function EnrollmentDialog({ student, options, config }: EnrollmentDialogProps) {
                                             <span>إغلاق</span>
                                         </Button>
                                     </DialogClose>
-                                    <CreateButton
-                                        title="تسجيل"
+                                    <SubmitButton
+                                        title={config.submitTitle ?? 'تـأكيد'}
                                         processing={processing || isLoading}
                                         disabled={processing || isSubmitDisabled}
                                     />
@@ -266,7 +296,7 @@ export function EnrollInGradeLevel({ student, gradeLevels }: EnrollInGradeLevelP
         <EnrollmentDialog
             student={student}
             options={gradeLevels}
-            config={gradeLevelConfig}
+            config={enrollGradeLevelConfig}
         />
     );
 }
@@ -281,7 +311,40 @@ export function EnrollInClassroom({ student, classrooms }: EnrollInClassroomProp
         <EnrollmentDialog
             student={student}
             options={classrooms}
-            config={classroomConfig}
+            config={enrollClassroomConfig}
+        />
+    );
+}
+
+type TransferClassroomProps = {
+    student: Student;
+    classrooms?: Classroom[];
+};
+
+export function TransferClassroom({ student, classrooms }: TransferClassroomProps) {
+    const availableClassrooms = React.useMemo(
+        () => (classrooms ?? []).filter((classroom) => classroom.id !== student.classroom?.id),
+        [classrooms, student.classroom?.id],
+    );
+
+    const currentClassroom = student.classroom?.name
+        ? (student.grade_level?.name
+            ? `${student.grade_level.name} / ${student.classroom.name}`
+            : student.classroom.name)
+        : null;
+
+    const config: EnrollmentDialogConfig = currentClassroom
+        ? {
+            ...transferClassroomConfig,
+            description: `الفصل الحالي: ${currentClassroom}. يرجى اختيار الفصل الدراسي الجديد ضمن نفس الصف الدراسي.`,
+        }
+        : transferClassroomConfig;
+
+    return (
+        <EnrollmentDialog
+            student={student}
+            options={availableClassrooms}
+            config={config}
         />
     );
 }

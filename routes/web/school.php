@@ -57,6 +57,7 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         // Grade Level Enrollments
         Route::post('/{student}/grade-level-enrollments', [StudentGradeLevelEnrollmentController::class, 'store'])->name('students.grade-level-enrollments.store');
         Route::post('/{student}/classroom-enrollments', [StudentClassroomEnrollmentController::class, 'store'])->name('students.classroom-enrollments.store');
+        Route::put('/{student}/classroom-enrollments', [StudentClassroomEnrollmentController::class, 'update'])->name('students.classroom-enrollments.update');
 
         // Student Psychosocial Card
         Route::get('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'show'])->name('students.psychosocial-card.show');

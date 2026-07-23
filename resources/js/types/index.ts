@@ -7,7 +7,7 @@ export const PERMISSION_ACTIONS = [
     'archive', 'restore', 'forceDelete', 'stateUpdate',
     'addGradeLevel', 'removeGradeLevel', 'resetClassroomDistribution',
     'addTransferredStudent', 'transferStudentOut',
-    'enrollInGradeLevel', 'enrollInClassroom',
+    'enrollInGradeLevel', 'enrollInClassroom', 'transferClassroom',
     'viewPsychosocialCard', 'updatePsychosocialCard', 'printPsychosocialCard',
     'viewAcademicRecord', 'createAcademicRecord',
     'print', 'export',

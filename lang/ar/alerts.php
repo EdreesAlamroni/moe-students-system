@@ -82,6 +82,7 @@ return [
 
         'student-classroom-enrolled' => 'تم تسجيل الطالب في الفصل الدراسي بنجاح.',
         'student-classroom-already-enrolled' => 'الطالب مسجل بالفعل في فصل دراسي للسنة الدراسية الحالية.',
+        'student-classroom-transferred' => 'تم نقل الطالب إلى الفصل الدراسي الجديد بنجاح.',
 
         'classroom-students-not-found' => 'لا يوجد طلاب في هذا الفصل الدراسي.',
 

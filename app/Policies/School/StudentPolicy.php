@@ -124,6 +124,29 @@ class StudentPolicy
         return $user->can('student:enroll-in-classroom');
     }
 
+    public function transferClassroom(User $user, Student $student): bool
+    {
+        if (AcademicYear::isCurrentYearInactive()) {
+            return false;
+        }
+
+        $student->loadMissing(['enrollment']);
+
+        if (! $student->hasEnrollment() || blank($student->enrollment->classroom_id)) {
+            return false;
+        }
+
+        if ($student->school_id !== $user->organization_id) {
+            return false;
+        }
+
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:transfer-classroom');
+    }
+
     public function viewPsychosocialCard(User $user, Student $student): bool
     {
         if ($student->school_id !== $user->organization_id) {

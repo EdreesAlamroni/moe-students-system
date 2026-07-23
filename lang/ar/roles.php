@@ -131,6 +131,7 @@ return [
 
             'student:role:enroll-in-grade-level' => 'تسجيل الطلاب في صف دراسي',
             'student:role:enroll-in-classroom' => 'تسجيل الطلاب في فصل دراسي',
+            'student:role:transfer-classroom' => 'نقل الطلاب بين الفصول الدراسية',
 
             'student:role:view-psychosocial-card' => 'عرض البطاقة الإجتماعية والنفسية للطلاب',
             'student:role:update-psychosocial-card' => 'تحديث البطاقة الإجتماعية والنفسية للطلاب',

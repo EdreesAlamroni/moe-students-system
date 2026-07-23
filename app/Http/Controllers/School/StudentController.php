@@ -147,6 +147,7 @@ class StudentController extends Controller
             ...ModelAbilityMap::make($student, [
                 'enrollInGradeLevel',
                 'enrollInClassroom',
+                'transferClassroom',
                 'update',
                 'transferStudentOut',
                 'viewPsychosocialCard',

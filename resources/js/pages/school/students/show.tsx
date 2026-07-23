@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/actions/button";
 
 import { Paginator } from "@/components/ui/navigation/paginator";
 
-import { EnrollInClassroom, EnrollInGradeLevel } from "@/components/features/school/students/enroll-student";
+import { EnrollInClassroom, EnrollInGradeLevel, TransferClassroom } from "@/components/features/school/students/enroll-student";
 import { StudentClassroomField, StudentGradeLevelField } from "@/components/shared/students/student-enrollment-fields";
 import TransferStudentOut from "@/components/shared/students/transfer-student-out";
 
@@ -76,6 +76,13 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
 
                         {can.enrollInClassroom && (
                             <EnrollInClassroom
+                                student={student}
+                                classrooms={classrooms}
+                            />
+                        )}
+
+                        {can.transferClassroom && (
+                            <TransferClassroom
                                 student={student}
                                 classrooms={classrooms}
                             />
