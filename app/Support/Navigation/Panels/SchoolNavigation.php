@@ -39,15 +39,15 @@ class SchoolNavigation extends NavigationPanel
                 'href' => route('school.students.index'),
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'school.students.*',
-                'excludedRoutes' => 'school.students.unenrolled-from-*',
+                'excludedRoutes' => ['school.students.unenrolled-from-grade-level.*', 'school.students.unenrolled-from-classroom.*'],
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
                 'title' => 'الطلاب غير المسجّلين في صفوف دراسية',
-                'href' => '#',
+                'href' => route('school.students.unenrolled-from-grade-level.index'),
                 'icon' => 'UserXIcon',
                 'activeRoutes' => 'school.students.unenrolled-from-grade-level.*',
-                'can' => true,
+                'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
                 'title' => 'الطلاب غير المسجّلين في فصول دراسية',
