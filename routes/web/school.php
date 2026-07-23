@@ -3,6 +3,8 @@
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\School\ClassroomController;
+use App\Http\Controllers\School\ClassroomDistributionController;
+use App\Http\Controllers\School\ClassroomDistributionMethodController;
 use App\Http\Controllers\School\ClassScheduleController;
 use App\Http\Controllers\School\DashboardController;
 use App\Http\Controllers\School\GradeLevelController;
@@ -77,6 +79,15 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         Route::get('/{student}/academic-record', [StudentAcademicRecordController::class, 'show'])->name('students.academic-record.show');
         Route::get('/{student}/academic-record/create', [StudentAcademicRecordController::class, 'create'])->name('students.academic-record.create');
         Route::post('/{student}/academic-record', [StudentAcademicRecordController::class, 'store'])->name('students.academic-record.store');
+    });
+
+    // Classroom Distribution
+    Route::prefix('classroom-distribution')->group(function () {
+        Route::get('/', [ClassroomDistributionController::class, 'index'])->name('classroom-distribution.index');
+        Route::post('/finalize', [ClassroomDistributionController::class, 'finalize'])->name('classroom-distribution.finalize');
+
+        Route::get('/{method}', [ClassroomDistributionMethodController::class, 'create'])->name('classroom-distribution.create');
+        Route::post('/{method}', [ClassroomDistributionMethodController::class, 'store'])->name('classroom-distribution.store');
     });
 
     // Users

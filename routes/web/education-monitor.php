@@ -5,6 +5,7 @@ use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\EducationMonitor\DashboardController;
 use App\Http\Controllers\EducationMonitor\EducationServicesOfficeController;
 use App\Http\Controllers\EducationMonitor\EducationServicesOfficeReportController;
+use App\Http\Controllers\EducationMonitor\SchoolClassroomDistributionResetController;
 use App\Http\Controllers\EducationMonitor\SchoolController;
 use App\Http\Controllers\EducationMonitor\SchoolReportController;
 use App\Http\Controllers\EducationMonitor\StudentController;
@@ -42,6 +43,11 @@ Route::middleware(['auth:education_monitor', 'ensure.password.changed'])->group(
         Route::get('/{school}/edit', [SchoolController::class, 'edit'])->name('schools.edit');
         Route::put('/{school}', [SchoolController::class, 'update'])->name('schools.update');
         Route::delete('/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy');
+    });
+
+    // Schools - Classroom Distribution
+    Route::prefix('schools')->group(function () {
+        Route::post('/{school}/classroom-distribution/reset', [SchoolClassroomDistributionResetController::class, 'reset'])->name('schools.classroom-distribution.reset');
     });
 
     // Students

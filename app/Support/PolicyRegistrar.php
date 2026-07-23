@@ -10,6 +10,7 @@ use App\Authorization\EducationMonitor\SchoolReport as EducationMonitorSchoolRep
 use App\Authorization\EducationMonitor\StudentCountByGradeLevelReport as EducationMonitorStudentCountByGradeLevelReport;
 use App\Authorization\EducationServicesOffice\SchoolReport as EducationServicesOfficeSchoolReport;
 use App\Authorization\EducationServicesOffice\StudentCountByGradeLevelReport as EducationServicesOfficeStudentCountByGradeLevelReport;
+use App\Authorization\School\ClassroomDistribution;
 use App\Models\AcademicYear;
 use App\Models\BookDistribution;
 use App\Models\ClassPeriod;
@@ -48,6 +49,7 @@ use App\Policies\EducationServicesOffice\SchoolReportPolicy as EducationServices
 use App\Policies\EducationServicesOffice\StudentCountByGradeLevelReportPolicy as EducationServicesOfficeStudentCountByGradeLevelReportPolicy;
 use App\Policies\EducationServicesOffice\StudentPolicy as EducationServicesOfficeStudentPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
+use App\Policies\School\ClassroomDistributionPolicy as SchoolClassroomDistributionPolicy;
 use App\Policies\School\ClassroomPolicy as SchoolClassroomPolicy;
 use App\Policies\School\ClassSchedulePolicy as SchoolClassSchedulePolicy;
 use App\Policies\School\GradeLevelPolicy as SchoolGradeLevelPolicy;
@@ -130,7 +132,9 @@ final class PolicyRegistrar
             EducationServicesOfficeSchoolReport::class => EducationServicesOfficeSchoolReportPolicy::class,
             EducationServicesOfficeStudentCountByGradeLevelReport::class => EducationServicesOfficeStudentCountByGradeLevelReportPolicy::class,
         ],
-        'school' => [],
+        'school' => [
+            ClassroomDistribution::class => SchoolClassroomDistributionPolicy::class,
+        ],
     ];
 
     public static function register(Request $request): void

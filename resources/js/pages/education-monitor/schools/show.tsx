@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Head, Link } from "@inertiajs/react";
 
-import type { CanPermissions, School } from "@/types";
+import type { CanPermissions, Enum, GradeLevel, School } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import ActionsSection from "@/components/ui/structure/actions-section";
@@ -15,17 +15,28 @@ import { DetailValue } from "@/components/ui/display/detail-value";
 import { Button } from "@/components/ui/actions/button";
 import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";
 
+import ResetClassroomDistributionAction from "@/components/features/education-monitor/schools/reset-classroom-distribution";
+
 import { GraduationCapIcon, PresentationIcon, NotepadTextIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
 import { destroy, edit, index, show } from "@/routes/education-monitor/schools";
 
+type ResetScopeOption = Enum & { description: string };
+
+type ClassroomDistributionResetProps = {
+    has_distribution_data: boolean;
+    eligible_grade_levels: GradeLevel[];
+    scopes: ResetScopeOption[];
+}
+
 type PageProps = {
     school: School;
+    classroomDistributionReset: ClassroomDistributionResetProps;
     canAny: boolean;
     can: CanPermissions;
 }
 
-export default function Show({ school, canAny, can }: PageProps) {
+export default function Show({ school, classroomDistributionReset, canAny, can }: PageProps) {
     const isPrivate = school.is_private === true;
     const hasOffice = !!school.office;
 
@@ -36,6 +47,14 @@ export default function Show({ school, canAny, can }: PageProps) {
             <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
+                        {can.resetClassroomDistribution && (
+                            <ResetClassroomDistributionAction
+                                school={school}
+                                classroomDistributionReset={classroomDistributionReset}
+                                canReset={can.resetClassroomDistribution}
+                            />
+                        )}
+
                         {can.update && (
                             <Button
                                 variant="outline"

@@ -278,6 +278,7 @@ return [
         'academic_year_id' => 'السنة الدراسية',
         'status' => 'الحالة',
         'rating' => 'التقدير',
+        'grade_level_ids' => 'الصفوف الدراسية',
     ],
 
     'values' => [],

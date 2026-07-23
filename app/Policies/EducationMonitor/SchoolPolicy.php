@@ -2,6 +2,7 @@
 
 namespace App\Policies\EducationMonitor;
 
+use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\School;
 use App\Models\User;
@@ -55,6 +56,23 @@ class SchoolPolicy
         }
 
         return $user->can('school:delete');
+    }
+
+    public function resetClassroomDistribution(User $user, School $school): bool
+    {
+        if (AcademicYear::isCurrentYearInactive()) {
+            return false;
+        }
+
+        if ($school->education_monitor_id !== $user->organization_id) {
+            return false;
+        }
+
+        if ($school->trashed()) {
+            return false;
+        }
+
+        return $user->can('school:reset-classroom-distribution');
     }
 
     private function belongsToCurrentMonitor(User $user, School $school): bool

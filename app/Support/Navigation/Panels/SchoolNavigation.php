@@ -2,6 +2,7 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Authorization\School\ClassroomDistribution;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
 use App\Models\Student;
@@ -58,10 +59,10 @@ class SchoolNavigation extends NavigationPanel
             ],
             [
                 'title' => 'توزيع الطلاب على الفصول',
-                'href' => '#',
+                'href' => route('school.classroom-distribution.index'),
                 'icon' => 'TableOfContentsIcon',
                 'activeRoutes' => 'school.classroom-distribution.*',
-                'can' => true,
+                'can' => $this->user?->canAny(['view'], ClassroomDistribution::class),
             ],
             [
                 'title' => 'توزيع الكُتب المدرسية',

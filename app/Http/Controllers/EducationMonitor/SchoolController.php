@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\EducationMonitor;
 
+use App\Actions\EducationMonitor\ResetClassroomDistribution;
+use App\Enums\ClassroomDistributionResetScope;
 use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolBranchType;
 use App\Enums\SchoolBuildingType;
@@ -23,6 +25,7 @@ use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
@@ -132,11 +135,16 @@ class SchoolController extends Controller
             'students',
         ]);
 
+        $classroomDistributionReset = Arr::merge(app(ResetClassroomDistribution::class)->summary($school), [
+            'scopes' => ClassroomDistributionResetScope::buildScopes()->all(),
+        ]);
+
         return Inertia::render('education-monitor/schools/show', [
             'school' => ResourcePayloadBuilder::make(
                 SchoolResource::make($school),
             ),
-            ...ModelAbilityMap::make($school, ['update', 'delete']),
+            'classroomDistributionReset' => $classroomDistributionReset,
+            ...ModelAbilityMap::make($school, ['resetClassroomDistribution', 'update', 'delete']),
         ]);
     }
 
