@@ -33,7 +33,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:update') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:update');
     }
 
     public function delete(User $user, Student $student): bool
@@ -46,7 +50,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:delete') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:delete');
     }
 
     public function addTransferredStudent(User $user): bool
@@ -65,7 +73,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:transfer-student-out-of-school') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:transfer-student-out-of-school');
     }
 
     public function enrollInGradeLevel(User $user, Student $student): bool
@@ -82,7 +94,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:enroll-in-grade-level') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:enroll-in-grade-level');
     }
 
     public function enrollInClassroom(User $user, Student $student): bool
@@ -101,7 +117,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:enroll-in-classroom') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:enroll-in-classroom');
     }
 
     public function viewPsychosocialCard(User $user, Student $student): bool
@@ -110,7 +130,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:view-psychosocial-card') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-psychosocial-card');
     }
 
     public function updatePsychosocialCard(User $user, Student $student): bool
@@ -127,7 +151,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:update-psychosocial-card') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:update-psychosocial-card');
     }
 
     public function printPsychosocialCard(User $user, Student $student): bool
@@ -136,7 +164,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:print-psychosocial-card') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:print-psychosocial-card');
     }
 
     public function viewAcademicRecord(User $user, Student $student): bool
@@ -153,7 +185,11 @@ class StudentPolicy
             return false;
         }
 
-        return $user->can('student:view-academic-record') && ! $student->trashed();
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-academic-record');
     }
 
     // TODO: Remove comments after implementing the academic record feature.
@@ -181,6 +217,10 @@ class StudentPolicy
     //         return false;
     //     }
 
-    //     return $user->can('student:create-academic-record') && ! $student->trashed();
+    //     if ($student->trashed()) {
+    //         return false;
+    //     }
+
+    //     return $user->can('student:create-academic-record');
     // }
 }
