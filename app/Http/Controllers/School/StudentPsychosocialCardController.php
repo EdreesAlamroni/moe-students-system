@@ -78,7 +78,7 @@ class StudentPsychosocialCardController extends Controller
                 StudentPsychosocialCardResource::make($student->psychosocialCard),
             ),
             'isFromPreviousYear' => $isFromPreviousYear,
-            'previousAcademicYearName' => $isFromPreviousYear && $previousPsychosocialCard->academicYear
+            'previousAcademicYearName' => $isFromPreviousYear
                 ? $previousPsychosocialCard->academicYear->name
                 : null,
             'studentLivingSituations' => StudentLivingSituation::optionsArray(),
@@ -145,7 +145,7 @@ class StudentPsychosocialCardController extends Controller
      */
     private function prepareBehavioralProblemsForPrint(?StudentPsychosocialCard $card): array
     {
-        $savedProblems = collect($card?->behavioral_problems ?? [])->keyBy('behavior');
+        $savedProblems = collect($card->behavioral_problems ?? [])->keyBy('behavior');
 
         return collect(StudentBehavioralProblem::cases())
             ->map(function (StudentBehavioralProblem $problem) use ($savedProblems): array {

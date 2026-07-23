@@ -13,7 +13,7 @@ class StudentPsychosocialCardResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        /** @var StudentPsychosocialCard $card */
+        /** @var StudentPsychosocialCard|null $card */
         $card = $this->resource;
 
         if ($card === null) {

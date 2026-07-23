@@ -36,7 +36,7 @@ class StudentResource extends JsonResource
             'mother_name' => $student->mother_name,
             'passport_number' => $student->passport_number,
             'gender' => $student->gender->toArray(),
-            'date_of_birth' => $student->date_of_birth?->toDateString(),
+            'date_of_birth' => $student->date_of_birth->toDateString(),
             'national_id' => $student->national_id,
             'family_registration_number' => $student->family_registration_number,
             'is_libyan' => $student->is_libyan,

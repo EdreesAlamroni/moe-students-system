@@ -101,13 +101,13 @@ class StoreTransferRequest extends FormRequest
     {
         if (! is_null($student->school_id)) {
             return __('validation.custom.student_transfer.already_in_school', [
-                'name' => $student->fullName,
+                'name' => $student->full_name,
             ]);
         }
 
         if (! is_null($student->education_monitor_id) && $student->education_monitor_id !== $school->education_monitor_id) {
             return __('validation.custom.student_transfer.wrong_education_monitor', [
-                'name' => $student->fullName,
+                'name' => $student->full_name,
             ]);
         }
 
@@ -115,20 +115,20 @@ class StoreTransferRequest extends FormRequest
 
         if (is_null($gradeLevelId)) {
             return __('validation.custom.student_transfer.no_grade_level', [
-                'name' => $student->fullName,
+                'name' => $student->full_name,
             ]);
         }
 
         if (! $schoolGradeLevelIds->contains($gradeLevelId)) {
             return __('validation.custom.student_transfer.grade_level_not_in_school', [
-                'name' => $student->fullName,
-                'grade_level' => $student->enrollment?->gradeLevel?->name ?? '',
+                'name' => $student->full_name,
+                'grade_level' => $student->enrollment->gradeLevel->name,
             ]);
         }
 
         if (! $student->isAwaitingSchoolTransfer()) {
             return __('validation.custom.student_transfer.not_awaiting_transfer', [
-                'name' => $student->fullName,
+                'name' => $student->full_name,
             ]);
         }
 
