@@ -14,7 +14,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class StudentClassroomEnrollmentController extends Controller
 {
-    public function store(EnrollClassroomRequest $request, Student $student): RedirectResponse {
+    public function store(EnrollClassroomRequest $request, Student $student): RedirectResponse
+    {
         Gate::authorize('enrollInClassroom', $student);
 
         $classroom = Classroom::query()
@@ -28,7 +29,8 @@ class StudentClassroomEnrollmentController extends Controller
         return Redirect::route('school.students.show', ['student' => $student]);
     }
 
-    public function update(TransferClassroomRequest $request, Student $student): RedirectResponse {
+    public function update(TransferClassroomRequest $request, Student $student): RedirectResponse
+    {
         Gate::authorize('transferClassroom', $student);
 
         $classroom = Classroom::query()
