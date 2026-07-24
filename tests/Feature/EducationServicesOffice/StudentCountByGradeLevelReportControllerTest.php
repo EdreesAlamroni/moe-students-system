@@ -102,14 +102,14 @@ test('authenticated users can visit the student count by grade level report page
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('education-services-office/reports/student-count-by-grade-level')
-            ->has('gradeLevels.data', 1)
-            ->where('gradeLevels.data.0.uuid', $gradeLevel->uuid)
-            ->where('gradeLevels.data.0.name', $gradeLevel->name)
-            ->where('gradeLevels.data.0.students_count', 1)
+            ->has('gradeLevels', 1)
+            ->where('gradeLevels.0.uuid', $gradeLevel->uuid)
+            ->where('gradeLevels.0.name', $gradeLevel->name)
+            ->where('gradeLevels.0.students_count', 1)
             ->has('educationalStages')
             ->where('can.print', true)
             ->where('filter', [])
-            ->missing('gradeLevels.data.1')
+            ->missing('gradeLevels.1')
         );
 
     expect(GradeLevel::query()->whereKey($otherGradeLevel->id)->exists())->toBeTrue();

@@ -50,7 +50,7 @@ class AttendanceReportController extends Controller
             'students' => $students,
             'year' => date('Y'),
             'month' => $validated['month'],
-            'days' => $this->daysOfMonth(date('Y'), $validated['month']),
+            'days' => $this->daysOfMonth((int) date('Y'), $validated['month']),
             'monthLabel' => $this->getMonthLabel($validated['month']),
             'academicYearName' => AcademicYear::currentName(),
         ]);
