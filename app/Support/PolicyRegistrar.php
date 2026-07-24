@@ -49,6 +49,7 @@ use App\Policies\EducationServicesOffice\SchoolReportPolicy as EducationServices
 use App\Policies\EducationServicesOffice\StudentCountByGradeLevelReportPolicy as EducationServicesOfficeStudentCountByGradeLevelReportPolicy;
 use App\Policies\EducationServicesOffice\StudentPolicy as EducationServicesOfficeStudentPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
+use App\Policies\School\BookDistributionPolicy as SchoolBookDistributionPolicy;
 use App\Policies\School\ClassroomDistributionPolicy as SchoolClassroomDistributionPolicy;
 use App\Policies\School\ClassroomPolicy as SchoolClassroomPolicy;
 use App\Policies\School\ClassSchedulePolicy as SchoolClassSchedulePolicy;
@@ -108,6 +109,7 @@ final class PolicyRegistrar
             Classroom::class => SchoolClassroomPolicy::class,
             ClassSchedule::class => SchoolClassSchedulePolicy::class,
             Student::class => SchoolStudentPolicy::class,
+            BookDistribution::class => SchoolBookDistributionPolicy::class,
         ],
     ];
 

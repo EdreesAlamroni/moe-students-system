@@ -101,7 +101,7 @@ export function ConfirmBookDistributionDialog(props: ConfirmBookDistributionDial
                                 </ul>
                             </div>
 
-                            <Alert variant="destructive" className="text-right">
+                            <Alert variant="warning">
                                 <AlertTriangleIcon />
                                 <AlertTitle>تنبيه</AlertTitle>
                                 <AlertDescription>

@@ -3,6 +3,7 @@
 namespace App\Support\Navigation\Panels;
 
 use App\Authorization\School\ClassroomDistribution;
+use App\Models\BookDistribution;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
 use App\Models\Student;
@@ -66,10 +67,10 @@ class SchoolNavigation extends NavigationPanel
             ],
             [
                 'title' => 'توزيع الكُتب المدرسية',
-                'href' => '#',
+                'href' => route('school.book-distributions.index'),
                 'icon' => 'BookTextIcon',
                 'activeRoutes' => 'school.book-distributions.*',
-                'can' => true,
+                'can' => $this->user?->canAny(['view'], BookDistribution::class),
             ],
         ];
     }

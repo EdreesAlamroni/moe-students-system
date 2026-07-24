@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->uuid()->unique();
             $table->foreignId('book_distribution_id')->constrained('book_distributions')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('school_id')->constrained('schools')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('student_id')->constrained('students')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps();
 
             // A student may receive books only once per academic year, regardless of

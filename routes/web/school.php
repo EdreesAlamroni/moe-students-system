@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
+use App\Http\Controllers\School\BookDistributionController;
 use App\Http\Controllers\School\ClassroomController;
 use App\Http\Controllers\School\ClassroomDistributionController;
 use App\Http\Controllers\School\ClassroomDistributionMethodController;
@@ -88,6 +89,12 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
 
         Route::get('/{method}', [ClassroomDistributionMethodController::class, 'create'])->name('classroom-distribution.create');
         Route::post('/{method}', [ClassroomDistributionMethodController::class, 'store'])->name('classroom-distribution.store');
+    });
+
+    // Book Distributions
+    Route::prefix('book-distributions')->group(function () {
+        Route::get('/', [BookDistributionController::class, 'index'])->name('book-distributions.index');
+        Route::post('/', [BookDistributionController::class, 'store'])->name('book-distributions.store');
     });
 
     // Users
