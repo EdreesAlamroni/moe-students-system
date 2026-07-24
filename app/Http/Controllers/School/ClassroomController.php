@@ -58,7 +58,7 @@ class ClassroomController extends Controller
                 $request,
             ),
             'gradeLevels' => $this->gradeLevels(),
-            'classroomNames' => $this->classroomNames(),
+            'classroomNames' => classroom_names(),
             'filter' => $request->input('filter', []),
             ...ModelAbilityMap::make(Classroom::class, ['create']),
         ]);
@@ -71,7 +71,7 @@ class ClassroomController extends Controller
         return Inertia::render('school/classrooms/create', [
             'educationalStages' => $this->educationalStages(),
             'gradeLevels' => $this->gradeLevels(),
-            'classroomNames' => $this->classroomNames(),
+            'classroomNames' => classroom_names(),
         ]);
     }
 
@@ -170,17 +170,5 @@ class ClassroomController extends Controller
             })
             ->values()
             ->all();
-    }
-
-    private function classroomNames(): array
-    {
-        return collect(
-            array_map('strval', range(1, 12))
-        )->map(function (string $name): array {
-            return [
-                'id' => $name,
-                'name' => $name,
-            ];
-        })->all();
     }
 }

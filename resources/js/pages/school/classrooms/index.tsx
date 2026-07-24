@@ -31,7 +31,7 @@ type ClassroomProps = Classroom & {
 type PageProps = {
     classrooms: Paginated<ClassroomProps>;
     gradeLevels: GradeLevel[];
-    classroomNames: Pick<Enum, "id" | "name">[];
+    classroomNames: Enum[];
     filter: {
         grade_level_id?: string;
         name?: string;

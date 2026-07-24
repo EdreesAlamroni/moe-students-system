@@ -26,6 +26,7 @@ class StudentCollection extends DirectModelCollection
             'passport_number' => $student->passport_number,
             'is_libyan' => $student->is_libyan,
             'grade_level' => $this->whenEnrollmentRelationLoaded($student, 'gradeLevel', ['id', 'name', 'educational_stage']),
+            'classroom' => $this->whenEnrollmentRelationLoaded($student, 'classroom', ['id', 'name']),
         ])->all();
     }
 

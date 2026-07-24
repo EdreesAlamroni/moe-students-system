@@ -26,13 +26,10 @@ import { ReplyIcon } from "lucide-react";
 import { create, index, store } from "@/routes/school/classrooms";
 import { decimalInputConstraints } from "@/lib/input-constraints";
 
-type GradeLevelOption = Pick<GradeLevel, "id" | "name" | "educational_stage">;
-type ClassroomNameOption = Pick<Enum, "id" | "name">;
-
 type PageProps = {
     educationalStages: Enum[];
-    gradeLevels: GradeLevelOption[];
-    classroomNames: ClassroomNameOption[];
+    gradeLevels: GradeLevel[];
+    classroomNames: Enum[];
 };
 
 export default function Create({ educationalStages, gradeLevels, classroomNames }: PageProps) {

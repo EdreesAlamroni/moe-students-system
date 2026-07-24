@@ -118,6 +118,7 @@ class Classroom extends Model
 
         /** @var \Illuminate\Database\Connection $connection */
         $connection = $query->getConnection();
+
         $stages = SchoolEducationalStageEnum::orderedValues();
 
         if (in_array($connection->getDriverName(), ['sqlite', 'pgsql'], true)) {

@@ -70,11 +70,11 @@
     }
 
     .print-meta-bar-item {
-        @apply rounded border border-black px-2 py-1.5 text-center text-xs leading-snug text-black;
+        @apply rounded-none border border-black px-2 py-1.5 text-center text-xs leading-snug text-black;
     }
 
     .print-meta-bar-item-wide {
-        @apply flex-1 rounded border border-black px-2 py-1.5 text-center text-xs leading-snug text-black;
+        @apply flex-1 rounded-none border border-black px-2 py-1.5 text-center text-xs leading-snug text-black;
     }
 
     /* Report table: single table whose <thead> repeats on every printed page */

@@ -32,7 +32,7 @@ function MenuLinkItem({
                 prefetch
                 onClick={onClick}
             >
-                <Icon iconNode={item.icon} className="ms-2" />
+                <Icon iconNode={item.icon} className="me-2" />
                 {item.title}
             </Link>
         </DropdownMenuItem>
@@ -59,12 +59,12 @@ export function UserMenuContent({ user }: Props) {
                     <UserInfo user={user} showEmail={false} />
                 </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="my-1" />
             {menuItems.length > 0 && (
                 <DropdownMenuGroup dir={direction}>
                     {menuItems.map((item, index) => (
                         <Fragment key={item.key ?? item.title}>
-                            {index > 0 && <DropdownMenuSeparator />}
+                            {index > 0 && <DropdownMenuSeparator className="my-1" />}
                             <MenuLinkItem item={item} onClick={cleanup} />
                         </Fragment>
                     ))}
@@ -72,7 +72,7 @@ export function UserMenuContent({ user }: Props) {
             )}
             {logoutItem && (
                 <>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator className="my-1" />
                     <DropdownMenuItem asChild dir={direction}>
                         <Link
                             className="block w-full cursor-pointer"
@@ -82,7 +82,7 @@ export function UserMenuContent({ user }: Props) {
                             onClick={handleLogout}
                             data-test="logout-button"
                         >
-                            <Icon iconNode={logoutItem.icon} className="ms-2" />
+                            <Icon iconNode={logoutItem.icon} className="me-2" />
                             {logoutItem.title}
                         </Link>
                     </DropdownMenuItem>

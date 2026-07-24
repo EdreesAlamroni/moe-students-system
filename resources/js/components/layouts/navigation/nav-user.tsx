@@ -32,11 +32,11 @@ export function NavUser() {
                             data-test="sidebar-menu-button"
                         >
                             <UserInfo user={auth.user} showEmail={false} />
-                            <ChevronsUpDown className="ml-auto size-4" />
+                            <ChevronsUpDown className="ms-auto size-4" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
                         align="end"
                         side={
                             isMobile
