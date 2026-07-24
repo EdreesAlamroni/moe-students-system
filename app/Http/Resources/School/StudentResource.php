@@ -21,7 +21,7 @@ class StudentResource extends JsonResource
             'nationality' => $this->whenLoaded('nationality', function (Nationality $nationality): array {
                 return $nationality->only(['name']);
             }),
-            'grade_level' => $this->whenEnrollmentRelationLoaded('gradeLevel', ['id', 'name']),
+            'grade_level' => $this->whenEnrollmentRelationLoaded('gradeLevel', ['id', 'name', 'educational_stage']),
             'classroom' => $this->whenEnrollmentRelationLoaded('classroom', ['id', 'name']),
             'has_enrollment' => $student->hasEnrollment(),
             'number' => $student->number,
@@ -56,6 +56,18 @@ class StudentResource extends JsonResource
             return new MissingValue;
         }
 
-        return $student->enrollment->{$relation}?->only($columns);
+        $related = $student->enrollment->{$relation};
+
+        if ($related === null) {
+            return null;
+        }
+
+        $data = $related->only($columns);
+
+        if (in_array('educational_stage', $columns, true)) {
+            $data['educational_stage'] = $related->educational_stage->toArray();
+        }
+
+        return $data;
     }
 }

@@ -9,11 +9,11 @@ function StateIndicator({ state, className = "", childClassName = "" }: {
 }) {
     return (
         <div className={cn(
-            `inline-flex items-center justify-center w-4 h-4 mt-[2px] p-1 rounded-full state-indicator--${state}`,
+            `inline-flex items-center justify-center w-4 h-4 mt-[2px] p-1 rounded-none state-indicator--${state}`,
             className,
         )}>
             <div className={cn(
-                `block w-[0.35rem] h-[0.35rem] rounded-full bg-current`,
+                `block w-[0.35rem] h-[0.35rem] rounded-none bg-current`,
                 childClassName
             )}></div>
         </div>

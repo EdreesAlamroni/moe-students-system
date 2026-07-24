@@ -25,7 +25,7 @@ class StudentCollection extends DirectModelCollection
             'family_registration_number' => $student->family_registration_number,
             'passport_number' => $student->passport_number,
             'is_libyan' => $student->is_libyan,
-            'grade_level' => $this->whenEnrollmentRelationLoaded($student, 'gradeLevel', ['id', 'name']),
+            'grade_level' => $this->whenEnrollmentRelationLoaded($student, 'gradeLevel', ['id', 'name', 'educational_stage']),
         ])->all();
     }
 
@@ -39,6 +39,18 @@ class StudentCollection extends DirectModelCollection
             return new MissingValue;
         }
 
-        return $student->enrollment->{$relation}?->only($columns);
+        $related = $student->enrollment->{$relation};
+
+        if ($related === null) {
+            return null;
+        }
+
+        $data = $related->only($columns);
+
+        if (in_array('educational_stage', $columns, true)) {
+            $data['educational_stage'] = $related->educational_stage->toArray();
+        }
+
+        return $data;
     }
 }

@@ -38,10 +38,10 @@ type PageProps = {
     registrationStatuses: Enum[];
     nationalities: Nationality[];
     filter: {
+        grade_level_id?: string;
         name?: string;
         registration_status?: string;
         nationality_id?: string;
-        grade_level_id?: string;
         national_id?: string;
         family_registration_number?: string;
         passport_number?: string;
@@ -236,7 +236,18 @@ export default function Index({ students, nationalities, registrationStatuses, g
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <TableCellNullableValue value={student.grade_level?.name} />
+                                                    {student.grade_level ? (
+                                                        <>
+                                                            <div>{student.grade_level.name}</div>
+                                                            {student.grade_level.educational_stage && (
+                                                                <div className="mt-2 text-xs text-muted-foreground">
+                                                                    <span>{student.grade_level.educational_stage.name}</span>
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    ) : (
+                                                        <TableCellNullableValue />
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
                                                     {student.is_libyan ? (

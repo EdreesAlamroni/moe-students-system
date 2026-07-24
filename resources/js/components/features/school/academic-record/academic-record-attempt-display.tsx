@@ -37,8 +37,8 @@ export default function AcademicRecordAttemptDisplay({
                 <div className="flex items-center gap-3">
                     <span
                         className={cn(
-                            "flex size-9 shrink-0 items-center justify-center rounded-full",
-                            "bg-muted/60 text-muted-foreground",
+                            "flex size-9 shrink-0 items-center justify-center rounded-none",
+                            "bg-muted/70 text-muted-foreground",
                         )}
                     >
                         <CalendarDaysIcon className="size-4" />
@@ -56,8 +56,8 @@ export default function AcademicRecordAttemptDisplay({
                     <div className="flex items-center gap-3">
                         <span
                             className={cn(
-                                "flex size-9 shrink-0 items-center justify-center rounded-full",
-                                "bg-muted/60 text-muted-foreground",
+                                "flex size-9 shrink-0 items-center justify-center rounded-none",
+                                "bg-muted/70 text-muted-foreground",
                             )}
                         >
                             <StarIcon className="size-4" />

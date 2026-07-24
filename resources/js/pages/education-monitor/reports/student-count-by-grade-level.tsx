@@ -46,7 +46,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                                 asChild
                             >
                                 {gradeLevels.length > 0 ? (
-                                    <a href={print.url()} target="_blank">
+                                    <a href={print.url({ query: { filter: filter } })} target="_blank">
                                         <PrinterIcon />
                                         <span>طباعة التقرير</span>
                                     </a>

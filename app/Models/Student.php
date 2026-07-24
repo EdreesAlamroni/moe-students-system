@@ -243,9 +243,14 @@ class Student extends Model
             return $query->whereRaw('1 = 0');
         }
 
-        return $query->whereDoesntHave('enrollments', function (Builder $query) use ($currentAcademicYearId): void {
-            $query->where('academic_year_id', '=', $currentAcademicYearId);
+        return $query->where(function (Builder $query) use ($currentAcademicYearId): void {
+            $query->whereDoesntHave('enrollments', function (Builder $query) use ($currentAcademicYearId): void {
+                $query->where('academic_year_id', '=', $currentAcademicYearId);
+            })->orWhereHas('enrollments', function (Builder $query) use ($currentAcademicYearId): void {
+                $query->where('academic_year_id', '=', $currentAcademicYearId)->whereNull('grade_level_id');
+            });
         });
+
     }
 
     #[Scope]

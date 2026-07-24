@@ -58,7 +58,7 @@ export default function AcademicRecordStudentOverview({
                     <div className="flex flex-col justify-center gap-6 py-4 lg:py-0 px-6">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div className="flex items-start gap-3 min-w-0">
-                                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                <span className="flex size-11 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary">
                                     <UserRoundIcon className="size-5" />
                                 </span>
 
@@ -134,10 +134,10 @@ export default function AcademicRecordStudentOverview({
                                     <span className="text-xs text-muted-foreground pb-1">صفوف مُدخلة</span>
                                 </div>
 
-                                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                                <div className="h-2 w-full overflow-hidden rounded-none bg-muted">
                                     <div
                                         className={cn(
-                                            "h-full rounded-full transition-all duration-500 ease-out",
+                                            "h-full rounded-none transition-all duration-500 ease-out",
                                             isComplete ? "bg-green-600" : "bg-primary",
                                         )}
                                         style={{ width: `${progressPercentage}%` }}
@@ -145,7 +145,7 @@ export default function AcademicRecordStudentOverview({
                                 </div>
 
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    {progressPercentage}% من الصفوف السابقة
+                                    <span className="font-mono">%{progressPercentage}</span> من الصفوف السابقة
                                 </p>
                             </div>
 

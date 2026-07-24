@@ -51,7 +51,7 @@ export default function Index({ offices, filter, canAny, can }: PageProps) {
                                 asChild
                             >
                                 {data.length > 0 ? (
-                                    <a href={print.url()} target="_blank">
+                                    <a href={print.url({ query: { filter: filter } })} target="_blank">
                                         <PrinterIcon />
                                         <span>طباعة التقرير</span>
                                     </a>
