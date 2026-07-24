@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountSettings\ProfileController;
 use App\Http\Controllers\AccountSettings\SecurityController;
+use App\Http\Controllers\School\AttendanceReportController;
 use App\Http\Controllers\School\BookDistributionController;
 use App\Http\Controllers\School\ClassroomController;
 use App\Http\Controllers\School\ClassroomDistributionController;
@@ -10,6 +11,8 @@ use App\Http\Controllers\School\ClassScheduleController;
 use App\Http\Controllers\School\DashboardController;
 use App\Http\Controllers\School\GradeLevelController;
 use App\Http\Controllers\School\StudentAcademicRecordController;
+use App\Http\Controllers\School\StudentByClassroomReportController;
+use App\Http\Controllers\School\StudentByGradeLevelReportController;
 use App\Http\Controllers\School\StudentClassroomEnrollmentController;
 use App\Http\Controllers\School\StudentController;
 use App\Http\Controllers\School\StudentGradeLevelEnrollmentController;
@@ -97,6 +100,17 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         Route::post('/', [BookDistributionController::class, 'store'])->name('book-distributions.store');
     });
 
+    // Reports
+    Route::prefix('reports')->group(function () {
+        Route::get('/students-by-grade-level', [StudentByGradeLevelReportController::class, 'index'])->name('reports.students-by-grade-level.index');
+        Route::get('/students-by-grade-level/print', [StudentByGradeLevelReportController::class, 'print'])->name('reports.students-by-grade-level.print');
+
+        Route::get('/students-by-classroom', [StudentByClassroomReportController::class, 'index'])->name('reports.students-by-classroom.index');
+        Route::get('/students-by-classroom/print', [StudentByClassroomReportController::class, 'print'])->name('reports.students-by-classroom.print');
+
+        Route::get('/attendance', [AttendanceReportController::class, 'index'])->name('reports.attendance.index');
+        Route::get('/attendance/print', [AttendanceReportController::class, 'print'])->name('reports.attendance.print');
+    });
     // Users
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users.index');

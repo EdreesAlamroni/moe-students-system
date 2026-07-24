@@ -2,7 +2,10 @@
 
 namespace App\Support\Navigation\Panels;
 
+use App\Authorization\School\AttendanceReport;
 use App\Authorization\School\ClassroomDistribution;
+use App\Authorization\School\StudentByClassroomReport;
+use App\Authorization\School\StudentByGradeLevelReport;
 use App\Models\BookDistribution;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
@@ -80,24 +83,24 @@ class SchoolNavigation extends NavigationPanel
         return [
             [
                 'title' => 'تقرير الطلاب حسب الصفوف',
-                'href' => '#',
+                'href' => route('school.reports.students-by-grade-level.index'),
                 'icon' => 'ClipboardList',
-                'routeIs' => 'school.reports.students-by-grade-level.*',
-                'can' => true,
+                'activeRoutes' => 'school.reports.students-by-grade-level.*',
+                'can' => $this->user?->canAny(['view'], StudentByGradeLevelReport::class),
             ],
             [
                 'title' => 'تقرير الطلاب حسب الفصول',
-                'href' => '#',
+                'href' => route('school.reports.students-by-classroom.index'),
                 'icon' => 'ClipboardList',
-                'routeIs' => 'school.reports.students-by-classroom.*',
-                'can' => true,
+                'activeRoutes' => 'school.reports.students-by-classroom.*',
+                'can' => $this->user?->canAny(['view'], StudentByClassroomReport::class),
             ],
             [
                 'title' => 'تقرير الغياب',
-                'href' => '#',
+                'href' => route('school.reports.attendance.index'),
                 'icon' => 'ClipboardList',
-                'routeIs' => 'school.reports.attendance.*',
-                'can' => true,
+                'activeRoutes' => 'school.reports.attendance.*',
+                'can' => $this->user?->canAny(['view'], AttendanceReport::class),
             ],
         ];
     }

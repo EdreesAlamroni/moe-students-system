@@ -10,7 +10,10 @@ use App\Authorization\EducationMonitor\SchoolReport as EducationMonitorSchoolRep
 use App\Authorization\EducationMonitor\StudentCountByGradeLevelReport as EducationMonitorStudentCountByGradeLevelReport;
 use App\Authorization\EducationServicesOffice\SchoolReport as EducationServicesOfficeSchoolReport;
 use App\Authorization\EducationServicesOffice\StudentCountByGradeLevelReport as EducationServicesOfficeStudentCountByGradeLevelReport;
+use App\Authorization\School\AttendanceReport;
 use App\Authorization\School\ClassroomDistribution;
+use App\Authorization\School\StudentByClassroomReport;
+use App\Authorization\School\StudentByGradeLevelReport;
 use App\Models\AcademicYear;
 use App\Models\BookDistribution;
 use App\Models\ClassPeriod;
@@ -49,11 +52,14 @@ use App\Policies\EducationServicesOffice\SchoolReportPolicy as EducationServices
 use App\Policies\EducationServicesOffice\StudentCountByGradeLevelReportPolicy as EducationServicesOfficeStudentCountByGradeLevelReportPolicy;
 use App\Policies\EducationServicesOffice\StudentPolicy as EducationServicesOfficeStudentPolicy;
 use App\Policies\EducationServicesOffice\UserPolicy as EducationServicesOfficeUserPolicy;
+use App\Policies\School\AttendanceReportPolicy as SchoolAttendanceReportPolicy;
 use App\Policies\School\BookDistributionPolicy as SchoolBookDistributionPolicy;
 use App\Policies\School\ClassroomDistributionPolicy as SchoolClassroomDistributionPolicy;
 use App\Policies\School\ClassroomPolicy as SchoolClassroomPolicy;
 use App\Policies\School\ClassSchedulePolicy as SchoolClassSchedulePolicy;
 use App\Policies\School\GradeLevelPolicy as SchoolGradeLevelPolicy;
+use App\Policies\School\StudentByClassroomReportPolicy as SchoolStudentByClassroomReportPolicy;
+use App\Policies\School\StudentByGradeLevelReportPolicy as SchoolStudentByGradeLevelReportPolicy;
 use App\Policies\School\StudentPolicy as SchoolStudentPolicy;
 use App\Policies\School\UserPolicy as SchoolUserPolicy;
 use App\Policies\Warehouse\BookDistributionPolicy as WarehouseBookDistributionPolicy;
@@ -110,6 +116,9 @@ final class PolicyRegistrar
             ClassSchedule::class => SchoolClassSchedulePolicy::class,
             Student::class => SchoolStudentPolicy::class,
             BookDistribution::class => SchoolBookDistributionPolicy::class,
+            StudentByGradeLevelReport::class => SchoolStudentByGradeLevelReportPolicy::class,
+            StudentByClassroomReport::class => SchoolStudentByClassroomReportPolicy::class,
+            AttendanceReport::class => SchoolAttendanceReportPolicy::class,
         ],
     ];
 
