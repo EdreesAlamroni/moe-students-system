@@ -170,8 +170,9 @@ test('selecting a school loads grade level statistics', function () {
 
     BookDistributionItem::factory()->create([
         'book_distribution_id' => $bookDistribution->id,
-        'student_id' => $distributedStudent->id,
         'academic_year_id' => $academicYearId,
+        'school_id' => $school->id,
+        'student_id' => $distributedStudent->id,
     ]);
 
     $response = $this->actingAs($user, 'warehouse')

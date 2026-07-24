@@ -41,7 +41,7 @@ class BookDistributionController extends Controller
             ->forCurrentSchoolGradeLevel($gradeLevelId)
             ->exists();
 
-        $students = $warehouseConfirmed && filled($gradeLevelId)
+        $students = $warehouseConfirmed
             ? $this->students($gradeLevelId, $classroomId)
             : collect([]);
 

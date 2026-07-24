@@ -193,6 +193,7 @@ test('selecting a grade level loads students with distribution status', function
 
     BookDistributionItem::factory()->create([
         'book_distribution_id' => $bookDistribution->id,
+        'school_id' => $school->id,
         'student_id' => $distributedStudent->id,
         'academic_year_id' => $academicYearId,
     ]);
