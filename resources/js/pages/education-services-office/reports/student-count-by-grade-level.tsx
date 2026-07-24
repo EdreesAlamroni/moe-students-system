@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
-import type { CanPermissions, Enum, GradeLevel, Paginated } from "@/types";
+import type { CanPermissions, Enum, GradeLevel } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 
@@ -22,7 +22,7 @@ import { ListIcon, PrinterIcon, RefreshCcwIcon, SearchIcon } from "lucide-react"
 import { index, print } from "@/routes/education-services-office/reports/student-count-by-grade-level";
 
 type PageProps = {
-    gradeLevels: Paginated<Pick<GradeLevel, 'id' | 'uuid' | 'name' | 'educational_stage' | 'students_count'>>;
+    gradeLevels: GradeLevel[];
     educationalStages: Enum[];
     filter: {
         educational_stage?: string;
@@ -32,8 +32,6 @@ type PageProps = {
 }
 
 export default function Index({ gradeLevels, educationalStages, filter, canAny, can }: PageProps) {
-    const { data, ...meta } = gradeLevels;
-
     return (
         <>
             <Head title="إحصائية الطلاب حسب الصفوف الدراسية" />
@@ -44,10 +42,10 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                         {can.print && (
                             <Button
                                 variant="default"
-                                disabled={data.length === 0}
+                                disabled={gradeLevels.length === 0}
                                 asChild
                             >
-                                {data.length > 0 ? (
+                                {gradeLevels.length > 0 ? (
                                     <a href={print.url()} target="_blank">
                                         <PrinterIcon />
                                         <span>طباعة التقرير</span>
@@ -73,7 +71,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
                                         <span>فرز النتائج</span>
-                                        <span className="font-mono">({meta.total})</span>
+                                        <span className="font-mono">({gradeLevels.length})</span>
                                     </div>
                                 </CardTitle>
                             </CardHeader>
@@ -134,7 +132,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                                 <span>إحصائية الطلاب حسب الصفوف الدراسية</span>
                             </CardTitle>
                         </CardHeader>
-                        {data.length > 0 ? (
+                        {gradeLevels.length > 0 ? (
                             <CardTableContent>
                                 <Table>
                                     <TableHeader>
@@ -146,7 +144,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {data.map((gradeLevel, index: number) => (
+                                        {gradeLevels.map((gradeLevel, index: number) => (
                                             <TableRow key={gradeLevel.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
                                                 <TableCell>{gradeLevel.name}</TableCell>

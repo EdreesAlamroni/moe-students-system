@@ -13,7 +13,6 @@ use App\Support\ResourcePayloadBuilder;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,25 +25,11 @@ class StudentCountByGradeLevelReportController extends Controller
     {
         Gate::authorize('view', StudentCountByGradeLevelReport::class);
 
-        $items = $this->query()->get();
-        $count = $items->count();
-
-        $gradeLevels = new LengthAwarePaginator(
-            $items,
-            $count,
-            max($count, 1),
-            1,
-            [
-                'path' => $request->url(),
-                'query' => $request->query(),
-            ],
-        );
+        $gradeLevels = $this->query()->get();
 
         return Inertia::render('education-monitor/reports/student-count-by-grade-level', [
-            'gradeLevels' => ResourcePayloadBuilder::paginate(
-                $gradeLevels,
+            'gradeLevels' => ResourcePayloadBuilder::make(
                 StudentCountByGradeLevelCollection::make($gradeLevels),
-                $request,
             ),
             'educationalStages' => SchoolEducationalStageEnum::optionsArray(),
             'filter' => $request->input('filter', []),
