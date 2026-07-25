@@ -84,11 +84,35 @@ export type EducationMonitorSchoolDistributionItem = {
     office: Pick<EducationServicesOffice, 'name'> | null;
 };
 
+export type LargestSchoolOfType = {
+    name: string;
+    students: number;
+};
+
 export type SchoolTypeDistribution = {
     public_schools: number;
     private_schools: number;
     public_students: number;
     private_students: number;
+    largest_public_school: LargestSchoolOfType | null;
+    largest_private_school: LargestSchoolOfType | null;
+};
+
+export type EducationServicesOfficeDashboardSummary = {
+    students: number;
+    males: number;
+    females: number;
+    nationalities: number;
+    schools: number;
+    grade_levels: number;
+    classrooms: number;
+    students_unenrolled_in_grade_level: number;
+};
+
+export type EducationServicesOfficeSchoolDistributionItem = {
+    name: string;
+    students: number;
+    classrooms: number;
 };
 
 export type WarehouseDashboardSummary = {

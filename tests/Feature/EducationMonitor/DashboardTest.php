@@ -385,18 +385,20 @@ test('the nationality distribution merges the tail into a single segment', funct
                 ->where('nationalityDistribution.4.students', 3)));
 });
 
-test('the school type distribution reports public and private school and student counts', function () {
+test('the school type distribution reports counts and the largest school of each type', function () {
     $monitor = EducationMonitor::factory()->create();
     $otherMonitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorDashboardUser($monitor);
 
-    $publicSchool = School::factory()->create([
+    $largestPublicSchool = School::factory()->create([
         'education_monitor_id' => $monitor->id,
         'type' => SchoolType::PUBLIC,
+        'name' => 'المدرسة العامة الكبرى',
     ]);
     $privateSchool = School::factory()->create([
         'education_monitor_id' => $monitor->id,
         'type' => SchoolType::PRIVATE,
+        'name' => 'المدرسة الخاصة',
     ]);
     School::factory()->create([
         'education_monitor_id' => $monitor->id,
@@ -410,7 +412,7 @@ test('the school type distribution reports public and private school and student
 
     Student::factory()->count(3)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $publicSchool->id,
+        'school_id' => $largestPublicSchool->id,
     ]);
 
     Student::factory()->count(2)->create([
@@ -438,5 +440,27 @@ test('the school type distribution reports public and private school and student
                 ->where('schoolTypeDistribution.public_schools', 2)
                 ->where('schoolTypeDistribution.private_schools', 1)
                 ->where('schoolTypeDistribution.public_students', 3)
-                ->where('schoolTypeDistribution.private_students', 2)));
+                ->where('schoolTypeDistribution.private_students', 2)
+                ->where('schoolTypeDistribution.largest_public_school.name', 'المدرسة العامة الكبرى')
+                ->where('schoolTypeDistribution.largest_public_school.students', 3)
+                ->where('schoolTypeDistribution.largest_private_school.name', 'المدرسة الخاصة')
+                ->where('schoolTypeDistribution.largest_private_school.students', 2)));
+});
+
+test('the largest school of a type is null when no school of that type has students', function () {
+    $monitor = EducationMonitor::factory()->create();
+    $user = createEducationMonitorDashboardUser($monitor);
+
+    School::factory()->create([
+        'education_monitor_id' => $monitor->id,
+        'type' => SchoolType::PRIVATE,
+    ]);
+
+    $this->actingAs($user, 'education_monitor')
+        ->get(route('education-monitor.dashboard'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('education-monitor/dashboard')
+            ->loadDeferredProps('school-types', fn (Assert $page) => $page
+                ->where('schoolTypeDistribution.largest_public_school', null)
+                ->where('schoolTypeDistribution.largest_private_school', null)));
 });

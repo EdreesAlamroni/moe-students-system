@@ -11,9 +11,10 @@ import type {
 
 import MainContainer from '@/components/ui/structure/main-container';
 
+import SchoolTypeDistributionSection from '@/components/shared/dashboard/school-type-distribution';
+
 import SummaryStats from '@/components/features/education-monitor/dashboard/summary-stats';
 import QuickInsights from '@/components/features/education-monitor/dashboard/quick-insights';
-import SchoolTypeDistributionSection from '@/components/features/education-monitor/dashboard/school-type-distribution';
 import GenderDistributionChart from '@/components/features/education-monitor/dashboard/gender-distribution-chart';
 import NationalityDistributionChart from '@/components/features/education-monitor/dashboard/nationality-distribution-chart';
 import GradeLevelDistributionChart from '@/components/features/education-monitor/dashboard/grade-level-distribution-chart';

@@ -1,0 +1,77 @@
+import React from "react";
+
+import { Label, Pie, PieChart } from "recharts";
+
+import type { NationalityDistributionItem } from "@/types";
+
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
+import type { ChartConfig } from "@/components/ui/display/chart";
+
+import DashboardSectionCard, { DonutChartSkeleton } from "@/components/shared/dashboard/dashboard-section-card";
+import donutCenterLabel from "@/components/shared/dashboard/donut-center-label";
+
+import { FlagIcon } from "lucide-react";
+
+type NationalityDistributionChartProps = {
+    items?: NationalityDistributionItem[];
+    className?: string;
+};
+
+export default function NationalityDistributionChart({ items, className }: NationalityDistributionChartProps) {
+    const dataItems = items ?? [];
+
+    const chartConfig = Object.fromEntries(
+        dataItems.map((item, index) => {
+            return [
+                `nationality-${index}`,
+                { label: item.name, color: `var(--chart-${(index % 5) + 1})` },
+            ];
+        })
+    ) satisfies ChartConfig;
+
+    const data = dataItems.map((item, index) => ({
+        key: `nationality-${index}`,
+        students: item.students,
+        fill: `var(--color-nationality-${index})`,
+    }));
+
+    const total = data.reduce((sum, item) => sum + item.students, 0);
+
+    return (
+        <DashboardSectionCard
+            title="توزيع الطلاب حسب الجنسية"
+            description="عدد الطلاب من كل جنسية مسجلة في نطاق مكتب الخدمات التعليمية"
+            icon={FlagIcon}
+            reloadProps={["nationalityDistribution"]}
+            isLoading={items === undefined}
+            isEmpty={dataItems.length === 0}
+            emptyText="لا يوجد طلاب مسجلون حالياً."
+            skeleton={<DonutChartSkeleton />}
+            className={className}
+        >
+            <ChartContainer
+                config={chartConfig}
+                className="mx-auto aspect-square max-h-72 w-full"
+            >
+                <PieChart accessibilityLayer>
+                    <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent nameKey="key" hideLabel />}
+                    />
+                    <Pie
+                        data={data}
+                        dataKey="students"
+                        nameKey="key"
+                        innerRadius={60}
+                        strokeWidth={5}
+                    >
+                        <Label content={donutCenterLabel(total, "إجمالي الطلاب")} />
+                    </Pie>
+                    <ChartLegend
+                        content={<ChartLegendContent nameKey="key" className="flex-wrap" />}
+                    />
+                </PieChart>
+            </ChartContainer>
+        </DashboardSectionCard>
+    );
+}

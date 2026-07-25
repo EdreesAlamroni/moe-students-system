@@ -170,7 +170,8 @@ class DashboardController extends Controller
     }
 
     /**
-     * Public vs private school and student counts for the current education monitor.
+     * Public vs private school and student counts for the current education monitor,
+     * plus the largest school of each type.
      */
     private function schoolTypeDistribution(): array
     {
@@ -199,6 +200,34 @@ class DashboardController extends Controller
             'private_schools' => (int) ($schools->private_schools ?? 0),
             'public_students' => (int) ($students->public_students ?? 0),
             'private_students' => (int) ($students->private_students ?? 0),
+            'largest_public_school' => $this->largestSchoolOfType(SchoolType::PUBLIC),
+            'largest_private_school' => $this->largestSchoolOfType(SchoolType::PRIVATE),
+        ];
+    }
+
+    /**
+     * The school of the given type with the most students, or null when
+     * no school of that type has any students.
+     *
+     * @return array{name: string, students: int}|null
+     */
+    private function largestSchoolOfType(SchoolType $type): ?array
+    {
+        $school = School::query()
+            ->select(['id', 'name'])
+            ->forCurrentEducationMonitor()
+            ->where('type', '=', $type)
+            ->withCount('students')
+            ->orderByDesc('students_count')
+            ->first();
+
+        if (is_null($school) || (int) $school->students_count === 0) {
+            return null;
+        }
+
+        return [
+            'name' => $school->name,
+            'students' => (int) $school->students_count,
         ];
     }
 
