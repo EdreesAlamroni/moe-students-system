@@ -32,7 +32,7 @@ export default function Show({ student, canAny, can }: PageProps) {
         <>
             <Head title="عرض بيانات الطالب" />
 
-            <MainContainer changeAcademicYearNotice>
+            <MainContainer showAcademicYearNotice>
                 {(canAny && currentAcademicYear?.is_active) && (
                     <ActionsSection>
                         {(can.transferStudentOut) && (

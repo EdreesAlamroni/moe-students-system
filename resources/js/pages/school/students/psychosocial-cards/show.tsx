@@ -79,7 +79,7 @@ export default function Show({ student, psychosocialCard, canAny, can }: PagePro
         <>
             <Head title="البطاقة الإجتماعية والنفسية للطالب" />
 
-            <MainContainer changeAcademicYearNotice>
+            <MainContainer showAcademicYearNotice>
                 <section>
                     <header className="flex items-center gap-3 border-b pb-4">
                         <BookUserIcon className="w-4 h-4 shrink-0" />

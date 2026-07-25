@@ -155,7 +155,7 @@ export default function Index({
         <>
             <Head title="الطلاب" />
 
-            <MainContainer changeAcademicYearNotice>
+            <MainContainer showAcademicYearNotice>
                 {(canAny && currentAcademicYear?.is_active) && (
                     <ActionsSection>
                         {can.addTransferredStudent && (

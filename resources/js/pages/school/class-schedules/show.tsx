@@ -41,7 +41,7 @@ export default function Show({ classroomName, schedule, subjects, days, canAny, 
         <>
             <Head title="عرض الجدول الدراسي" />
 
-            <MainContainer changeAcademicYearNotice>
+            <MainContainer showAcademicYearNotice>
                 {canAny && currentAcademicYear?.is_active && (
                     <ActionsSection>
                         {can.update && (

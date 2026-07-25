@@ -9,12 +9,12 @@ import type {
 
 import MainContainer from '@/components/ui/structure/main-container';
 
-import ClassroomOccupancyChart from '@/components/features/school/dashboard/classroom-occupancy-chart';
+import SummaryStats from '@/components/features/school/dashboard/summary-stats';
+import QuickInsights from '@/components/features/school/dashboard/quick-insights';
 import GenderDistributionChart from '@/components/features/school/dashboard/gender-distribution-chart';
 import GradeLevelDistributionChart from '@/components/features/school/dashboard/grade-level-distribution-chart';
 import NationalityDistributionChart from '@/components/features/school/dashboard/nationality-distribution-chart';
-import QuickInsights from '@/components/features/school/dashboard/quick-insights';
-import SummaryStats from '@/components/features/school/dashboard/summary-stats';
+import ClassroomOccupancyChart from '@/components/features/school/dashboard/classroom-occupancy-chart';
 
 import { dashboard } from '@/routes/school';
 
@@ -36,7 +36,9 @@ export default function Dashboard({
             <Head title="الرئيسية" />
 
             <MainContainer showAcademicYearNotice>
-                <SummaryStats summary={summary} />
+                <SummaryStats
+                    summary={summary}
+                />
 
                 <QuickInsights
                     summary={summary}

@@ -50,7 +50,7 @@ export default function Index({ classrooms, gradeLevels, classroomNames, filter,
     const hasPagination = data.length > 0 && meta.last_page > 1;
 
     return (
-        <MainContainer changeAcademicYearNotice>
+        <MainContainer showAcademicYearNotice>
             <Head title="الفصول الدراسية" />
 
             {(canAny && currentAcademicYear?.is_active) && (

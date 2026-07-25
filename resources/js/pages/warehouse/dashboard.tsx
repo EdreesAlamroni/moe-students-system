@@ -42,7 +42,9 @@ export default function Dashboard({
             <Head title="الرئيسية" />
 
             <MainContainer showAcademicYearNotice>
-                <SummaryStats summary={summary} />
+                <SummaryStats
+                    summary={summary}
+                />
 
                 <QuickInsights
                     summary={summary}

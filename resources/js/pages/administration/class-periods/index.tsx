@@ -61,7 +61,7 @@ export default function Index({ classPeriods, academicPeriods, filter, canAny, c
         <>
             <Head title="الحصص الدراسية" />
 
-            <MainContainer changeAcademicYearNotice>
+            <MainContainer showAcademicYearNotice>
                 {(canAny && currentAcademicYear?.is_active) && (
                     <ActionsSection>
                         {can.create && (

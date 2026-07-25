@@ -149,7 +149,7 @@ export default function Edit({
         <>
             <Head title="تعديل البطاقة الإجتماعية والنفسية" />
 
-            <MainContainer changeAcademicYearNotice>
+            <MainContainer showAcademicYearNotice>
                 <section>
                     <header className="flex items-center gap-3 border-b pb-4">
                         <BookUserIcon className="w-4 h-4 shrink-0" />

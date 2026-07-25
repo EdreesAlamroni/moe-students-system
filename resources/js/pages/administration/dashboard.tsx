@@ -10,15 +10,15 @@ import type {
 
 import MainContainer from '@/components/ui/structure/main-container';
 
-import EducationMonitorSchoolsChart from '@/components/features/administration/dashboard/education-monitor-schools-chart';
-import EducationMonitorStudentsChart from '@/components/features/administration/dashboard/education-monitor-students-chart';
+import SummaryStats from '@/components/features/administration/dashboard/summary-stats';
+import QuickInsights from '@/components/features/administration/dashboard/quick-insights';
 import GenderDistributionChart from '@/components/features/administration/dashboard/gender-distribution-chart';
 import GradeLevelDistributionChart from '@/components/features/administration/dashboard/grade-level-distribution-chart';
+import EducationMonitorSchoolsChart from '@/components/features/administration/dashboard/education-monitor-schools-chart';
+import EducationMonitorStudentsChart from '@/components/features/administration/dashboard/education-monitor-students-chart';
 import NationalityDistributionChart from '@/components/features/administration/dashboard/nationality-distribution-chart';
-import QuickInsights from '@/components/features/administration/dashboard/quick-insights';
-import SchoolClassroomsChart from '@/components/features/administration/dashboard/school-classrooms-chart';
 import SchoolStudentsChart from '@/components/features/administration/dashboard/school-students-chart';
-import SummaryStats from '@/components/features/administration/dashboard/summary-stats';
+import SchoolClassroomsChart from '@/components/features/administration/dashboard/school-classrooms-chart';
 
 import { dashboard } from '@/routes/administration';
 
@@ -42,7 +42,9 @@ export default function Dashboard({
             <Head title="الرئيسية" />
 
             <MainContainer showAcademicYearNotice>
-                <SummaryStats summary={summary} />
+                <SummaryStats
+                    summary={summary}
+                />
 
                 <QuickInsights
                     summary={summary}

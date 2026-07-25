@@ -51,7 +51,7 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
         <>
             <Head title="عرض بيانات الطالب" />
 
-            <MainContainer changeAcademicYearNotice>
+            <MainContainer showAcademicYearNotice>
                 {(!student.has_enrollment && currentAcademicYear?.is_active) && (
                     <section>
                         <Alert variant="info">
