@@ -80,6 +80,66 @@
     }
 }
 
+/* Custom Theme — MOE identity (navy + gold), anchored on brand hue 266 */
+:root {
+    /* Brand primitives — single source of truth, drawn from the MOE seal */
+    --brand-primary: oklch(0.38 0.14 266); /* navy-indigo ring */
+    --brand-gold: oklch(0.72 0.1 82); /* seal gold: olive branches, stars */
+    --brand-ink: oklch(0.13 0.04 266); /* near-black navy for text */
+    --brand-white: oklch(1 0 0);
+
+    /* Surfaces */
+    --background: var(--brand-white);
+    --foreground: var(--brand-ink);
+    --card: var(--brand-white);
+    --card-foreground: var(--brand-ink);
+    --popover: var(--brand-white);
+    --popover-foreground: var(--brand-ink);
+
+    /* Brand actions */
+    --primary: var(--brand-primary);
+    --primary-foreground: oklch(0.985 0.005 266);
+    --secondary: oklch(0.968 0.008 266);
+    --secondary-foreground: var(--brand-primary);
+
+    /* Supporting UI */
+    --muted: oklch(0.968 0.008 266);
+    --muted-foreground: oklch(0.55 0.03 266);
+    --accent: oklch(0.955 0.012 266);
+    --accent-foreground: var(--brand-primary);
+
+    /* Feedback */
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: var(--brand-white);
+
+    /* Controls */
+    --border: oklch(0.925 0.012 266);
+    --input: oklch(0.925 0.012 266);
+    --ring: var(--brand-primary);
+    --radius: 0.625rem;
+
+    /* Charts — MOE navy + gold with supporting blue/neutral tones.
+       chart-1/chart-2 carry the recurring female/male (and capacity/students)
+       pairings as the two brand colors for maximum, accessible contrast. */
+    --chart-1: var(--brand-gold);
+    --chart-2: var(--brand-primary);
+    --chart-3: oklch(0.62 0.09 245);
+    --chart-4: oklch(0.75 0.07 240);
+    --chart-5: oklch(0.55 0.08 72);
+
+    /* Sidebar */
+    --sidebar: oklch(0.985 0.005 266);
+    --sidebar-foreground: var(--brand-ink);
+    --sidebar-primary: var(--brand-primary);
+    --sidebar-primary-foreground: oklch(0.985 0.005 266);
+    --sidebar-accent: oklch(0.955 0.012 266);
+    --sidebar-accent-foreground: var(--brand-primary);
+    --sidebar-border: oklch(0.925 0.012 266);
+    --sidebar-ring: var(--brand-primary);
+
+    color-scheme: light;
+}
+
 /* Default Theme */
 /* :root {
     --background: oklch(1 0 0);
@@ -131,8 +191,8 @@
     --sidebar-ring: oklch(0.705 0.015 286.067);
 } */
 
-/* Custom Theme */
-:root {
+/* Custom Theme : OLD */
+/* :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.129 0.042 264.695);
 
@@ -179,7 +239,7 @@
 
     --sidebar-border: oklch(0.929 0.013 255.508);
     --sidebar-ring: oklch(0.38 0.14 266);
-}
+} */
 
 @layer base {
     * {
