@@ -56,3 +56,48 @@ export type SchoolDistributionItem = {
     classrooms: number;
     monitor: Pick<EducationMonitor, 'name'>;
 };
+
+export type WarehouseDashboardSummary = {
+    education_monitors: number;
+    schools: number;
+    students: number;
+    book_distributions: number;
+    students_received: number;
+    students_pending: number;
+    completion_rate: number;
+};
+
+export type WarehouseEducationMonitorDistributionItem = {
+    name: string;
+    students: number;
+    schools: number;
+    book_distributions: number;
+    students_received: number;
+    students_pending: number;
+    completion_rate: number;
+};
+
+export type WarehouseSchoolDistributionItem = {
+    name: string;
+    students: number;
+    book_distributions: number;
+    students_received: number;
+    students_pending: number;
+    completion_rate: number;
+    monitor: Pick<EducationMonitor, 'name'>;
+};
+
+export type WarehouseAcademicYearTrendItem = {
+    name: string;
+    book_distributions: number;
+    students_received: number;
+    is_current: boolean;
+};
+
+export type WarehouseRecentActivityItem = {
+    id: number;
+    distributed_at: string | null;
+    school: string;
+    grade_level: string;
+    monitor: string;
+};

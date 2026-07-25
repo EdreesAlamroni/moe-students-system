@@ -18,14 +18,17 @@ type NationalityDistributionChartProps = {
 };
 
 export default function NationalityDistributionChart({ items, className }: NationalityDistributionChartProps) {
+    items = items ?? [];
     const chartConfig = Object.fromEntries(
-        (items ?? []).map((item, index) => [
-            `nationality-${index}`,
-            { label: item.name, color: `var(--chart-${(index % 5) + 1})` },
-        ]),
+        items.map((item, index) => {
+            return [
+                `nationality-${index}`,
+                { label: item.name, color: `var(--chart-${(index % 5) + 1})` },
+            ];
+        })
     ) satisfies ChartConfig;
 
-    const data = (items ?? []).map((item, index) => ({
+    const data = items.map((item, index) => ({
         key: `nationality-${index}`,
         students: item.students,
         fill: `var(--color-nationality-${index})`,

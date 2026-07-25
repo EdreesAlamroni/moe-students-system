@@ -68,11 +68,13 @@ function GenderRatioInsight({ summary }: { summary?: DashboardSummary }) {
 }
 
 function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDistributionItem[] }) {
-    const largest = gradeLevels?.reduce(
-        (candidate: GradeLevelDistributionItem | undefined, item) =>
-            !candidate || item.students > candidate.students ? item : candidate,
-        undefined,
-    );
+    const largest = gradeLevels?.reduce((candidate: GradeLevelDistributionItem | undefined, item) => {
+        if (!candidate || item.students > candidate.students) {
+            return item;
+        }
+
+        return candidate;
+    }, undefined);
 
     return (
         <InsightCard

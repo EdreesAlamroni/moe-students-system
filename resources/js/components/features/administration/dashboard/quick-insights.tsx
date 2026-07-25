@@ -77,11 +77,13 @@ function GenderRatioInsight({ summary }: { summary?: AdministrationDashboardSumm
 }
 
 function LargestEducationMonitorInsight({ monitors }: { monitors?: EducationMonitorDistributionItem[] }) {
-    const largest = monitors?.reduce(
-        (candidate: EducationMonitorDistributionItem | undefined, item) =>
-            !candidate || item.students > candidate.students ? item : candidate,
-        undefined,
-    );
+    const largest = monitors?.reduce((candidate: EducationMonitorDistributionItem | undefined, item) => {
+        if (!candidate || item.students > candidate.students) {
+            return item;
+        }
+
+        return candidate;
+    }, undefined);
 
     return (
         <InsightCard
@@ -99,11 +101,13 @@ function LargestEducationMonitorInsight({ monitors }: { monitors?: EducationMoni
 }
 
 function LargestSchoolInsight({ schools }: { schools?: SchoolDistributionItem[] }) {
-    const largest = schools?.reduce(
-        (candidate: SchoolDistributionItem | undefined, item) =>
-            !candidate || item.students > candidate.students ? item : candidate,
-        undefined,
-    );
+    const largest = schools?.reduce((candidate: SchoolDistributionItem | undefined, item) => {
+        if (!candidate || item.students > candidate.students) {
+            return item;
+        }
+
+        return candidate;
+    }, undefined);
 
     const detail =
         largest && largest.students > 0
@@ -127,11 +131,13 @@ function LargestSchoolInsight({ schools }: { schools?: SchoolDistributionItem[] 
 }
 
 function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDistributionItem[] }) {
-    const largest = gradeLevels?.reduce(
-        (candidate: GradeLevelDistributionItem | undefined, item) =>
-            !candidate || item.students > candidate.students ? item : candidate,
-        undefined,
-    );
+    const largest = gradeLevels?.reduce((candidate: GradeLevelDistributionItem | undefined, item) => {
+        if (!candidate || item.students > candidate.students) {
+            return item;
+        }
+
+        return candidate;
+    }, undefined);
 
     return (
         <InsightCard
@@ -149,10 +155,9 @@ function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDis
 }
 
 function SchoolDistributionInsight({ summary }: { summary?: AdministrationDashboardSummary }) {
-    const averageStudentsPerSchool =
-        summary && summary.schools > 0
-            ? Math.round(summary.students / summary.schools)
-            : 0;
+    const averageStudentsPerSchool = summary && summary.schools > 0
+        ? Math.round(summary.students / summary.schools)
+        : 0;
 
     return (
         <InsightCard
@@ -176,10 +181,9 @@ function SchoolDistributionInsight({ summary }: { summary?: AdministrationDashbo
 }
 
 function AverageClassSizeInsight({ summary }: { summary?: AdministrationDashboardSummary }) {
-    const average =
-        summary && summary.classrooms > 0
-            ? Math.round(summary.students / summary.classrooms)
-            : 0;
+    const average = summary && summary.classrooms > 0
+        ? Math.round(summary.students / summary.classrooms)
+        : 0;
 
     return (
         <InsightCard
