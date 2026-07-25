@@ -1,30 +1,59 @@
 import { Head } from '@inertiajs/react';
 
-import { PlaceholderPattern } from '@/components/ui/structure/placeholder-pattern';
+import MainContainer from '@/components/ui/structure/main-container';
+
+import ClassroomOccupancyChart from '@/components/features/school/dashboard/classroom-occupancy-chart';
+import GenderDistributionChart from '@/components/features/school/dashboard/gender-distribution-chart';
+import GradeLevelDistributionChart from '@/components/features/school/dashboard/grade-level-distribution-chart';
+import NationalityDistributionChart from '@/components/features/school/dashboard/nationality-distribution-chart';
+import QuickInsights from '@/components/features/school/dashboard/quick-insights';
+import SummaryStats from '@/components/features/school/dashboard/summary-stats';
+
+import type {
+    ClassroomOccupancyItem,
+    DashboardSummary,
+    GradeLevelDistributionItem,
+    NationalityDistributionItem,
+} from '@/types';
 
 import { dashboard } from '@/routes/school';
 
-export default function Dashboard() {
+type PageProps = {
+    summary?: DashboardSummary;
+    gradeLevelDistribution?: GradeLevelDistributionItem[];
+    classroomOccupancy?: ClassroomOccupancyItem[];
+    nationalityDistribution?: NationalityDistributionItem[];
+};
+
+export default function Dashboard({
+    summary,
+    gradeLevelDistribution,
+    classroomOccupancy,
+    nationalityDistribution,
+}: PageProps) {
     return (
         <>
             <Head title="الرئيسية" />
 
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-zinc-900/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-zinc-900/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-zinc-900/20" />
-                    </div>
-                </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-zinc-900/20" />
-                </div>
-            </div>
+            <MainContainer showAcademicYearNotice>
+                <SummaryStats summary={summary} />
+
+                <QuickInsights
+                    summary={summary}
+                    gradeLevels={gradeLevelDistribution}
+                    classrooms={classroomOccupancy}
+                />
+
+                <section
+                    aria-label="الرسوم البيانية"
+                    className="grid grid-cols-1 gap-6 xl:grid-cols-5"
+                >
+                    <GenderDistributionChart summary={summary} className="xl:col-span-2" />
+                    <GradeLevelDistributionChart items={gradeLevelDistribution} className="xl:col-span-3" />
+                    <NationalityDistributionChart items={nationalityDistribution} className="xl:col-span-2" />
+                    <ClassroomOccupancyChart items={classroomOccupancy} className="xl:col-span-3" />
+                </section>
+            </MainContainer>
         </>
     );
 }

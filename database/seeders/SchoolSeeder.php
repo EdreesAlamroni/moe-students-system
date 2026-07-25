@@ -83,6 +83,7 @@ class SchoolSeeder extends Seeder
     protected function educationalStages(): array
     {
         return [
+            SchoolEducationalStageEnum::KINDERGARTEN,
             SchoolEducationalStageEnum::PRIMARY_EDUCATION,
             SchoolEducationalStageEnum::SECONDARY_EDUCATION,
         ];
