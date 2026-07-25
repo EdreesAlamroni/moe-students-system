@@ -1,4 +1,4 @@
-import type { EducationMonitor } from "@/types";
+import type { EducationMonitor, EducationServicesOffice } from "@/types";
 
 export type DashboardSummary = {
     students: number;
@@ -55,6 +55,40 @@ export type SchoolDistributionItem = {
     students: number;
     classrooms: number;
     monitor: Pick<EducationMonitor, 'name'>;
+};
+
+export type EducationMonitorDashboardSummary = {
+    students: number;
+    males: number;
+    females: number;
+    nationalities: number;
+    education_services_offices: number;
+    schools: number;
+    grade_levels: number;
+    classrooms: number;
+    students_unassigned_to_school: number;
+};
+
+export type EducationServicesOfficeDistributionItem = {
+    name: string;
+    males: number;
+    females: number;
+    students: number;
+    schools: number;
+};
+
+export type EducationMonitorSchoolDistributionItem = {
+    name: string;
+    students: number;
+    classrooms: number;
+    office: Pick<EducationServicesOffice, 'name'> | null;
+};
+
+export type SchoolTypeDistribution = {
+    public_schools: number;
+    private_schools: number;
+    public_students: number;
+    private_students: number;
 };
 
 export type WarehouseDashboardSummary = {
