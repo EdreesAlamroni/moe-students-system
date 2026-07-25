@@ -33,8 +33,6 @@ class DashboardController extends Controller
 
     /**
      * Headline counts for the current school, using a single aggregate query for students.
-     *
-     * @return array{students: int, males: int, females: int, grade_levels: int, classrooms: int, nationalities: int}
      */
     private function summary(): array
     {
@@ -59,8 +57,6 @@ class DashboardController extends Controller
 
     /**
      * Student counts per grade level for the current academic year, split by gender.
-     *
-     * @return Collection<int, array{name: string, males: int, females: int, students: int}>
      */
     private function gradeLevelDistribution(): Collection
     {
@@ -85,8 +81,6 @@ class DashboardController extends Controller
 
     /**
      * Enrolled student counts and capacity per classroom for the current academic year.
-     *
-     * @return Collection<int, array{name: string, grade_level: string, students: int, capacity: int}>
      */
     private function classroomOccupancy(): Collection
     {
@@ -106,8 +100,6 @@ class DashboardController extends Controller
 
     /**
      * Student counts per nationality, largest first, with the tail merged into "Other".
-     *
-     * @return Collection<int, array{name: string, students: int}>
      */
     private function nationalityDistribution(): Collection
     {

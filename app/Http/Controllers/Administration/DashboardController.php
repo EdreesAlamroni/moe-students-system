@@ -39,18 +39,6 @@ class DashboardController extends Controller
 
     /**
      * Headline system-wide counts, using a single aggregate query for students.
-     *
-     * @return array{
-     *     students: int,
-     *     males: int,
-     *     females: int,
-     *     nationalities: int,
-     *     education_monitors: int,
-     *     education_services_offices: int,
-     *     schools: int,
-     *     warehouses: int,
-     *     classrooms: int,
-     * }
      */
     private function summary(): array
     {
@@ -78,8 +66,6 @@ class DashboardController extends Controller
     /**
      * Student counts (split by gender) and school counts per education monitor,
      * largest monitor first. Feeds both monitor charts from a single payload.
-     *
-     * @return Collection<int, array{name: string, males: int, females: int, students: int, schools: int}>
      */
     private function educationMonitorDistribution(): Collection
     {
@@ -116,8 +102,6 @@ class DashboardController extends Controller
 
     /**
      * Student and classroom counts for the largest schools, feeding both school charts.
-     *
-     * @return Collection<int, array{name: string, students: int, classrooms: int, monitor: array{name: string}}>
      */
     private function schoolDistribution(): Collection
     {
@@ -146,8 +130,6 @@ class DashboardController extends Controller
 
     /**
      * System-wide student counts per grade level for the current academic year, split by gender.
-     *
-     * @return Collection<int, array{name: string, males: int, females: int, students: int}>
      */
     private function gradeLevelDistribution(): Collection
     {
@@ -171,8 +153,6 @@ class DashboardController extends Controller
 
     /**
      * Student counts per nationality, largest first, with the tail merged into "Other".
-     *
-     * @return Collection<int, array{name: string, students: int}>
      */
     private function nationalityDistribution(): Collection
     {

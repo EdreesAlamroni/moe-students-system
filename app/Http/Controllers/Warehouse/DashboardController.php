@@ -42,16 +42,6 @@ class DashboardController extends Controller
 
     /**
      * Headline warehouse counts for the current academic year.
-     *
-     * @return array{
-     *     education_monitors: int,
-     *     schools: int,
-     *     students: int,
-     *     book_distributions: int,
-     *     students_received: int,
-     *     students_pending: int,
-     *     completion_rate: float,
-     * }
      */
     private function summary(): array
     {
@@ -77,16 +67,6 @@ class DashboardController extends Controller
 
     /**
      * Student and book-distribution progress per education monitor, largest student count first.
-     *
-     * @return Collection<int, array{
-     *     name: string,
-     *     students: int,
-     *     schools: int,
-     *     book_distributions: int,
-     *     students_received: int,
-     *     students_pending: int,
-     *     completion_rate: float,
-     * }>
      */
     private function educationMonitorDistribution(): Collection
     {
@@ -130,16 +110,6 @@ class DashboardController extends Controller
 
     /**
      * Student and book-distribution progress for the largest schools under this warehouse.
-     *
-     * @return Collection<int, array{
-     *     name: string,
-     *     students: int,
-     *     book_distributions: int,
-     *     students_received: int,
-     *     students_pending: int,
-     *     completion_rate: float,
-     *     monitor: array{name: string},
-     * }>
      */
     private function schoolDistribution(): Collection
     {
@@ -184,13 +154,6 @@ class DashboardController extends Controller
 
     /**
      * Warehouse book-distribution activity across academic years.
-     *
-     * @return Collection<int, array{
-     *     name: string,
-     *     book_distributions: int,
-     *     students_received: int,
-     *     is_current: bool,
-     * }>
      */
     // private function academicYearTrends(): Collection
     // {
@@ -235,14 +198,6 @@ class DashboardController extends Controller
 
     /**
      * Latest warehouse book-distribution confirmations.
-     *
-     * @return Collection<int, array{
-     *     id: int,
-     *     distributed_at: string,
-     *     school: string,
-     *     grade_level: string,
-     *     monitor: string,
-     * }>
      */
     private function recentActivities(): Collection
     {
@@ -280,17 +235,11 @@ class DashboardController extends Controller
             ->values();
     }
 
-    /**
-     * @return Builder<Student>
-     */
     private function warehouseStudentsQuery(): Builder
     {
         return Student::query()->whereIn('education_monitor_id', $this->warehouseMonitorIdsQuery());
     }
 
-    /**
-     * @return Builder<EducationMonitor>
-     */
     private function warehouseMonitorIdsQuery(): Builder
     {
         return EducationMonitor::query()
@@ -335,9 +284,6 @@ class DashboardController extends Controller
             ->value('aggregate');
     }
 
-    /**
-     * @return Collection<int|string, int>
-     */
     private function bookDistributionsByMonitor(): Collection
     {
         return BookDistribution::query()
@@ -350,9 +296,6 @@ class DashboardController extends Controller
             ->pluck('aggregate', 'education_monitor_id');
     }
 
-    /**
-     * @return Collection<int|string, int>
-     */
     private function bookDistributionsBySchool(): Collection
     {
         return BookDistribution::query()
@@ -365,9 +308,6 @@ class DashboardController extends Controller
             ->pluck('aggregate', 'school_id');
     }
 
-    /**
-     * @return Collection<int|string, int>
-     */
     private function studentsReceivedByMonitor(): Collection
     {
         $warehouseId = $this->warehouseId();
@@ -388,9 +328,6 @@ class DashboardController extends Controller
             ->pluck('aggregate', 'education_monitor_id');
     }
 
-    /**
-     * @return Collection<int|string, int>
-     */
     private function studentsReceivedBySchool(): Collection
     {
         $warehouseId = $this->warehouseId();
@@ -411,9 +348,6 @@ class DashboardController extends Controller
             ->pluck('aggregate', 'school_id');
     }
 
-    /**
-     * @return Collection<int|string, int>
-     */
     private function studentsPendingByMonitor(): Collection
     {
         $warehouseId = $this->warehouseId();
@@ -430,9 +364,6 @@ class DashboardController extends Controller
             ->pluck('aggregate', 'education_monitor_id');
     }
 
-    /**
-     * @return Collection<int|string, int>
-     */
     private function studentsPendingBySchool(): Collection
     {
         $warehouseId = $this->warehouseId();
