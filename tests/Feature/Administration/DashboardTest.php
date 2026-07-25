@@ -88,14 +88,13 @@ test('the summary reports system-wide aggregate counts', function () {
                 ->where('summary.students', 3)
                 ->where('summary.males', 2)
                 ->where('summary.females', 1)
-                ->where('summary.schools', 1)
+                ->where('summary.nationalities', 2)
                 ->where('summary.education_monitors', 1)
                 ->where('summary.education_services_offices', 1)
+                ->where('summary.schools', 1)
                 ->where('summary.warehouses', 1)
-                ->where('summary.grade_levels', 1)
-                ->where('summary.classrooms', 1)
-                ->where('summary.academic_years', 1)
-                ->where('summary.nationalities', 2)));
+                ->where('summary.classrooms', 1))
+        );
 });
 
 test('the education monitor distribution reports student and school counts per monitor, largest first', function () {

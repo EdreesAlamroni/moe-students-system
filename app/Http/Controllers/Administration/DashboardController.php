@@ -44,14 +44,12 @@ class DashboardController extends Controller
      *     students: int,
      *     males: int,
      *     females: int,
-     *     schools: int,
+     *     nationalities: int,
      *     education_monitors: int,
      *     education_services_offices: int,
+     *     schools: int,
      *     warehouses: int,
-     *     grade_levels: int,
      *     classrooms: int,
-     *     academic_years: int,
-     *     nationalities: int,
      * }
      */
     private function summary(): array
@@ -69,10 +67,10 @@ class DashboardController extends Controller
             'males' => (int) $students->males,
             'females' => (int) $students->females,
             'nationalities' => (int) $students->nationalities,
-            'education_monitors' => EducationMonitor::query()->count(),
-            'education_services_offices' => EducationServicesOffice::query()->count(),
-            'schools' => School::query()->count(),
-            'warehouses' => Warehouse::query()->count(),
+            'education_monitors' => EducationMonitor::count(),
+            'education_services_offices' => EducationServicesOffice::count(),
+            'schools' => School::count(),
+            'warehouses' => Warehouse::count(),
             'classrooms' => Classroom::forCurrentAcademicYear()->count(),
         ];
     }
