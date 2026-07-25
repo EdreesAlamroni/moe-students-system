@@ -25,7 +25,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read AcademicYear $academicYear
- * @property-read EducationMonitor $educationMonitor
+ * @property-read EducationMonitor $monitor
  * @property-read School $school
  * @property-read GradeLevel $gradeLevel
  * @property-read Warehouse $warehouse

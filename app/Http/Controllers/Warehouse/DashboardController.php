@@ -31,7 +31,10 @@ class DashboardController extends Controller
             'schoolDistribution' => Inertia::defer(function (): Collection {
                 return $this->schoolDistribution();
             }, 'schools'),
-            'recentActivities' => Inertia::defer(function (): Collection {
+            // 'academicYearTrends' => Inertia::defer(function (): Collection {
+            //     return $this->academicYearTrends();
+            // }, 'trends'),
+            'recentActivities' => Inertia::defer(function () {
                 return $this->recentActivities();
             }, 'recent'),
         ]);
@@ -189,53 +192,53 @@ class DashboardController extends Controller
      *     is_current: bool,
      * }>
      */
-    private function academicYearTrends(): Collection
-    {
-        $warehouseId = $this->warehouseId();
+    // private function academicYearTrends(): Collection
+    // {
+    //     $warehouseId = $this->warehouseId();
 
-        if (is_null($warehouseId)) {
-            return collect();
-        }
+    //     if (is_null($warehouseId)) {
+    //         return collect();
+    //     }
 
-        $distributions = BookDistribution::query()
-            ->toBase()
-            ->select('academic_year_id')
-            ->selectRaw('COUNT(*) AS book_distributions')
-            ->where('warehouse_id', '=', $warehouseId)
-            ->groupBy('academic_year_id')
-            ->pluck('book_distributions', 'academic_year_id');
+    //     $distributions = BookDistribution::query()
+    //         ->toBase()
+    //         ->select('academic_year_id')
+    //         ->selectRaw('COUNT(*) AS book_distributions')
+    //         ->where('warehouse_id', '=', $warehouseId)
+    //         ->groupBy('academic_year_id')
+    //         ->pluck('book_distributions', 'academic_year_id');
 
-        $received = BookDistributionItem::query()
-            ->toBase()
-            ->join('book_distributions', 'book_distributions.id', '=', 'book_distribution_items.book_distribution_id')
-            ->select('book_distribution_items.academic_year_id')
-            ->selectRaw('COUNT(DISTINCT book_distribution_items.student_id) AS students_received')
-            ->where('book_distributions.warehouse_id', '=', $warehouseId)
-            ->groupBy('book_distribution_items.academic_year_id')
-            ->pluck('students_received', 'academic_year_id');
+    //     $received = BookDistributionItem::query()
+    //         ->toBase()
+    //         ->join('book_distributions', 'book_distributions.id', '=', 'book_distribution_items.book_distribution_id')
+    //         ->select('book_distribution_items.academic_year_id')
+    //         ->selectRaw('COUNT(DISTINCT book_distribution_items.student_id) AS students_received')
+    //         ->where('book_distributions.warehouse_id', '=', $warehouseId)
+    //         ->groupBy('book_distribution_items.academic_year_id')
+    //         ->pluck('students_received', 'academic_year_id');
 
-        $currentId = AcademicYear::currentId();
+    //     $currentId = AcademicYear::currentId();
 
-        return AcademicYear::query()
-            ->select(['id', 'name', 'is_active', 'start_date'])
-            ->orderedByActiveFirst()
-            ->get()
-            ->map(fn (AcademicYear $year): array => [
-                'name' => $year->name,
-                'book_distributions' => (int) ($distributions[$year->id] ?? 0),
-                'students_received' => (int) ($received[$year->id] ?? 0),
-                'is_current' => $year->id === $currentId,
-            ])
-            ->filter(fn (array $row): bool => $row['book_distributions'] > 0 || $row['students_received'] > 0 || $row['is_current'])
-            ->values();
-    }
+    //     return AcademicYear::query()
+    //         ->select(['id', 'name', 'is_active', 'start_date'])
+    //         ->orderedByActiveFirst()
+    //         ->get()
+    //         ->map(fn (AcademicYear $year): array => [
+    //             'name' => $year->name,
+    //             'book_distributions' => (int) ($distributions[$year->id] ?? 0),
+    //             'students_received' => (int) ($received[$year->id] ?? 0),
+    //             'is_current' => $year->id === $currentId,
+    //         ])
+    //         ->filter(fn (array $row): bool => $row['book_distributions'] > 0 || $row['students_received'] > 0 || $row['is_current'])
+    //         ->values();
+    // }
 
     /**
      * Latest warehouse book-distribution confirmations.
      *
      * @return Collection<int, array{
      *     id: int,
-     *     distributed_at: string|null,
+     *     distributed_at: string,
      *     school: string,
      *     grade_level: string,
      *     monitor: string,
@@ -269,7 +272,7 @@ class DashboardController extends Controller
             ->get()
             ->map(fn (BookDistribution $distribution): array => [
                 'id' => $distribution->id,
-                'distributed_at' => $distribution->distributed_at?->toDateTimeString(),
+                'distributed_at' => $distribution->distributed_at->toDateTimeString(),
                 'school' => $distribution->school->name,
                 'grade_level' => $distribution->gradeLevel->name,
                 'monitor' => $distribution->monitor->name,
