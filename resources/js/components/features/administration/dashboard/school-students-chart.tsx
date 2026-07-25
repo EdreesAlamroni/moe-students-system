@@ -2,20 +2,20 @@ import React from "react";
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-import type { ClassroomOccupancyItem } from "@/types";
+import type { SchoolDistributionItem } from "@/types";
 
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
 import type { ChartConfig } from "@/components/ui/display/chart";
 
 import DashboardSectionCard, { BarChartSkeleton } from "@/components/shared/dashboard/dashboard-section-card";
 
-import { PresentationIcon } from "lucide-react";
+import { UsersIcon } from "lucide-react";
 
 /**
- * Minimum horizontal space reserved per classroom so large datasets
- * scroll horizontally instead of squeezing the bars together.
+ * Minimum horizontal space reserved per school so the bars stay readable
+ * and scroll horizontally instead of squeezing together.
  */
-const MIN_GROUP_WIDTH = 48;
+const MIN_GROUP_WIDTH = 72;
 
 const MAX_TICK_LENGTH = 16;
 
@@ -24,32 +24,23 @@ const chartConfig = {
         label: "الطلاب",
         color: "var(--chart-2)",
     },
-    capacity: {
-        label: "السعة",
-        color: "var(--chart-3)",
-    },
 } satisfies ChartConfig;
 
-type ClassroomOccupancyChartProps = {
-    items?: ClassroomOccupancyItem[];
+type SchoolStudentsChartProps = {
+    items?: SchoolDistributionItem[];
     className?: string;
 };
 
-export default function ClassroomOccupancyChart({ items, className }: ClassroomOccupancyChartProps) {
-    const data = items?.map((item) => ({
-        ...item,
-        label: `${item.grade_level} / ${item.name}`,
-    }));
-
+export default function SchoolStudentsChart({ items, className }: SchoolStudentsChartProps) {
     return (
         <DashboardSectionCard
-            title="توزيع الطلاب حسب الفصول الدراسية"
-            description="عدد الطلاب الموزعين على كل فصل دراسي مقارنةً بسعته الاستيعابية"
-            icon={PresentationIcon}
-            reloadProps={["classroomOccupancy"]}
+            title="توزيع الطلاب حسب المدارس"
+            description="أكبر المدارس في المنظومة من حيث عدد الطلاب المسجلين"
+            icon={UsersIcon}
+            reloadProps={["schoolDistribution"]}
             isLoading={!items}
             isEmpty={items?.length === 0}
-            emptyText="لا توجد فصول دراسية حالياً."
+            emptyText="لا توجد مدارس مسجلة حالياً."
             skeleton={<BarChartSkeleton />}
             className={className}
         >
@@ -57,16 +48,16 @@ export default function ClassroomOccupancyChart({ items, className }: ClassroomO
                 <ChartContainer
                     config={chartConfig}
                     className="aspect-auto h-72 w-full"
-                    style={{ minWidth: (data?.length ?? 0) * MIN_GROUP_WIDTH }}
+                    style={{ minWidth: (items?.length ?? 0) * MIN_GROUP_WIDTH }}
                 >
                     <BarChart
                         accessibilityLayer
-                        data={data}
+                        data={items}
                         margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
                     >
                         <CartesianGrid vertical={false} />
                         <XAxis
-                            dataKey="label"
+                            dataKey="name"
                             reversed
                             tickLine={false}
                             axisLine={false}
@@ -84,13 +75,11 @@ export default function ClassroomOccupancyChart({ items, className }: ClassroomO
                             axisLine={false}
                             tickMargin={8}
                             allowDecimals={false}
-                            width={40}
+                            width={52}
                             tick={{ className: "font-mono" }}
                         />
                         <ChartTooltip content={<ChartTooltipContent />} />
-                        <ChartLegend content={<ChartLegendContent />} />
-                        <Bar dataKey="students" fill="var(--color-students)" maxBarSize={18} />
-                        <Bar dataKey="capacity" fill="var(--color-capacity)" maxBarSize={18} />
+                        <Bar dataKey="students" fill="var(--color-students)" maxBarSize={22} />
                     </BarChart>
                 </ChartContainer>
             </div>

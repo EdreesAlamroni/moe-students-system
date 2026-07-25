@@ -1,4 +1,5 @@
 import * as React from "react"
+
 import * as RechartsPrimitive from "recharts"
 import type { TooltipValueType } from "recharts"
 
@@ -67,6 +68,7 @@ function ChartContainer({
                     className
                 )}
                 {...props}
+                dir="ltr"
             >
                 <ChartStyle id={chartId} config={config} />
                 <RechartsPrimitive.ResponsiveContainer

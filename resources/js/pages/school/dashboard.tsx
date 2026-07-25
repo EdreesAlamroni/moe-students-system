@@ -1,5 +1,12 @@
 import { Head } from '@inertiajs/react';
 
+import type {
+    ClassroomOccupancyItem,
+    DashboardSummary,
+    GradeLevelDistributionItem,
+    NationalityDistributionItem,
+} from '@/types';
+
 import MainContainer from '@/components/ui/structure/main-container';
 
 import ClassroomOccupancyChart from '@/components/features/school/dashboard/classroom-occupancy-chart';
@@ -8,13 +15,6 @@ import GradeLevelDistributionChart from '@/components/features/school/dashboard/
 import NationalityDistributionChart from '@/components/features/school/dashboard/nationality-distribution-chart';
 import QuickInsights from '@/components/features/school/dashboard/quick-insights';
 import SummaryStats from '@/components/features/school/dashboard/summary-stats';
-
-import type {
-    ClassroomOccupancyItem,
-    DashboardSummary,
-    GradeLevelDistributionItem,
-    NationalityDistributionItem,
-} from '@/types';
 
 import { dashboard } from '@/routes/school';
 
@@ -48,10 +48,25 @@ export default function Dashboard({
                     aria-label="الرسوم البيانية"
                     className="grid grid-cols-1 gap-6 xl:grid-cols-5"
                 >
-                    <GenderDistributionChart summary={summary} className="xl:col-span-2" />
-                    <GradeLevelDistributionChart items={gradeLevelDistribution} className="xl:col-span-3" />
-                    <NationalityDistributionChart items={nationalityDistribution} className="xl:col-span-2" />
-                    <ClassroomOccupancyChart items={classroomOccupancy} className="xl:col-span-3" />
+                    <GenderDistributionChart
+                        summary={summary}
+                        className="xl:col-span-2"
+                    />
+
+                    <GradeLevelDistributionChart
+                        items={gradeLevelDistribution}
+                        className="xl:col-span-3"
+                    />
+
+                    <NationalityDistributionChart
+                        items={nationalityDistribution}
+                        className="xl:col-span-2"
+                    />
+
+                    <ClassroomOccupancyChart
+                        items={classroomOccupancy}
+                        className="xl:col-span-3"
+                    />
                 </section>
             </MainContainer>
         </>

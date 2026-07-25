@@ -41,6 +41,8 @@ use Illuminate\Support\Str;
  * @property Carbon|null $deleted_at
  * @property-read EducationMonitor $monitor
  * @property-read EducationServicesOffice|null $office
+ * @property-read int|null $students_count
+ * @property-read int|null $classrooms_count
  */
 #[Guarded(['id'])]
 class School extends Model

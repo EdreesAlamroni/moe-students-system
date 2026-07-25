@@ -2,7 +2,7 @@ import React from "react";
 
 import { Label, Pie, PieChart } from "recharts";
 
-import type { DashboardSummary } from "@/types";
+import type { NationalityDistributionItem } from "@/types";
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
 import type { ChartConfig } from "@/components/ui/display/chart";
@@ -10,40 +10,37 @@ import type { ChartConfig } from "@/components/ui/display/chart";
 import DashboardSectionCard, { DonutChartSkeleton } from "@/components/shared/dashboard/dashboard-section-card";
 import donutCenterLabel from "@/components/shared/dashboard/donut-center-label";
 
-import { VenusAndMarsIcon } from "lucide-react";
+import { FlagIcon } from "lucide-react";
 
-const chartConfig = {
-    males: {
-        label: "الذكور",
-        color: "var(--chart-2)",
-    },
-    females: {
-        label: "الإناث",
-        color: "var(--chart-1)",
-    },
-} satisfies ChartConfig;
-
-type GenderDistributionChartProps = {
-    summary?: DashboardSummary;
+type NationalityDistributionChartProps = {
+    items?: NationalityDistributionItem[];
     className?: string;
 };
 
-export default function GenderDistributionChart({ summary, className }: GenderDistributionChartProps) {
-    const data = summary
-        ? [
-            { key: "males", students: summary.males, fill: "var(--color-males)" },
-            { key: "females", students: summary.females, fill: "var(--color-females)" },
-        ].filter((item) => item.students > 0)
-        : [];
+export default function NationalityDistributionChart({ items, className }: NationalityDistributionChartProps) {
+    const chartConfig = Object.fromEntries(
+        (items ?? []).map((item, index) => [
+            `nationality-${index}`,
+            { label: item.name, color: `var(--chart-${(index % 5) + 1})` },
+        ]),
+    ) satisfies ChartConfig;
+
+    const data = (items ?? []).map((item, index) => ({
+        key: `nationality-${index}`,
+        students: item.students,
+        fill: `var(--color-nationality-${index})`,
+    }));
+
+    const total = data.reduce((sum, item) => sum + item.students, 0);
 
     return (
         <DashboardSectionCard
-            title="توزيع الطلاب حسب الجنس"
-            description="نسبة الذكور والإناث من إجمالي طلاب المدرسة"
-            icon={VenusAndMarsIcon}
-            reloadProps={["summary"]}
-            isLoading={!summary}
-            isEmpty={data.length === 0}
+            title="توزيع الطلاب حسب الجنسية"
+            description="عدد الطلاب من كل جنسية مسجلة في المنظومة"
+            icon={FlagIcon}
+            reloadProps={["nationalityDistribution"]}
+            isLoading={!items}
+            isEmpty={items?.length === 0}
             emptyText="لا يوجد طلاب مسجلون حالياً."
             skeleton={<DonutChartSkeleton />}
             className={className}
@@ -64,9 +61,11 @@ export default function GenderDistributionChart({ summary, className }: GenderDi
                         innerRadius={60}
                         strokeWidth={5}
                     >
-                        <Label content={donutCenterLabel(summary?.students ?? 0, "إجمالي الطلاب")} />
+                        <Label content={donutCenterLabel(total, "إجمالي الطلاب")} />
                     </Pie>
-                    <ChartLegend content={<ChartLegendContent nameKey="key" />} />
+                    <ChartLegend
+                        content={<ChartLegendContent nameKey="key" className="flex-wrap" />}
+                    />
                 </PieChart>
             </ChartContainer>
         </DashboardSectionCard>

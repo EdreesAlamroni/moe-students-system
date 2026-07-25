@@ -58,6 +58,12 @@ class Classroom extends Model
      */
 
     #[Scope]
+    protected function forCurrentAcademicYear(Builder $query): Builder
+    {
+        return $query->where('academic_year_id', '=', AcademicYear::currentId());
+    }
+
+    #[Scope]
     protected function forCurrentSchool(Builder $query): Builder
     {
         $id = auth('school')->user()->organization_id;

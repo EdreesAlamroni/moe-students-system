@@ -1,21 +1,16 @@
+import React from "react";
+
 import { Label, Pie, PieChart } from "recharts";
-
-import {
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent
-    
-} from "@/components/ui/display/chart";
-import type {ChartConfig} from "@/components/ui/display/chart";
-
-import { FlagIcon } from "lucide-react";
 
 import type { NationalityDistributionItem } from "@/types";
 
-import DashboardSectionCard, { DonutChartSkeleton } from "./dashboard-section-card";
-import donutCenterLabel from "./donut-center-label";
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
+import type { ChartConfig } from "@/components/ui/display/chart";
+
+import DashboardSectionCard, { DonutChartSkeleton } from "@/components/shared/dashboard/dashboard-section-card";
+import donutCenterLabel from "@/components/shared/dashboard/donut-center-label";
+
+import { FlagIcon } from "lucide-react";
 
 type NationalityDistributionChartProps = {
     items?: NationalityDistributionItem[];

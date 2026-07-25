@@ -2,18 +2,18 @@ import React from "react";
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
+import type { GradeLevelDistributionItem } from "@/types";
+
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
 import type { ChartConfig } from "@/components/ui/display/chart";
-
-import { GraduationCapIcon } from "lucide-react";
-
-import type { GradeLevelDistributionItem } from "@/types";
 
 import DashboardSectionCard, { BarChartSkeleton } from "@/components/shared/dashboard/dashboard-section-card";
 import horizontalBarTick from "@/components/shared/dashboard/horizontal-bar-tick";
 
+import { GraduationCapIcon } from "lucide-react";
+
 const ROW_HEIGHT = 48;
-const LABEL_WIDTH = 170;
+const LABEL_WIDTH = 160;
 
 const chartConfig = {
     males: {
@@ -35,7 +35,7 @@ export default function GradeLevelDistributionChart({ items, className }: GradeL
     return (
         <DashboardSectionCard
             title="توزيع الطلاب حسب الصفوف الدراسية"
-            description="عدد الطلاب المقيدين في كل صف دراسي للسنة الدراسية الحالية"
+            description="عدد الطلاب المقيدين في كل صف دراسي على مستوى المنظومة للسنة الدراسية الحالية"
             icon={GraduationCapIcon}
             reloadProps={["gradeLevelDistribution"]}
             isLoading={!items}

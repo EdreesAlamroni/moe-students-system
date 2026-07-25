@@ -11,8 +11,8 @@ import EmptyState from "@/components/ui/display/empty-state";
 
 import { Button } from "@/components/ui/actions/button";
 
-import { RefreshCcwIcon  } from "lucide-react";
-import type {LucideIcon} from "lucide-react";
+import { RefreshCcwIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 type DashboardSectionCardProps = {
     title: string;

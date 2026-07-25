@@ -2,7 +2,7 @@ import React from "react";
 
 import { Label, Pie, PieChart } from "recharts";
 
-import type { DashboardSummary } from "@/types";
+import type { AdministrationDashboardSummary } from "@/types";
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
 import type { ChartConfig } from "@/components/ui/display/chart";
@@ -24,7 +24,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 type GenderDistributionChartProps = {
-    summary?: DashboardSummary;
+    summary?: AdministrationDashboardSummary;
     className?: string;
 };
 
@@ -39,7 +39,7 @@ export default function GenderDistributionChart({ summary, className }: GenderDi
     return (
         <DashboardSectionCard
             title="توزيع الطلاب حسب الجنس"
-            description="نسبة الذكور والإناث من إجمالي طلاب المدرسة"
+            description="نسبة الذكور والإناث من إجمالي الطلاب في المنظومة"
             icon={VenusAndMarsIcon}
             reloadProps={["summary"]}
             isLoading={!summary}
