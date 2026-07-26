@@ -10,13 +10,16 @@ use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use App\Http\Controllers\Controller;
 use App\Http\Pipelines\School\CreateEducationalStages;
+use App\Http\Pipelines\School\CreateGradeLevels;
 use App\Http\Pipelines\School\CreateSchoolRecords;
 use App\Http\Requests\Administration\School\StoreRequest;
 use App\Http\Requests\Administration\School\UpdateRequest;
+use App\Http\Resources\Administration\GradeLevelCollection;
 use App\Http\Resources\Administration\SchoolCollection;
 use App\Http\Resources\Administration\SchoolFormResource;
 use App\Http\Resources\Administration\SchoolResource;
 use App\Models\EducationMonitor;
+use App\Models\GradeLevel;
 use App\Models\School;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
@@ -80,6 +83,11 @@ class SchoolController extends Controller
     {
         Gate::authorize('create', School::class);
 
+        $gradeLevels = GradeLevel::query()
+            ->select(['id', 'name', 'educational_stage'])
+            ->ordered()
+            ->get();
+
         return Inertia::render('administration/schools/create', [
             'monitors' => EducationMonitor::listWithOffices(),
             'types' => SchoolType::optionsArray(),
@@ -88,6 +96,9 @@ class SchoolController extends Controller
             'branchTypes' => SchoolBranchType::optionsArray(),
             'buildingTypes' => SchoolBuildingType::optionsArray(),
             'educationalStages' => SchoolEducationalStageEnum::optionsArray(),
+            'gradeLevels' => ResourcePayloadBuilder::make(
+                GradeLevelCollection::make($gradeLevels),
+            ),
             'schoolPrivateType' => SchoolType::PRIVATE->value,
             'schoolDualAcademicPeriod' => SchoolAcademicPeriod::DUAL_PERIOD->value,
         ]);
@@ -103,6 +114,7 @@ class SchoolController extends Controller
                 ->through([
                     CreateSchoolRecords::class,
                     CreateEducationalStages::class,
+                    CreateGradeLevels::class,
                 ])
                 ->thenReturn();
         });
@@ -126,9 +138,18 @@ class SchoolController extends Controller
             'students',
         ]);
 
+        $gradeLevels = $school->gradeLevels()
+            ->select(['grade_levels.id', 'grade_levels.name', 'grade_levels.educational_stage'])
+            ->withCount(['students'])
+            ->ordered()
+            ->get();
+
         return Inertia::render('administration/schools/show', [
             'school' => ResourcePayloadBuilder::make(
                 SchoolResource::make($school),
+            ),
+            'gradeLevels' => ResourcePayloadBuilder::make(
+                GradeLevelCollection::make($gradeLevels),
             ),
             ...ModelAbilityMap::make($school, ['update', 'delete']),
         ]);

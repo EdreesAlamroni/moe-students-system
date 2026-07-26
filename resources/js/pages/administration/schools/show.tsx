@@ -2,15 +2,18 @@ import React from 'react'
 
 import { Head, Link } from "@inertiajs/react";
 
-import type { CanPermissions, School } from "@/types";
+import type { CanPermissions, GradeLevel, School } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import ActionsSection from "@/components/ui/structure/actions-section";
 import { StatCardsSection } from "@/components/ui/display/stat-card";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
+import { Card, CardContent, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 import { DetailField, DetailFields } from "@/components/ui/display/detail-field";
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
+
+import { Table, TableBody, TableCell, TableCellNullableValue, TableHead, TableHeader, TableRow } from "@/components/ui/display/table";
+import EmptyState from "@/components/ui/display/empty-state";
 
 import { Button } from "@/components/ui/actions/button";
 import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";
@@ -21,11 +24,12 @@ import { destroy, edit, index, show } from "@/routes/administration/schools";
 
 type PageProps = {
     school: School;
+    gradeLevels: GradeLevel[];
     canAny: boolean;
     can: CanPermissions;
 }
 
-export default function Show({ school, canAny, can }: PageProps) {
+export default function Show({ school, gradeLevels, canAny, can }: PageProps) {
     const isPrivate = school.is_private === true;
     const hasOffice = !!school.office;
 
@@ -149,6 +153,50 @@ export default function Show({ school, canAny, can }: PageProps) {
                                 </DetailField>
                             </DetailFields>
                         </CardContent>
+                    </Card>
+                </section>
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <GraduationCapIcon />
+                                <div className="flex items-center gap-x-1.5">
+                                    <span>الصفوف الدراسية</span>
+                                    <span className="font-mono">({gradeLevels.length})</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        {gradeLevels.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">الاسم</TableHead>
+                                            <TableHead scope="col">المرحلة الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {gradeLevels.map((gradeLevel: GradeLevel, index: number) => (
+                                            <TableRow key={gradeLevel.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{gradeLevel.name}</TableCell>
+                                                <TableCell>{gradeLevel.educational_stage.name}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={gradeLevel.students_count} className="font-mono" fallback="0" />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState />
+                            </CardContent>
+                        )}
                     </Card>
                 </section>
             </MainContainer>

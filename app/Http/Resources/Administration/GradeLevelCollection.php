@@ -15,6 +15,7 @@ class GradeLevelCollection extends DirectModelCollection
             'uuid' => $gradeLevel->uuid,
             'name' => $gradeLevel->name,
             'educational_stage' => $gradeLevel->educational_stage->toArray(),
+            'students_count' => (int) ($gradeLevel->students_count ?? 0),
         ])->all();
     }
 }

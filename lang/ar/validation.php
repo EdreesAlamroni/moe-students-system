@@ -183,6 +183,9 @@ return [
         'classroom_id' => [
             'different' => 'يجب اختيار فصل دراسي مختلف عن الفصل الحالي.',
         ],
+        'grade_levels' => [
+            'must_belong_to_educational_stages' => 'يجب أن تنتمي الصفوف الدراسية المحددة إلى المراحل الدراسية المختارة.',
+        ],
     ],
 
     /*
@@ -279,6 +282,18 @@ return [
         'status' => 'الحالة',
         'rating' => 'التقدير',
         'grade_level_ids' => 'الصفوف الدراسية',
+        'grade_levels' => 'الصفوف الدراسية',
+        'grade_levels.*' => 'الصف الدراسي',
+        'grade_levels_morning' => 'الصفوف الدراسية (الفترة الصباحية)',
+        'grade_levels_morning.*' => 'الصف الدراسي (الفترة الصباحية)',
+        'grade_levels_evening' => 'الصفوف الدراسية (الفترة المسائية)',
+        'grade_levels_evening.*' => 'الصف الدراسي (الفترة المسائية)',
+        'educational_stages' => 'المراحل الدراسية',
+        'educational_stages.*' => 'المرحلة الدراسية',
+        'educational_stages_morning' => 'المراحل الدراسية (الفترة الصباحية)',
+        'educational_stages_morning.*' => 'المرحلة الدراسية (الفترة الصباحية)',
+        'educational_stages_evening' => 'المراحل الدراسية (الفترة المسائية)',
+        'educational_stages_evening.*' => 'المرحلة الدراسية (الفترة المسائية)',
     ],
 
     'values' => [],

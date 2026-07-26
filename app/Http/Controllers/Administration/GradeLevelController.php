@@ -27,6 +27,7 @@ class GradeLevelController extends Controller
                 'created_at',
                 'deleted_at',
             ])
+            ->withCount(['students'])
             ->allowedFilters(
                 'name',
                 AllowedFilter::exact('educational_stage'),
