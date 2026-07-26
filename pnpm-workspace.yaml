@@ -6,3 +6,6 @@ allowBuilds:
 
 publicHoistPattern:
   - '@inertiajs/core'
+  - '@types/*'
+  - react
+  - react-dom
