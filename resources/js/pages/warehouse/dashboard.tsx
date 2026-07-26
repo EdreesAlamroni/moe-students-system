@@ -54,21 +54,23 @@ export default function Dashboard({
 
                 <section
                     aria-label="الرسوم البيانية"
-                    className="grid grid-cols-1 gap-6 xl:grid-cols-5"
+                    className="grid grid-cols-1 gap-6 xl:grid-cols-4"
                 >
-                    <DistributionStatusChart
-                        summary={summary}
-                        className="xl:col-span-2"
-                    />
+                    <div className="grid grid-cols-1 gap-6 xl:grid-cols-5 col-span-full">
+                        <DistributionStatusChart
+                            summary={summary}
+                            className="xl:col-span-2"
+                        />
 
-                    <EducationMonitorStudentsChart
-                        items={educationMonitorDistribution}
-                        className="xl:col-span-3"
-                    />
+                        <EducationMonitorStudentsChart
+                            items={educationMonitorDistribution}
+                            className="xl:col-span-3"
+                        />
+                    </div>
 
                     <EducationMonitorProgressChart
                         items={educationMonitorDistribution}
-                        className="xl:col-span-5"
+                        className="xl:col-span-full"
                     />
 
                     <SchoolStudentsChart
@@ -78,20 +80,20 @@ export default function Dashboard({
 
                     <SchoolProgressChart
                         items={schoolDistribution}
-                        className="xl:col-span-3"
+                        className="xl:col-span-2"
                     />
 
                     {/* <AcademicYearTrendsChart
                         items={academicYearTrends}
-                        className="xl:col-span-5"
+                        className="xl:col-span-full"
                     /> */}
 
                     <RecentActivities
                         items={recentActivities}
-                        className="xl:col-span-5"
+                        className="xl:col-span-full"
                     />
                 </section>
-            </MainContainer>
+            </MainContainer >
         </>
     );
 }

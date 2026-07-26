@@ -48,16 +48,11 @@ export default function Dashboard({
 
                 <section
                     aria-label="الرسوم البيانية"
-                    className="grid grid-cols-1 gap-6 xl:grid-cols-5"
+                    className="grid grid-cols-1 gap-6 xl:grid-cols-4"
                 >
                     <GenderDistributionChart
                         summary={summary}
                         className="xl:col-span-2"
-                    />
-
-                    <GradeLevelDistributionChart
-                        items={gradeLevelDistribution}
-                        className="xl:col-span-3"
                     />
 
                     <NationalityDistributionChart
@@ -65,9 +60,14 @@ export default function Dashboard({
                         className="xl:col-span-2"
                     />
 
+                    <GradeLevelDistributionChart
+                        items={gradeLevelDistribution}
+                        className="xl:col-span-full"
+                    />
+
                     <ClassroomOccupancyChart
                         items={classroomOccupancy}
-                        className="xl:col-span-3"
+                        className="xl:col-span-full"
                     />
                 </section>
             </MainContainer>
