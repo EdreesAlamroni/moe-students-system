@@ -11,6 +11,7 @@ use App\Enums\SchoolType;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,10 +40,28 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read EloquentCollection<int, User> $users
  * @property-read EducationMonitor $monitor
  * @property-read EducationServicesOffice|null $office
+ * @property-read Collection<int, SchoolEducationalStage> $educationalStages
+ * @property-read EloquentCollection<int, GradeLevel> $allGradeLevels
+ * @property-read EloquentCollection<int, GradeLevel> $gradeLevels
+ * @property-read EloquentCollection<int, Classroom> $allClassrooms
+ * @property-read EloquentCollection<int, Classroom> $classrooms
+ * @property-read EloquentCollection<int, Student> $allStudents
+ * @property-read EloquentCollection<int, Student> $students
+ * @property-read EloquentCollection<int, StudentEnrollment> $allEnrollments
+ * @property-read EloquentCollection<int, StudentEnrollment> $enrollments
+ * @property-read int|null $educational_stages_count
+ * @property-read int|null $all_grade_levels_count
+ * @property-read int|null $grade_levels_count
+ * @property-read int|null $all_classrooms_count
+ * @property-read int|null $classrooms_count
+ * @property-read int|null $all_students_count
  * @property-read int|null $students_count
  * @property-read int|null $classrooms_count
+ * @property-read int|null $all_enrollments_count
+ * @property-read int|null $enrollments_count
  */
 #[Guarded(['id'])]
 class School extends Model
@@ -183,6 +202,8 @@ class School extends Model
 
     /**
      * Get all grade levels associated with the school across all academic years.
+     *
+     * @return BelongsToMany<GradeLevel, $this, GradeLevelSchool>
      */
     public function allGradeLevels(): BelongsToMany
     {
@@ -194,6 +215,8 @@ class School extends Model
 
     /**
      * Get the grade levels associated with the school for the current academic year.
+     *
+     * @return BelongsToMany<GradeLevel, $this, GradeLevelSchool>
      */
     public function gradeLevels(): BelongsToMany
     {

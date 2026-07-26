@@ -168,6 +168,8 @@ class GradeLevel extends Model
 
     /**
      * Get all schools associated with the grade level across all academic years.
+     *
+     * @return BelongsToMany<School, $this, GradeLevelSchool>
      */
     public function allSchools(): BelongsToMany
     {
@@ -179,6 +181,8 @@ class GradeLevel extends Model
 
     /**
      * Get the schools associated with the grade level for the current academic year.
+     *
+     * @return BelongsToMany<School, $this, GradeLevelSchool>
      */
     public function schools(): BelongsToMany
     {
