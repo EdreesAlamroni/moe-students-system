@@ -10,10 +10,12 @@ use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use App\Models\AcademicYear;
 use App\Models\EducationServicesOffice;
+use App\Models\GradeLevel;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreRequest extends FormRequest
 {
@@ -149,6 +151,77 @@ class StoreRequest extends FormRequest
             'educational_stages_evening.*' => [
                 Rule::enum(SchoolEducationalStageEnum::class),
             ],
+            'grade_levels' => [
+                'sometimes',
+                'nullable',
+                Rule::requiredIf(function () {
+                    return ! $this->isDualPeriod();
+                }),
+                'array',
+                'min:1',
+            ],
+            'grade_levels.*' => [
+                'integer',
+                'distinct',
+                Rule::exists(GradeLevel::class, 'id'),
+            ],
+            'grade_levels_morning' => [
+                'sometimes',
+                'nullable',
+                Rule::requiredIf(function () {
+                    return $this->isDualPeriod();
+                }),
+                'array',
+                'min:1',
+            ],
+            'grade_levels_morning.*' => [
+                'integer',
+                'distinct',
+                Rule::exists(GradeLevel::class, 'id'),
+            ],
+            'grade_levels_evening' => [
+                'sometimes',
+                'nullable',
+                Rule::requiredIf(function () {
+                    return $this->isDualPeriod();
+                }),
+                'array',
+                'min:1',
+            ],
+            'grade_levels_evening.*' => [
+                'integer',
+                'distinct',
+                Rule::exists(GradeLevel::class, 'id'),
+            ],
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                if (! $this->isDualPeriod()) {
+                    $this->ensureGradeLevelsBelongToStages(
+                        $validator,
+                        'grade_levels',
+                        'educational_stages',
+                    );
+
+                    return;
+                }
+
+                $this->ensureGradeLevelsBelongToStages(
+                    $validator,
+                    'grade_levels_morning',
+                    'educational_stages_morning',
+                );
+
+                $this->ensureGradeLevelsBelongToStages(
+                    $validator,
+                    'grade_levels_evening',
+                    'educational_stages_evening',
+                );
+            },
         ];
     }
 
@@ -181,6 +254,9 @@ class StoreRequest extends FormRequest
                 'educational_stages' => [
                     $academicPeriod => $this->buildEducationalStages('educational_stages'),
                 ],
+                'grade_levels' => [
+                    $academicPeriod => $this->buildGradeLevels('grade_levels'),
+                ],
             ];
 
             return is_null($key) ? $attributes : ($attributes[$key] ?? []);
@@ -210,6 +286,10 @@ class StoreRequest extends FormRequest
                 $morningPeriod => $this->buildEducationalStages('educational_stages_morning'),
                 $eveningPeriod => $this->buildEducationalStages('educational_stages_evening'),
             ],
+            'grade_levels' => [
+                $morningPeriod => $this->buildGradeLevels('grade_levels_morning'),
+                $eveningPeriod => $this->buildGradeLevels('grade_levels_evening'),
+            ],
         ];
 
         return is_null($key) ? $attributes : ($attributes[$key] ?? []);
@@ -219,14 +299,19 @@ class StoreRequest extends FormRequest
     {
         $educationalStages = null;
         $educationalStagesMorning = $educationalStagesEvening = null;
+        $gradeLevels = null;
+        $gradeLevelsMorning = $gradeLevelsEvening = null;
 
         if (! $this->isDualPeriod()) {
-            $educationalStages = $this->decodeEducationalStages('educational_stages');
+            $educationalStages = $this->decodeArrayInput('educational_stages');
+            $gradeLevels = $this->decodeArrayInput('grade_levels');
         }
 
         if ($this->isDualPeriod()) {
-            $educationalStagesMorning = $this->decodeEducationalStages('educational_stages_morning');
-            $educationalStagesEvening = $this->decodeEducationalStages('educational_stages_evening');
+            $educationalStagesMorning = $this->decodeArrayInput('educational_stages_morning');
+            $educationalStagesEvening = $this->decodeArrayInput('educational_stages_evening');
+            $gradeLevelsMorning = $this->decodeArrayInput('grade_levels_morning');
+            $gradeLevelsEvening = $this->decodeArrayInput('grade_levels_evening');
         }
 
         $usesSharedSchoolName = $this->usesSharedSchoolName();
@@ -249,6 +334,10 @@ class StoreRequest extends FormRequest
             'educational_stages' => $educationalStages,
             'educational_stages_morning' => $educationalStagesMorning,
             'educational_stages_evening' => $educationalStagesEvening,
+
+            'grade_levels' => $gradeLevels,
+            'grade_levels_morning' => $gradeLevelsMorning,
+            'grade_levels_evening' => $gradeLevelsEvening,
         ]);
     }
 
@@ -272,7 +361,7 @@ class StoreRequest extends FormRequest
         return $this->isDualPeriod() && ! $this->usesSharedSchoolName();
     }
 
-    protected function decodeEducationalStages(string $key): ?array
+    protected function decodeArrayInput(string $key): ?array
     {
         $value = $this->input($key);
 
@@ -305,6 +394,56 @@ class StoreRequest extends FormRequest
         }
 
         return $stages;
+    }
+
+    /**
+     * @return array<int, array{academic_year_id: int}> Grade level IDs keyed by ID, each with pivot attributes for attach.
+     */
+    protected function buildGradeLevels(string $key): array
+    {
+        $academicYearId = AcademicYear::currentId();
+
+        if (is_null($academicYearId)) {
+            return [];
+        }
+
+        $gradeLevels = [];
+
+        foreach (array_unique(array_map('intval', $this->input($key, []))) as $gradeLevelId) {
+            $gradeLevels[$gradeLevelId] = [
+                'academic_year_id' => $academicYearId,
+            ];
+        }
+
+        return $gradeLevels;
+    }
+
+    protected function ensureGradeLevelsBelongToStages(Validator $validator, string $gradeLevelsKey, string $stagesKey): void
+    {
+        $gradeLevelIds = array_values(
+            array_unique(array_map(
+                'intval',
+                $this->input($gradeLevelsKey, []) ?? [],
+            ))
+        );
+
+        $stages = $this->input($stagesKey, []) ?? [];
+
+        if ($gradeLevelIds === [] || $stages === []) {
+            return;
+        }
+
+        $invalidExists = GradeLevel::query()
+            ->whereIn('id', $gradeLevelIds)
+            ->whereNotIn('educational_stage', $stages)
+            ->exists();
+
+        if ($invalidExists) {
+            $validator->errors()->add(
+                $gradeLevelsKey,
+                __('validation.custom.grade_levels.must_belong_to_educational_stages'),
+            );
+        }
     }
 
     private function currentOfficeId(): ?int

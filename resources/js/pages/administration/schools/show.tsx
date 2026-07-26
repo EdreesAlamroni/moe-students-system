@@ -8,12 +8,13 @@ import MainContainer from "@/components/ui/structure/main-container";
 import ActionsSection from "@/components/ui/structure/actions-section";
 import { StatCardsSection } from "@/components/ui/display/stat-card";
 import { Card, CardContent, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
+
 import { DetailField, DetailFields } from "@/components/ui/display/detail-field";
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
-
 import { Table, TableBody, TableCell, TableCellNullableValue, TableHead, TableHeader, TableRow } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
+
 
 import { Button } from "@/components/ui/actions/button";
 import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\GradeLevelEnum;
 use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolBranchType;
 use App\Enums\SchoolBuildingType;
@@ -10,6 +11,7 @@ use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\EducationServicesOffice;
+use App\Models\GradeLevel;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
 use App\Models\User;
@@ -61,19 +63,42 @@ function createEducationServicesOfficeSchoolManager(EducationServicesOffice $off
     return $user;
 }
 
+if (! function_exists('createGradeLevelForStage')) {
+    function createGradeLevelForStage(SchoolEducationalStageEnum $stage): GradeLevel
+    {
+        $grade = collect(GradeLevelEnum::cases())
+            ->first(fn (GradeLevelEnum $case): bool => $case->stage() === $stage);
+
+        return GradeLevel::factory()->create([
+            'code' => $grade->value,
+            'name' => $grade->label(),
+            'educational_stage' => $grade->stage(),
+            'order' => $grade->order(),
+        ]);
+    }
+}
+
 /**
  * @param  array<string, mixed>  $overrides
  * @return array<string, mixed>
  */
 function educationServicesOfficePublicSchoolPayload(array $overrides = []): array
 {
-    return array_merge([
+    $payload = [
         'type' => SchoolType::PUBLIC->value,
         'academic_period' => SchoolAcademicPeriod::MORNING->value,
         'name' => 'مدرسة الشهداء',
         'students_gender' => SchoolStudentsGender::MIXED->value,
         'educational_stages' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
-    ], $overrides);
+    ];
+
+    if (! array_key_exists('grade_levels', $overrides)) {
+        $payload['grade_levels'] = [
+            createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION)->id,
+        ];
+    }
+
+    return array_merge($payload, $overrides);
 }
 
 beforeEach(function () {
@@ -161,6 +186,7 @@ test('authenticated users can visit the create school page', function () {
             ->has('types')
             ->has('academicPeriods')
             ->has('studentsGender')
+            ->has('gradeLevels')
             ->where('schoolPrivateType', SchoolType::PRIVATE->value)
             ->where('schoolDualAcademicPeriod', SchoolAcademicPeriod::DUAL_PERIOD->value)
         );
@@ -169,9 +195,12 @@ test('authenticated users can visit the create school page', function () {
 test('authenticated users can store a public single-period school', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
+    $gradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
 
     $this->actingAs($user, 'education_services_office')
-        ->post(route('education-services-office.schools.store'), educationServicesOfficePublicSchoolPayload())
+        ->post(route('education-services-office.schools.store'), educationServicesOfficePublicSchoolPayload([
+            'grade_levels' => [$gradeLevel->id],
+        ]))
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 1);
@@ -186,6 +215,12 @@ test('authenticated users can store a public single-period school', function () 
     $this->assertDatabaseHas('school_educational_stages', [
         'school_id' => $school->id,
         'stage' => SchoolEducationalStageEnum::PRIMARY_EDUCATION->value,
+    ]);
+
+    $this->assertDatabaseHas('grade_level_school', [
+        'school_id' => $school->id,
+        'grade_level_id' => $gradeLevel->id,
+        'academic_year_id' => AcademicYear::currentId(),
     ]);
 });
 
@@ -210,6 +245,8 @@ test('store associates the school with the current office even if another office
 test('authenticated users can store a dual-period school as two records', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
+    $primaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
+    $secondaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::SECONDARY_EDUCATION);
 
     $payload = [
         'type' => SchoolType::PUBLIC->value,
@@ -220,6 +257,8 @@ test('authenticated users can store a dual-period school as two records', functi
         'students_gender_evening' => SchoolStudentsGender::GIRLS->value,
         'educational_stages_morning' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
         'educational_stages_evening' => [SchoolEducationalStageEnum::SECONDARY_EDUCATION->value],
+        'grade_levels_morning' => [$primaryGradeLevel->id],
+        'grade_levels_evening' => [$secondaryGradeLevel->id],
     ];
 
     $this->actingAs($user, 'education_services_office')
@@ -242,6 +281,18 @@ test('authenticated users can store a dual-period school as two records', functi
     ]);
 
     expect(SchoolEducationalStage::query()->count())->toBe(2);
+
+    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
+    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+
+    $this->assertDatabaseHas('grade_level_school', [
+        'school_id' => $morningSchool->id,
+        'grade_level_id' => $primaryGradeLevel->id,
+    ]);
+    $this->assertDatabaseHas('grade_level_school', [
+        'school_id' => $eveningSchool->id,
+        'grade_level_id' => $secondaryGradeLevel->id,
+    ]);
 });
 
 test('private school requires company name and branch and building types', function () {
@@ -253,6 +304,32 @@ test('private school requires company name and branch and building types', funct
             'type' => SchoolType::PRIVATE->value,
         ]))
         ->assertSessionHasErrors(['educational_company_name', 'branch_type', 'building_type']);
+});
+
+test('grade levels are required when creating a school', function () {
+    $office = EducationServicesOffice::factory()->create();
+    $user = createEducationServicesOfficeSchoolManager($office);
+
+    $this->actingAs($user, 'education_services_office')
+        ->post(route('education-services-office.schools.store'), educationServicesOfficePublicSchoolPayload([
+            'grade_levels' => null,
+        ]))
+        ->assertSessionHasErrors('grade_levels');
+});
+
+test('selected grade levels must belong to the selected educational stages', function () {
+    $office = EducationServicesOffice::factory()->create();
+    $user = createEducationServicesOfficeSchoolManager($office);
+    $secondaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::SECONDARY_EDUCATION);
+
+    $this->actingAs($user, 'education_services_office')
+        ->post(route('education-services-office.schools.store'), educationServicesOfficePublicSchoolPayload([
+            'educational_stages' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
+            'grade_levels' => [$secondaryGradeLevel->id],
+        ]))
+        ->assertSessionHasErrors([
+            'grade_levels' => __('validation.custom.grade_levels.must_belong_to_educational_stages'),
+        ]);
 });
 
 test('authenticated users can visit the show school page', function () {

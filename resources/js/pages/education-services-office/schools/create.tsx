@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
-import type { Enum } from "@/types";
+import type { Enum, GradeLevel } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
@@ -35,8 +35,33 @@ type PageProps = {
     branchTypes: Enum[];
     buildingTypes: Enum[];
     educationalStages: Enum[];
+    gradeLevels: GradeLevel[];
     schoolPrivateType: string;
     schoolDualAcademicPeriod: string;
+}
+
+function filterGradeLevelsByStages(
+    gradeLevels: GradeLevel[],
+    stages: string[],
+): GradeLevel[] {
+    if (stages.length === 0) {
+        return [];
+    }
+
+    return gradeLevels.filter((gradeLevel) => stages.includes(gradeLevel.educational_stage.id));
+}
+
+function pruneGradeLevelSelections(
+    selectedIds: string[],
+    availableGradeLevels: GradeLevel[],
+): string[] {
+    if (selectedIds.length === 0) {
+        return selectedIds;
+    }
+
+    const validIds = new Set(availableGradeLevels.map((gradeLevel) => gradeLevel.id.toString()));
+
+    return selectedIds.filter((id) => validIds.has(id));
 }
 
 export default function Create({
@@ -46,6 +71,7 @@ export default function Create({
     branchTypes,
     buildingTypes,
     educationalStages,
+    gradeLevels,
     schoolPrivateType,
     schoolDualAcademicPeriod,
 }: PageProps) {
@@ -55,9 +81,48 @@ export default function Create({
     const [selectedStages, setSelectedStages] = useState<string[]>([]);
     const [selectedStagesMorning, setSelectedStagesMorning] = useState<string[]>([]);
     const [selectedStagesEvening, setSelectedStagesEvening] = useState<string[]>([]);
+    const [selectedGradeLevels, setSelectedGradeLevels] = useState<string[]>([]);
+    const [selectedGradeLevelsMorning, setSelectedGradeLevelsMorning] = useState<string[]>([]);
+    const [selectedGradeLevelsEvening, setSelectedGradeLevelsEvening] = useState<string[]>([]);
 
     const isPrivate = selectedType === schoolPrivateType;
     const isDualPeriod = selectedAcademicPeriod === schoolDualAcademicPeriod;
+
+    const availableGradeLevels = useMemo(
+        () => filterGradeLevelsByStages(gradeLevels, selectedStages),
+        [gradeLevels, selectedStages],
+    );
+
+    const availableGradeLevelsMorning = useMemo(
+        () => filterGradeLevelsByStages(gradeLevels, selectedStagesMorning),
+        [gradeLevels, selectedStagesMorning],
+    );
+
+    const availableGradeLevelsEvening = useMemo(
+        () => filterGradeLevelsByStages(gradeLevels, selectedStagesEvening),
+        [gradeLevels, selectedStagesEvening],
+    );
+
+    const handleStagesChange = (stages: string[]) => {
+        setSelectedStages(stages);
+        setSelectedGradeLevels((current) =>
+            pruneGradeLevelSelections(current, filterGradeLevelsByStages(gradeLevels, stages)),
+        );
+    };
+
+    const handleStagesMorningChange = (stages: string[]) => {
+        setSelectedStagesMorning(stages);
+        setSelectedGradeLevelsMorning((current) =>
+            pruneGradeLevelSelections(current, filterGradeLevelsByStages(gradeLevels, stages)),
+        );
+    };
+
+    const handleStagesEveningChange = (stages: string[]) => {
+        setSelectedStagesEvening(stages);
+        setSelectedGradeLevelsEvening((current) =>
+            pruneGradeLevelSelections(current, filterGradeLevelsByStages(gradeLevels, stages)),
+        );
+    };
 
     return (
         <>
@@ -77,9 +142,14 @@ export default function Create({
                                     <input type="hidden" name="same_school_name" value={sameSchoolName ? "1" : "0"} />
                                     <input type="hidden" name="educational_stages_morning" value={JSON.stringify(selectedStagesMorning)} />
                                     <input type="hidden" name="educational_stages_evening" value={JSON.stringify(selectedStagesEvening)} />
+                                    <input type="hidden" name="grade_levels_morning" value={JSON.stringify(selectedGradeLevelsMorning)} />
+                                    <input type="hidden" name="grade_levels_evening" value={JSON.stringify(selectedGradeLevelsEvening)} />
                                 </>
                             ) : (
-                                <input type="hidden" name="educational_stages" value={JSON.stringify(selectedStages)} />
+                                <>
+                                    <input type="hidden" name="educational_stages" value={JSON.stringify(selectedStages)} />
+                                    <input type="hidden" name="grade_levels" value={JSON.stringify(selectedGradeLevels)} />
+                                </>
                             )}
 
                             <section>
@@ -246,11 +316,28 @@ export default function Create({
                                                             id="educational_stages"
                                                             options={educationalStages}
                                                             defaultValue={selectedStages}
-                                                            onValueChange={setSelectedStages}
+                                                            onValueChange={handleStagesChange}
                                                             placeholder="اختر المراحل الدراسية"
                                                             aria-invalid={!!errors.educational_stages}
                                                         />
                                                         <InputError message={errors.educational_stages} />
+                                                    </Field>
+
+                                                    <Field className="col-span-full">
+                                                        <Label htmlFor="grade_levels" hasError={!!errors.grade_levels} required>
+                                                            الصفوف الدراسية
+                                                        </Label>
+                                                        <MultiSelect
+                                                            id="grade_levels"
+                                                            options={availableGradeLevels}
+                                                            defaultValue={selectedGradeLevels}
+                                                            onValueChange={setSelectedGradeLevels}
+                                                            placeholder="اختر الصفوف الدراسية"
+                                                            emptyPlaceholder="يرجى اختيار مرحلة دراسية واحدة أو أكثر أولاً"
+                                                            disabled={selectedStages.length === 0}
+                                                            aria-invalid={!!errors.grade_levels}
+                                                        />
+                                                        <InputError message={errors.grade_levels} />
                                                     </Field>
                                                 </>
                                             ) : (
@@ -380,7 +467,7 @@ export default function Create({
                                                             id="educational_stages_morning"
                                                             options={educationalStages}
                                                             defaultValue={selectedStagesMorning}
-                                                            onValueChange={setSelectedStagesMorning}
+                                                            onValueChange={handleStagesMorningChange}
                                                             placeholder="اختر المراحل الدراسية"
                                                             aria-invalid={!!errors.educational_stages_morning}
                                                         />
@@ -396,11 +483,47 @@ export default function Create({
                                                             id="educational_stages_evening"
                                                             options={educationalStages}
                                                             defaultValue={selectedStagesEvening}
-                                                            onValueChange={setSelectedStagesEvening}
+                                                            onValueChange={handleStagesEveningChange}
                                                             placeholder="اختر المراحل الدراسية"
                                                             aria-invalid={!!errors.educational_stages_evening}
                                                         />
                                                         <InputError message={errors.educational_stages_evening} />
+                                                    </Field>
+
+                                                    <Field>
+                                                        <Label htmlFor="grade_levels_morning" hasError={!!errors.grade_levels_morning} required>
+                                                            <span>الصفوف الدراسية</span>
+                                                            <span className="text-muted-foreground ms-1.5">( الفترة الصباحية )</span>
+                                                        </Label>
+                                                        <MultiSelect
+                                                            id="grade_levels_morning"
+                                                            options={availableGradeLevelsMorning}
+                                                            defaultValue={selectedGradeLevelsMorning}
+                                                            onValueChange={setSelectedGradeLevelsMorning}
+                                                            placeholder="اختر الصفوف الدراسية"
+                                                            emptyPlaceholder="يرجى اختيار مرحلة دراسية واحدة أو أكثر أولاً"
+                                                            disabled={selectedStagesMorning.length === 0}
+                                                            aria-invalid={!!errors.grade_levels_morning}
+                                                        />
+                                                        <InputError message={errors.grade_levels_morning} />
+                                                    </Field>
+
+                                                    <Field>
+                                                        <Label htmlFor="grade_levels_evening" hasError={!!errors.grade_levels_evening} required>
+                                                            <span>الصفوف الدراسية</span>
+                                                            <span className="text-muted-foreground ms-1.5">( الفترة المسائية )</span>
+                                                        </Label>
+                                                        <MultiSelect
+                                                            id="grade_levels_evening"
+                                                            options={availableGradeLevelsEvening}
+                                                            defaultValue={selectedGradeLevelsEvening}
+                                                            onValueChange={setSelectedGradeLevelsEvening}
+                                                            placeholder="اختر الصفوف الدراسية"
+                                                            emptyPlaceholder="يرجى اختيار مرحلة دراسية واحدة أو أكثر أولاً"
+                                                            disabled={selectedStagesEvening.length === 0}
+                                                            aria-invalid={!!errors.grade_levels_evening}
+                                                        />
+                                                        <InputError message={errors.grade_levels_evening} />
                                                     </Field>
                                                 </>
                                             )}
