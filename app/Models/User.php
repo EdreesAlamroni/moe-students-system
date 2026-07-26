@@ -179,6 +179,16 @@ class User extends Authenticatable
         return ! $this->request_state->equals(Approved::class);
     }
 
+    public function hasOrganization(): bool
+    {
+        return $this->organization_id !== null && $this->organization_type !== null;
+    }
+
+    public function belongsToDeletedOrganization(): bool
+    {
+        return $this->hasOrganization() && $this->organization()->onlyTrashed()->exists();
+    }
+
     /**
      * Typed organizational context for the attached organization morph.
      *

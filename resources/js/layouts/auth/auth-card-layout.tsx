@@ -24,7 +24,7 @@ export default function AuthCardLayout({
                     href={welcome.url()}
                     className="flex items-center gap-2 self-center font-medium"
                 >
-                    <div className="flex h-24 w-24 items-center justify-center md:h-28 md:w-28">
+                    <div className="flex h-28 w-36 items-center justify-center md:h-32 md:w-40">
                         <AppLogoIcon className="size-auto fill-current text-black" />
                     </div>
                 </Link>
@@ -39,6 +39,14 @@ export default function AuthCardLayout({
                             {children}
                         </CardContent>
                     </Card>
+
+
+                    <Link
+                        href={welcome.url()}
+                        className="self-center text-sm text-foreground hover:underline hover:underline-offset-2"
+                    >
+                        العودة إلى الرئيسية
+                    </Link>
                 </div>
             </div>
         </div>

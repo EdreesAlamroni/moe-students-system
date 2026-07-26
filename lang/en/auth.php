@@ -18,6 +18,7 @@ return [
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
     'deactivated' => 'This account has been deactivated. Please contact an administrator.',
     'not_approved' => 'This account has not been approved yet.',
+    'organization_deleted' => 'Your organization has been deactivated. Please contact an administrator.',
     'username_required' => 'The username field is required.',
     'password_required' => 'The password field is required.',
 

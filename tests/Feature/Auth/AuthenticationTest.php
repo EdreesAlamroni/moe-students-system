@@ -2,6 +2,7 @@
 
 use App\Enums\AuthPage;
 use App\Enums\UserScope;
+use App\Models\EducationMonitor;
 use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
 use App\ModelStates\User\State\Deactivated;
@@ -88,6 +89,25 @@ test('pending users cannot authenticate', function () {
     ])->assertSessionHasErrors('username');
 
     $this->assertGuest('administration');
+});
+
+test('users with a deleted organization cannot authenticate', function () {
+    $monitor = EducationMonitor::factory()->create();
+    $user = User::factory()->withScope(UserScope::EDUCATION_MONITOR)->create([
+        'organization_type' => EducationMonitor::class,
+        'organization_id' => $monitor->id,
+    ]);
+
+    $monitor->delete();
+
+    $this->post(route('education-monitor.login'), [
+        'username' => $user->username,
+        'password' => 'password',
+    ])->assertSessionHasErrors([
+        'username' => __('auth.organization_deleted'),
+    ]);
+
+    $this->assertGuest('education_monitor');
 });
 
 test('users with must change password are redirected to change password', function () {

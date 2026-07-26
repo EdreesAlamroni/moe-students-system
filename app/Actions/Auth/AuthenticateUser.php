@@ -45,6 +45,14 @@ class AuthenticateUser
             ]);
         }
 
+        if ($user->belongsToDeletedOrganization()) {
+            $this->recordFailedAttempt($username, $ip);
+
+            throw ValidationException::withMessages([
+                'username' => __('auth.organization_deleted'),
+            ]);
+        }
+
         if (! Auth::guard($dashboard->guard)->attempt([
             'username' => $username,
             'password' => $password,
