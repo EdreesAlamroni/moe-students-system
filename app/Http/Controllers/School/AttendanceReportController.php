@@ -24,8 +24,12 @@ class AttendanceReportController extends Controller
     {
         Gate::authorize('view', AttendanceReport::class);
 
+        $classrooms = Classroom::list(function ($query) {
+            $query->forCurrentSchoolAndAcademicYear();
+        });
+
         return Inertia::render('school/reports/attendance', [
-            'classrooms' => Classroom::listForCurrentSchool(),
+            'classrooms' => $classrooms,
             'months' => $this->getMonthOptions(),
             ...ModelAbilityMap::make(AttendanceReport::class, ['print']),
         ]);

@@ -216,20 +216,31 @@ class Classroom extends Model
     public static function list(?callable $callback = null, array $additionalColumns = []): Collection
     {
         $columns = array_unique(
-            array_merge(['classrooms.id', 'classrooms.name'], $additionalColumns)
+            array_merge([
+                'classrooms.id',
+                'classrooms.name',
+                'grade_levels.name as grade_level_name',
+            ], $additionalColumns)
         );
-        $query = self::query()->select($columns);
+
+        $query = self::query()
+            ->select($columns)
+            ->ordered();
 
         if ($callback) {
             $callback($query);
         }
 
         return $query
-            ->pluck('classrooms.name', 'classrooms.id')
-            ->map(function (string $name, int $id): array {
+            ->get()
+            ->map(function (self $classroom): array {
                 return [
-                    'id' => $id,
-                    'name' => $name,
+                    'id' => $classroom->id,
+                    'name' => sprintf(
+                        '%s / %s',
+                        $classroom->getAttribute('grade_level_name'),
+                        $classroom->name,
+                    ),
                 ];
             })->values();
     }
