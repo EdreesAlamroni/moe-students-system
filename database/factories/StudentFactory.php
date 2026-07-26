@@ -38,7 +38,7 @@ class StudentFactory extends Factory
             'education_monitor_id' => EducationMonitor::factory(),
             'school_id' => School::factory(),
             'nationality_id' => Nationality::libyanId() ?? Nationality::factory(),
-            'number' => fake()->unique()->numerify('#######'),
+            'number' => null,
             'registration_status' => fake()->randomElement(StudentRegistrationStatus::cases()),
             'exam_enrollment_status' => fake()->randomElement(StudentExamEnrollmentStatus::cases()),
 
