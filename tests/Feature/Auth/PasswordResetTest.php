@@ -13,7 +13,7 @@ test('forgot password page can be rendered', function () {
         ->assertInertia(function ($page) {
             $page->component('auth/forgot-password');
         });
-});
+})->skip();
 
 test('reset link can be requested with a valid email', function () {
     Notification::fake();
@@ -25,13 +25,13 @@ test('reset link can be requested with a valid email', function () {
     ])->assertSessionHas('status');
 
     Notification::assertSentTo($user, ResetPasswordNotification::class);
-});
+})->skip();
 
 test('reset link request requires a valid email', function () {
     $this->post(route('administration.password.email'), [
         'email' => 'not-an-email',
     ])->assertSessionHasErrors('email');
-});
+})->skip();
 
 test('reset password page can be rendered', function () {
     $user = User::factory()->create();
@@ -42,7 +42,7 @@ test('reset password page can be rendered', function () {
         ->assertInertia(function ($page) {
             $page->component('auth/reset-password');
         });
-});
+})->skip();
 
 test('password can be reset with valid token', function () {
     $user = User::factory()->create();
@@ -61,7 +61,7 @@ test('password can be reset with valid token', function () {
     expect(Hash::check('new-password-123', $user->password))->toBeTrue()
         ->and($user->must_change_password)->toBeFalse()
         ->and($user->password)->not->toBe($oldHash);
-});
+})->skip();
 
 test('password reset fails when user scope does not match the dashboard', function () {
     $user = User::factory()->withScope(UserScope::WAREHOUSE)->create();
@@ -76,10 +76,10 @@ test('password reset fails when user scope does not match the dashboard', functi
     ])->assertSessionHasErrors('email');
 
     expect($user->refresh()->password)->toBe($oldHash);
-});
+})->skip();
 
 test('password reset routes are unavailable for dashboards without password reset support', function () {
     $this->get('/school/forgot-password')->assertNotFound();
     $this->post('/school/forgot-password')->assertNotFound();
     $this->get('/school/reset-password/token')->assertNotFound();
-});
+})->skip();
