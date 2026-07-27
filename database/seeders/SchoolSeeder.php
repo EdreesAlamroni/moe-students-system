@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolEducationalStageEnum;
+use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
@@ -37,13 +39,6 @@ class SchoolSeeder extends Seeder
             ->where('education_monitor_id', '=', $monitor->id)
             ->value('id') ?? null;
 
-        $attributes = School::factory()->raw([
-            'education_monitor_id' => $monitor->id,
-            'education_services_office_id' => $officeId,
-            'name' => 'مدرسة تجريبية',
-            'type' => SchoolType::PUBLIC,
-        ]);
-
         $school = School::query()->firstOrCreate(
             [
                 'education_monitor_id' => $monitor->id,
@@ -51,9 +46,9 @@ class SchoolSeeder extends Seeder
                 'name' => 'مدرسة تجريبية',
             ],
             [
-                'type' => $attributes['type'],
-                'academic_period' => $attributes['academic_period'],
-                'students_gender' => $attributes['students_gender'],
+                'type' => SchoolType::PUBLIC,
+                'academic_period' => SchoolAcademicPeriod::MORNING,
+                'students_gender' => SchoolStudentsGender::MIXED,
             ],
         );
 

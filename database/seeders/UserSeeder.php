@@ -10,7 +10,9 @@ use App\Models\School;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\ModelStates\User\RequestState\Approved;
+use App\ModelStates\User\State\Activated;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -49,7 +51,10 @@ class UserSeeder extends Seeder
      */
     protected function createUser(array $attributes): void
     {
-        User::factory()->create(array_merge($this->defaultUserAttributes(), $attributes));
+        User::query()->updateOrCreate(
+            ['username' => $attributes['username']],
+            array_merge($this->defaultUserAttributes(), $attributes),
+        );
     }
 
     /**
@@ -59,8 +64,11 @@ class UserSeeder extends Seeder
     {
         return [
             'role' => UserRole::MANAGER,
+            'state' => Activated::class,
             'request_state' => Approved::class,
             'must_change_password' => false,
+            'password' => 'password',
+            'remember_token' => Str::random(10),
         ];
     }
 

@@ -17,7 +17,7 @@ class ClassPeriodSeeder extends Seeder
             return;
         }
 
-        ClassPeriod::factory()->createMany([
+        $periods = [
             ...$this->periodsFor(
                 SchoolAcademicPeriod::MORNING,
                 $academicYearId,
@@ -28,7 +28,23 @@ class ClassPeriodSeeder extends Seeder
                 $academicYearId,
                 $this->eveningSchedule()
             ),
-        ]);
+        ];
+
+        foreach ($periods as $period) {
+            ClassPeriod::query()->updateOrCreate(
+                [
+                    'academic_year_id' => $period['academic_year_id'],
+                    'academic_period' => $period['academic_period'],
+                    'order' => $period['order'],
+                ],
+                [
+                    'name' => $period['name'],
+                    'start_time' => $period['start_time'],
+                    'end_time' => $period['end_time'],
+                    'is_break' => $period['is_break'],
+                ],
+            );
+        }
     }
 
     private function periodsFor(SchoolAcademicPeriod $academicPeriod, int $academicYearId, array $schedule): array

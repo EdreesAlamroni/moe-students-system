@@ -12,7 +12,15 @@ class StudentSeeder extends Seeder
 {
     public function run(): void
     {
+        if (! function_exists('fake')) {
+            return;
+        }
+
         $school = School::first();
+
+        if ($school === null) {
+            return;
+        }
 
         $school->gradeLevels()->each(function (GradeLevel $gradeLevel) use ($school) {
             Student::factory(50)
