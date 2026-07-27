@@ -12,7 +12,7 @@ use App\Models\School;
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
 
-class ClassScheduleSeeder extends Seeder
+class ClassScheduleSeederBackup extends Seeder
 {
     public function run(): void
     {
