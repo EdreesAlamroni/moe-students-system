@@ -8,6 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Flash\Flash;
@@ -28,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureHttps();
 
         JsonResource::withoutWrapping();
 
@@ -66,5 +68,15 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+    }
+
+    /**
+     * Force HTTPS URL generation when APP_URL is configured for HTTPS.
+     */
+    protected function configureHttps(): void
+    {
+        if (str_starts_with((string) config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
     }
 }

@@ -23,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['sidebar_state']);
 
+        // Trust reverse proxies (TLS termination) so generated URLs use HTTPS.
+        $middleware->trustProxies(at: '*');
+
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
