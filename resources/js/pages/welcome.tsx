@@ -217,8 +217,8 @@ export default function Welcome() {
                             </h2>
 
                             <p className="mx-auto mt-2.5 max-w-xl text-sm leading-relaxed text-pretty text-muted-foreground">
-                                اختر لوحة التحكم المناسبة لجهتك للمتابعة إلى
-                                تسجيل الدخول وإدارة العمليات التعليمية بأمان.
+                                اختر لوحة التحكم للمتابعة إلى صفحة تسجيل الدخول
+                                وإدارة العمليات التعليمية بسهولة وأمان.
                             </p>
                         </section>
 
@@ -249,7 +249,7 @@ export default function Welcome() {
                                             'lg:col-span-2',
                                             index === 3 && 'lg:col-start-2',
                                             index === portals.length - 1 &&
-                                                'sm:col-span-2 sm:mx-auto sm:w-full sm:max-w-[calc(50%-0.5rem)] lg:col-span-2 lg:mx-0 lg:max-w-none',
+                                            'sm:col-span-2 sm:mx-auto sm:w-full sm:max-w-[calc(50%-0.5rem)] lg:col-span-2 lg:mx-0 lg:max-w-none',
                                         )}
                                     >
                                         <PortalCard portal={portal} />
