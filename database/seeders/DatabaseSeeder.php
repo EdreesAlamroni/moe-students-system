@@ -9,6 +9,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+
+        if (! app()->isLocal()) {
+            $this->command->error('Seeding is only allowed in the local environment.');
+            $this->command->newLine();
+
+            return;
+        }
+
         $this->call([
             NationalitySeeder::class,
             MunicipalSeeder::class,

@@ -1,0 +1,177 @@
+<?php
+
+namespace App\Console\Commands\Setup;
+
+use App\Models\Municipal;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
+use Illuminate\Console\Command;
+
+#[Signature('setup:install-municipals')]
+#[Description('Install municipal records')]
+class InstallMunicipalsCommand extends Command
+{
+    public function handle(): int
+    {
+        if (Municipal::query()->exists()) {
+            $this->components->info('Municipals already installed. Skipping.');
+
+            return self::SUCCESS;
+        }
+
+        foreach ($this->definitions() as $attributes) {
+            Municipal::create($attributes);
+        }
+
+        $this->components->info('Municipals installed successfully.');
+
+        return self::SUCCESS;
+    }
+
+    private function definitions(): array
+    {
+        return [
+            ['name' => 'أبوسليم'],
+            ['name' => 'أوباري'],
+            ['name' => 'أوجلة'],
+            ['name' => 'اجخرة'],
+            ['name' => 'إجدابيا'],
+            ['name' => 'إدري الشاطئ'],
+            ['name' => 'اسبيعة'],
+            ['name' => 'الأبرق'],
+            ['name' => 'الأبيار'],
+            ['name' => 'الأصابعة'],
+            ['name' => 'البردي'],
+            ['name' => 'البريقة'],
+            ['name' => 'البيضاء'],
+            ['name' => 'الجفرة'],
+            ['name' => 'الجميل'],
+            ['name' => 'الحرابة'],
+            ['name' => 'الحوامد'],
+            ['name' => 'الخمس'],
+            ['name' => 'الرجبان'],
+            ['name' => 'الرحيبات'],
+            ['name' => 'الرياينة'],
+            ['name' => 'الزاوية'],
+            ['name' => 'الزاوية الجنوب'],
+            ['name' => 'الزاوية الغرب'],
+            ['name' => 'الزنتان'],
+            ['name' => 'الزهراء'],
+            ['name' => 'الزويتينة سلطان'],
+            ['name' => 'السائح'],
+            ['name' => 'الشرقية'],
+            ['name' => 'الشقيقة'],
+            ['name' => 'الشويرف'],
+            ['name' => 'العامرية'],
+            ['name' => 'العجيلات'],
+            ['name' => 'العربان'],
+            ['name' => 'العزيزية'],
+            ['name' => 'العواته'],
+            ['name' => 'الغريفة'],
+            ['name' => 'القبة'],
+            ['name' => 'القرة بوللي'],
+            ['name' => 'القرضة الشاطئ'],
+            ['name' => 'القطرون'],
+            ['name' => 'القلعة'],
+            ['name' => 'القواليش'],
+            ['name' => 'القيقب'],
+            ['name' => 'الكفرة'],
+            ['name' => 'الماية'],
+            ['name' => 'المرج'],
+            ['name' => 'العوينة'],
+            ['name' => 'المعمورة'],
+            ['name' => 'المليطانية'],
+            ['name' => 'المنشية الجميل'],
+            ['name' => 'الناصرية'],
+            ['name' => 'امساعد'],
+            ['name' => 'انتلات البيضان'],
+            ['name' => 'بئر الأشهب'],
+            ['name' => 'باطن الجبل'],
+            ['name' => 'براك الشاطئ'],
+            ['name' => 'بنت بية'],
+            ['name' => 'بنغازي'],
+            ['name' => 'بني وليد'],
+            ['name' => 'تاجوراء'],
+            ['name' => 'تازربو'],
+            ['name' => 'تاورغاء'],
+            ['name' => 'تراغن'],
+            ['name' => 'ترهونة'],
+            ['name' => 'توكرة'],
+            ['name' => 'جادو'],
+            ['name' => 'جالو'],
+            ['name' => 'جردس العبيد'],
+            ['name' => 'جنزور'],
+            ['name' => 'جنوب الجبل الأخضر'],
+            ['name' => 'حي الأندلس'],
+            ['name' => 'خليج السدرة'],
+            ['name' => 'درج'],
+            ['name' => 'درنة'],
+            ['name' => 'ربيانة'],
+            ['name' => 'رقدالين'],
+            ['name' => 'زلطن'],
+            ['name' => 'زليتن'],
+            ['name' => 'زمزم'],
+            ['name' => 'زوارة'],
+            ['name' => 'ساحل الجبل'],
+            ['name' => 'سبها'],
+            ['name' => 'سرت'],
+            ['name' => 'سلوق'],
+            ['name' => 'سواني بن أدم'],
+            ['name' => 'سوسة'],
+            ['name' => 'سوق الجمعة'],
+            ['name' => 'سوق الخميس'],
+            ['name' => 'شحات'],
+            ['name' => 'صبراتة'],
+            ['name' => 'صرمان'],
+            ['name' => 'طبرق'],
+            ['name' => 'طرابلس المركز'],
+            ['name' => 'ظاهر الجبل'],
+            ['name' => 'عمر المختار'],
+            ['name' => 'عين زارة'],
+            ['name' => 'عين غزالة'],
+            ['name' => 'غات'],
+            ['name' => 'غدامس'],
+            ['name' => 'غريان'],
+            ['name' => 'قصر بن غشير'],
+            ['name' => 'قصر خيار'],
+            ['name' => 'قمينس'],
+            ['name' => 'كاباو'],
+            ['name' => 'ككلة'],
+            ['name' => 'مرادة'],
+            ['name' => 'مرزق'],
+            ['name' => 'مرسى دفنة'],
+            ['name' => 'مزدة'],
+            ['name' => 'مسلاتة'],
+            ['name' => 'مصراتة'],
+            ['name' => 'نالوت'],
+            ['name' => 'نسمة'],
+            ['name' => 'هراوة'],
+            ['name' => 'وادي البوانيس'],
+            ['name' => 'وادي عتبة'],
+            ['name' => 'وازن'],
+            ['name' => 'وردامة'],
+            ['name' => 'يفرن'],
+            ['name' => 'أم الرزم'],
+            ['name' => 'الجليدة'],
+            ['name' => 'الجديدة'],
+            ['name' => 'مدور الزيتون'],
+            ['name' => 'العوينات'],
+            ['name' => 'تجرهي'],
+            ['name' => 'المردوم'],
+            ['name' => 'تنيناي'],
+            ['name' => 'القريات'],
+            ['name' => 'زلة'],
+            ['name' => 'برقن'],
+            ['name' => 'اوال'],
+            ['name' => 'تهالة'],
+            ['name' => 'بركت'],
+            ['name' => 'سيناون'],
+            ['name' => 'زويلة'],
+            ['name' => 'راس الطبل'],
+            ['name' => 'المنطقة الادارية الشعبة'],
+            ['name' => 'جرمة'],
+            ['name' => 'قرارة'],
+            ['name' => 'الرقيبة'],
+        ];
+    }
+}
