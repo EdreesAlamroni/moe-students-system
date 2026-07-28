@@ -23,6 +23,10 @@ class UserPolicy
 
     public function create(User $user): bool
     {
+        if (! $this->hasSchoolContext($user)) {
+            return false;
+        }
+
         return $user->can('user:create');
     }
 
@@ -78,5 +82,14 @@ class UserPolicy
         return $target->organization_type === School::class
             && $user->organization_type === School::class
             && $user->organization_id === $target->organization_id;
+    }
+
+    private function hasSchoolContext(User $user): bool
+    {
+        if ($user->organization_type !== School::class || $user->organization_id === null) {
+            return false;
+        }
+
+        return $user->organization()->exists();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Policies\EducationMonitor;
 
 use App\Enums\UserScope;
+use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
 use App\Models\User;
@@ -26,6 +27,10 @@ class UserPolicy
     public function create(User $user, ?UserScope $scope = null): bool
     {
         if (! is_null($scope) && $user->scope->getAccessibleScopes()->doesntContain($scope)) {
+            return false;
+        }
+
+        if (! $this->hasEducationMonitorContext($user)) {
             return false;
         }
 
@@ -105,5 +110,14 @@ class UserPolicy
         }
 
         return $user->organization_id === $targetMonitorId;
+    }
+
+    private function hasEducationMonitorContext(User $user): bool
+    {
+        if ($user->organization_type !== EducationMonitor::class || $user->organization_id === null) {
+            return false;
+        }
+
+        return $user->organization()->exists();
     }
 }

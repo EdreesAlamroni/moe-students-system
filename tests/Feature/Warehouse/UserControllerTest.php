@@ -91,6 +91,38 @@ test('users without user permissions cannot visit the create user page', functio
         ->assertForbidden();
 });
 
+test('warehouse users without organization context cannot visit the create user page', function () {
+    $user = User::factory()->create([
+        'scope' => UserScope::WAREHOUSE,
+        'role' => UserRole::MANAGER,
+        'organization_type' => null,
+        'organization_id' => null,
+    ]);
+
+    Permission::findOrCreate('user:create', UserScope::WAREHOUSE->value);
+    $user->givePermissionTo(['user:create']);
+
+    $this->actingAs($user, 'warehouse')
+        ->get(route('warehouse.users.create'))
+        ->assertForbidden();
+});
+
+test('warehouse users with orphaned organization cannot visit the create user page', function () {
+    $user = User::factory()->create([
+        'scope' => UserScope::WAREHOUSE,
+        'role' => UserRole::MANAGER,
+        'organization_type' => Warehouse::class,
+        'organization_id' => 999999,
+    ]);
+
+    Permission::findOrCreate('user:create', UserScope::WAREHOUSE->value);
+    $user->givePermissionTo(['user:create']);
+
+    $this->actingAs($user, 'warehouse')
+        ->get(route('warehouse.users.create'))
+        ->assertForbidden();
+});
+
 test('authenticated warehouse users can visit the users index', function () {
     $warehouse = Warehouse::factory()->create();
     $user = createWarehouseManager($warehouse);

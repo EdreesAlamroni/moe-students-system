@@ -3,6 +3,7 @@
 namespace App\Policies\EducationServicesOffice;
 
 use App\Enums\UserScope;
+use App\Models\EducationServicesOffice;
 use App\Models\School;
 use App\Models\User;
 
@@ -25,6 +26,10 @@ class UserPolicy
     public function create(User $user, ?UserScope $scope = null): bool
     {
         if (! is_null($scope) && $user->scope->getAccessibleScopes()->doesntContain($scope)) {
+            return false;
+        }
+
+        if (! $this->hasEducationServicesOfficeContext($user)) {
             return false;
         }
 
@@ -99,5 +104,14 @@ class UserPolicy
         }
 
         return $user->organization_id === $targetOfficeId;
+    }
+
+    private function hasEducationServicesOfficeContext(User $user): bool
+    {
+        if ($user->organization_type !== EducationServicesOffice::class || $user->organization_id === null) {
+            return false;
+        }
+
+        return $user->organization()->exists();
     }
 }

@@ -91,6 +91,22 @@ test('users without user permissions cannot visit the create user page', functio
         ->assertForbidden();
 });
 
+test('school users with orphaned organization cannot visit the create user page', function () {
+    $user = User::factory()->create([
+        'scope' => UserScope::SCHOOL,
+        'role' => UserRole::MANAGER,
+        'organization_type' => School::class,
+        'organization_id' => 999999,
+    ]);
+
+    Permission::findOrCreate('user:create', UserScope::SCHOOL->value);
+    $user->givePermissionTo(['user:create']);
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.users.create'))
+        ->assertForbidden();
+});
+
 test('authenticated school users can visit the users index', function () {
     $school = School::factory()->create();
     $user = createSchoolManager($school);

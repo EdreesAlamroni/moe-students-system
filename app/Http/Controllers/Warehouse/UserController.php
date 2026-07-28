@@ -72,8 +72,7 @@ class UserController extends Controller
         Gate::authorize('create', User::class);
 
         /** @var User $user */
-        $user = auth('warehouse')->user();
-        $user->loadMissing(['organization']);
+        $user = auth('warehouse')->user()->loadMissing(['organization']);
 
         /** @var Warehouse $warehouse */
         $warehouse = $user->organization;

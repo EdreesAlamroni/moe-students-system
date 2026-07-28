@@ -96,6 +96,22 @@ test('users without user permissions cannot visit the create user page', functio
         ->assertForbidden();
 });
 
+test('education monitor users with orphaned organization cannot visit the create user page', function () {
+    $user = User::factory()->create([
+        'scope' => UserScope::EDUCATION_MONITOR,
+        'role' => UserRole::MANAGER,
+        'organization_type' => EducationMonitor::class,
+        'organization_id' => 999999,
+    ]);
+
+    Permission::findOrCreate('user:create', UserScope::EDUCATION_MONITOR->value);
+    $user->givePermissionTo(['user:create']);
+
+    $this->actingAs($user, 'education_monitor')
+        ->get(route('education-monitor.users.create', ['scope' => UserScope::EDUCATION_MONITOR->value]))
+        ->assertForbidden();
+});
+
 test('authenticated education monitor users can visit the users index', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorManager($monitor);

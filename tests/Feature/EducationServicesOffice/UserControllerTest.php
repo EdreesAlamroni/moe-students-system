@@ -95,6 +95,22 @@ test('users without user permissions cannot visit the create user page', functio
         ->assertForbidden();
 });
 
+test('education services office users with orphaned organization cannot visit the create user page', function () {
+    $user = User::factory()->create([
+        'scope' => UserScope::EDUCATION_SERVICES_OFFICE,
+        'role' => UserRole::MANAGER,
+        'organization_type' => EducationServicesOffice::class,
+        'organization_id' => 999999,
+    ]);
+
+    Permission::findOrCreate('user:create', UserScope::EDUCATION_SERVICES_OFFICE->value);
+    $user->givePermissionTo(['user:create']);
+
+    $this->actingAs($user, 'education_services_office')
+        ->get(route('education-services-office.users.create', ['scope' => UserScope::EDUCATION_SERVICES_OFFICE->value]))
+        ->assertForbidden();
+});
+
 test('authenticated education services office users can visit the users index', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeManager($office);
