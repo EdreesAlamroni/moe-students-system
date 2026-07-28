@@ -29,7 +29,7 @@ class SchoolFactory extends Factory
             'education_services_office_id' => function (array $attributes) {
                 return EducationServicesOffice::where('education_monitor_id', '=', $attributes['education_monitor_id'])->value('id');
             },
-            'type' => $this->faker->randomElement(SchoolType::cases()),
+            'type' => fake()->randomElement(SchoolType::cases()),
             'name' => fake()->unique()->company(),
             'academic_period' => fake()->randomElement(SchoolAcademicPeriod::getPrimaryValues()),
             'students_gender' => fake()->randomElement(SchoolStudentsGender::cases()),

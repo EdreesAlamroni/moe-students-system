@@ -12,10 +12,6 @@ class StudentSeeder extends Seeder
 {
     public function run(): void
     {
-        if (! function_exists('fake')) {
-            return;
-        }
-
         $school = School::first();
 
         if ($school === null) {
