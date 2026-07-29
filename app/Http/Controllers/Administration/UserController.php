@@ -52,6 +52,7 @@ class UserController extends Controller
                 'scope',
             )
             ->orderedByScope()
+            ->orderBy('name')
             ->paginate()
             ->withQueryString()
             ->appends($request->query())
