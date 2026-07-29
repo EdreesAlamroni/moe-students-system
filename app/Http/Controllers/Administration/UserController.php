@@ -122,7 +122,7 @@ class UserController extends Controller
                 : [],
             'availableStates' => $user->getTransitionableStates(),
             'availableRequestStates' => $user->getTransitionableStates('request_state'),
-            ...ModelAbilityMap::make($user, ['update', 'delete', 'stateUpdate']),
+            ...ModelAbilityMap::make($user, ['update', 'delete', 'stateUpdate', 'updatePassword']),
         ]);
     }
 

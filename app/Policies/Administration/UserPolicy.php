@@ -67,4 +67,17 @@ class UserPolicy
 
         return $user->can('user:state-update');
     }
+
+    public function updatePassword(User $user, User $target): bool
+    {
+        if (! $user->isAdministrator()) {
+            return false;
+        }
+
+        if ($target->trashed()) {
+            return false;
+        }
+
+        return $user->can('user:update');
+    }
 }

@@ -5,7 +5,8 @@ export type * from './ui';
 
 export const PERMISSION_ACTIONS = [
     'viewAny', 'view', 'create', 'update', 'delete',
-    'archive', 'restore', 'forceDelete', 'stateUpdate',
+    'archive', 'restore', 'forceDelete',
+    'stateUpdate', 'updatePassword',
     'addGradeLevel', 'removeGradeLevel', 'resetClassroomDistribution',
     'addTransferredStudent', 'transferStudentOut',
     'enrollInGradeLevel', 'enrollInClassroom', 'transferClassroom',

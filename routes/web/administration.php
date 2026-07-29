@@ -18,6 +18,7 @@ use App\Http\Controllers\Administration\StudentUnassignedToEducationMonitorContr
 use App\Http\Controllers\Administration\StudentUnassignedToSchoolController;
 use App\Http\Controllers\Administration\SubjectController;
 use App\Http\Controllers\Administration\UserController;
+use App\Http\Controllers\Administration\UserPasswordController;
 use App\Http\Controllers\Administration\UserStateController;
 use App\Http\Controllers\Administration\WarehouseController;
 use App\Support\Auth\DashboardAuth;
@@ -132,6 +133,7 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::put('/{user}/password/update', [UserPasswordController::class, 'update'])->name('users.password.update');
         Route::patch('/{user}/state/update', [UserStateController::class, 'stateUpdate'])->name('users.state.update');
         Route::patch('/{user}/request-state/update', [UserStateController::class, 'requestStateUpdate'])->name('users.request-state.update');
     });

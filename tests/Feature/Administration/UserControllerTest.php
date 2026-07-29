@@ -13,6 +13,7 @@ use App\ModelStates\User\State\Activated;
 use App\ModelStates\User\State\Deactivated;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -510,6 +511,7 @@ test('authenticated users can visit the show user page', function () {
             ->has('can.update')
             ->has('can.delete')
             ->has('can.stateUpdate')
+            ->has('can.updatePassword')
         );
 });
 
@@ -693,4 +695,57 @@ test('users without state update permission cannot update account state', functi
         ->assertForbidden();
 
     expect($target->fresh()->state)->toBeInstanceOf(Activated::class);
+});
+
+test('authenticated administrators can update a user password', function () {
+    $user = createUserAdminUser();
+    $target = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.users.password.update', ['user' => $target]), [
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
+        ])
+        ->assertRedirect(route('administration.users.show', ['user' => $target]));
+
+    expect(Hash::check('new-password-123', $target->fresh()->password))->toBeTrue();
+});
+
+test('password update validates required fields', function () {
+    $user = createUserAdminUser();
+    $target = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.users.password.update', ['user' => $target]), [])
+        ->assertSessionHasErrors('password');
+});
+
+test('password update requires confirmation to match', function () {
+    $user = createUserAdminUser();
+    $target = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.users.password.update', ['user' => $target]), [
+            'password' => 'new-password-123',
+            'password_confirmation' => 'different-password',
+        ])
+        ->assertSessionHasErrors('password');
+});
+
+test('non-administrators cannot update a user password', function () {
+    $user = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+    Permission::findOrCreate('user:update', UserScope::ADMINISTRATION->value);
+    $user->givePermissionTo('user:update');
+
+    $target = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+    $originalPassword = $target->password;
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.users.password.update', ['user' => $target]), [
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
+        ])
+        ->assertForbidden();
+
+    expect($target->fresh()->password)->toBe($originalPassword);
 });

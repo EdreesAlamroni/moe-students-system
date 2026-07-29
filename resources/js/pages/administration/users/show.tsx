@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/actions/button";
 import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";
 
 import GroupedRolesShowCard from "@/components/shared/users/grouped-roles-show-card";
+import { UpdatePassword } from "@/components/features/administration/users/update-password";
 import { UpdateAccountState, UpdateRequestState } from "@/components/features/administration/users/update-user-state";
 
 import { NotepadTextIcon, SquarePenIcon } from "lucide-react";
@@ -45,6 +46,12 @@ export default function Show({ user, roles, availableRequestStates, availableSta
             <MainContainer>
                 {canAny && (
                     <ActionsSection>
+                        {can.updatePassword && (
+                            <UpdatePassword
+                                user={user}
+                            />
+                        )}
+
                         {can.stateUpdate && (
                             <>
                                 {availableRequestStates.length > 0 && (
