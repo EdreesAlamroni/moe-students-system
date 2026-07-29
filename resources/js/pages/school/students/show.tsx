@@ -101,7 +101,6 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
                             </Button>
                         )}
 
-
                         {can.viewPsychosocialCard && (
                             <Button
                                 variant="outline"
@@ -223,83 +222,81 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
                 </section>
 
                 <section>
-                    <section>
-                        <Card>
-                            <CardHeader className="border-b">
-                                <CardTitle>
-                                    <ArrowRightLeftIcon />
-                                    <div className="flex items-center gap-x-1.5">
-                                        <span>سجل عمليات النقل</span>
-                                        <span className="font-mono">({transfersMeta.total})</span>
-                                    </div>
-                                </CardTitle>
-                            </CardHeader>
-                            {transfersData.length > 0 ? (
-                                <CardTableContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead scope="col" className="w-24 font-mono">#</TableHead>
-                                                <TableHead scope="col">المدرسة المغادر منها</TableHead>
-                                                <TableHead scope="col">المدرسة الملتحق بها</TableHead>
-                                                <TableHead scope="col" className="text-center">السنة الدراسية عند المغادرة</TableHead>
-                                                <TableHead scope="col" className="text-center">السنة الدراسية عند الالتحاق</TableHead>
-                                                <TableHead scope="col" className="text-center">تاريخ المغادرة</TableHead>
-                                                <TableHead scope="col" className="text-center">تاريخ الالتحاق</TableHead>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <ArrowRightLeftIcon />
+                                <div className="flex items-center gap-x-1.5">
+                                    <span>سجل عمليات النقل</span>
+                                    <span className="font-mono">({transfersMeta.total})</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        {transfersData.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="w-24 font-mono">#</TableHead>
+                                            <TableHead scope="col">المدرسة المغادر منها</TableHead>
+                                            <TableHead scope="col">المدرسة الملتحق بها</TableHead>
+                                            <TableHead scope="col" className="text-center">السنة الدراسية عند المغادرة</TableHead>
+                                            <TableHead scope="col" className="text-center">السنة الدراسية عند الالتحاق</TableHead>
+                                            <TableHead scope="col" className="text-center">تاريخ المغادرة</TableHead>
+                                            <TableHead scope="col" className="text-center">تاريخ الالتحاق</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {transfersData.map((transfer, index) => (
+                                            <TableRow key={transfer.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={transfer.from_school.name} />
+                                                    {transfer.from_school?.monitor && (
+                                                        <div className="mt-2 text-xs text-muted-foreground">
+                                                            <span>{transfer.from_school?.monitor?.name}</span>
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={transfer.to_school?.name} />
+                                                    {transfer.to_school?.monitor && (
+                                                        <div className="mt-2 text-xs text-muted-foreground">
+                                                            <span>{transfer.to_school?.monitor?.name}</span>
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={transfer.left_academic_year.name} className="font-mono" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={transfer.joined_academic_year?.name} className="font-mono" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={transfer.left_school_at} className="font-mono" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={transfer.joined_school_at} className="font-mono" />
+                                                </TableCell>
                                             </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {transfersData.map((transfer, index) => (
-                                                <TableRow key={transfer.uuid}>
-                                                    <TableCell className="font-mono">{index + 1}</TableCell>
-                                                    <TableCell>
-                                                        <TableCellNullableValue value={transfer.from_school.name} />
-                                                        {transfer.from_school?.monitor && (
-                                                            <div className="mt-2 text-xs text-muted-foreground">
-                                                                <span>{transfer.from_school?.monitor?.name}</span>
-                                                            </div>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <TableCellNullableValue value={transfer.to_school?.name} />
-                                                        {transfer.to_school?.monitor && (
-                                                            <div className="mt-2 text-xs text-muted-foreground">
-                                                                <span>{transfer.to_school?.monitor?.name}</span>
-                                                            </div>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        <TableCellNullableValue value={transfer.left_academic_year.name} className="font-mono" />
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        <TableCellNullableValue value={transfer.joined_academic_year?.name} className="font-mono" />
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        <TableCellNullableValue value={transfer.left_school_at} className="font-mono" />
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        <TableCellNullableValue value={transfer.joined_school_at} className="font-mono" />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </CardTableContent>
-                            ) : (
-                                <CardContent>
-                                    <EmptyState />
-                                </CardContent>
-                            )}
-                            {transfersHasPagination && (
-                                <CardFooter className="border-t">
-                                    <Paginator
-                                        links={transfersLinks}
-                                        meta={transfersMeta}
-                                    />
-                                </CardFooter>
-                            )}
-                        </Card>
-                    </section>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState />
+                            </CardContent>
+                        )}
+                        {transfersHasPagination && (
+                            <CardFooter className="border-t">
+                                <Paginator
+                                    links={transfersLinks}
+                                    meta={transfersMeta}
+                                />
+                            </CardFooter>
+                        )}
+                    </Card>
                 </section>
             </MainContainer>
         </>

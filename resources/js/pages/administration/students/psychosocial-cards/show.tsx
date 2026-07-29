@@ -1,13 +1,10 @@
 import React from 'react'
 
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 
-import { cn } from "@/lib/utils";
-
-import type { CanPermissions, Student, StudentPsychosocialCard } from "@/types";
+import type { Student, StudentPsychosocialCard } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import ActionsSection from "@/components/ui/structure/actions-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
 import { Separator } from "@/components/ui/structure/separator";
 
@@ -17,65 +14,19 @@ import { DetailField, DetailFields } from "@/components/ui/display/detail-field"
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
 
-import { Button } from "@/components/ui/actions/button";
-
-import { BookUserIcon, CheckCircleIcon, NotepadTextIcon, PrinterIcon, SquarePenIcon } from "lucide-react";
+import { BookUserIcon, CheckCircleIcon, NotepadTextIcon } from "lucide-react";
 
 import { StudentClassroomField, StudentGradeLevelField } from "@/components/shared/students/student-enrollment-fields";
 
-import { index as indexStudents, show as showStudents } from "@/routes/school/students";
-import { show, edit, print } from "@/routes/school/students/psychosocial-card";
+import { index as indexStudents, show as showStudents } from "@/routes/administration/students";
+import { show } from "@/routes/administration/students/psychosocial-card";
 
 type PageProps = {
     student: Student;
     psychosocialCard: StudentPsychosocialCard;
-    canAny: boolean;
-    can: CanPermissions;
 };
 
-export default function Show({ student, psychosocialCard, canAny, can }: PageProps) {
-    const { currentAcademicYear } = usePage().props;
-
-    const hasFullData = Boolean(
-        psychosocialCard?.guardian_name
-        && psychosocialCard?.guardian_date_of_birth
-        && psychosocialCard?.guardian_nationality?.name
-        && psychosocialCard?.guardian_relationship
-        && psychosocialCard?.guardian_phone_number
-        && psychosocialCard?.guardian_education_level
-        && psychosocialCard?.guardian_job_title
-        && psychosocialCard?.guardian_work_place
-        && psychosocialCard?.mother_date_of_birth
-        && psychosocialCard?.mother_nationality?.name
-        && psychosocialCard?.mother_phone_number
-        && psychosocialCard?.mother_education_level
-        && psychosocialCard?.mother_profession
-        && psychosocialCard?.mother_work_place
-        && psychosocialCard?.number_of_family_members
-        && psychosocialCard?.student_family_order
-        && psychosocialCard?.number_of_siblings
-        && psychosocialCard?.student_living_situation?.name
-        && psychosocialCard?.family_situation_reason?.name
-        && psychosocialCard?.residential_area
-        && psychosocialCard?.residential_street
-        && psychosocialCard?.nearest_landmark
-        && psychosocialCard?.previous_activities
-        && psychosocialCard?.talents
-        && psychosocialCard?.previous_diseases
-        && psychosocialCard?.physical_disability_type
-        && psychosocialCard?.vision_level?.name
-        && psychosocialCard?.hearing_level?.name
-        && psychosocialCard?.family_income?.name
-        && psychosocialCard?.accommodation_type?.name
-        && psychosocialCard?.accommodation_form?.name
-        && (psychosocialCard?.behavioral_problems?.length ?? 0) > 0
-        && psychosocialCard?.guardian_representative_name
-        && psychosocialCard?.guardian_representative_relationship
-        && psychosocialCard?.guardian_representative_id_card_number
-        && psychosocialCard?.guardian_representative_phone_number
-        && psychosocialCard?.guardian_representative_work_place,
-    );
-
+export default function Show({ student, psychosocialCard }: PageProps) {
     return (
         <>
             <Head title="البطاقة الإجتماعية والنفسية للطالب" />
@@ -89,48 +40,6 @@ export default function Show({ student, psychosocialCard, canAny, can }: PagePro
                         </h1>
                     </header>
                 </section>
-
-                {canAny && (
-                    <ActionsSection>
-                        {(can.updatePsychosocialCard && currentAcademicYear?.is_active) && (
-                            <Button
-                                variant="outline"
-                                asChild
-                            >
-                                <Link href={edit.url({ student: student })}>
-                                    <SquarePenIcon />
-                                    <span>تعديل بيانات البطاقة</span>
-                                </Link>
-                            </Button>
-                        )}
-
-                        {can.printPsychosocialCard && (
-                            <Button
-                                variant="outline"
-                                disabled={!hasFullData}
-                                asChild
-                            >
-                                <a
-                                    href={print.url({ student: student })}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={cn(!hasFullData && "cursor-not-allowed opacity-50 ")}
-                                    onClick={(event: React.MouseEvent<HTMLAnchorElement>): void => {
-                                        if (!hasFullData) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-                                    }}
-                                    aria-disabled={!hasFullData || undefined}
-                                    tabIndex={!hasFullData ? -1 : undefined}
-                                >
-                                    <PrinterIcon />
-                                    <span>طباعة البطاقة</span>
-                                </a>
-                            </Button>
-                        )}
-                    </ActionsSection>
-                )}
 
                 <StudentDetailsSection
                     student={student}

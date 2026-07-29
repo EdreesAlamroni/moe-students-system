@@ -9,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/struct
 
 import { Button } from "@/components/ui/actions/button";
 
-import AcademicRecordStudentOverview from "@/components/features/school/academic-record/academic-record-student-overview";
-import AcademicRecordGradeLevelCard from "@/components/features/school/academic-record/academic-record-grade-level-card";
+import AcademicRecordStudentOverview from "@/components/shared/academic-record/academic-record-student-overview";
+import AcademicRecordGradeLevelCard from "@/components/shared/academic-record/academic-record-grade-level-card";
 
 import { FileTextIcon, ReplyIcon } from "lucide-react";
 

@@ -19,7 +19,6 @@ class SchoolPermissionSeeder extends Seeder
         $this->seedStudent();
         $this->seedClassroomDistribution();
         $this->seedBookDistribution();
-        $this->seedSchoolStaff();
         $this->seedUser();
         $this->seedReports();
     }
@@ -120,14 +119,14 @@ class SchoolPermissionSeeder extends Seeder
         $enrollInClassroomRole = Role::findOrCreate('student:role:enroll-in-classroom', $this->scope);
         $transferClassroomRole = Role::findOrCreate('student:role:transfer-classroom', $this->scope);
 
+        // Academic record roles
+        $viewAcademicRecordRole = Role::findOrCreate('student:role:view-academic-record', $this->scope);
+        $createAcademicRecordRole = Role::findOrCreate('student:role:create-academic-record', $this->scope);
+
         // Psychosocial card roles
         $viewPsychosocialCardRole = Role::findOrCreate('student:role:view-psychosocial-card', $this->scope);
         $updatePsychosocialCardRole = Role::findOrCreate('student:role:update-psychosocial-card', $this->scope);
         $printPsychosocialCardRole = Role::findOrCreate('student:role:print-psychosocial-card', $this->scope);
-
-        // Academic record roles
-        $viewAcademicRecordRole = Role::findOrCreate('student:role:view-academic-record', $this->scope);
-        $createAcademicRecordRole = Role::findOrCreate('student:role:create-academic-record', $this->scope);
 
         // Sync permissions with roles
         $viewRole->syncPermissions([$viewAny, $view]);
@@ -144,14 +143,14 @@ class SchoolPermissionSeeder extends Seeder
         $enrollInClassroomRole->syncPermissions([$viewAny, $view, $enrollInClassroom]);
         $transferClassroomRole->syncPermissions([$viewAny, $view, $transferClassroom]);
 
+        // Sync academic record permissions with roles
+        $viewAcademicRecordRole->syncPermissions([$viewAny, $view, $viewAcademicRecord]);
+        $createAcademicRecordRole->syncPermissions([$viewAny, $view, $viewAcademicRecord, $createAcademicRecord]);
+
         // Sync psychosocial card permissions with roles
         $viewPsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard]);
         $updatePsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard, $updatePsychosocialCard]);
         $printPsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard, $printPsychosocialCard]);
-
-        // Sync academic record permissions with roles
-        $viewAcademicRecordRole->syncPermissions([$viewAny, $view, $viewAcademicRecord]);
-        $createAcademicRecordRole->syncPermissions([$viewAny, $view, $viewAcademicRecord, $createAcademicRecord]);
     }
 
     private function seedClassroomDistribution(): void
@@ -185,28 +184,6 @@ class SchoolPermissionSeeder extends Seeder
         // Sync permissions with roles
         $viewRole->syncPermissions([$view]);
         $distributeRole->syncPermissions([$view, $distribute]);
-    }
-
-    private function seedSchoolStaff(): void
-    {
-        // Permissions
-        $viewAny = Permission::findOrCreate('school-staff:view-any', $this->scope);
-        $view = Permission::findOrCreate('school-staff:view', $this->scope);
-        $create = Permission::findOrCreate('school-staff:create', $this->scope);
-        $update = Permission::findOrCreate('school-staff:update', $this->scope);
-        $delete = Permission::findOrCreate('school-staff:delete', $this->scope);
-
-        // Roles
-        $viewRole = Role::findOrCreate('school-staff:role:view', $this->scope);
-        $createRole = Role::findOrCreate('school-staff:role:create', $this->scope);
-        $updateRole = Role::findOrCreate('school-staff:role:update', $this->scope);
-        $deleteRole = Role::findOrCreate('school-staff:role:delete', $this->scope);
-
-        // Sync permissions with roles
-        $viewRole->syncPermissions([$viewAny, $view]);
-        $createRole->syncPermissions([$viewAny, $create]);
-        $updateRole->syncPermissions([$viewAny, $view, $update]);
-        $deleteRole->syncPermissions([$viewAny, $view, $delete]);
     }
 
     private function seedUser(): void

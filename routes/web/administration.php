@@ -13,7 +13,9 @@ use App\Http\Controllers\Administration\GradeLevelController;
 use App\Http\Controllers\Administration\MunicipalController;
 use App\Http\Controllers\Administration\SchoolController;
 use App\Http\Controllers\Administration\SchoolReportController;
+use App\Http\Controllers\Administration\StudentAcademicRecordController;
 use App\Http\Controllers\Administration\StudentController;
+use App\Http\Controllers\Administration\StudentPsychosocialCardController;
 use App\Http\Controllers\Administration\StudentUnassignedToEducationMonitorController;
 use App\Http\Controllers\Administration\StudentUnassignedToSchoolController;
 use App\Http\Controllers\Administration\SubjectController;
@@ -111,6 +113,12 @@ Route::middleware(['auth:administration', 'ensure.password.changed'])->group(fun
         Route::get('/unassigned-to-education-monitor', [StudentUnassignedToEducationMonitorController::class, 'index'])->name('students.unassigned-to-education-monitor.index');
         Route::get('/unassigned-to-school', [StudentUnassignedToSchoolController::class, 'index'])->name('students.unassigned-to-school.index');
         Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
+
+        // Academic Records
+        Route::get('/{student}/academic-record', [StudentAcademicRecordController::class, 'show'])->name('students.academic-record.show');
+
+        // Student Psychosocial Card
+        Route::get('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'show'])->name('students.psychosocial-card.show');
     });
 
     // Schools

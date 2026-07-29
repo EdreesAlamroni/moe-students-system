@@ -43,4 +43,22 @@ class StudentPolicy
 
         return $user->can('student:delete');
     }
+
+    public function viewAcademicRecord(User $user, Student $student): bool
+    {
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-academic-record');
+    }
+
+    public function viewPsychosocialCard(User $user, Student $student): bool
+    {
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-psychosocial-card');
+    }
 }

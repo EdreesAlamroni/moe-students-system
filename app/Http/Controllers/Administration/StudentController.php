@@ -6,10 +6,13 @@ use App\Enums\StudentRegistrationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Administration\StudentCollection;
 use App\Http\Resources\Administration\StudentResource;
+use App\Http\Resources\Administration\StudentTransferCollection;
 use App\Models\EducationMonitor;
 use App\Models\Nationality;
 use App\Models\School;
 use App\Models\Student;
+use App\Models\StudentTransfer;
+use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -64,7 +67,7 @@ class StudentController extends Controller
         ]);
     }
 
-    public function show(Student $student): Response
+    public function show(Request $request, Student $student): Response
     {
         Gate::authorize('view', $student);
 
@@ -72,12 +75,19 @@ class StudentController extends Controller
             'monitor:id,uuid,name',
             'school:id,uuid,name',
             'nationality:id,uuid,name,code',
+            'enrollment',
+            'enrollment.gradeLevel',
+            'enrollment.classroom',
         ]);
+
+        $transfers = $this->getStudentTransfers($request, $student);
 
         return Inertia::render('administration/students/show', [
             'student' => ResourcePayloadBuilder::make(
                 StudentResource::make($student),
             ),
+            'transfers' => $transfers,
+            ...ModelAbilityMap::make($student, ['viewAcademicRecord', 'viewPsychosocialCard']),
         ]);
     }
 
@@ -122,5 +132,41 @@ class StudentController extends Controller
             ->withQueryString()
             ->appends($request->query())
             ->onEachSide(0);
+    }
+
+    private function getStudentTransfers(Request $request, Student $student)
+    {
+        $transfers = StudentTransfer::query()
+            ->select([
+                'id',
+                'uuid',
+                'left_academic_year_id',
+                'joined_academic_year_id',
+                'student_id',
+                'from_school_id',
+                'to_school_id',
+                'left_school_at',
+                'joined_school_at',
+                'created_at',
+                'deleted_at',
+            ])
+            ->where('student_id', '=', $student->id)
+            ->with([
+                'leftAcademicYear',
+                'joinedAcademicYear',
+                'student',
+                'fromSchool.monitor',
+                'toSchool.monitor',
+            ])
+            ->paginate()
+            ->withQueryString()
+            ->appends($request->query())
+            ->onEachSide(0);
+
+        return ResourcePayloadBuilder::paginate(
+            $transfers,
+            StudentTransferCollection::make($transfers),
+            $request,
+        );
     }
 }

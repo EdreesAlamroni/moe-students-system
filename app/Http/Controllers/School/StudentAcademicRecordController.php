@@ -9,7 +9,7 @@ use App\Http\Requests\School\Student\StoreAcademicRecordRequest;
 use App\Http\Resources\School\StudentResource;
 use App\Models\AcademicRecord;
 use App\Models\Student;
-use App\Services\School\AcademicRecordService;
+use App\Services\AcademicRecordService;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\RedirectResponse;

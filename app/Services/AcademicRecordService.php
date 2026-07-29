@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\School;
+namespace App\Services;
 
 use App\Enums\AcademicRecordStatus;
 use App\Enums\StudentRegistrationStatus;

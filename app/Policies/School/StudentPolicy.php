@@ -5,7 +5,7 @@ namespace App\Policies\School;
 use App\Models\AcademicYear;
 use App\Models\Student;
 use App\Models\User;
-use App\Services\School\AcademicRecordService;
+use App\Services\AcademicRecordService;
 
 class StudentPolicy
 {
@@ -148,6 +148,50 @@ class StudentPolicy
         return $user->can('student:transfer-classroom');
     }
 
+    public function viewAcademicRecord(User $user, Student $student): bool
+    {
+        if ($student->doesntHaveEnrollment()) {
+            return false;
+        }
+
+        if ($student->school_id !== $user->organization_id) {
+            return false;
+        }
+
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-academic-record');
+    }
+
+    public function createAcademicRecord(User $user, Student $student): bool
+    {
+        if ($student->doesntHaveEnrollment()) {
+            return false;
+        }
+
+        if ($student->school_id !== $user->organization_id) {
+            return false;
+        }
+
+        $academicRecordService = app(AcademicRecordService::class);
+
+        if (! $academicRecordService->requiresAcademicRecord($student)) {
+            return false;
+        }
+
+        if ($academicRecordService->isComplete($student)) {
+            return false;
+        }
+
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:create-academic-record');
+    }
+
     public function viewPsychosocialCard(User $user, Student $student): bool
     {
         if ($student->school_id !== $user->organization_id) {
@@ -193,57 +237,5 @@ class StudentPolicy
         }
 
         return $user->can('student:print-psychosocial-card');
-    }
-
-    public function viewAcademicRecord(User $user, Student $student): bool
-    {
-        if (AcademicYear::isCurrentYearInactive()) {
-            return false;
-        }
-
-        if ($student->doesntHaveEnrollment()) {
-            return false;
-        }
-
-        if ($student->school_id !== $user->organization_id) {
-            return false;
-        }
-
-        if ($student->trashed()) {
-            return false;
-        }
-
-        return $user->can('student:view-academic-record');
-    }
-
-    public function createAcademicRecord(User $user, Student $student): bool
-    {
-        if (AcademicYear::isCurrentYearInactive()) {
-            return false;
-        }
-
-        if ($student->doesntHaveEnrollment()) {
-            return false;
-        }
-
-        if ($student->school_id !== $user->organization_id) {
-            return false;
-        }
-
-        $academicRecordService = app(AcademicRecordService::class);
-
-        if (! $academicRecordService->requiresAcademicRecord($student)) {
-            return false;
-        }
-
-        if ($academicRecordService->isComplete($student)) {
-            return false;
-        }
-
-        if ($student->trashed()) {
-            return false;
-        }
-
-        return $user->can('student:create-academic-record');
     }
 }

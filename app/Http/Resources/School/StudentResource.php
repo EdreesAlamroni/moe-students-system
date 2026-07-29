@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources\School;
 
+use App\Models\EducationMonitor;
 use App\Models\Nationality;
+use App\Models\School;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,11 +20,11 @@ class StudentResource extends JsonResource
         return [
             'id' => $student->id,
             'uuid' => $student->uuid,
+            'grade_level' => $this->whenEnrollmentRelationLoaded('gradeLevel', ['id', 'name', 'educational_stage']),
+            'classroom' => $this->whenEnrollmentRelationLoaded('classroom', ['id', 'name']),
             'nationality' => $this->whenLoaded('nationality', function (Nationality $nationality): array {
                 return $nationality->only(['name']);
             }),
-            'grade_level' => $this->whenEnrollmentRelationLoaded('gradeLevel', ['id', 'name', 'educational_stage']),
-            'classroom' => $this->whenEnrollmentRelationLoaded('classroom', ['id', 'name']),
             'has_enrollment' => $student->hasEnrollment(),
             'number' => $student->number,
             'registration_status' => $student->registration_status->toArray(),
@@ -40,6 +42,12 @@ class StudentResource extends JsonResource
             'national_id' => $student->national_id,
             'family_registration_number' => $student->family_registration_number,
             'is_libyan' => $student->is_libyan,
+            'monitor' => $this->whenLoaded('monitor', function (EducationMonitor $monitor): array {
+                return $monitor->only(['id', 'uuid', 'name']);
+            }),
+            'school' => $this->whenLoaded('school', function (School $school): array {
+                return $school->only(['id', 'uuid', 'name']);
+            }),
         ];
     }
 

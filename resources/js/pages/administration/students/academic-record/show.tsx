@@ -1,25 +1,22 @@
 import React from 'react'
 
-import { Head, Link } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 
 import type { CanPermissions, GroupedAcademicRecord, Student } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import ActionsSection from "@/components/ui/structure/actions-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
 
 import { Badge } from "@/components/ui/display/badge";
 import EmptyState from "@/components/ui/display/empty-state";
 
-import { Button } from "@/components/ui/actions/button";
-
 import AcademicRecordStudentOverview from "@/components/shared/academic-record/academic-record-student-overview";
 import AcademicRecordGradeLevelCard from "@/components/shared/academic-record/academic-record-grade-level-card";
 
-import { CheckCircle2Icon, FileTextIcon, GraduationCapIcon, PlusIcon } from "lucide-react";
+import { CheckCircle2Icon, FileTextIcon, GraduationCapIcon } from "lucide-react";
 
-import { index as indexStudents, show as showStudent } from "@/routes/school/students";
-import { show, create } from "@/routes/school/students/academic-record";
+import { index as indexStudents, show as showStudent } from "@/routes/administration/students";
+import { show } from "@/routes/administration/students/academic-record";
 
 type PageProps = {
     student: Student;
@@ -35,12 +32,12 @@ export default function Show({
     groupedRecords,
     requiresAcademicRecord,
     isComplete,
-    canAny,
-    can,
 }: PageProps) {
     const hasRecords = groupedRecords.some((record) => record.attempts.length > 0);
     const completedGradeLevels = groupedRecords.filter((record) => record.attempts.length > 0).length;
     const totalGradeLevels = groupedRecords.length;
+
+    console.log(student);
 
     return (
         <>
@@ -69,22 +66,6 @@ export default function Show({
                         )}
                     </header>
                 </section>
-
-                {canAny && (
-                    <ActionsSection>
-                        {can.createAcademicRecord && (
-                            <Button
-                                variant="default"
-                                asChild
-                            >
-                                <Link href={create.url({ student: student })}>
-                                    <PlusIcon />
-                                    <span>إنشاء السجل الدراسي</span>
-                                </Link>
-                            </Button>
-                        )}
-                    </ActionsSection>
-                )}
 
                 <section>
                     <AcademicRecordStudentOverview
@@ -121,7 +102,6 @@ export default function Show({
                                 <EmptyState
                                     icon={FileTextIcon}
                                     text="لم يُنشأ السجل الدراسي بعد"
-                                    description="أدخل بيانات الصفوف الدراسية السابقة لإكمال السجل وحساب صفة القيد."
                                 />
                             )}
 

@@ -63,26 +63,26 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         Route::get('/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
         Route::put('/{student}', [StudentController::class, 'update'])->name('students.update');
 
+        // Student Transfers
+        Route::get('/transfers/create', [StudentTransferController::class, 'create'])->name('students.transfers.create');
+        Route::post('/transfers', [StudentTransferController::class, 'store'])->name('students.transfers.store');
+        Route::delete('/transfers/{student}', [StudentTransferController::class, 'destroy'])->name('students.transfers.destroy');
+
         // Grade Level Enrollments
         Route::post('/{student}/grade-level-enrollments', [StudentGradeLevelEnrollmentController::class, 'store'])->name('students.grade-level-enrollments.store');
         Route::post('/{student}/classroom-enrollments', [StudentClassroomEnrollmentController::class, 'store'])->name('students.classroom-enrollments.store');
         Route::put('/{student}/classroom-enrollments', [StudentClassroomEnrollmentController::class, 'update'])->name('students.classroom-enrollments.update');
+
+        // Academic Records
+        Route::get('/{student}/academic-record', [StudentAcademicRecordController::class, 'show'])->name('students.academic-record.show');
+        Route::get('/{student}/academic-record/create', [StudentAcademicRecordController::class, 'create'])->name('students.academic-record.create');
+        Route::post('/{student}/academic-record', [StudentAcademicRecordController::class, 'store'])->name('students.academic-record.store');
 
         // Student Psychosocial Card
         Route::get('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'show'])->name('students.psychosocial-card.show');
         Route::get('/{student}/psychosocial-card/edit', [StudentPsychosocialCardController::class, 'edit'])->name('students.psychosocial-card.edit');
         Route::put('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'update'])->name('students.psychosocial-card.update');
         Route::get('/{student}/psychosocial-card/print', [StudentPsychosocialCardController::class, 'print'])->name('students.psychosocial-card.print');
-
-        // Student Transfers
-        Route::get('/transfers/create', [StudentTransferController::class, 'create'])->name('students.transfers.create');
-        Route::post('/transfers', [StudentTransferController::class, 'store'])->name('students.transfers.store');
-        Route::delete('/transfers/{student}', [StudentTransferController::class, 'destroy'])->name('students.transfers.destroy');
-
-        // Academic Records
-        Route::get('/{student}/academic-record', [StudentAcademicRecordController::class, 'show'])->name('students.academic-record.show');
-        Route::get('/{student}/academic-record/create', [StudentAcademicRecordController::class, 'create'])->name('students.academic-record.create');
-        Route::post('/{student}/academic-record', [StudentAcademicRecordController::class, 'store'])->name('students.academic-record.store');
     });
 
     // Classroom Distribution

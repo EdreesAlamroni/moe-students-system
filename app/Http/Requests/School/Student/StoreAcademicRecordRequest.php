@@ -7,7 +7,7 @@ use App\Enums\AcademicRecordStatus;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
 use App\Models\Student;
-use App\Services\School\AcademicRecordService;
+use App\Services\AcademicRecordService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
