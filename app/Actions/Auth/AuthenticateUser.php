@@ -53,6 +53,14 @@ class AuthenticateUser
             ]);
         }
 
+        if ($user->hasOrphanedOrganization()) {
+            $this->recordFailedAttempt($username, $ip);
+
+            throw ValidationException::withMessages([
+                'username' => __('auth.organization_orphaned'),
+            ]);
+        }
+
         if (! Auth::guard($dashboard->guard)->attempt([
             'username' => $username,
             'password' => $password,

@@ -189,6 +189,11 @@ class User extends Authenticatable
         return $this->hasOrganization() && $this->organization()->onlyTrashed()->exists();
     }
 
+    public function hasOrphanedOrganization(): bool
+    {
+        return $this->hasOrganization() && ! $this->organization()->exists();
+    }
+
     /**
      * Typed organizational context for the attached organization morph.
      *
