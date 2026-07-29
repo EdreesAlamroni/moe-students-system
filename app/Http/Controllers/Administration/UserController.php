@@ -51,6 +51,7 @@ class UserController extends Controller
                 'username',
                 'scope',
             )
+            ->orderedByScope()
             ->paginate()
             ->withQueryString()
             ->appends($request->query())
@@ -121,7 +122,6 @@ class UserController extends Controller
                 : [],
             'availableStates' => $user->getTransitionableStates(),
             'availableRequestStates' => $user->getTransitionableStates('request_state'),
-            'isRequestPending' => $user->requestIsPending(),
             ...ModelAbilityMap::make($user, ['update', 'delete', 'stateUpdate']),
         ]);
     }

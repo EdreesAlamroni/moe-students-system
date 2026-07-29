@@ -16,10 +16,11 @@ import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
 import { StatePill } from "@/components/ui/display/state";
 
-import GroupedRolesShowCard from "@/components/shared/users/grouped-roles-show-card";
-
 import { Button } from "@/components/ui/actions/button";
 import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";
+
+import GroupedRolesShowCard from "@/components/shared/users/grouped-roles-show-card";
+import { UpdateAccountState, UpdateRequestState } from "@/components/features/administration/users/update-user-state";
 
 import { NotepadTextIcon, SquarePenIcon } from "lucide-react";
 
@@ -30,12 +31,11 @@ type PageProps = {
     roles: RoleGroup[];
     availableStates: ModelState[];
     availableRequestStates: ModelState[];
-    isRequestPending: boolean;
     canAny: boolean;
     can: CanPermissions;
 };
 
-export default function Show({ user, roles, canAny, can }: PageProps) {
+export default function Show({ user, roles, availableRequestStates, availableStates, canAny, can }: PageProps) {
     const organization = resolveOrganizationDisplay(user.organization);
 
     return (
@@ -45,6 +45,24 @@ export default function Show({ user, roles, canAny, can }: PageProps) {
             <MainContainer>
                 {canAny && (
                     <ActionsSection>
+                        {can.stateUpdate && (
+                            <>
+                                {availableRequestStates.length > 0 && (
+                                    <UpdateRequestState
+                                        user={user}
+                                        availableRequestStates={availableRequestStates}
+                                    />
+                                )}
+
+                                {availableStates.length > 0 && (
+                                    <UpdateAccountState
+                                        user={user}
+                                        availableStates={availableStates}
+                                    />
+                                )}
+                            </>
+                        )}
+
                         {can.update && (
                             <Button variant="outline" asChild>
                                 <Link href={edit.url({ user: user })}>

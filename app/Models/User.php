@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Spatie\ModelStates\HasStates;
 use Spatie\Permission\Traits\HasRoles;
@@ -146,6 +147,30 @@ class User extends Authenticatable
         $organizationId = $this->authenticatedOrganizationId(UserScope::WAREHOUSE);
 
         return $this->scopedToOrganization($query, $organizationId, Warehouse::class);
+    }
+
+    #[Scope]
+    protected function orderedByScope(Builder $query): Builder
+    {
+        $scopes = UserScope::values();
+
+        /** @var \Illuminate\Database\Connection $connection */
+        $connection = $query->getConnection();
+
+        if ($connection->getDriverName() === 'mysql') {
+            $placeholders = implode(', ', array_fill(0, count($scopes), '?'));
+
+            return $query->orderByRaw("FIELD(scope, {$placeholders})", $scopes);
+        }
+
+        $case = implode(' ', Arr::map($scopes, function (string $scope, int $index): string {
+            return sprintf('WHEN ? THEN %d', $index + 1);
+        }));
+
+        return $query->orderByRaw(
+            sprintf('CASE scope %s ELSE %d END', $case, count($scopes) + 1),
+            $scopes,
+        );
     }
 
     /*

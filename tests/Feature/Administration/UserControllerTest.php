@@ -8,6 +8,9 @@ use App\Models\School;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\ModelStates\User\RequestState\Approved;
+use App\ModelStates\User\RequestState\Pending;
+use App\ModelStates\User\State\Activated;
+use App\ModelStates\User\State\Deactivated;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
@@ -17,7 +20,14 @@ function createUserAdminUser(): User
 {
     $user = User::factory()->create();
 
-    foreach (['user:view-any', 'user:view', 'user:create', 'user:update', 'user:delete'] as $permission) {
+    foreach ([
+        'user:view-any',
+        'user:view',
+        'user:create',
+        'user:update',
+        'user:delete',
+        'user:state-update',
+    ] as $permission) {
         Permission::findOrCreate($permission, UserScope::ADMINISTRATION->value);
     }
 
@@ -27,6 +37,7 @@ function createUserAdminUser(): User
         'user:create',
         'user:update',
         'user:delete',
+        'user:state-update',
     ]);
 
     return $user;
@@ -143,6 +154,33 @@ beforeEach(function () {
 test('guests are redirected from the users page', function () {
     $this->get(route('administration.users.index'))
         ->assertRedirect(route('administration.login'));
+});
+
+test('users index orders by scope hierarchy', function () {
+    $admin = createUserAdminUser();
+
+    User::factory()->withScope(UserScope::SCHOOL)->create(['username' => 'scope.school']);
+    User::factory()->withScope(UserScope::EDUCATION_SERVICES_OFFICE)->create(['username' => 'scope.office']);
+    User::factory()->withScope(UserScope::EDUCATION_MONITOR)->create(['username' => 'scope.monitor']);
+    User::factory()->withScope(UserScope::WAREHOUSE)->create(['username' => 'scope.warehouse']);
+
+    $this->actingAs($admin, 'administration')
+        ->get(route('administration.users.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('administration/users/index')
+            ->where('users.data', function ($users) {
+                $scopes = collect($users)->pluck('scope.id')->all();
+
+                return $scopes === [
+                    UserScope::ADMINISTRATION->value,
+                    UserScope::WAREHOUSE->value,
+                    UserScope::EDUCATION_MONITOR->value,
+                    UserScope::EDUCATION_SERVICES_OFFICE->value,
+                    UserScope::SCHOOL->value,
+                ];
+            })
+        );
 });
 
 test('users without user permissions cannot visit the create user page', function () {
@@ -471,6 +509,7 @@ test('authenticated users can visit the show user page', function () {
             ->has('availableRequestStates')
             ->has('can.update')
             ->has('can.delete')
+            ->has('can.stateUpdate')
         );
 });
 
@@ -590,4 +629,68 @@ test('authenticated users can delete a user', function () {
         ->assertRedirect(route('administration.users.index'));
 
     $this->assertSoftDeleted($target);
+});
+
+test('authenticated users can update a user account state', function () {
+    $user = createUserAdminUser();
+    $target = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->patch(route('administration.users.state.update', ['user' => $target]), [
+            'state' => 'deactivated',
+        ])
+        ->assertRedirect(route('administration.users.show', ['user' => $target]));
+
+    expect($target->fresh()->state)->toBeInstanceOf(Deactivated::class);
+});
+
+test('authenticated users can update a user request state', function () {
+    $user = createUserAdminUser();
+    $target = User::factory()
+        ->withRequestState(Pending::class)
+        ->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->patch(route('administration.users.request-state.update', ['user' => $target]), [
+            'request_state' => 'approved',
+        ])
+        ->assertRedirect(route('administration.users.show', ['user' => $target]));
+
+    expect($target->fresh()->request_state)->toBeInstanceOf(Approved::class);
+});
+
+test('state update validates the selected state', function () {
+    $user = createUserAdminUser();
+    $target = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->patch(route('administration.users.state.update', ['user' => $target]), [])
+        ->assertSessionHasErrors('state');
+});
+
+test('request state update validates the selected state', function () {
+    $user = createUserAdminUser();
+    $target = User::factory()
+        ->withRequestState(Pending::class)
+        ->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->patch(route('administration.users.request-state.update', ['user' => $target]), [])
+        ->assertSessionHasErrors('request_state');
+});
+
+test('users without state update permission cannot update account state', function () {
+    $user = User::factory()->create();
+    Permission::findOrCreate('user:view', UserScope::ADMINISTRATION->value);
+    $user->givePermissionTo('user:view');
+
+    $target = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->patch(route('administration.users.state.update', ['user' => $target]), [
+            'state' => 'deactivated',
+        ])
+        ->assertForbidden();
+
+    expect($target->fresh()->state)->toBeInstanceOf(Activated::class);
 });
