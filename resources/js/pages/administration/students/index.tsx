@@ -138,8 +138,14 @@ export default function Index({
     const schoolId = school_id?.toString();
     const monitorPending = pendingOrganization.monitorId !== undefined && pendingOrganization.monitorId !== monitorId;
     const schoolPending = pendingOrganization.schoolId !== undefined && pendingOrganization.schoolId !== schoolId;
-    const activeMonitorId = monitorId ?? pendingOrganization.monitorId;
-    const activeSchoolId = monitorPending ? pendingOrganization.schoolId : (schoolId ?? pendingOrganization.schoolId);
+    const activeMonitorId = pendingOrganization.monitorId ?? monitorId;
+    const candidateSchoolId = monitorPending
+        ? undefined
+        : (pendingOrganization.schoolId ?? schoolId);
+    const activeSchoolId =
+        candidateSchoolId && schools.some((school) => school.id.toString() === candidateSchoolId)
+            ? candidateSchoolId
+            : undefined;
     const isLoadingSchools = Boolean(activeMonitorId && monitorPending);
     const studentsStale = isNavigating && (schoolPending || monitorPending);
     const studentsLoading = Boolean(activeSchoolId && (!students || studentsStale));
@@ -236,6 +242,7 @@ export default function Index({
                                         </Select>
                                     ) : schools.length > 0 ? (
                                         <Select
+                                            key={activeMonitorId}
                                             value={activeSchoolId}
                                             disabled={isNavigating}
                                             onValueChange={handleSchoolChange}
