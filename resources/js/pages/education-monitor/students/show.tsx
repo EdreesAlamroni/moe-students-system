@@ -2,22 +2,26 @@ import React from 'react'
 
 import { Head, Link, usePage } from "@inertiajs/react";
 
-import type { CanPermissions, Student } from "@/types";
+import type { CanPermissions, Paginated, Student, StudentTransfer } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 import ActionsSection from "@/components/ui/structure/actions-section";
 
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellNullableValue } from "@/components/ui/display/table";
+import EmptyState from "@/components/ui/display/empty-state";
 import { DetailField, DetailFields } from "@/components/ui/display/detail-field";
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
 
 import { Button } from "@/components/ui/actions/button";
 
+import { Paginator } from "@/components/ui/navigation/paginator";
+
 import { StudentClassroomField, StudentGradeLevelField } from "@/components/shared/students/student-enrollment-fields";
 import TransferStudentOut from "@/components/shared/students/transfer-student-out";
 
-import { BookUserIcon, FileTextIcon, NotepadTextIcon } from "lucide-react";
+import { ArrowRightLeftIcon, BookUserIcon, FileTextIcon, NotepadTextIcon } from "lucide-react";
 
 import { index, show } from "@/routes/education-monitor/students";
 import { show as showPsychosocialCard } from "@/routes/education-monitor/students/psychosocial-card";
@@ -25,12 +29,17 @@ import { show as showAcademicRecord } from "@/routes/education-monitor/students/
 
 type PageProps = {
     student: Student;
+    transfers: Paginated<StudentTransfer>;
     canAny: boolean;
     can: CanPermissions;
 };
 
-export default function Show({ student, canAny, can }: PageProps) {
+export default function Show({ student, transfers, canAny, can }: PageProps) {
     const { currentAcademicYear } = usePage().props;
+
+    const { data: transfersData, links: transfersLinks, ...transfersMeta } = transfers;
+
+    const transfersHasPagination = transfersData.length > 0 && transfersMeta.last_page > 1;
 
     return (
         <>
@@ -162,6 +171,84 @@ export default function Show({ student, canAny, can }: PageProps) {
                                 </DetailField>
                             </DetailFields>
                         </CardContent>
+                    </Card>
+                </section>
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <ArrowRightLeftIcon />
+                                <div className="flex items-center gap-x-1.5">
+                                    <span>سجل عمليات النقل</span>
+                                    <span className="font-mono">({transfersMeta.total})</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        {transfersData.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="w-24 font-mono">#</TableHead>
+                                            <TableHead scope="col">المدرسة المغادر منها</TableHead>
+                                            <TableHead scope="col">المدرسة الملتحق بها</TableHead>
+                                            <TableHead scope="col" className="text-center">السنة الدراسية عند المغادرة</TableHead>
+                                            <TableHead scope="col" className="text-center">السنة الدراسية عند الالتحاق</TableHead>
+                                            <TableHead scope="col" className="text-center">تاريخ المغادرة</TableHead>
+                                            <TableHead scope="col" className="text-center">تاريخ الالتحاق</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {transfersData.map((transfer, index) => (
+                                            <TableRow key={transfer.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={transfer.from_school.name} />
+                                                    {transfer.from_school?.monitor && (
+                                                        <div className="mt-2 text-xs text-muted-foreground">
+                                                            <span>{transfer.from_school?.monitor?.name}</span>
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={transfer.to_school?.name} />
+                                                    {transfer.to_school?.monitor && (
+                                                        <div className="mt-2 text-xs text-muted-foreground">
+                                                            <span>{transfer.to_school?.monitor?.name}</span>
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={transfer.left_academic_year.name} className="font-mono" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={transfer.joined_academic_year?.name} className="font-mono" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={transfer.left_school_at} className="font-mono" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={transfer.joined_school_at} className="font-mono" />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState />
+                            </CardContent>
+                        )}
+                        {transfersHasPagination && (
+                            <CardFooter className="border-t">
+                                <Paginator
+                                    links={transfersLinks}
+                                    meta={transfersMeta}
+                                />
+                            </CardFooter>
+                        )}
                     </Card>
                 </section>
             </MainContainer>

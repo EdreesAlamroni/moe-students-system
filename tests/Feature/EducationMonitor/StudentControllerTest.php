@@ -267,6 +267,7 @@ test('student show displays student details', function () {
             ->where('student.monitor.name', $monitor->name)
             ->where('student.school.name', $school->name)
             ->where('student.nationality.name', $student->nationality->name)
+            ->has('transfers')
         );
 });
 
