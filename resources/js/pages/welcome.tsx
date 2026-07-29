@@ -38,41 +38,36 @@ type Portal = {
 const portals: Portal[] = [
     {
         key: 'administration',
-        title: 'الوزارة',
-        description:
-            'إدارة البيانات المركزية، المستخدمين، المدارس، والمراجع الأساسية للمنظومة.',
+        title: 'الإدارة',
+        description: 'إدارة البيانات المركزية، المستخدمين، المدارس، والمراجع الأساسية للمنظومة.',
         href: administrationLogin.url(),
         icon: UserRoundCogIcon,
     },
     {
         key: 'warehouse',
         title: 'المخزن',
-        description:
-            'متابعة توزيع الكتب المدرسية وإدارة المخزون عبر المراقبات والمدارس.',
+        description: 'متابعة توزيع الكتب المدرسية وإدارة المخزون عبر المراقبات والمدارس.',
         href: warehouseLogin.url(),
         icon: WarehouseIcon,
     },
     {
         key: 'education-monitor',
         title: 'المُراقبة',
-        description:
-            'متابعة المدارس ومكاتب الخدمات التعليمية ضمن نطاق المراقبة التعليمية.',
+        description: 'متابعة المدارس ومكاتب الخدمات التعليمية ضمن نطاق المراقبة التعليمية.',
         href: educationMonitorLogin.url(),
         icon: LandmarkIcon,
     },
     {
         key: 'education-services-office',
         title: 'مكتب الخدمات التعليمية',
-        description:
-            'إدارة المدارس والطلاب والعمليات اليومية ضمن نطاق مكتب الخدمات التعليمية.',
+        description: 'إدارة المدارس والطلاب والعمليات اليومية ضمن نطاق مكتب الخدمات التعليمية.',
         href: educationServicesOfficeLogin.url(),
         icon: BuildingIcon,
     },
     {
         key: 'school',
         title: 'المدرسة',
-        description:
-            'إدارة شؤون المدرسة، الطلاب، الفصول الدراسية، والسجلات الأكاديمية.',
+        description: 'إدارة شؤون المدرسة، الطلاب، الفصول الدراسية، والسجلات الأكاديمية.',
         href: schoolLogin.url(),
         icon: SchoolIcon,
     },
