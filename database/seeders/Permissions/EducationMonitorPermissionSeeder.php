@@ -108,6 +108,12 @@ class EducationMonitorPermissionSeeder extends Seeder
         $addTransferredStudent = Permission::findOrCreate('student:add-transferred-student', $this->scope);
         $transferStudentOut = Permission::findOrCreate('student:transfer-student-out-of-monitor', $this->scope);
 
+        // Academic record permissions
+        $viewAcademicRecord = Permission::findOrCreate('student:view-academic-record', $this->scope);
+
+        // Psychosocial card permissions
+        $viewPsychosocialCard = Permission::findOrCreate('student:view-psychosocial-card', $this->scope);
+
         // Roles
         $viewRole = Role::findOrCreate('student:role:view', $this->scope);
 
@@ -115,12 +121,24 @@ class EducationMonitorPermissionSeeder extends Seeder
         $addTransferredStudentRole = Role::findOrCreate('student:role:add-transferred-student', $this->scope);
         $transferStudentOutRole = Role::findOrCreate('student:role:transfer-student-out-of-monitor', $this->scope);
 
+        // Academic record roles
+        $viewAcademicRecordRole = Role::findOrCreate('student:role:view-academic-record', $this->scope);
+
+        // Psychosocial card roles
+        $viewPsychosocialCardRole = Role::findOrCreate('student:role:view-psychosocial-card', $this->scope);
+
         // Sync permissions with roles
         $viewRole->syncPermissions([$viewAny, $view]);
 
         // Sync transfer permissions with roles
         $addTransferredStudentRole->syncPermissions([$viewAny, $view, $addTransferredStudent]);
         $transferStudentOutRole->syncPermissions([$viewAny, $view, $transferStudentOut]);
+
+        // Sync academic record permissions with roles
+        $viewAcademicRecordRole->syncPermissions([$viewAny, $view, $viewAcademicRecord]);
+
+        // Sync psychosocial card permissions with roles
+        $viewPsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard]);
     }
 
     protected function seedReports(): void

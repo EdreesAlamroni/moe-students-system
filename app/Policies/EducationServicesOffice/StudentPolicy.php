@@ -22,6 +22,32 @@ class StudentPolicy
         return $user->can('student:view');
     }
 
+    public function viewAcademicRecord(User $user, Student $student): bool
+    {
+        if (! $this->belongsToCurrentOffice($user, $student)) {
+            return false;
+        }
+
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-academic-record');
+    }
+
+    public function viewPsychosocialCard(User $user, Student $student): bool
+    {
+        if (! $this->belongsToCurrentOffice($user, $student)) {
+            return false;
+        }
+
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-psychosocial-card');
+    }
+
     private function belongsToCurrentOffice(User $user, Student $student): bool
     {
         if ($user->organization_type !== EducationServicesOffice::class) {

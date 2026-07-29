@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Head, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 
 import type { CanPermissions, Student } from "@/types";
 
@@ -12,12 +12,16 @@ import { DetailField, DetailFields } from "@/components/ui/display/detail-field"
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
 
+import { Button } from "@/components/ui/actions/button";
+
 import { StudentClassroomField, StudentGradeLevelField } from "@/components/shared/students/student-enrollment-fields";
 import TransferStudentOut from "@/components/shared/students/transfer-student-out";
 
-import { NotepadTextIcon } from "lucide-react";
+import { BookUserIcon, FileTextIcon, NotepadTextIcon } from "lucide-react";
 
 import { index, show } from "@/routes/education-monitor/students";
+import { show as showPsychosocialCard } from "@/routes/education-monitor/students/psychosocial-card";
+import { show as showAcademicRecord } from "@/routes/education-monitor/students/academic-record";
 
 type PageProps = {
     student: Student;
@@ -33,9 +37,33 @@ export default function Show({ student, canAny, can }: PageProps) {
             <Head title="عرض بيانات الطالب" />
 
             <MainContainer showAcademicYearNotice>
-                {(canAny && currentAcademicYear?.is_active) && (
+                {canAny && (
                     <ActionsSection>
-                        {(can.transferStudentOut) && (
+                        {can.viewAcademicRecord && (
+                            <Button
+                                variant="outline"
+                                asChild
+                            >
+                                <Link href={showAcademicRecord.url({ student: student })}>
+                                    <FileTextIcon />
+                                    <span>السجل الدراسي</span>
+                                </Link>
+                            </Button>
+                        )}
+
+                        {can.viewPsychosocialCard && (
+                            <Button
+                                variant="outline"
+                                asChild
+                            >
+                                <Link href={showPsychosocialCard.url({ student: student })}>
+                                    <BookUserIcon />
+                                    <span>البطاقة الإجتماعية والنفسية</span>
+                                </Link>
+                            </Button>
+                        )}
+
+                        {(currentAcademicYear?.is_active && can.transferStudentOut) && (
                             <TransferStudentOut
                                 student={student}
                                 context="education-monitor"

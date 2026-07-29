@@ -5,8 +5,10 @@ use App\Http\Controllers\AccountSettings\SecurityController;
 use App\Http\Controllers\EducationServicesOffice\DashboardController;
 use App\Http\Controllers\EducationServicesOffice\SchoolController;
 use App\Http\Controllers\EducationServicesOffice\SchoolReportController;
+use App\Http\Controllers\EducationServicesOffice\StudentAcademicRecordController;
 use App\Http\Controllers\EducationServicesOffice\StudentController;
 use App\Http\Controllers\EducationServicesOffice\StudentCountByGradeLevelReportController;
+use App\Http\Controllers\EducationServicesOffice\StudentPsychosocialCardController;
 use App\Http\Controllers\EducationServicesOffice\UserController;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Auth\RegistersDashboardAuthRoutes;
@@ -33,6 +35,12 @@ Route::middleware(['auth:education_services_office', 'ensure.password.changed'])
     Route::prefix('students')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
         Route::get('/{student}', [StudentController::class, 'show'])->name('students.show');
+
+        // Academic Records
+        Route::get('/{student}/academic-record', [StudentAcademicRecordController::class, 'show'])->name('students.academic-record.show');
+
+        // Student Psychosocial Card
+        Route::get('/{student}/psychosocial-card', [StudentPsychosocialCardController::class, 'show'])->name('students.psychosocial-card.show');
     });
 
     // Reports

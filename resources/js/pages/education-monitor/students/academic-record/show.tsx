@@ -15,8 +15,8 @@ import AcademicRecordGradeLevelCard from "@/components/shared/academic-record/ac
 
 import { CheckCircle2Icon, FileTextIcon, GraduationCapIcon } from "lucide-react";
 
-import { index as indexStudents, show as showStudent } from "@/routes/administration/students";
-import { show } from "@/routes/administration/students/academic-record";
+import { index as indexStudents, show as showStudent } from "@/routes/education-monitor/students";
+import { show } from "@/routes/education-monitor/students/academic-record";
 
 type PageProps = {
     student: Student;

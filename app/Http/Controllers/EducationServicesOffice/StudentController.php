@@ -9,6 +9,7 @@ use App\Http\Resources\EducationServicesOffice\StudentResource;
 use App\Models\Nationality;
 use App\Models\School;
 use App\Models\Student;
+use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -62,12 +63,16 @@ class StudentController extends Controller
             'monitor:id,uuid,name',
             'school:id,uuid,name,education_services_office_id',
             'nationality:id,uuid,name,code',
+            'enrollment',
+            'enrollment.gradeLevel',
+            'enrollment.classroom',
         ]);
 
         return Inertia::render('education-services-office/students/show', [
             'student' => ResourcePayloadBuilder::make(
                 StudentResource::make($student),
             ),
+            ...ModelAbilityMap::make($student, ['viewAcademicRecord', 'viewPsychosocialCard']),
         ]);
     }
 

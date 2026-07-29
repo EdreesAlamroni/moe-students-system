@@ -275,11 +275,11 @@ class AdministrationPermissionSeeder extends Seeder
         $update = Permission::findOrCreate('student:update', $this->scope);
         $delete = Permission::findOrCreate('student:delete', $this->scope);
 
-        // Psychosocial card permissions
-        $viewPsychosocialCard = Permission::findOrCreate('student:view-psychosocial-card', $this->scope);
-
         // Academic record permissions
         $viewAcademicRecord = Permission::findOrCreate('student:view-academic-record', $this->scope);
+
+        // Psychosocial card permissions
+        $viewPsychosocialCard = Permission::findOrCreate('student:view-psychosocial-card', $this->scope);
 
         // Roles
         $viewRole = Role::findOrCreate('student:role:view', $this->scope);
@@ -287,11 +287,11 @@ class AdministrationPermissionSeeder extends Seeder
         $updateRole = Role::findOrCreate('student:role:update', $this->scope);
         $deleteRole = Role::findOrCreate('student:role:delete', $this->scope);
 
-        // Psychosocial card roles
-        $viewPsychosocialCardRole = Role::findOrCreate('student:role:view-psychosocial-card', $this->scope);
-
         // Academic record roles
         $viewAcademicRecordRole = Role::findOrCreate('student:role:view-academic-record', $this->scope);
+
+        // Psychosocial card roles
+        $viewPsychosocialCardRole = Role::findOrCreate('student:role:view-psychosocial-card', $this->scope);
 
         // Sync permissions with roles
         $viewRole->syncPermissions([$viewAny, $view]);
@@ -299,11 +299,11 @@ class AdministrationPermissionSeeder extends Seeder
         $updateRole->syncPermissions([$viewAny, $view, $update]);
         $deleteRole->syncPermissions([$viewAny, $view, $delete]);
 
-        // Sync psychosocial card permissions with roles
-        $viewPsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard]);
-
         // Sync academic record permissions with roles
         $viewAcademicRecordRole->syncPermissions([$viewAny, $view, $viewAcademicRecord]);
+
+        // Sync psychosocial card permissions with roles
+        $viewPsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard]);
     }
 
     private function seedSubjectClassification(): void

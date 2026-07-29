@@ -60,7 +60,7 @@ class StudentPsychosocialCardResource extends JsonResource
             'family_income' => $card->family_income?->toArray(),
             'accommodation_type' => $card->accommodation_type?->toArray(),
             'accommodation_form' => $card->accommodation_form?->toArray(),
-            'behavioral_problems' => Arr::map($card->behavioral_problems, function (array $problem) {
+            'behavioral_problems' => Arr::map($card->behavioral_problems ?? [], function (array $problem) {
                 return [
                     'label' => StudentBehavioralProblem::from($problem['behavior'])->label(),
                     'behavior' => $problem['behavior'],

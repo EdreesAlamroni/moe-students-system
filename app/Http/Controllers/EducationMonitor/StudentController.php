@@ -64,13 +64,16 @@ class StudentController extends Controller
             'monitor:id,uuid,name',
             'school:id,uuid,name',
             'nationality:id,uuid,name,code',
+            'enrollment',
+            'enrollment.gradeLevel',
+            'enrollment.classroom',
         ]);
 
         return Inertia::render('education-monitor/students/show', [
             'student' => ResourcePayloadBuilder::make(
                 StudentResource::make($student),
             ),
-            ...ModelAbilityMap::make($student, ['transferStudentOut']),
+            ...ModelAbilityMap::make($student, ['transferStudentOut', 'viewAcademicRecord', 'viewPsychosocialCard']),
         ]);
     }
 

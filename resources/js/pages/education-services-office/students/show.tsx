@@ -1,32 +1,67 @@
 import React from 'react'
 
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 
-import type { Student } from "@/types";
+import type { CanPermissions, Student } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
+import ActionsSection from "@/components/ui/structure/actions-section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
 
 import { DetailField, DetailFields } from "@/components/ui/display/detail-field";
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
 
+import { Button } from "@/components/ui/actions/button";
+
 import { StudentClassroomField, StudentGradeLevelField } from "@/components/shared/students/student-enrollment-fields";
 
-import { NotepadTextIcon } from "lucide-react";
+import { BookUserIcon, FileTextIcon, NotepadTextIcon } from "lucide-react";
 
 import { index, show } from "@/routes/education-services-office/students";
+import { show as showPsychosocialCard } from "@/routes/education-services-office/students/psychosocial-card";
+import { show as showAcademicRecord } from "@/routes/education-services-office/students/academic-record";
 
 type PageProps = {
     student: Student;
+    canAny: boolean;
+    can: CanPermissions;
 };
 
-export default function Show({ student }: PageProps) {
+export default function Show({ student, canAny, can }: PageProps) {
     return (
         <>
             <Head title="عرض بيانات الطالب" />
 
             <MainContainer showAcademicYearNotice>
+                {canAny && (
+                    <ActionsSection>
+                        {can.viewAcademicRecord && (
+                            <Button
+                                variant="outline"
+                                asChild
+                            >
+                                <Link href={showAcademicRecord.url({ student: student })}>
+                                    <FileTextIcon />
+                                    <span>السجل الدراسي</span>
+                                </Link>
+                            </Button>
+                        )}
+
+                        {can.viewPsychosocialCard && (
+                            <Button
+                                variant="outline"
+                                asChild
+                            >
+                                <Link href={showPsychosocialCard.url({ student: student })}>
+                                    <BookUserIcon />
+                                    <span>البطاقة الإجتماعية والنفسية</span>
+                                </Link>
+                            </Button>
+                        )}
+                    </ActionsSection>
+                )}
+
                 <section>
                     <Card>
                         <CardHeader className="border-b">

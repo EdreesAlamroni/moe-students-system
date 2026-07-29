@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Administration;
+namespace App\Http\Resources\EducationServicesOffice;
 
 use App\Enums\StudentBehavioralProblem;
 use App\Models\Nationality;

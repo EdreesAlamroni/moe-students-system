@@ -69,11 +69,29 @@ class EducationServicesOfficePermissionSeeder extends Seeder
         $viewAny = Permission::findOrCreate('student:view-any', $this->scope);
         $view = Permission::findOrCreate('student:view', $this->scope);
 
+        // Academic record permissions
+        $viewAcademicRecord = Permission::findOrCreate('student:view-academic-record', $this->scope);
+
+        // Psychosocial card permissions
+        $viewPsychosocialCard = Permission::findOrCreate('student:view-psychosocial-card', $this->scope);
+
         // Roles
         $viewRole = Role::findOrCreate('student:role:view', $this->scope);
 
+        // Academic record roles
+        $viewAcademicRecordRole = Role::findOrCreate('student:role:view-academic-record', $this->scope);
+
+        // Psychosocial card roles
+        $viewPsychosocialCardRole = Role::findOrCreate('student:role:view-psychosocial-card', $this->scope);
+
         // Sync permissions with roles
         $viewRole->syncPermissions([$viewAny, $view]);
+
+        // Sync academic record permissions with roles
+        $viewAcademicRecordRole->syncPermissions([$viewAny, $view, $viewAcademicRecord]);
+
+        // Sync psychosocial card permissions with roles
+        $viewPsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard]);
     }
 
     protected function seedReports(): void

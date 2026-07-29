@@ -50,6 +50,32 @@ class StudentPolicy
         return $user->can('student:transfer-student-out-of-monitor');
     }
 
+    public function viewAcademicRecord(User $user, Student $student): bool
+    {
+        if (! $this->belongsToCurrentMonitor($user, $student)) {
+            return false;
+        }
+
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-academic-record');
+    }
+
+    public function viewPsychosocialCard(User $user, Student $student): bool
+    {
+        if (! $this->belongsToCurrentMonitor($user, $student)) {
+            return false;
+        }
+
+        if ($student->trashed()) {
+            return false;
+        }
+
+        return $user->can('student:view-psychosocial-card');
+    }
+
     private function belongsToCurrentMonitor(User $user, Student $student): bool
     {
         return $user->organization_type === EducationMonitor::class
