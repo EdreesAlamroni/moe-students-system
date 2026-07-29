@@ -74,10 +74,14 @@ export function LoginForm({ routes }: Props) {
                         <InputError message={errors.password} />
                     </Field>
 
-                    <div className="flex items-center gap-x-3">
-                        <Checkbox id="remember" name="remember" tabIndex={3} />
+                    <div className="flex items-start flex-col gap-2">
+                        <div className="flex items-center gap-x-3">
+                            <Checkbox id="remember" name="remember" tabIndex={3} />
 
-                        <Label htmlFor="remember">تذكرني</Label>
+                            <Label htmlFor="remember">تذكرني</Label>
+                        </div>
+
+                        <InputError message={errors.remember} />
                     </div>
 
                     <Button
