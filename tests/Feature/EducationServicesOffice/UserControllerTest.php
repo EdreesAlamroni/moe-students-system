@@ -273,6 +273,26 @@ test('store rejects schools that do not belong to the current office', function 
         ->assertSessionHasErrors('school_id');
 });
 
+test('store requires a school when the field is omitted', function () {
+    $office = EducationServicesOffice::factory()->create();
+    $user = createEducationServicesOfficeManager($office);
+    $role = Role::findOrCreate('user:role:view', UserScope::SCHOOL->value);
+    $payload = [
+        'scope' => UserScope::SCHOOL->value,
+        'name' => 'School User Without Organization',
+        'username' => 'school.user.without.organization',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ];
+
+    $this->actingAs($user, 'education_services_office')
+        ->post(route('education-services-office.users.store'), $payload)
+        ->assertSessionHasErrors('school_id');
+
+    expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
+});
+
 test('store validates required fields', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeManager($office);

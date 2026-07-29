@@ -271,6 +271,86 @@ test('store rejects offices that do not belong to the current monitor', function
         ->assertSessionHasErrors('education_services_office_id');
 });
 
+test('store requires an education services office when the field is omitted', function () {
+    $monitor = EducationMonitor::factory()->create();
+    $user = createEducationMonitorManager($monitor);
+    $role = Role::findOrCreate('user:role:view', UserScope::EDUCATION_SERVICES_OFFICE->value);
+    $payload = [
+        'scope' => UserScope::EDUCATION_SERVICES_OFFICE->value,
+        'name' => 'Office User Without Organization',
+        'username' => 'office.user.without.organization',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ];
+
+    $this->actingAs($user, 'education_monitor')
+        ->post(route('education-monitor.users.store'), $payload)
+        ->assertSessionHasErrors('education_services_office_id');
+
+    expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
+});
+
+test('store requires a school when the field is omitted', function () {
+    $monitor = EducationMonitor::factory()->create();
+    $user = createEducationMonitorManager($monitor);
+    $role = Role::findOrCreate('user:role:view', UserScope::SCHOOL->value);
+    $payload = [
+        'scope' => UserScope::SCHOOL->value,
+        'name' => 'School User Without Organization',
+        'username' => 'school.user.without.organization',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ];
+
+    $this->actingAs($user, 'education_monitor')
+        ->post(route('education-monitor.users.store'), $payload)
+        ->assertSessionHasErrors('school_id');
+
+    expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
+});
+
+test('authenticated education monitor users can store a school user under their monitor', function () {
+    $monitor = EducationMonitor::factory()->create();
+    $user = createEducationMonitorManager($monitor);
+    $school = School::factory()->for($monitor, 'monitor')->create();
+    $payload = educationMonitorDashboardUserPayload([
+        'scope' => UserScope::SCHOOL->value,
+        'school_id' => $school->id,
+        'username' => 'school.dashboard.user',
+        'email' => 'school.dashboard.user@example.com',
+    ]);
+
+    $response = $this->actingAs($user, 'education_monitor')
+        ->post(route('education-monitor.users.store'), $payload);
+
+    $createdUser = User::query()->where('username', $payload['username'])->first();
+
+    expect($createdUser)->not->toBeNull()
+        ->and($createdUser->scope)->toBe(UserScope::SCHOOL)
+        ->and($createdUser->request_state)->toBeInstanceOf(Pending::class)
+        ->and($createdUser->organization_id)->toBe($school->id)
+        ->and($createdUser->organization_type)->toBe(School::class);
+
+    $response->assertRedirect(route('education-monitor.users.show', ['user' => $createdUser]));
+});
+
+test('store rejects schools that do not belong to the current monitor', function () {
+    $monitor = EducationMonitor::factory()->create();
+    $user = createEducationMonitorManager($monitor);
+    $otherMonitor = EducationMonitor::factory()->create();
+    $foreignSchool = School::factory()->for($otherMonitor, 'monitor')->create();
+
+    $this->actingAs($user, 'education_monitor')
+        ->post(route('education-monitor.users.store'), educationMonitorDashboardUserPayload([
+            'scope' => UserScope::SCHOOL->value,
+            'school_id' => $foreignSchool->id,
+            'username' => 'foreign.school.user',
+        ]))
+        ->assertSessionHasErrors('school_id');
+});
+
 test('store validates required fields', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorManager($monitor);

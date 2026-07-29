@@ -294,6 +294,7 @@ return [
         'educational_stages_morning.*' => 'المرحلة الدراسية (الفترة الصباحية)',
         'educational_stages_evening' => 'المراحل الدراسية (الفترة المسائية)',
         'educational_stages_evening.*' => 'المرحلة الدراسية (الفترة المسائية)',
+        'warehouse_id' => 'المخزن',
     ],
 
     'values' => [],

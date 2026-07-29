@@ -71,6 +71,71 @@ function warehouseUserPayload(Warehouse $warehouse, array $overrides = []): arra
     ], $overrides);
 }
 
+/**
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function educationMonitorUserPayload(EducationMonitor $monitor, array $overrides = []): array
+{
+    $role = Role::findOrCreate('user:role:view', UserScope::EDUCATION_MONITOR->value);
+
+    return array_merge([
+        'scope' => UserScope::EDUCATION_MONITOR->value,
+        'education_monitor_id' => $monitor->id,
+        'name' => 'New Education Monitor User',
+        'username' => 'education.monitor.user.create',
+        'email' => null,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ], $overrides);
+}
+
+/**
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function educationServicesOfficeUserPayload(
+    EducationMonitor $monitor,
+    EducationServicesOffice $office,
+    array $overrides = [],
+): array {
+    $role = Role::findOrCreate('user:role:view', UserScope::EDUCATION_SERVICES_OFFICE->value);
+
+    return array_merge([
+        'scope' => UserScope::EDUCATION_SERVICES_OFFICE->value,
+        'education_monitor_id' => $monitor->id,
+        'education_services_office_id' => $office->id,
+        'name' => 'New Education Services Office User',
+        'username' => 'education.services.office.user.create',
+        'email' => null,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ], $overrides);
+}
+
+/**
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function schoolUserPayload(EducationMonitor $monitor, School $school, array $overrides = []): array
+{
+    $role = Role::findOrCreate('user:role:view', UserScope::SCHOOL->value);
+
+    return array_merge([
+        'scope' => UserScope::SCHOOL->value,
+        'education_monitor_id' => $monitor->id,
+        'school_id' => $school->id,
+        'name' => 'New School User',
+        'username' => 'school.user.create',
+        'email' => null,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ], $overrides);
+}
+
 beforeEach(function () {
     PolicyRegistrar::register(Request::create('/administration/users', 'GET'));
 });
@@ -215,6 +280,141 @@ test('store requires a warehouse when creating a warehouse user', function () {
     $this->actingAs($user, 'administration')
         ->post(route('administration.users.store'), $payload)
         ->assertSessionHasErrors('warehouse_id');
+});
+
+test('store requires a warehouse when the field is omitted', function () {
+    $user = createUserAdminUser();
+    $role = Role::findOrCreate('user:role:view', UserScope::WAREHOUSE->value);
+    $payload = [
+        'scope' => UserScope::WAREHOUSE->value,
+        'name' => 'Warehouse User Without Organization',
+        'username' => 'warehouse.user.without.organization',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ];
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.users.store'), $payload)
+        ->assertSessionHasErrors('warehouse_id');
+
+    expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
+});
+
+test('store requires an education monitor when the field is omitted', function () {
+    $user = createUserAdminUser();
+    $role = Role::findOrCreate('user:role:view', UserScope::EDUCATION_MONITOR->value);
+    $payload = [
+        'scope' => UserScope::EDUCATION_MONITOR->value,
+        'name' => 'Education Monitor User Without Organization',
+        'username' => 'education.monitor.user.without.organization',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ];
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.users.store'), $payload)
+        ->assertSessionHasErrors('education_monitor_id');
+
+    expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
+});
+
+test('store requires an education monitor and office when office fields are omitted', function () {
+    $user = createUserAdminUser();
+    $role = Role::findOrCreate('user:role:view', UserScope::EDUCATION_SERVICES_OFFICE->value);
+    $payload = [
+        'scope' => UserScope::EDUCATION_SERVICES_OFFICE->value,
+        'name' => 'Education Services Office User Without Organization',
+        'username' => 'education.services.office.user.without.organization',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ];
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.users.store'), $payload)
+        ->assertSessionHasErrors(['education_monitor_id', 'education_services_office_id']);
+
+    expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
+});
+
+test('store requires an education monitor and school when school fields are omitted', function () {
+    $user = createUserAdminUser();
+    $role = Role::findOrCreate('user:role:view', UserScope::SCHOOL->value);
+    $payload = [
+        'scope' => UserScope::SCHOOL->value,
+        'name' => 'School User Without Organization',
+        'username' => 'school.user.without.organization',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'roles' => [$role->id],
+    ];
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.users.store'), $payload)
+        ->assertSessionHasErrors(['education_monitor_id', 'school_id']);
+
+    expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
+});
+
+test('authenticated users can store an education monitor user', function () {
+    $user = createUserAdminUser();
+    $monitor = EducationMonitor::factory()->create();
+    $payload = educationMonitorUserPayload($monitor, [
+        'username' => 'education.monitor.user.store',
+    ]);
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.users.store'), $payload)
+        ->assertRedirect();
+
+    $createdUser = User::query()->where('username', $payload['username'])->first();
+
+    expect($createdUser)->not->toBeNull()
+        ->and($createdUser->scope)->toBe(UserScope::EDUCATION_MONITOR)
+        ->and($createdUser->organization_id)->toBe($monitor->id)
+        ->and($createdUser->organization_type)->toBe(EducationMonitor::class);
+});
+
+test('authenticated users can store an education services office user', function () {
+    $user = createUserAdminUser();
+    $monitor = EducationMonitor::factory()->create();
+    $office = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
+    $payload = educationServicesOfficeUserPayload($monitor, $office, [
+        'username' => 'education.services.office.user.store',
+    ]);
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.users.store'), $payload)
+        ->assertRedirect();
+
+    $createdUser = User::query()->where('username', $payload['username'])->first();
+
+    expect($createdUser)->not->toBeNull()
+        ->and($createdUser->scope)->toBe(UserScope::EDUCATION_SERVICES_OFFICE)
+        ->and($createdUser->organization_id)->toBe($office->id)
+        ->and($createdUser->organization_type)->toBe(EducationServicesOffice::class);
+});
+
+test('authenticated users can store a school user', function () {
+    $user = createUserAdminUser();
+    $monitor = EducationMonitor::factory()->create();
+    $school = School::factory()->for($monitor, 'monitor')->create();
+    $payload = schoolUserPayload($monitor, $school, [
+        'username' => 'school.user.store',
+    ]);
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.users.store'), $payload)
+        ->assertRedirect();
+
+    $createdUser = User::query()->where('username', $payload['username'])->first();
+
+    expect($createdUser)->not->toBeNull()
+        ->and($createdUser->scope)->toBe(UserScope::SCHOOL)
+        ->and($createdUser->organization_id)->toBe($school->id)
+        ->and($createdUser->organization_type)->toBe(School::class);
 });
 
 test('store rejects roles that do not belong to the selected scope', function () {

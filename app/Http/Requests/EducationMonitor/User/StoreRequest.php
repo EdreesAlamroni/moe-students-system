@@ -26,23 +26,20 @@ class StoreRequest extends FormRequest
     {
         $monitorId = $this->currentMonitorId();
 
+        $scopeIsEducationServicesOffice = $this->scopeIs(UserScope::EDUCATION_SERVICES_OFFICE);
+        $scopeIsSchool = $this->scopeIs(UserScope::SCHOOL);
+
         return [
-            'education_services_office_id' => [
-                'sometimes',
-                'nullable',
-                Rule::requiredIf(function (): bool {
-                    return $this->scopeIs(UserScope::EDUCATION_SERVICES_OFFICE);
-                }),
-                Rule::exists(EducationServicesOffice::class, 'id')->where('education_monitor_id', $monitorId),
-            ],
-            'school_id' => [
-                'sometimes',
-                'nullable',
-                Rule::requiredIf(function (): bool {
-                    return $this->scopeIs(UserScope::SCHOOL);
-                }),
-                Rule::exists(School::class, 'id')->where('education_monitor_id', $monitorId),
-            ],
+            'education_services_office_id' => Rule::when($scopeIsEducationServicesOffice, [
+                'required',
+                Rule::exists(EducationServicesOffice::class, 'id')
+                    ->where('education_monitor_id', $monitorId),
+            ]),
+            'school_id' => Rule::when($scopeIsSchool, [
+                'required',
+                Rule::exists(School::class, 'id')
+                    ->where('education_monitor_id', $monitorId),
+            ]),
             'name' => [
                 'required',
                 'string',

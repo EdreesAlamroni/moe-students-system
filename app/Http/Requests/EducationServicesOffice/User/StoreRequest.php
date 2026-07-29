@@ -25,15 +25,14 @@ class StoreRequest extends FormRequest
     {
         $officeId = $this->currentOfficeId();
 
+        $scopeIsSchool = $this->scopeIs(UserScope::SCHOOL);
+
         return [
-            'school_id' => [
-                'sometimes',
-                'nullable',
-                Rule::requiredIf(function (): bool {
-                    return $this->scopeIs(UserScope::SCHOOL);
-                }),
-                Rule::exists(School::class, 'id')->where('education_services_office_id', $officeId),
-            ],
+            'school_id' => Rule::when($scopeIsSchool, [
+                'required',
+                Rule::exists(School::class, 'id')
+                    ->where('education_services_office_id', $officeId),
+            ]),
             'name' => [
                 'required',
                 'string',

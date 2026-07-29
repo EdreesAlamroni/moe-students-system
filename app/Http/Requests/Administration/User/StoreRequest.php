@@ -25,41 +25,30 @@ class StoreRequest extends FormRequest
 
     public function rules(): array
     {
+        $scopeIsWarehouse = $this->scopeIs(UserScope::WAREHOUSE);
+        $scopeRequiresMonitor = $this->scopeRequiresMonitor();
+        $scopeIsEducationServicesOffice = $this->scopeIs(UserScope::EDUCATION_SERVICES_OFFICE);
+        $scopeIsSchool = $this->scopeIs(UserScope::SCHOOL);
+
         return [
-            'warehouse_id' => [
-                'sometimes',
-                'nullable',
-                Rule::requiredIf(function (): bool {
-                    return $this->scopeIs(UserScope::WAREHOUSE);
-                }),
+            'warehouse_id' => Rule::when($scopeIsWarehouse, [
+                'required',
                 Rule::exists(Warehouse::class, 'id'),
-            ],
-            'education_monitor_id' => [
-                'sometimes',
-                'nullable',
-                Rule::requiredIf(function (): bool {
-                    return $this->scopeIs(UserScope::EDUCATION_MONITOR)
-                        || $this->scopeIs(UserScope::EDUCATION_SERVICES_OFFICE)
-                        || $this->scopeIs(UserScope::SCHOOL);
-                }),
+            ]),
+            'education_monitor_id' => Rule::when($scopeRequiresMonitor, [
+                'required',
                 Rule::exists(EducationMonitor::class, 'id'),
-            ],
-            'education_services_office_id' => [
-                'sometimes',
-                'nullable',
-                Rule::requiredIf(function (): bool {
-                    return $this->scopeIs(UserScope::EDUCATION_SERVICES_OFFICE);
-                }),
-                Rule::exists(EducationServicesOffice::class, 'id')->where('education_monitor_id', $this->input('education_monitor_id')),
-            ],
-            'school_id' => [
-                'sometimes',
-                'nullable',
-                Rule::requiredIf(function (): bool {
-                    return $this->scopeIs(UserScope::SCHOOL);
-                }),
-                Rule::exists(School::class, 'id')->where('education_monitor_id', $this->input('education_monitor_id')),
-            ],
+            ]),
+            'education_services_office_id' => Rule::when($scopeIsEducationServicesOffice, [
+                'required',
+                Rule::exists(EducationServicesOffice::class, 'id')
+                    ->where('education_monitor_id', $this->input('education_monitor_id')),
+            ]),
+            'school_id' => Rule::when($scopeIsSchool, [
+                'required',
+                Rule::exists(School::class, 'id')
+                    ->where('education_monitor_id', $this->input('education_monitor_id')),
+            ]),
             'name' => [
                 'required',
                 'string',
@@ -161,5 +150,12 @@ class StoreRequest extends FormRequest
     private function scopeIs(UserScope $scope): bool
     {
         return $this->enum('scope', UserScope::class) === $scope;
+    }
+
+    private function scopeRequiresMonitor(): bool
+    {
+        return $this->scopeIs(UserScope::EDUCATION_MONITOR)
+            || $this->scopeIs(UserScope::EDUCATION_SERVICES_OFFICE)
+            || $this->scopeIs(UserScope::SCHOOL);
     }
 }
