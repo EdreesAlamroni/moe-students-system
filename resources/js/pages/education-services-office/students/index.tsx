@@ -273,26 +273,32 @@ export default function Index({
                                                 </SelectContent>
                                             </Select>
 
-                                            <Select
-                                                name="filter[nationality_id]"
-                                                defaultValue={filter.nationality_id || undefined}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="الجنسية" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        {(nationalities ?? []).map((nationality) => (
-                                                            <SelectItem
-                                                                key={nationality.id}
-                                                                value={nationality.id.toString()}
-                                                            >
-                                                                {nationality.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
+                                            {(nationalities ?? []).length > 0 ? (
+                                                <Select
+                                                    name="filter[nationality_id]"
+                                                    defaultValue={filter.nationality_id || undefined}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="الجنسية" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            {(nationalities ?? []).map((nationality) => (
+                                                                <SelectItem
+                                                                    key={nationality.id}
+                                                                    value={nationality.id.toString()}
+                                                                >
+                                                                    {nationality.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                            ) : (
+                                                <EmptyOptionsInput
+                                                    placeholder="لا توجد جنسيات متاحة للاختيار"
+                                                />
+                                            )}
 
                                             <Input
                                                 type="text"

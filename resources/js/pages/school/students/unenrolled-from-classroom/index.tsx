@@ -15,6 +15,7 @@ import EmptyState from "@/components/ui/display/empty-state";
 
 import { Input } from "@/components/ui/controls/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import { Button } from "@/components/ui/actions/button";
 import ViewDetailsLink from "@/components/ui/actions/view-details-link";
@@ -76,26 +77,32 @@ export default function Index({ students, nationalities, registrationStatuses, g
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                                    <Select
-                                        name="filter[grade_level_id]"
-                                        defaultValue={filter.grade_level_id || undefined}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="الصف الدراسي" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {gradeLevels.map((gradeLevel) => (
-                                                    <SelectItem
-                                                        key={gradeLevel.id}
-                                                        value={gradeLevel.id.toString()}
-                                                    >
-                                                        {gradeLevel.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    {gradeLevels.length > 0 ? (
+                                        <Select
+                                            name="filter[grade_level_id]"
+                                            defaultValue={filter.grade_level_id || undefined}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="الصف الدراسي" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {gradeLevels.map((gradeLevel) => (
+                                                        <SelectItem
+                                                            key={gradeLevel.id}
+                                                            value={gradeLevel.id.toString()}
+                                                        >
+                                                            {gradeLevel.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <EmptyOptionsInput
+                                            placeholder="لا توجد صفوف دراسية متاحة للاختيار"
+                                        />
+                                    )}
 
                                     <Input
                                         type="text"
@@ -123,26 +130,32 @@ export default function Index({ students, nationalities, registrationStatuses, g
                                         </SelectContent>
                                     </Select>
 
-                                    <Select
-                                        name="filter[nationality_id]"
-                                        defaultValue={filter.nationality_id || undefined}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="الجنسية" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {nationalities.map((nationality) => (
-                                                    <SelectItem
-                                                        key={nationality.id}
-                                                        value={nationality.id.toString()}
-                                                    >
-                                                        {nationality.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    {nationalities.length > 0 ? (
+                                        <Select
+                                            name="filter[nationality_id]"
+                                            defaultValue={filter.nationality_id || undefined}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="الجنسية" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {nationalities.map((nationality) => (
+                                                        <SelectItem
+                                                            key={nationality.id}
+                                                            value={nationality.id.toString()}
+                                                        >
+                                                            {nationality.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <EmptyOptionsInput
+                                            placeholder="لا توجد جنسيات متاحة للاختيار"
+                                        />
+                                    )}
 
                                     <Input
                                         type="text"

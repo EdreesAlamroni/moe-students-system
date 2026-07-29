@@ -273,26 +273,32 @@ export default function Index({
                                                 </SelectContent>
                                             </Select>
 
-                                            <Select
-                                                name="filter[nationality_id]"
-                                                defaultValue={filter.nationality_id || undefined}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="الجنسية" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        {(nationalities ?? []).map((nationality) => (
-                                                            <SelectItem
-                                                                key={nationality.id}
-                                                                value={nationality.id.toString()}
-                                                            >
-                                                                {nationality.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
+                                            {(nationalities ?? []).length > 0 ? (
+                                                <Select
+                                                    name="filter[nationality_id]"
+                                                    defaultValue={filter.nationality_id || undefined}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="الجنسية" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            {(nationalities ?? []).map((nationality) => (
+                                                                <SelectItem
+                                                                    key={nationality.id}
+                                                                    value={nationality.id.toString()}
+                                                                >
+                                                                    {nationality.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                            ) : (
+                                                <EmptyOptionsInput
+                                                    placeholder="لا توجد جنسيات متاحة للاختيار"
+                                                />
+                                            )}
 
                                             <Input
                                                 type="text"
@@ -387,7 +393,7 @@ export default function Index({
                                                                 </div>
                                                             ) : (
                                                                 student.passport_number && (
-                                                                        <div className="mt-2 text-xs text-muted-foreground">
+                                                                    <div className="mt-2 text-xs text-muted-foreground">
                                                                         <span>رقم جواز السفر:</span>
                                                                         <span className="font-mono ms-1">{student.passport_number}</span>
                                                                     </div>

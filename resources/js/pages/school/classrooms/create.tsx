@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/controls/label";
 import { Input } from "@/components/ui/controls/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
 import InputError from "@/components/ui/controls/input-error";
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
@@ -110,29 +111,37 @@ export default function Create({ educationalStages, gradeLevels, classroomNames 
                                                     الصف الدراسي
                                                 </Label>
 
-                                                <Select
-                                                    key={selectedStage}
-                                                    name="grade_level_id"
-                                                    value={selectedGradeLevelId || undefined}
-                                                    onValueChange={setSelectedGradeLevelId}
-                                                    disabled={!selectedStage}
-                                                >
-                                                    <SelectTrigger id="grade_level_id" hasError={!!errors.grade_level_id}>
-                                                        <SelectValue placeholder="اختر الصف الدراسي" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            {availableGradeLevels.map((gradeLevel) => (
-                                                                <SelectItem
-                                                                    key={gradeLevel.id}
-                                                                    value={gradeLevel.id.toString()}
-                                                                >
-                                                                    {gradeLevel.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
+                                                {availableGradeLevels.length > 0 ? (
+                                                    <Select
+                                                        key={selectedStage}
+                                                        name="grade_level_id"
+                                                        value={selectedGradeLevelId || undefined}
+                                                        onValueChange={setSelectedGradeLevelId}
+                                                        disabled={!selectedStage}
+                                                    >
+                                                        <SelectTrigger id="grade_level_id" hasError={!!errors.grade_level_id}>
+                                                            <SelectValue placeholder="اختر الصف الدراسي" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                {availableGradeLevels.map((gradeLevel) => (
+                                                                    <SelectItem
+                                                                        key={gradeLevel.id}
+                                                                        value={gradeLevel.id.toString()}
+                                                                    >
+                                                                        {gradeLevel.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                ) : (
+                                                    <EmptyOptionsInput
+                                                        id="grade_level_select"
+                                                        placeholder={selectedStage ? "لا توجد صفوف دراسية متاحة للاختيار" : "اختر المرحلة الدراسية اولاً"}
+                                                        hasError={!!errors.grade_level_id}
+                                                    />
+                                                )}
 
                                                 <InputError message={errors.grade_level_id} />
                                             </Field>

@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/controls/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
 import DatePicker from "@/components/ui/controls/date-picker";
 import InputError from "@/components/ui/controls/input-error";
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
@@ -73,29 +74,38 @@ export default function Create({ gradeLevels, registrationStatuses, nationalitie
                                                     الصف الدراسي
                                                 </Label>
 
-                                                <Select
-                                                    name="grade_level_id"
-                                                    required
-                                                >
-                                                    <SelectTrigger
-                                                        id="grade_level_id"
-                                                        hasError={!!errors.grade_level_id}
+                                                {gradeLevels.length > 0 ? (
+                                                    <Select
+                                                        name="grade_level_id"
+                                                        required
                                                     >
-                                                        <SelectValue placeholder="اختر الصف الدراسي" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            {gradeLevels.map((gradeLevel) => (
-                                                                <SelectItem
-                                                                    key={gradeLevel.id}
-                                                                    value={gradeLevel.id.toString()}
-                                                                >
-                                                                    {gradeLevel.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
+                                                        <SelectTrigger
+                                                            id="grade_level_id"
+                                                            hasError={!!errors.grade_level_id}
+                                                        >
+                                                            <SelectValue placeholder="اختر الصف الدراسي" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                {gradeLevels.map((gradeLevel) => (
+                                                                    <SelectItem
+                                                                        key={gradeLevel.id}
+                                                                        value={gradeLevel.id.toString()}
+                                                                    >
+                                                                        {gradeLevel.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+
+                                                ) : (
+                                                    <EmptyOptionsInput
+                                                        id="grade_level_id"
+                                                        placeholder="لا توجد صفوف دراسية متاحة للاختيار"
+                                                        hasError={!!errors.grade_level_id}
+                                                    />
+                                                )}
 
                                                 <InputError message={errors.grade_level_id} />
                                             </Field>
@@ -250,31 +260,39 @@ export default function Create({ gradeLevels, registrationStatuses, nationalitie
                                                     الجنسية
                                                 </Label>
 
-                                                <Select
-                                                    name="nationality_id"
-                                                    defaultValue={libyanNationalityId.toString() || undefined}
-                                                    onValueChange={setSelectedNationalityId}
-                                                    required
-                                                >
-                                                    <SelectTrigger
-                                                        id="nationality_id"
-                                                        hasError={!!errors.nationality_id}
+                                                {nationalities.length > 0 ? (
+                                                    <Select
+                                                        name="nationality_id"
+                                                        defaultValue={libyanNationalityId.toString() || undefined}
+                                                        onValueChange={setSelectedNationalityId}
+                                                        required
                                                     >
-                                                        <SelectValue placeholder="اختر الجنسية" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            {nationalities.map((nationality) => (
-                                                                <SelectItem
-                                                                    key={nationality.id}
-                                                                    value={nationality.id.toString()}
-                                                                >
-                                                                    {nationality.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
+                                                        <SelectTrigger
+                                                            id="nationality_id"
+                                                            hasError={!!errors.nationality_id}
+                                                        >
+                                                            <SelectValue placeholder="اختر الجنسية" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                {nationalities.map((nationality) => (
+                                                                    <SelectItem
+                                                                        key={nationality.id}
+                                                                        value={nationality.id.toString()}
+                                                                    >
+                                                                        {nationality.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                ) : (
+                                                    <EmptyOptionsInput
+                                                        id="nationality_id"
+                                                        placeholder="لا توجد جنسيات متاحة للاختيار"
+                                                        hasError={!!errors.nationality_id}
+                                                    />
+                                                )}
 
                                                 <InputError message={errors.nationality_id} />
                                             </Field>

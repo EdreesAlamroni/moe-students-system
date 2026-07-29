@@ -14,6 +14,7 @@ import EmptyState from "@/components/ui/display/empty-state";
 
 import { Input } from "@/components/ui/controls/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import { Button } from "@/components/ui/actions/button";
 import ViewDetailsLink from "@/components/ui/actions/view-details-link";
@@ -88,26 +89,32 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <Select
-                                        name="filter[education_monitor_id]"
-                                        defaultValue={filter.education_monitor_id || undefined}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="اختر المُراقبة" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {monitors.map((monitor) => (
-                                                    <SelectItem
-                                                        key={monitor.id}
-                                                        value={monitor.id.toString()}
-                                                    >
-                                                        {monitor.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    {monitors.length > 0 ? (
+                                        <Select
+                                            name="filter[education_monitor_id]"
+                                            defaultValue={filter.education_monitor_id || undefined}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="اختر المُراقبة" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {monitors.map((monitor) => (
+                                                        <SelectItem
+                                                            key={monitor.id}
+                                                            value={monitor.id.toString()}
+                                                        >
+                                                            {monitor.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <EmptyOptionsInput
+                                            placeholder="لا توجد مُراقبات متاحة للاختيار"
+                                        />
+                                    )}
 
                                     <Input
                                         type="text"

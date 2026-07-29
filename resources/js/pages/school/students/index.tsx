@@ -16,6 +16,7 @@ import EmptyState from "@/components/ui/display/empty-state";
 
 import { Input } from "@/components/ui/controls/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import { Button } from "@/components/ui/actions/button";
 import ViewDetailsLink from "@/components/ui/actions/view-details-link";
@@ -35,7 +36,7 @@ type StudentProps = Student & {
 
 type PageProps = {
     students: Paginated<StudentProps>;
-    nationalities?: Pick<Nationality, "id" | "name">[];
+    nationalities: Nationality[];
     registrationStatuses?: Enum[];
     filter: {
         name?: string;
@@ -133,26 +134,32 @@ export default function Index({ students, nationalities, registrationStatuses, f
                                         </SelectContent>
                                     </Select>
 
-                                    <Select
-                                        name="filter[nationality_id]"
-                                        defaultValue={filter.nationality_id || undefined}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="الجنسية" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {(nationalities ?? []).map((nationality) => (
-                                                    <SelectItem
-                                                        key={nationality.id}
-                                                        value={nationality.id.toString()}
-                                                    >
-                                                        {nationality.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    {nationalities.length > 0 ? (
+                                        <Select
+                                            name="filter[nationality_id]"
+                                            defaultValue={filter.nationality_id || undefined}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="الجنسية" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {nationalities.map((nationality) => (
+                                                        <SelectItem
+                                                            key={nationality.id}
+                                                            value={nationality.id.toString()}
+                                                        >
+                                                            {nationality.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <EmptyOptionsInput
+                                            placeholder="لا توجد جنسيات متاحة للاختيار"
+                                        />
+                                    )}
 
                                     <Input
                                         type="text"

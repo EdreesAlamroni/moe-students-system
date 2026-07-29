@@ -14,6 +14,7 @@ import EmptyState from "@/components/ui/display/empty-state";
 
 import { Input } from "@/components/ui/controls/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import { Button } from "@/components/ui/actions/button";
 import ViewDetailsLink from "@/components/ui/actions/view-details-link";
@@ -87,26 +88,32 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                    <Select
-                                        name="filter[education_services_office_id]"
-                                        defaultValue={filter.education_services_office_id || undefined}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="اختر مكتب الخدمات التعليمية" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {offices.map((office) => (
-                                                    <SelectItem
-                                                        key={office.id}
-                                                        value={office.id.toString()}
-                                                    >
-                                                        {office.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    {offices.length > 0 ? (
+                                        <Select
+                                            name="filter[education_services_office_id]"
+                                            defaultValue={filter.education_services_office_id || undefined}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="اختر مكتب الخدمات التعليمية" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {offices.map((office) => (
+                                                        <SelectItem
+                                                            key={office.id}
+                                                            value={office.id.toString()}
+                                                        >
+                                                            {office.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <EmptyOptionsInput
+                                            placeholder="لا توجد مكاتب خدمات تعليمية متاحة للاختيار"
+                                        />
+                                    )}
 
                                     <Select
                                         name="filter[type]"

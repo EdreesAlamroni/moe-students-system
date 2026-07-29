@@ -18,6 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/controls/select';
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import { GraduationCapIcon } from 'lucide-react';
 
@@ -50,30 +51,37 @@ export default function GradeLevelSelector({
                     <Field className="max-w-md">
                         <Label htmlFor="grade_level_select">الصف الدراسي</Label>
 
-                        <Select
-                            value={
-                                selectedGradeLevelId !== null
-                                    ? String(selectedGradeLevelId)
-                                    : ''
-                            }
-                            onValueChange={onGradeChange}
-                        >
-                            <SelectTrigger id="grade_level_select">
-                                <SelectValue placeholder="اختر الصف الدراسي" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    {gradeLevels.map((grade: GradeLevel) => (
-                                        <SelectItem
-                                            key={grade.id}
-                                            value={String(grade.id)}
-                                        >
-                                            {grade.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                        {gradeLevels.length > 0 ? (
+                            <Select
+                                value={
+                                    selectedGradeLevelId !== null
+                                        ? String(selectedGradeLevelId)
+                                        : ''
+                                }
+                                onValueChange={onGradeChange}
+                            >
+                                <SelectTrigger id="grade_level_select">
+                                    <SelectValue placeholder="اختر الصف الدراسي" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {gradeLevels.map((grade: GradeLevel) => (
+                                            <SelectItem
+                                                key={grade.id}
+                                                value={String(grade.id)}
+                                            >
+                                                {grade.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        ) : (
+                            <EmptyOptionsInput
+                                id="grade_level_select"
+                                placeholder="لا توجد صفوف دراسية متاحة للاختيار"
+                            />
+                        )}
                     </Field>
                 </CardContent>
             </Card>

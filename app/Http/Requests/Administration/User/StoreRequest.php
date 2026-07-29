@@ -160,6 +160,6 @@ class StoreRequest extends FormRequest
 
     private function scopeIs(UserScope $scope): bool
     {
-        return $this->input('scope') === $scope->value;
+        return $this->enum('scope', UserScope::class) === $scope;
     }
 }

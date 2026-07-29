@@ -12,6 +12,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCel
 import EmptyState from "@/components/ui/display/empty-state";
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import { Button } from "@/components/ui/actions/button";
 import ViewDetailsLink from "@/components/ui/actions/view-details-link";
@@ -80,26 +81,32 @@ export default function Index({ classrooms, gradeLevels, classroomNames, filter,
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <Select
-                                    name="filter[grade_level_id]"
-                                    defaultValue={filter.grade_level_id || undefined}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="اختر الصف الدراسي" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {gradeLevels.map((gradeLevel) => (
-                                                <SelectItem
-                                                    key={gradeLevel.id}
-                                                    value={gradeLevel.id.toString()}
-                                                >
-                                                    {gradeLevel.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
+                                {gradeLevels.length > 0 ? (
+                                    <Select
+                                        name="filter[grade_level_id]"
+                                        defaultValue={filter.grade_level_id || undefined}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="اختر الصف الدراسي" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {gradeLevels.map((gradeLevel) => (
+                                                    <SelectItem
+                                                        key={gradeLevel.id}
+                                                        value={gradeLevel.id.toString()}
+                                                    >
+                                                        {gradeLevel.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <EmptyOptionsInput
+                                        placeholder="لا توجد صفوف دراسية متاحة للاختيار"
+                                    />
+                                )}
 
                                 <Select
                                     name="filter[name]"

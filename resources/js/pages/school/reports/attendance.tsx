@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/struct
 import ActionsSection from "@/components/ui/structure/actions-section";
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
+import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
 
 import { Button } from "@/components/ui/actions/button";
 
@@ -65,25 +66,32 @@ export default function Index({ classrooms, months, canAny, can }: PageProps) {
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <Select
-                                        onValueChange={setClassroomId}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="اختر الفصل الدراسي" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {classrooms.map((classroom) => (
-                                                    <SelectItem
-                                                        key={classroom.uuid}
-                                                        value={classroom.id.toString()}
-                                                    >
-                                                        {classroom.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    {classrooms.length > 0 ? (
+                                        <Select
+                                            onValueChange={setClassroomId}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="اختر الفصل الدراسي" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {classrooms.map((classroom) => (
+                                                        <SelectItem
+                                                            key={classroom.uuid}
+                                                            value={classroom.id.toString()}
+                                                        >
+                                                            {classroom.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <EmptyOptionsInput
+                                            placeholder="لا توجد فصول دراسية متاحة للاختيار"
+                                        />
+                                    )}
+
 
                                     <Select
                                         onValueChange={setMonth}
