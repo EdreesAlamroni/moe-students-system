@@ -295,6 +295,7 @@ return [
         'educational_stages_evening' => 'المراحل الدراسية (الفترة المسائية)',
         'educational_stages_evening.*' => 'المرحلة الدراسية (الفترة المسائية)',
         'warehouse_id' => 'المخزن',
+        'guardian_name' => 'اسم ولي الأمر',
     ],
 
     'values' => [],
