@@ -21,9 +21,9 @@ class ResetClassroomDistribution
      */
     public function summary(School $school): array
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if ($academicYearId === null) {
+        if ($currentAcademicYearId === null) {
             return [
                 'has_distribution_data' => false,
                 'eligible_grade_levels' => [],
@@ -34,14 +34,14 @@ class ResetClassroomDistribution
 
         if ($schoolGradeLevelIds === []) {
             return [
-                'has_distribution_data' => $this->hasDistributionData($school, $academicYearId, []),
+                'has_distribution_data' => $this->hasDistributionData($school, $currentAcademicYearId, []),
                 'eligible_grade_levels' => [],
             ];
         }
 
         $gradeLevelIdsWithAssignments = StudentEnrollment::query()
             ->where('school_id', '=', $school->id)
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->whereIn('grade_level_id', $schoolGradeLevelIds)
             ->whereNotNull('classroom_id')
             ->distinct()
@@ -63,16 +63,16 @@ class ResetClassroomDistribution
             ->all();
 
         return [
-            'has_distribution_data' => $this->hasDistributionData($school, $academicYearId, $schoolGradeLevelIds),
+            'has_distribution_data' => $this->hasDistributionData($school, $currentAcademicYearId, $schoolGradeLevelIds),
             'eligible_grade_levels' => $eligibleGradeLevels,
         ];
     }
 
     public function execute(School $school, ClassroomDistributionResetScope $scope, array $gradeLevelIds = []): void
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if ($academicYearId === null) {
+        if ($currentAcademicYearId === null) {
             throw ValidationException::withMessages([
                 '_' => [__('alerts.messages.academic-year-not-found')],
             ]);
@@ -82,17 +82,17 @@ class ResetClassroomDistribution
             ? $school->gradeLevels()->pluck('grade_levels.id')->all()
             : $gradeLevelIds;
 
-        if (! $this->hasDistributionData($school, $academicYearId, $targetGradeLevelIds)) {
+        if (! $this->hasDistributionData($school, $currentAcademicYearId, $targetGradeLevelIds)) {
             throw ValidationException::withMessages([
                 '_' => [__('alerts.messages.classroom-distribution-reset-nothing-to-reset')],
             ]);
         }
 
-        DB::transaction(function () use ($school, $academicYearId, $targetGradeLevelIds): void {
+        DB::transaction(function () use ($school, $currentAcademicYearId, $targetGradeLevelIds): void {
             if ($targetGradeLevelIds !== []) {
                 StudentEnrollment::query()
                     ->where('school_id', '=', $school->id)
-                    ->where('academic_year_id', '=', $academicYearId)
+                    ->where('academic_year_id', '=', $currentAcademicYearId)
                     ->whereIn('grade_level_id', $targetGradeLevelIds)
                     ->whereNotNull('classroom_id')
                     ->update(['classroom_id' => null]);
@@ -100,17 +100,17 @@ class ResetClassroomDistribution
 
             ClassroomDistributionCompletion::query()
                 ->where('school_id', '=', $school->id)
-                ->where('academic_year_id', '=', $academicYearId)
+                ->where('academic_year_id', '=', $currentAcademicYearId)
                 ->delete();
         });
     }
 
-    private function hasDistributionData(School $school, int $academicYearId, array $gradeLevelIds): bool
+    private function hasDistributionData(School $school, int $currentAcademicYearId, array $gradeLevelIds): bool
     {
         if ($gradeLevelIds !== []) {
             $hasClassroomAssignments = StudentEnrollment::query()
                 ->where('school_id', '=', $school->id)
-                ->where('academic_year_id', '=', $academicYearId)
+                ->where('academic_year_id', '=', $currentAcademicYearId)
                 ->whereIn('grade_level_id', $gradeLevelIds)
                 ->whereNotNull('classroom_id')
                 ->exists();
@@ -122,7 +122,7 @@ class ResetClassroomDistribution
 
         return ClassroomDistributionCompletion::query()
             ->where('school_id', '=', $school->id)
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->exists();
     }
 }

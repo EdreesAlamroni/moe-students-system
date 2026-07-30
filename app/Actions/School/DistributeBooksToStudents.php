@@ -24,16 +24,16 @@ class DistributeBooksToStudents
      */
     public function execute(int $schoolId, int $gradeLevelId, array $studentIds, ?int $classroomId = null): int
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($academicYearId)) {
+        if (is_null($currentAcademicYearId)) {
             throw ValidationException::withMessages([
                 '_' => [__('alerts.messages.academic-year-not-found')],
             ]);
         }
 
         $distribution = BookDistribution::query()
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->where('school_id', '=', $schoolId)
             ->where('grade_level_id', '=', $gradeLevelId)
             ->first();
@@ -44,7 +44,7 @@ class DistributeBooksToStudents
             ]);
         }
 
-        return DB::transaction(function () use ($distribution, $gradeLevelId, $schoolId, $studentIds, $academicYearId, $classroomId): int {
+        return DB::transaction(function () use ($distribution, $gradeLevelId, $schoolId, $studentIds, $currentAcademicYearId, $classroomId): int {
             $eligibleStudentIds = Student::query()
                 ->whereIn('id', $studentIds)
                 ->where('school_id', '=', $schoolId)
@@ -65,11 +65,11 @@ class DistributeBooksToStudents
 
             $now = now();
 
-            $rows = $eligibleStudentIds->map(function (int $studentId) use ($distribution, $academicYearId, $schoolId, $now): array {
+            $rows = $eligibleStudentIds->map(function (int $studentId) use ($distribution, $currentAcademicYearId, $schoolId, $now): array {
                 return [
                     'uuid' => Str::uuid()->toString(),
                     'book_distribution_id' => $distribution->id,
-                    'academic_year_id' => $academicYearId,
+                    'academic_year_id' => $currentAcademicYearId,
                     'school_id' => $schoolId,
                     'student_id' => $studentId,
                     'created_at' => $now,

@@ -29,10 +29,10 @@ class StudentPsychosocialCardSeeder extends Seeder
 
         $student->load('enrollment');
 
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
         $enrollment = $student->enrollment;
 
-        if ($academicYearId === null || $enrollment === null) {
+        if ($currentAcademicYearId === null || $enrollment === null) {
             return;
         }
 
@@ -47,7 +47,7 @@ class StudentPsychosocialCardSeeder extends Seeder
 
         StudentPsychosocialCard::query()->updateOrCreate([
             'student_id' => $student->id,
-            'academic_year_id' => $academicYearId,
+            'academic_year_id' => $currentAcademicYearId,
             'student_enrollment_id' => $enrollment->id,
         ], [
             'guardian_name' => $student->father_full_name,

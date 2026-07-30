@@ -19,9 +19,9 @@ class ClassroomSeeder extends Seeder
 
     public function run(): void
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if ($academicYearId === null) {
+        if ($currentAcademicYearId === null) {
             return;
         }
 
@@ -32,7 +32,7 @@ class ClassroomSeeder extends Seeder
         }
 
         $gradeLevelsBySchool = GradeLevelSchool::query()
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->get(['school_id', 'grade_level_id'])
             ->groupBy('school_id');
 
@@ -46,7 +46,7 @@ class ClassroomSeeder extends Seeder
             foreach ($gradeLevels as $gradeLevelSchool) {
                 foreach (self::CLASSROOM_NAMES as $name) {
                     Classroom::query()->firstOrCreate([
-                        'academic_year_id' => $academicYearId,
+                        'academic_year_id' => $currentAcademicYearId,
                         'school_id' => $school->id,
                         'grade_level_id' => $gradeLevelSchool->grade_level_id,
                         'name' => $name,

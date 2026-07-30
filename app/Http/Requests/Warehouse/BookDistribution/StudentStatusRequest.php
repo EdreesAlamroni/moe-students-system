@@ -16,7 +16,6 @@ class StudentStatusRequest extends FormRequest
     public function rules(): array
     {
         $warehouseId = auth('warehouse')->user()->organization_id;
-        $academicYearId = AcademicYear::currentId();
 
         return [
             'education_monitor_id' => [
@@ -40,7 +39,7 @@ class StudentStatusRequest extends FormRequest
                 }),
                 Rule::exists('grade_level_school', 'grade_level_id')
                     ->where('school_id', $this->integer('school_id'))
-                    ->where('academic_year_id', $academicYearId),
+                    ->where('academic_year_id', AcademicYear::currentId()),
             ],
         ];
     }

@@ -49,9 +49,9 @@ class BookDistributionGradeLevelStats
 
     private function build(int $schoolId, bool $withStudentDistributionCounts): Collection
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($academicYearId)) {
+        if (is_null($currentAcademicYearId)) {
             return collect([]);
         }
 
@@ -62,10 +62,10 @@ class BookDistributionGradeLevelStats
                 'grade_levels.educational_stage',
                 'grade_levels.order',
             ])
-            ->join('grade_level_school', function (JoinClause $join) use ($schoolId, $academicYearId): void {
+            ->join('grade_level_school', function (JoinClause $join) use ($schoolId, $currentAcademicYearId): void {
                 $join->on('grade_levels.id', '=', 'grade_level_school.grade_level_id')
                     ->where('grade_level_school.school_id', '=', $schoolId)
-                    ->where('grade_level_school.academic_year_id', '=', $academicYearId);
+                    ->where('grade_level_school.academic_year_id', '=', $currentAcademicYearId);
             })
             ->orderBy('grade_levels.order')
             ->get();
@@ -78,21 +78,21 @@ class BookDistributionGradeLevelStats
 
         $studentCounts = StudentEnrollment::query()
             ->select('grade_level_id', DB::raw('COUNT(*) as count'))
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->where('school_id', '=', $schoolId)
             ->whereIn('grade_level_id', $gradeLevelIds)
             ->groupBy('grade_level_id')
             ->pluck('count', 'grade_level_id');
 
         $confirmedGradeLevelIds = BookDistribution::query()
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->where('school_id', '=', $schoolId)
             ->whereIn('grade_level_id', $gradeLevelIds)
             ->pluck('grade_level_id')
             ->flip();
 
         $distributedStudentCounts = $withStudentDistributionCounts
-            ? $this->distributedStudentCounts($academicYearId, $schoolId, $gradeLevelIds)
+            ? $this->distributedStudentCounts($schoolId, $gradeLevelIds)
             : null;
 
         if ($withStudentDistributionCounts) {
@@ -150,16 +150,18 @@ class BookDistributionGradeLevelStats
         ];
     }
 
-    private function distributedStudentCounts(int $academicYearId, int $schoolId, array $gradeLevelIds): Collection
+    private function distributedStudentCounts(int $schoolId, array $gradeLevelIds): Collection
     {
+        $currentAcademicYearId = AcademicYear::currentId();
+
         return BookDistributionItem::query()
             ->select('student_enrollments.grade_level_id', DB::raw('COUNT(DISTINCT book_distribution_items.student_id) as count'))
-            ->join('student_enrollments', function (JoinClause $join) use ($academicYearId, $schoolId): void {
+            ->join('student_enrollments', function (JoinClause $join) use ($currentAcademicYearId, $schoolId): void {
                 $join->on('student_enrollments.student_id', '=', 'book_distribution_items.student_id')
-                    ->where('student_enrollments.academic_year_id', '=', $academicYearId)
+                    ->where('student_enrollments.academic_year_id', '=', $currentAcademicYearId)
                     ->where('student_enrollments.school_id', '=', $schoolId);
             })
-            ->where('book_distribution_items.academic_year_id', '=', $academicYearId)
+            ->where('book_distribution_items.academic_year_id', '=', $currentAcademicYearId)
             ->whereIn('student_enrollments.grade_level_id', $gradeLevelIds)
             ->groupBy('student_enrollments.grade_level_id')
             ->pluck('count', 'grade_level_id');

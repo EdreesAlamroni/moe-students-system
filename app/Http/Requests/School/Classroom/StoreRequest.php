@@ -19,7 +19,7 @@ class StoreRequest extends FormRequest
 
     public function rules(): array
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
         $schoolId = auth('school')->user()->organization_id;
 
         return [
@@ -34,7 +34,7 @@ class StoreRequest extends FormRequest
                 Rule::exists(GradeLevel::class, 'id')
                     ->where('educational_stage', $this->input('educational_stage')),
                 Rule::exists(GradeLevelSchool::class, 'grade_level_id')
-                    ->where('academic_year_id', $academicYearId)
+                    ->where('academic_year_id', $currentAcademicYearId)
                     ->where('school_id', $schoolId),
             ],
             'name' => [
@@ -42,7 +42,7 @@ class StoreRequest extends FormRequest
                 'string',
                 Rule::in(array_map('strval', range(1, 12))),
                 Rule::unique('classrooms', 'name')
-                    ->where('academic_year_id', $academicYearId)
+                    ->where('academic_year_id', $currentAcademicYearId)
                     ->where('school_id', $schoolId)
                     ->where('grade_level_id', $this->integer('grade_level_id')),
             ],

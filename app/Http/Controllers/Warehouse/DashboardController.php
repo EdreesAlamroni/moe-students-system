@@ -255,9 +255,9 @@ class DashboardController extends Controller
     private function studentsReceivedCount(): int
     {
         $warehouseId = $this->warehouseId();
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($warehouseId) || is_null($academicYearId)) {
+        if (is_null($warehouseId) || is_null($currentAcademicYearId)) {
             return 0;
         }
 
@@ -265,7 +265,7 @@ class DashboardController extends Controller
             ->toBase()
             ->join('book_distributions', 'book_distributions.id', '=', 'book_distribution_items.book_distribution_id')
             ->where('book_distributions.warehouse_id', '=', $warehouseId)
-            ->where('book_distribution_items.academic_year_id', '=', $academicYearId)
+            ->where('book_distribution_items.academic_year_id', '=', $currentAcademicYearId)
             ->selectRaw('COUNT(DISTINCT book_distribution_items.student_id) AS aggregate')
             ->value('aggregate');
     }
@@ -273,13 +273,13 @@ class DashboardController extends Controller
     private function studentsPendingCount(): int
     {
         $warehouseId = $this->warehouseId();
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($warehouseId) || is_null($academicYearId)) {
+        if (is_null($warehouseId) || is_null($currentAcademicYearId)) {
             return 0;
         }
 
-        return (int) $this->pendingEnrollmentsQuery($warehouseId, $academicYearId)
+        return (int) $this->pendingEnrollmentsQuery($warehouseId, $currentAcademicYearId)
             ->selectRaw('COUNT(DISTINCT student_enrollments.student_id) AS aggregate')
             ->value('aggregate');
     }
@@ -311,9 +311,9 @@ class DashboardController extends Controller
     private function studentsReceivedByMonitor(): Collection
     {
         $warehouseId = $this->warehouseId();
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($warehouseId) || is_null($academicYearId)) {
+        if (is_null($warehouseId) || is_null($currentAcademicYearId)) {
             return collect();
         }
 
@@ -323,7 +323,7 @@ class DashboardController extends Controller
             ->select('book_distributions.education_monitor_id')
             ->selectRaw('COUNT(DISTINCT book_distribution_items.student_id) AS aggregate')
             ->where('book_distributions.warehouse_id', '=', $warehouseId)
-            ->where('book_distribution_items.academic_year_id', '=', $academicYearId)
+            ->where('book_distribution_items.academic_year_id', '=', $currentAcademicYearId)
             ->groupBy('book_distributions.education_monitor_id')
             ->pluck('aggregate', 'education_monitor_id');
     }
@@ -331,9 +331,9 @@ class DashboardController extends Controller
     private function studentsReceivedBySchool(): Collection
     {
         $warehouseId = $this->warehouseId();
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($warehouseId) || is_null($academicYearId)) {
+        if (is_null($warehouseId) || is_null($currentAcademicYearId)) {
             return collect();
         }
 
@@ -343,7 +343,7 @@ class DashboardController extends Controller
             ->select('book_distribution_items.school_id')
             ->selectRaw('COUNT(DISTINCT book_distribution_items.student_id) AS aggregate')
             ->where('book_distributions.warehouse_id', '=', $warehouseId)
-            ->where('book_distribution_items.academic_year_id', '=', $academicYearId)
+            ->where('book_distribution_items.academic_year_id', '=', $currentAcademicYearId)
             ->groupBy('book_distribution_items.school_id')
             ->pluck('aggregate', 'school_id');
     }
@@ -351,13 +351,13 @@ class DashboardController extends Controller
     private function studentsPendingByMonitor(): Collection
     {
         $warehouseId = $this->warehouseId();
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($warehouseId) || is_null($academicYearId)) {
+        if (is_null($warehouseId) || is_null($currentAcademicYearId)) {
             return collect();
         }
 
-        return $this->pendingEnrollmentsQuery($warehouseId, $academicYearId)
+        return $this->pendingEnrollmentsQuery($warehouseId, $currentAcademicYearId)
             ->select('book_distributions.education_monitor_id')
             ->selectRaw('COUNT(DISTINCT student_enrollments.student_id) AS aggregate')
             ->groupBy('book_distributions.education_monitor_id')
@@ -367,13 +367,13 @@ class DashboardController extends Controller
     private function studentsPendingBySchool(): Collection
     {
         $warehouseId = $this->warehouseId();
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($warehouseId) || is_null($academicYearId)) {
+        if (is_null($warehouseId) || is_null($currentAcademicYearId)) {
             return collect();
         }
 
-        return $this->pendingEnrollmentsQuery($warehouseId, $academicYearId)
+        return $this->pendingEnrollmentsQuery($warehouseId, $currentAcademicYearId)
             ->select('student_enrollments.school_id')
             ->selectRaw('COUNT(DISTINCT student_enrollments.student_id) AS aggregate')
             ->groupBy('student_enrollments.school_id')
@@ -383,21 +383,21 @@ class DashboardController extends Controller
     /**
      * Enrollments in warehouse-confirmed grade levels that still lack a student book item.
      */
-    private function pendingEnrollmentsQuery(int $warehouseId, int $academicYearId): QueryBuilder
+    private function pendingEnrollmentsQuery(int $warehouseId, int $currentAcademicYearId): QueryBuilder
     {
         return StudentEnrollment::query()
             ->toBase()
-            ->join('book_distributions', function (JoinClause $join) use ($warehouseId, $academicYearId): void {
+            ->join('book_distributions', function (JoinClause $join) use ($warehouseId, $currentAcademicYearId): void {
                 $join->on('book_distributions.school_id', '=', 'student_enrollments.school_id')
                     ->on('book_distributions.grade_level_id', '=', 'student_enrollments.grade_level_id')
-                    ->where('book_distributions.academic_year_id', '=', $academicYearId)
+                    ->where('book_distributions.academic_year_id', '=', $currentAcademicYearId)
                     ->where('book_distributions.warehouse_id', '=', $warehouseId);
             })
-            ->leftJoin('book_distribution_items', function (JoinClause $join) use ($academicYearId): void {
+            ->leftJoin('book_distribution_items', function (JoinClause $join) use ($currentAcademicYearId): void {
                 $join->on('book_distribution_items.student_id', '=', 'student_enrollments.student_id')
-                    ->where('book_distribution_items.academic_year_id', '=', $academicYearId);
+                    ->where('book_distribution_items.academic_year_id', '=', $currentAcademicYearId);
             })
-            ->where('student_enrollments.academic_year_id', '=', $academicYearId)
+            ->where('student_enrollments.academic_year_id', '=', $currentAcademicYearId)
             ->whereNull('book_distribution_items.id');
     }
 }

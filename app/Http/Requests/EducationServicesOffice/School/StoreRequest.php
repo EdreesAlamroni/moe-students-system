@@ -378,9 +378,9 @@ class StoreRequest extends FormRequest
 
     protected function buildEducationalStages(string $key): array
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($academicYearId)) {
+        if (is_null($currentAcademicYearId)) {
             return [];
         }
 
@@ -388,7 +388,7 @@ class StoreRequest extends FormRequest
 
         foreach (array_unique($this->input($key, [])) as $stage) {
             $stages[] = [
-                'academic_year_id' => $academicYearId,
+                'academic_year_id' => $currentAcademicYearId,
                 'stage' => $stage,
             ];
         }
@@ -401,9 +401,9 @@ class StoreRequest extends FormRequest
      */
     protected function buildGradeLevels(string $key): array
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($academicYearId)) {
+        if (is_null($currentAcademicYearId)) {
             return [];
         }
 
@@ -411,7 +411,7 @@ class StoreRequest extends FormRequest
 
         foreach (array_unique(array_map('intval', $this->input($key, []))) as $gradeLevelId) {
             $gradeLevels[$gradeLevelId] = [
-                'academic_year_id' => $academicYearId,
+                'academic_year_id' => $currentAcademicYearId,
             ];
         }
 

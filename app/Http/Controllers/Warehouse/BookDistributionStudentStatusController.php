@@ -54,17 +54,17 @@ class BookDistributionStudentStatusController extends Controller
 
     private function gradeLevelsForSchool(int $schoolId): Collection
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($academicYearId)) {
+        if (is_null($currentAcademicYearId)) {
             return collect([]);
         }
 
-        return GradeLevel::list(function ($query) use ($schoolId, $academicYearId): void {
-            $query->join('grade_level_school', function (JoinClause $join) use ($schoolId, $academicYearId): void {
+        return GradeLevel::list(function ($query) use ($schoolId, $currentAcademicYearId): void {
+            $query->join('grade_level_school', function (JoinClause $join) use ($schoolId, $currentAcademicYearId): void {
                 $join->on('grade_levels.id', '=', 'grade_level_school.grade_level_id')
                     ->where('grade_level_school.school_id', '=', $schoolId)
-                    ->where('grade_level_school.academic_year_id', '=', $academicYearId);
+                    ->where('grade_level_school.academic_year_id', '=', $currentAcademicYearId);
             });
         });
     }

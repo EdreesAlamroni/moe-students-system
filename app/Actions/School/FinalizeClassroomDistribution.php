@@ -42,17 +42,17 @@ class FinalizeClassroomDistribution
             ]);
         }
 
-        $academicYearId = AcademicYear::currentId();
-        if ($academicYearId === null) {
+        $currentAcademicYearId = AcademicYear::currentId();
+        if ($currentAcademicYearId === null) {
             throw ValidationException::withMessages([
                 '_' => [__('alerts.messages.academic-year-not-found')],
             ]);
         }
 
-        DB::transaction(function () use ($academicYearId) {
+        DB::transaction(function () use ($currentAcademicYearId) {
             ClassroomDistributionCompletion::create([
                 'school_id' => auth('school')->user()->organization_id,
-                'academic_year_id' => $academicYearId,
+                'academic_year_id' => $currentAcademicYearId,
                 'completed_at' => now(),
             ]);
         });

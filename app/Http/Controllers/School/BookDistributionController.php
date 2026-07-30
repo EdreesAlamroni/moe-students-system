@@ -85,9 +85,9 @@ class BookDistributionController extends Controller
 
     private function students(int $gradeLevelId, ?int $classroomId): Collection
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($academicYearId)) {
+        if (is_null($currentAcademicYearId)) {
             return collect([]);
         }
 
@@ -103,9 +103,9 @@ class BookDistributionController extends Controller
                 'students.gender',
             ])
             ->forCurrentSchool()
-            ->whereHas('enrollments', function (Builder $query) use ($academicYearId, $gradeLevelId, $classroomId): void {
+            ->whereHas('enrollments', function (Builder $query) use ($currentAcademicYearId, $gradeLevelId, $classroomId): void {
                 $query
-                    ->where('academic_year_id', '=', $academicYearId)
+                    ->where('academic_year_id', '=', $currentAcademicYearId)
                     ->where('grade_level_id', '=', $gradeLevelId)
                     ->when(filled($classroomId), function (Builder $query) use ($classroomId): void {
                         $query->where('classroom_id', '=', $classroomId);

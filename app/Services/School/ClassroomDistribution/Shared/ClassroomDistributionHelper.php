@@ -23,13 +23,12 @@ final class ClassroomDistributionHelper
      */
     public static function getClassroomsForGrade(int $gradeLevelId, array $classroomIds = []): EloquentCollection
     {
-        $academicYearId = AcademicYear::currentId();
         $schoolId = self::getCurrentSchoolId();
 
         return Classroom::query()
             ->select(['id', 'uuid', 'grade_level_id', 'name', 'capacity'])
             ->where('school_id', '=', $schoolId)
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', AcademicYear::currentId())
             ->where('grade_level_id', '=', $gradeLevelId)
             ->when(! empty($classroomIds), function (Builder $query) use ($classroomIds): void {
                 $query->whereIn('id', $classroomIds);
@@ -138,13 +137,11 @@ final class ClassroomDistributionHelper
      */
     public static function buildCapacitySlots(EloquentCollection $classrooms): array
     {
-        $academicYearId = AcademicYear::currentId();
-
         $occupied = StudentEnrollment::query()
             ->select('classroom_id')
             ->selectRaw('COUNT(*) as occupied_count')
             ->whereIn('classroom_id', $classrooms->pluck('id')->all())
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', AcademicYear::currentId())
             ->groupBy('classroom_id')
             ->pluck('occupied_count', 'classroom_id')
             ->all();
@@ -171,14 +168,13 @@ final class ClassroomDistributionHelper
      */
     protected static function getStudentsWithoutClassroomQuery(int $gradeLevelId): Builder
     {
-        $academicYearId = AcademicYear::currentId();
         $schoolId = self::getCurrentSchoolId();
 
         return Student::query()
             ->where('school_id', '=', $schoolId)
-            ->whereHas('enrollments', function (Builder $query) use ($academicYearId, $gradeLevelId): void {
+            ->whereHas('enrollments', function (Builder $query) use ($gradeLevelId): void {
                 $query
-                    ->where('academic_year_id', '=', $academicYearId)
+                    ->where('academic_year_id', '=', AcademicYear::currentId())
                     ->where('grade_level_id', '=', $gradeLevelId)
                     ->whereNull('classroom_id');
             });
@@ -189,16 +185,10 @@ final class ClassroomDistributionHelper
      */
     protected static function enrollmentQueryForCurrentSchoolAndYear(): Builder
     {
-        $academicYearId = AcademicYear::currentId();
-
-        if (is_null($academicYearId)) {
-            return StudentEnrollment::query()->whereRaw('1 = 0');
-        }
-
         $schoolId = self::getCurrentSchoolId();
 
         return StudentEnrollment::query()
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', AcademicYear::currentConstraintId())
             ->where('school_id', '=', $schoolId);
     }
 }

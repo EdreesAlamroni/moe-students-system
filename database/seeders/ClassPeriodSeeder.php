@@ -11,21 +11,21 @@ class ClassPeriodSeeder extends Seeder
 {
     public function run(): void
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if ($academicYearId === null) {
+        if ($currentAcademicYearId === null) {
             return;
         }
 
         $periods = [
             ...$this->periodsFor(
                 SchoolAcademicPeriod::MORNING,
-                $academicYearId,
+                $currentAcademicYearId,
                 $this->morningSchedule()
             ),
             ...$this->periodsFor(
                 SchoolAcademicPeriod::EVENING,
-                $academicYearId,
+                $currentAcademicYearId,
                 $this->eveningSchedule()
             ),
         ];
@@ -47,13 +47,13 @@ class ClassPeriodSeeder extends Seeder
         }
     }
 
-    private function periodsFor(SchoolAcademicPeriod $academicPeriod, int $academicYearId, array $schedule): array
+    private function periodsFor(SchoolAcademicPeriod $academicPeriod, int $currentAcademicYearId, array $schedule): array
     {
         $periods = [];
 
         foreach ($schedule as $index => $period) {
             $periods[] = [
-                'academic_year_id' => $academicYearId,
+                'academic_year_id' => $currentAcademicYearId,
                 'academic_period' => $academicPeriod,
                 'name' => $period['name'],
                 'start_time' => $period['start_time'],

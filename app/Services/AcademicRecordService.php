@@ -131,8 +131,8 @@ class AcademicRecordService
     public function studentHasAcademicYearRecord(Student $student, int $academicYearId): bool
     {
         return AcademicRecord::query()
-            ->where('student_id', $student->id)
-            ->where('academic_year_id', $academicYearId)
+            ->where('student_id', '=', $student->id)
+            ->where('academic_year_id', '=', $academicYearId)
             ->exists();
     }
 

@@ -21,9 +21,9 @@ class InstallClassPeriodsCommand extends Command
             return self::SUCCESS;
         }
 
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if ($academicYearId === null) {
+        if ($currentAcademicYearId === null) {
             $this->components->error('No active academic year found. Run the academic years install step first.');
 
             return self::FAILURE;
@@ -32,12 +32,12 @@ class InstallClassPeriodsCommand extends Command
         $periods = [
             ...$this->periodsFor(
                 SchoolAcademicPeriod::MORNING,
-                $academicYearId,
+                $currentAcademicYearId,
                 $this->morningSchedule()
             ),
             ...$this->periodsFor(
                 SchoolAcademicPeriod::EVENING,
-                $academicYearId,
+                $currentAcademicYearId,
                 $this->eveningSchedule()
             ),
         ];
@@ -63,13 +63,13 @@ class InstallClassPeriodsCommand extends Command
         return self::SUCCESS;
     }
 
-    private function periodsFor(SchoolAcademicPeriod $academicPeriod, int $academicYearId, array $schedule): array
+    private function periodsFor(SchoolAcademicPeriod $academicPeriod, int $currentAcademicYearId, array $schedule): array
     {
         $periods = [];
 
         foreach ($schedule as $index => $period) {
             $periods[] = [
-                'academic_year_id' => $academicYearId,
+                'academic_year_id' => $currentAcademicYearId,
                 'academic_period' => $academicPeriod,
                 'name' => $period['name'],
                 'start_time' => $period['start_time'],

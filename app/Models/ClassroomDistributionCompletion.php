@@ -68,13 +68,13 @@ class ClassroomDistributionCompletion extends Model
             return false;
         }
 
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($academicYearId)) {
+        if (is_null($currentAcademicYearId)) {
             return false;
         }
 
-        return self::isCompleteForSchoolAndYear($schoolId, $academicYearId);
+        return self::isCompleteForSchoolAndYear($schoolId, $currentAcademicYearId);
     }
 
     /*

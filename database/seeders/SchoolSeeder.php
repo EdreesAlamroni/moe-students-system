@@ -27,9 +27,9 @@ class SchoolSeeder extends Seeder
             return;
         }
 
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if ($academicYearId === null) {
+        if ($currentAcademicYearId === null) {
             return;
         }
 
@@ -61,7 +61,7 @@ class SchoolSeeder extends Seeder
 
         foreach ($stages as $stage) {
             SchoolEducationalStage::query()->updateOrCreate([
-                'academic_year_id' => $academicYearId,
+                'academic_year_id' => $currentAcademicYearId,
                 'school_id' => $school->id,
                 'stage' => $stage,
             ], []);
@@ -75,7 +75,7 @@ class SchoolSeeder extends Seeder
             GradeLevelSchool::query()->updateOrCreate([
                 'grade_level_id' => $gradeLevel->id,
                 'school_id' => $school->id,
-                'academic_year_id' => $academicYearId,
+                'academic_year_id' => $currentAcademicYearId,
             ], []);
         }
     }

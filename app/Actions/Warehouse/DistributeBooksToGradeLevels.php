@@ -22,15 +22,15 @@ class DistributeBooksToGradeLevels
      */
     public function execute(int $monitorId, int $schoolId, int $warehouseId, array $gradeLevelIds): int
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if (is_null($academicYearId)) {
+        if (is_null($currentAcademicYearId)) {
             throw ValidationException::withMessages([
                 '_' => [__('alerts.messages.academic-year-not-found')],
             ]);
         }
 
-        return DB::transaction(function () use ($monitorId, $schoolId, $warehouseId, $gradeLevelIds, $academicYearId): int {
+        return DB::transaction(function () use ($monitorId, $schoolId, $warehouseId, $gradeLevelIds, $currentAcademicYearId): int {
             $school = School::query()
                 ->where('education_monitor_id', '=', $monitorId)
                 ->find($schoolId);
@@ -48,7 +48,7 @@ class DistributeBooksToGradeLevels
             }
 
             $alreadyDistributedIds = BookDistribution::query()
-                ->where('academic_year_id', '=', $academicYearId)
+                ->where('academic_year_id', '=', $currentAcademicYearId)
                 ->where('school_id', '=', $schoolId)
                 ->whereIn('grade_level_id', $eligibleGradeLevelIds)
                 ->pluck('grade_level_id');
@@ -61,10 +61,10 @@ class DistributeBooksToGradeLevels
 
             $now = now();
 
-            $rows = $pendingGradeLevelIds->map(function (int $gradeLevelId) use ($academicYearId, $monitorId, $schoolId, $warehouseId, $now): array {
+            $rows = $pendingGradeLevelIds->map(function (int $gradeLevelId) use ($currentAcademicYearId, $monitorId, $schoolId, $warehouseId, $now): array {
                 return [
                     'uuid' => Str::uuid()->toString(),
-                    'academic_year_id' => $academicYearId,
+                    'academic_year_id' => $currentAcademicYearId,
                     'education_monitor_id' => $monitorId,
                     'school_id' => $schoolId,
                     'grade_level_id' => $gradeLevelId,

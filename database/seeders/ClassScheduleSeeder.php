@@ -18,13 +18,13 @@ class ClassScheduleSeeder extends Seeder
 
     public function run(): void
     {
-        $academicYearId = AcademicYear::currentId();
+        $currentAcademicYearId = AcademicYear::currentId();
 
-        if ($academicYearId === null) {
+        if ($currentAcademicYearId === null) {
             return;
         }
 
-        if (! ClassPeriod::query()->where('academic_year_id', '=', $academicYearId)->exists()) {
+        if (! ClassPeriod::query()->where('academic_year_id', '=', $currentAcademicYearId)->exists()) {
             $this->call(ClassPeriodSeeder::class);
         }
 
@@ -35,7 +35,7 @@ class ClassScheduleSeeder extends Seeder
         }
 
         $classroomsBySchool = Classroom::query()
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->get(['id', 'school_id', 'grade_level_id'])
             ->groupBy('school_id');
 
@@ -44,7 +44,7 @@ class ClassScheduleSeeder extends Seeder
         }
 
         $periodsByAcademicPeriod = ClassPeriod::query()
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->where('is_break', '=', false)
             ->ordered()
             ->get(['id', 'academic_period'])
@@ -55,7 +55,7 @@ class ClassScheduleSeeder extends Seeder
             ->groupBy('grade_level_id');
 
         $seededClassroomIds = ClassSchedule::query()
-            ->where('academic_year_id', '=', $academicYearId)
+            ->where('academic_year_id', '=', $currentAcademicYearId)
             ->distinct()
             ->pluck('classroom_id');
 
@@ -92,7 +92,7 @@ class ClassScheduleSeeder extends Seeder
                         $records[] = [
                             'uuid' => Str::uuid7()->toString(),
                             'school_id' => $school->id,
-                            'academic_year_id' => $academicYearId,
+                            'academic_year_id' => $currentAcademicYearId,
                             'classroom_id' => $classroom->id,
                             'class_period_id' => $period->id,
                             'subject_id' => $subjects->random()->id,

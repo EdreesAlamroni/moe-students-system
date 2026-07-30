@@ -68,8 +68,6 @@ class RandomDistributionMethod implements DistributionMethodContract
         shuffle($studentIds);
 
         DB::transaction(function () use ($studentIds, $slots, $classrooms, $gradeLevelId): void {
-            $academicYearId = AcademicYear::currentId();
-
             $classroomIdList = $classrooms->pluck('id')->all();
 
             foreach ($studentIds as $index => $studentId) {
@@ -81,7 +79,7 @@ class RandomDistributionMethod implements DistributionMethodContract
 
                 StudentEnrollment::query()
                     ->where('student_id', '=', $studentId)
-                    ->where('academic_year_id', '=', $academicYearId)
+                    ->where('academic_year_id', '=', AcademicYear::currentId())
                     ->where('grade_level_id', '=', $gradeLevelId)
                     ->whereNull('classroom_id')
                     ->update(['classroom_id' => $classroomId]);
