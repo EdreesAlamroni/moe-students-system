@@ -49,12 +49,20 @@ export default function MainContainer({
 function ShowAcademicYearNotice() {
     const { currentAcademicYear } = usePage().props;
 
+    const hasCurrentAcademicYear = currentAcademicYear !== null;
+
     return (
         <Alert aria-live="polite" aria-atomic="true">
             <InfoIcon className="mt-px" />
             <AlertTitle className="flex flex-wrap items-center gap-2">
                 <span>يتم حالياً عرض بيانات السنة الدراسية</span>
-                <span className="font-mono">{currentAcademicYear?.name}</span>
+                {hasCurrentAcademicYear ? (
+                    <span className="font-mono">{currentAcademicYear?.name}</span>
+                ) : (
+                    <>
+                        "<span className="text-muted-foreground">لم يتم تفعيل أي سنة دراسية حالياً</span>"
+                    </>
+                )}
             </AlertTitle>
         </Alert>
     );
@@ -83,13 +91,21 @@ function ChangeAcademicYearNotice() {
         router.flushAll();
     };
 
+    const hasCurrentAcademicYear = currentAcademicYear !== null;
+
     return (
         <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <Alert aria-live="polite" aria-atomic="true">
                 <InfoIcon className="mt-px" />
                 <AlertTitle className="flex flex-wrap items-center gap-2">
                     <span>يتم حالياً عرض بيانات السنة الدراسية</span>
-                    <span className="font-mono">{currentAcademicYear?.name}</span>
+                    {hasCurrentAcademicYear ? (
+                        <span className="font-mono">{currentAcademicYear?.name}</span>
+                    ) : (
+                        <>
+                            "<span className="text-muted-foreground">لم يتم تفعيل أي سنة دراسية حالياً</span>"
+                        </>
+                    )}
                 </AlertTitle>
                 <AlertDescription className="mt-0.5 flex flex-wrap items-center gap-1">
                     <span>

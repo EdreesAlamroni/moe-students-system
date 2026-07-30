@@ -4,7 +4,6 @@ namespace App\Http\Requests\Administration\AcademicYear;
 
 use App\Models\AcademicYear;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Carbon;
 
 class StoreRequest extends FormRequest
 {
@@ -42,11 +41,10 @@ class StoreRequest extends FormRequest
         $startDate = $this->validated('start_date');
         $endDate = $this->validated('end_date');
 
-        $startYear = Carbon::parse($startDate)->year;
-        $endYear = Carbon::parse($endDate)->year;
+        $defaults = AcademicYear::defaultsForCreateForm();
 
         return [
-            'name' => sprintf('%d/%d', $startYear + 1, $endYear),
+            'name' => $defaults['name'],
             'start_date' => $startDate,
             'end_date' => $endDate,
             'is_active' => true,

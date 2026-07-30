@@ -191,6 +191,8 @@ class AcademicYear extends Model
      */
     public static function defaultsForCreateForm(): array
     {
+        // TODO: Improve the default name for the next academic year.
+
         $startYear = self::nextStartYear();
 
         $startDate = Carbon::create($startYear, 9, 1);
