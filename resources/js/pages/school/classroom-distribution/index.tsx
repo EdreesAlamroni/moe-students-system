@@ -85,7 +85,7 @@ export default function Index({
                         <div className="grid gap-4 sm:grid-cols-2">
                             {methods.map((method) => (
                                 <MethodCard
-                                    key={method.value}
+                                    key={method.id}
                                     method={method}
                                     interactive={canSelectMethod}
                                 />

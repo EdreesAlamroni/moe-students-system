@@ -128,6 +128,8 @@ test('authenticated school users can visit the classroom distribution page', fun
         ->assertInertia(fn (Assert $page) => $page
             ->component('school/classroom-distribution/index')
             ->has('methods', 2)
+            ->where('methods.0.id', 'random')
+            ->where('methods.1.id', 'manual')
             ->where('isDistributionCompleted', false)
             ->where('enrollmentSummary.totalCount', 1)
             ->where('enrollmentSummary.eligibleCount', 1)

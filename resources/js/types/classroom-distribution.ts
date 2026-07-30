@@ -7,8 +7,8 @@ export type ClassroomRow = Classroom & {
 export type ListStudent = Student;
 
 export type ClassroomDistributionMethod = {
+    id: string;
     name: string;
-    value: string;
     description: string;
     icon: string;
     route: string;
