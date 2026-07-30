@@ -52,7 +52,10 @@ function ShowAcademicYearNotice() {
     const hasCurrentAcademicYear = currentAcademicYear !== null;
 
     return (
-        <Alert aria-live="polite" aria-atomic="true">
+        <Alert
+            aria-live="polite"
+            aria-atomic="true"
+        >
             <InfoIcon className="mt-px" />
             <AlertTitle className="flex flex-wrap items-center gap-2">
                 <span>يتم حالياً عرض بيانات السنة الدراسية</span>
@@ -94,8 +97,14 @@ function ChangeAcademicYearNotice() {
     const hasCurrentAcademicYear = currentAcademicYear !== null;
 
     return (
-        <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
-            <Alert aria-live="polite" aria-atomic="true">
+        <Dialog
+            open={isDialogOpen}
+            onOpenChange={handleDialogOpenChange}
+        >
+            <Alert
+                aria-live="polite"
+                aria-atomic="true"
+            >
                 <InfoIcon className="mt-px" />
                 <AlertTitle className="flex flex-wrap items-center gap-2">
                     <span>يتم حالياً عرض بيانات السنة الدراسية</span>

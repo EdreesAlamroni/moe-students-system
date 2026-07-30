@@ -19,10 +19,12 @@ import { FormLayout } from '@/components/ui/structure/form-layout';
 
 import { Icon } from '@/components/ui/display/icon';
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alerts/alert";
+
 import StatusAlerts from '@/components/features/school/classroom-distribution/status-alerts';
 import FinalizeSection from '@/components/features/school/classroom-distribution/finalize-section';
 
-import { ArrowLeftIcon, LayoutGridIcon } from 'lucide-react';
+import { ArrowLeftIcon, ListIcon } from 'lucide-react';
 
 import { index } from '@/routes/school/classroom-distribution';
 
@@ -57,21 +59,16 @@ export default function Index({
             <Head title="توزيع الطلاب على الفصول الدراسية" />
 
             <MainContainer showAcademicYearNotice>
-                <section>
-                    <header className="flex items-center gap-3 border-b pb-4">
-                        <LayoutGridIcon className="h-4 w-4 shrink-0" />
-                        <div className="flex flex-col gap-1">
-                            <h1 className="text-sm font-medium text-foreground">
-                                توزيع الطلاب على الفصول الدراسية
-                            </h1>
-                            <p className="text-xs text-muted-foreground">
-                                اختر طريقة التوزيع المناسبة لتعيين الطلاب على
-                                الفصول الدراسية، ثم أتمم العملية للسنة الدراسية
-                                الحالية.
-                            </p>
-                        </div>
-                    </header>
-                </section>
+                <Alert>
+                    <ListIcon />
+                    <AlertTitle>توزيع الطلاب على الفصول الدراسية</AlertTitle>
+                    <AlertDescription>
+                        اختر طريقة التوزيع المناسبة لتعيين الطلاب على
+                        الفصول الدراسية، ثم أتمم العملية للسنة الدراسية
+                        الحالية.
+                    </AlertDescription>
+                </Alert>
+
 
                 <StatusAlerts
                     isDistributionCompleted={isDistributionCompleted}

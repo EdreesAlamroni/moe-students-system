@@ -312,6 +312,7 @@ class Student extends Model
     protected function withCurrentGradeLevel(Builder $query): Builder
     {
         $currentAcademicYearId = AcademicYear::currentConstraintId();
+
         $table = $query->getModel()->getTable();
 
         return $query
