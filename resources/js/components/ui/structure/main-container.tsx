@@ -60,7 +60,7 @@ function ShowAcademicYearNotice() {
                     <span className="font-mono">{currentAcademicYear?.name}</span>
                 ) : (
                     <>
-                        "<span className="text-muted-foreground">لم يتم تفعيل أي سنة دراسية حالياً</span>"
+                        (<span className="text-muted-foreground">لم يتم تفعيل أي سنة دراسية حالياً</span>)
                     </>
                 )}
             </AlertTitle>
@@ -103,7 +103,7 @@ function ChangeAcademicYearNotice() {
                         <span className="font-mono">{currentAcademicYear?.name}</span>
                     ) : (
                         <>
-                            "<span className="text-muted-foreground">لم يتم تفعيل أي سنة دراسية حالياً</span>"
+                            (<span className="text-muted-foreground">لم يتم تفعيل أي سنة دراسية حالياً</span>)
                         </>
                     )}
                 </AlertTitle>

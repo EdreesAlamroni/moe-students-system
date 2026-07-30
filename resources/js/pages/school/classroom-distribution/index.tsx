@@ -56,7 +56,7 @@ export default function Index({
         <>
             <Head title="توزيع الطلاب على الفصول الدراسية" />
 
-            <MainContainer>
+            <MainContainer showAcademicYearNotice>
                 <section>
                     <header className="flex items-center gap-3 border-b pb-4">
                         <LayoutGridIcon className="h-4 w-4 shrink-0" />

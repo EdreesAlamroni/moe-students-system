@@ -48,13 +48,7 @@ class BookDistributionItem extends Model
     #[Scope]
     protected function forCurrentAcademicYear(Builder $query): Builder
     {
-        $academicYearId = AcademicYear::currentId();
-
-        if (is_null($academicYearId)) {
-            return $query;
-        }
-
-        return $query->where('academic_year_id', '=', $academicYearId);
+        return $query->where('academic_year_id', '=', AcademicYear::currentConstraintId());
     }
 
     /*

@@ -73,7 +73,7 @@ class ClassPeriod extends Model
     #[Scope]
     protected function forCurrentAcademicYear(Builder $query): Builder
     {
-        return $query->where('academic_year_id', '=', AcademicYear::currentId());
+        return $query->where('academic_year_id', '=', AcademicYear::currentConstraintId());
     }
 
     #[Scope]

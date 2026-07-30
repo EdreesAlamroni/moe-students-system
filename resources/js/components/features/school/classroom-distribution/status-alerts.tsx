@@ -1,3 +1,5 @@
+import { usePage } from "@inertiajs/react";
+
 import {
     Alert,
     AlertDescription,
@@ -21,10 +23,11 @@ export default function StatusAlerts({
     isAcademicYearActive,
     enrollmentSummary,
 }: StatusAlertsProps) {
+    const { currentAcademicYear } = usePage().props;
+
     const hasEligibleEnrollments = (enrollmentSummary?.eligibleCount ?? 0) > 0;
     const hasAnyEnrollments = (enrollmentSummary?.totalCount ?? 0) > 0;
-    const withoutGradeLevelCount =
-        enrollmentSummary?.withoutGradeLevelCount ?? 0;
+    const withoutGradeLevelCount = enrollmentSummary?.withoutGradeLevelCount ?? 0;
 
     return (
         <>
@@ -42,7 +45,18 @@ export default function StatusAlerts({
                 </Alert>
             )}
 
-            {!isAcademicYearActive && (
+            {(currentAcademicYear === null) && (
+                <Alert variant="info">
+                    <InfoIcon />
+                    <AlertTitle>لم يتم تفعيل سنة دراسية حالياً</AlertTitle>
+                    <AlertDescription>
+                        لا توجد سنة دراسية نشطة حالياً.
+                        يرجى انتظار تفعيل السنة الدراسية من الإدارة لبدء توزيع الطلاب.
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            {(!isAcademicYearActive && currentAcademicYear !== null) && (
                 <Alert variant="info">
                     <InfoIcon />
                     <AlertTitle>عرض سنة دراسية سابقة</AlertTitle>

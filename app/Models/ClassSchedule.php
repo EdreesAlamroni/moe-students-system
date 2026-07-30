@@ -90,7 +90,7 @@ class ClassSchedule extends Model
         }
 
         return $query
-            ->where('academic_year_id', '=', AcademicYear::currentId())
+            ->where('academic_year_id', '=', AcademicYear::currentConstraintId())
             ->where('school_id', '=', $id);
     }
 

@@ -73,6 +73,18 @@ class AcademicYear extends Model
         return self::current()?->id;
     }
 
+    /**
+     * Academic year ID suitable for query constraints (WHERE / JOIN).
+     *
+     * When no current year is selected, returns 0 so filters and joins match
+     * no rows without invalid SQL (e.g. `WHERE academic_year_id IS NULL`) and
+     * without skipping joins that callers still reference in SELECT / GROUP BY / ORDER BY.
+     */
+    public static function currentConstraintId(): int
+    {
+        return self::currentId() ?? 0;
+    }
+
     public static function currentName(): ?string
     {
         return self::current()?->name;

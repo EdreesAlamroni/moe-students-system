@@ -273,6 +273,48 @@ test('classroom counts exclude classrooms from previous academic years', functio
                 ->where('schoolDistribution.0.classrooms', 1)));
 });
 
+test('the grade level distribution is empty when no academic year exists', function () {
+    AcademicYear::query()->delete();
+    AcademicYear::clearCachedCurrent();
+
+    $user = User::factory()->create();
+    $school = School::factory()->create();
+    $gradeLevel = GradeLevel::factory()->create();
+    $student = Student::factory()->create([
+        'school_id' => $school->id,
+        'gender' => Gender::MALE,
+    ]);
+
+    $inactiveYear = AcademicYear::query()->create([
+        'name' => '2023-2024',
+        'start_date' => now()->subYear()->startOfYear(),
+        'end_date' => now()->subYear()->endOfYear(),
+        'is_active' => false,
+    ]);
+
+    StudentEnrollment::factory()->create([
+        'academic_year_id' => $inactiveYear->id,
+        'school_id' => $school->id,
+        'grade_level_id' => $gradeLevel->id,
+        'classroom_id' => null,
+        'student_id' => $student->id,
+    ]);
+
+    AcademicYear::clearCachedCurrent();
+
+    expect(AcademicYear::currentId())->toBeNull();
+
+    $this->actingAs($user, 'administration')
+        ->get(route('administration.dashboard'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('administration/dashboard')
+            ->loadDeferredProps('grade-levels', fn (Assert $page) => $page
+                ->count('gradeLevelDistribution', 0))
+            ->loadDeferredProps('summary', fn (Assert $page) => $page
+                ->where('summary.classrooms', 0)));
+});
+
 test('the nationality distribution merges the tail into a single segment', function () {
     $user = User::factory()->create();
 

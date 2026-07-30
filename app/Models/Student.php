@@ -237,11 +237,7 @@ class Student extends Model
     #[Scope]
     protected function unenrolledFromGradeLevel(Builder $query): Builder
     {
-        $currentAcademicYearId = AcademicYear::currentId();
-
-        if (is_null($currentAcademicYearId)) {
-            return $query->whereRaw('1 = 0');
-        }
+        $currentAcademicYearId = AcademicYear::currentConstraintId();
 
         return $query->where(function (Builder $query) use ($currentAcademicYearId): void {
             $query->whereDoesntHave('enrollments', function (Builder $query) use ($currentAcademicYearId): void {
@@ -250,17 +246,12 @@ class Student extends Model
                 $query->where('academic_year_id', '=', $currentAcademicYearId)->whereNull('grade_level_id');
             });
         });
-
     }
 
     #[Scope]
     protected function unenrolledFromClassroom(Builder $query): Builder
     {
-        $currentAcademicYearId = AcademicYear::currentId();
-
-        if (is_null($currentAcademicYearId)) {
-            return $query->whereRaw('1 = 0');
-        }
+        $currentAcademicYearId = AcademicYear::currentConstraintId();
 
         return $query->whereHas('enrollments', function (Builder $query) use ($currentAcademicYearId): void {
             $query
@@ -273,12 +264,7 @@ class Student extends Model
     #[Scope]
     protected function eligibleForSchoolTransfer(Builder $query, School $school): Builder
     {
-        $currentAcademicYearId = AcademicYear::currentId();
-
-        if (is_null($currentAcademicYearId)) {
-            return $query->whereRaw('1 = 0');
-        }
-
+        $currentAcademicYearId = AcademicYear::currentConstraintId();
         $table = $query->getModel()->getTable();
 
         return $query
@@ -325,12 +311,7 @@ class Student extends Model
     #[Scope]
     protected function withCurrentGradeLevel(Builder $query): Builder
     {
-        $currentAcademicYearId = AcademicYear::currentId();
-
-        if (is_null($currentAcademicYearId)) {
-            return $query->whereRaw('1 = 0');
-        }
-
+        $currentAcademicYearId = AcademicYear::currentConstraintId();
         $table = $query->getModel()->getTable();
 
         return $query
@@ -367,12 +348,7 @@ class Student extends Model
     #[Scope]
     protected function withCurrentClassroom(Builder $query): Builder
     {
-        $currentAcademicYearId = AcademicYear::currentId();
-
-        if (is_null($currentAcademicYearId)) {
-            return $query->whereRaw('1 = 0');
-        }
-
+        $currentAcademicYearId = AcademicYear::currentConstraintId();
         $table = $query->getModel()->getTable();
 
         return $query

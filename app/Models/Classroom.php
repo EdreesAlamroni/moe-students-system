@@ -60,7 +60,7 @@ class Classroom extends Model
     #[Scope]
     protected function forCurrentAcademicYear(Builder $query): Builder
     {
-        return $query->where('academic_year_id', '=', AcademicYear::currentId());
+        return $query->where('academic_year_id', '=', AcademicYear::currentConstraintId());
     }
 
     #[Scope]
@@ -89,7 +89,7 @@ class Classroom extends Model
         $table = $query->getModel()->getTable();
 
         return $query
-            ->where("{$table}.academic_year_id", '=', AcademicYear::currentId())
+            ->where("{$table}.academic_year_id", '=', AcademicYear::currentConstraintId())
             ->where("{$table}.school_id", '=', $id);
     }
 

@@ -57,13 +57,7 @@ class BookDistribution extends Model
     #[Scope]
     protected function forCurrentAcademicYear(Builder $query): Builder
     {
-        $academicYearId = AcademicYear::currentId();
-
-        if (is_null($academicYearId)) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where('academic_year_id', '=', $academicYearId);
+        return $query->where('academic_year_id', '=', AcademicYear::currentConstraintId());
     }
 
     #[Scope]
@@ -93,13 +87,7 @@ class BookDistribution extends Model
     #[Scope]
     protected function forCurrentSchoolGradeLevel(Builder $query, int $gradeLevelId): Builder
     {
-        $academicYearId = AcademicYear::currentId();
-
-        if (is_null($academicYearId)) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        $query->where('academic_year_id', '=', $academicYearId);
+        $query->where('academic_year_id', '=', AcademicYear::currentConstraintId());
 
         $schoolId = auth('school')->user()?->organization_id;
 
