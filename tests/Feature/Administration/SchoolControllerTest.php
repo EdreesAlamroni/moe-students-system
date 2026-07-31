@@ -317,15 +317,61 @@ test('dual-period school with shared name requires the single name field', funct
         ->assertSessionHasErrors('name');
 });
 
-test('grade levels are required when creating a school', function () {
+test('authenticated users can store a single-period school without students gender or grade levels', function () {
     $user = createSchoolAdminUser();
     $monitor = EducationMonitor::factory()->create();
 
     $this->actingAs($user, 'administration')
         ->post(route('administration.schools.store'), publicSchoolPayload($monitor, [
+            'students_gender' => null,
             'grade_levels' => null,
         ]))
-        ->assertSessionHasErrors('grade_levels');
+        ->assertRedirect();
+
+    $this->assertDatabaseCount('schools', 1);
+
+    $school = School::query()->firstOrFail();
+
+    expect($school->students_gender)->toBeNull()
+        ->and($school->gradeLevels()->count())->toBe(0);
+
+    $this->assertDatabaseHas('school_educational_stages', [
+        'school_id' => $school->id,
+        'stage' => SchoolEducationalStageEnum::PRIMARY_EDUCATION->value,
+    ]);
+});
+
+test('authenticated users can store a dual-period school without students gender or grade levels', function () {
+    $user = createSchoolAdminUser();
+    $monitor = EducationMonitor::factory()->create();
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.schools.store'), [
+            'education_monitor_id' => $monitor->id,
+            'type' => SchoolType::PUBLIC->value,
+            'academic_period' => SchoolAcademicPeriod::DUAL_PERIOD->value,
+            'name_morning' => 'مدرسة الصباح',
+            'name_evening' => 'مدرسة المساء',
+            'students_gender_morning' => null,
+            'students_gender_evening' => null,
+            'educational_stages_morning' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
+            'educational_stages_evening' => [SchoolEducationalStageEnum::SECONDARY_EDUCATION->value],
+            'grade_levels_morning' => null,
+            'grade_levels_evening' => null,
+        ])
+        ->assertRedirect();
+
+    $this->assertDatabaseCount('schools', 2);
+
+    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
+    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+
+    expect($morningSchool->students_gender)->toBeNull()
+        ->and($eveningSchool->students_gender)->toBeNull()
+        ->and($morningSchool->gradeLevels()->count())->toBe(0)
+        ->and($eveningSchool->gradeLevels()->count())->toBe(0);
+
+    expect(SchoolEducationalStage::query()->count())->toBe(2);
 });
 
 test('selected grade levels must belong to the selected educational stages', function () {

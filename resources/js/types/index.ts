@@ -271,7 +271,7 @@ export interface School {
     building_type?: Enum;
     name: string;
     academic_period: Enum;
-    students_gender: Enum;
+    students_gender?: Enum;
     is_public?: boolean;
     is_private?: boolean;
     is_morning_period?: boolean;
@@ -419,7 +419,7 @@ export type StudentPsychosocialCard = {
     guardian_representative_work_place?: string;
 }
 
-export interface SchoolEducationalStage {
+export type SchoolEducationalStage = {
     id: number;
     school_id: number;
     school?: School;
@@ -431,7 +431,7 @@ export interface SchoolEducationalStage {
     [key: string]: unknown; // This allows for additional properties...
 };
 
-export interface AcademicRecordAttempt {
+export type AcademicRecordAttempt = {
     id: number;
     uuid: string;
     academic_year?: AcademicYear;
@@ -440,14 +440,37 @@ export interface AcademicRecordAttempt {
     created_at?: string;
 }
 
-export interface GroupedAcademicRecord {
+export type GroupedAcademicRecord = {
     grade_level: GradeLevel;
     attempts: AcademicRecordAttempt[];
     is_passed: boolean;
     is_current?: boolean;
 }
 
-export interface AcademicRecordProgress {
+export type AcademicRecordProgress = {
     completed: number;
     total: number;
 }
+
+export type CreateSchoolFormData = {
+    education_monitor_id?: string;
+    education_services_office_id?: string;
+    type?: string;
+    academic_period?: string;
+    same_school_name?: string;
+    educational_company_name?: string;
+    branch_type?: string;
+    building_type?: string;
+    name?: string;
+    name_morning?: string;
+    name_evening?: string;
+    students_gender?: string;
+    students_gender_morning?: string;
+    students_gender_evening?: string;
+    educational_stages?: string;
+    educational_stages_morning?: string;
+    educational_stages_evening?: string;
+    grade_levels?: string;
+    grade_levels_morning?: string;
+    grade_levels_evening?: string;
+};

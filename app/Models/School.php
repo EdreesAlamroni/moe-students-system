@@ -36,7 +36,7 @@ use Illuminate\Support\Str;
  * @property SchoolBuildingType|null $building_type
  * @property string $name
  * @property SchoolAcademicPeriod $academic_period
- * @property SchoolStudentsGender $students_gender
+ * @property SchoolStudentsGender|null $students_gender
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
