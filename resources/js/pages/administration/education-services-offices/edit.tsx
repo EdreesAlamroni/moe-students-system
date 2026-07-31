@@ -155,7 +155,7 @@ export default function Edit({ office, monitors }: PageProps) {
                                                     defaultValue={office.phone_number ?? ""}
                                                     hasError={!!errors.phone_number}
                                                     className="font-mono"
-                                                    placeholder="0912345678"
+                                                    autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
 
@@ -177,7 +177,7 @@ export default function Edit({ office, monitors }: PageProps) {
                                                     defaultValue={office.whatsapp_phone_number ?? ""}
                                                     hasError={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
-                                                    placeholder="0912345678"
+                                                    autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
 

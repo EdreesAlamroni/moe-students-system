@@ -77,7 +77,7 @@ export default function Edit({ classroom }: PageProps) {
                                                     hasError={!!errors.capacity}
                                                     required
                                                 >
-                                                    السعة
+                                                    سعة الفصل
                                                 </Label>
 
                                                 <Input

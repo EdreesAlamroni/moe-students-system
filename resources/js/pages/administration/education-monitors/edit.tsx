@@ -160,7 +160,6 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                     defaultValue={monitor.phone_number ?? ""}
                                                     hasError={!!errors.phone_number}
                                                     className="font-mono"
-                                                    placeholder="0912345678"
                                                     autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
@@ -183,7 +182,6 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                     defaultValue={monitor.whatsapp_phone_number ?? ""}
                                                     hasError={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
-                                                    placeholder="0912345678"
                                                     autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />

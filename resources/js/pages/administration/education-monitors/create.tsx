@@ -157,7 +157,6 @@ export default function Create({ municipals }: PageProps) {
                                                     name="phone_number"
                                                     hasError={!!errors.phone_number}
                                                     className="font-mono"
-                                                    placeholder="0912345678"
                                                     autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />
@@ -179,7 +178,6 @@ export default function Create({ municipals }: PageProps) {
                                                     name="whatsapp_phone_number"
                                                     hasError={!!errors.whatsapp_phone_number}
                                                     className="font-mono"
-                                                    placeholder="0912345678"
                                                     autoComplete="off"
                                                     {...libyanPhoneNumberInputConstraints()}
                                                 />

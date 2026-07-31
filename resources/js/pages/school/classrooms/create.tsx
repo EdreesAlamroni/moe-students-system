@@ -177,7 +177,7 @@ export default function Create({ educationalStages, gradeLevels, classroomNames 
 
                                             <Field>
                                                 <Label htmlFor="capacity" hasError={!!errors.capacity} required>
-                                                    السعة
+                                                    سعة الفصل
                                                 </Label>
 
                                                 <Input
