@@ -282,6 +282,9 @@ test('authenticated users can store a dual-period school as two records', functi
     $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
     $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
 
+    expect($morningSchool->same_school_uuid)->toBeNull()
+        ->and($eveningSchool->same_school_uuid)->toBeNull();
+
     $this->assertDatabaseHas('grade_level_school', [
         'school_id' => $morningSchool->id,
         'grade_level_id' => $primaryGradeLevel->id,
@@ -301,7 +304,7 @@ test('authenticated users can store a dual-period school sharing the same name',
     $payload = [
         'type' => SchoolType::PUBLIC->value,
         'academic_period' => SchoolAcademicPeriod::DUAL_PERIOD->value,
-        'same_school_name' => '1',
+        'is_same_school' => '1',
         'name' => 'مدرسة الوحدة',
         'students_gender_morning' => SchoolStudentsGender::BOYS->value,
         'students_gender_evening' => SchoolStudentsGender::GIRLS->value,
@@ -329,6 +332,12 @@ test('authenticated users can store a dual-period school sharing the same name',
         'academic_period' => SchoolAcademicPeriod::EVENING->value,
         'students_gender' => SchoolStudentsGender::GIRLS->value,
     ]);
+
+    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
+    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+
+    expect($morningSchool->same_school_uuid)->not->toBeNull()
+        ->and($eveningSchool->same_school_uuid)->toBe($morningSchool->same_school_uuid);
 });
 
 test('dual-period school with shared name requires the single name field', function () {
@@ -341,7 +350,7 @@ test('dual-period school with shared name requires the single name field', funct
         ->post(route('education-monitor.schools.store'), [
             'type' => SchoolType::PUBLIC->value,
             'academic_period' => SchoolAcademicPeriod::DUAL_PERIOD->value,
-            'same_school_name' => '1',
+            'is_same_school' => '1',
             'students_gender_morning' => SchoolStudentsGender::BOYS->value,
             'students_gender_evening' => SchoolStudentsGender::GIRLS->value,
             'educational_stages_morning' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],

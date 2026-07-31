@@ -457,7 +457,7 @@ export type CreateSchoolFormData = {
     education_services_office_id?: string;
     type?: string;
     academic_period?: string;
-    same_school_name?: string;
+    is_same_school?: string;
     educational_company_name?: string;
     branch_type?: string;
     building_type?: string;

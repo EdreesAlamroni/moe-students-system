@@ -27,6 +27,7 @@ use Illuminate\Support\Str;
 /**
  * @property int $id
  * @property string $uuid
+ * @property string|null $same_school_uuid
  * @property int $education_monitor_id
  * @property int|null $education_services_office_id
  * @property string $serial_number

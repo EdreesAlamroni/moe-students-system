@@ -50,7 +50,7 @@ abstract class StoreSchoolRequest extends FormRequest
                 'required',
                 Rule::enum(SchoolAcademicPeriod::class),
             ],
-            'same_school_name' => [
+            'is_same_school' => [
                 'sometimes',
                 'boolean',
             ],
@@ -83,7 +83,7 @@ abstract class StoreSchoolRequest extends FormRequest
                 'sometimes',
                 'nullable',
                 Rule::requiredIf(function () {
-                    return ! $this->isDualPeriod() || $this->usesSharedSchoolName();
+                    return ! $this->isDualPeriod() || $this->isSameSchool();
                 }),
                 'string',
                 'max:255',
@@ -92,7 +92,7 @@ abstract class StoreSchoolRequest extends FormRequest
                 'sometimes',
                 'nullable',
                 Rule::requiredIf(function () {
-                    return $this->usesSeparateSchoolNames();
+                    return $this->isSeparateSchool();
                 }),
                 'string',
                 'max:255',
@@ -101,7 +101,7 @@ abstract class StoreSchoolRequest extends FormRequest
                 'sometimes',
                 'nullable',
                 Rule::requiredIf(function () {
-                    return $this->usesSeparateSchoolNames();
+                    return $this->isSeparateSchool();
                 }),
                 'string',
                 'max:255',
@@ -227,19 +227,16 @@ abstract class StoreSchoolRequest extends FormRequest
 
     public function getAttributes(?string $key = null): array
     {
-        $sharedValues = $this->sharedSchoolValues();
-
         if (! $this->isDualPeriod()) {
             $academicPeriod = $this->input('academic_period');
 
             $attributes = [
                 'schools' => [
-                    $academicPeriod => Arr::merge($sharedValues, [
-                        'school_group_uuid' => null,
-                        'name' => $this->input('name'),
-                        'academic_period' => $academicPeriod,
-                        'students_gender' => $this->input('students_gender'),
-                    ]),
+                    $academicPeriod => $this->buildSchoolRecord(
+                        academicPeriod: $academicPeriod,
+                        name: $this->input('name'),
+                        studentsGender: $this->input('students_gender'),
+                    ),
                 ],
                 'educational_stages' => [
                     $academicPeriod => $this->buildEducationalStages('educational_stages'),
@@ -254,27 +251,22 @@ abstract class StoreSchoolRequest extends FormRequest
 
         $morningPeriod = SchoolAcademicPeriod::MORNING->value;
         $eveningPeriod = SchoolAcademicPeriod::EVENING->value;
-
-        $sharedName = $this->input('name');
-        $morningName = $this->usesSharedSchoolName() ? $sharedName : $this->input('name_morning');
-        $eveningName = $this->usesSharedSchoolName() ? $sharedName : $this->input('name_evening');
-
-        $schoolGroupUuid = Str::uuid7()->toString();
+        $sameSchoolUuid = $this->sameSchoolUuid();
 
         $attributes = [
             'schools' => [
-                $morningPeriod => Arr::merge($sharedValues, [
-                    'school_group_uuid' => $schoolGroupUuid,
-                    'name' => $morningName,
-                    'academic_period' => $morningPeriod,
-                    'students_gender' => $this->input('students_gender_morning'),
-                ]),
-                $eveningPeriod => Arr::merge($sharedValues, [
-                    'school_group_uuid' => $schoolGroupUuid,
-                    'name' => $eveningName,
-                    'academic_period' => $eveningPeriod,
-                    'students_gender' => $this->input('students_gender_evening'),
-                ]),
+                $morningPeriod => $this->buildSchoolRecord(
+                    academicPeriod: $morningPeriod,
+                    name: $this->schoolNameForPeriod(SchoolAcademicPeriod::MORNING),
+                    studentsGender: $this->input('students_gender_morning'),
+                    sameSchoolUuid: $sameSchoolUuid,
+                ),
+                $eveningPeriod => $this->buildSchoolRecord(
+                    academicPeriod: $eveningPeriod,
+                    name: $this->schoolNameForPeriod(SchoolAcademicPeriod::EVENING),
+                    studentsGender: $this->input('students_gender_evening'),
+                    sameSchoolUuid: $sameSchoolUuid,
+                ),
             ],
             'educational_stages' => [
                 $morningPeriod => $this->buildEducationalStages('educational_stages_morning'),
@@ -308,18 +300,18 @@ abstract class StoreSchoolRequest extends FormRequest
             $gradeLevelsEvening = $this->decodeArrayInput('grade_levels_evening');
         }
 
-        $usesSharedSchoolName = $this->usesSharedSchoolName();
+        $isSameSchool = $this->isSameSchool();
 
         $this->merge([
-            'same_school_name' => $usesSharedSchoolName,
+            'is_same_school' => $isSameSchool,
 
             'educational_company_name' => $this->isPrivateType() ? $this->input('educational_company_name') : null,
             'branch_type' => $this->isPrivateType() ? $this->input('branch_type') : null,
             'building_type' => $this->isPrivateType() ? $this->input('building_type') : null,
 
-            'name' => (! $this->isDualPeriod() || $usesSharedSchoolName) ? $this->input('name') : null,
-            'name_morning' => $this->usesSeparateSchoolNames() ? $this->input('name_morning') : null,
-            'name_evening' => $this->usesSeparateSchoolNames() ? $this->input('name_evening') : null,
+            'name' => (! $this->isDualPeriod() || $isSameSchool) ? $this->input('name') : null,
+            'name_morning' => $this->isSeparateSchool() ? $this->input('name_morning') : null,
+            'name_evening' => $this->isSeparateSchool() ? $this->input('name_evening') : null,
 
             'students_gender' => ! $this->isDualPeriod() ? $this->input('students_gender') : null,
             'students_gender_morning' => $this->isDualPeriod() ? $this->input('students_gender_morning') : null,
@@ -332,6 +324,23 @@ abstract class StoreSchoolRequest extends FormRequest
             'grade_levels' => $gradeLevels,
             'grade_levels_morning' => $gradeLevelsMorning,
             'grade_levels_evening' => $gradeLevelsEvening,
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function buildSchoolRecord(
+        string $academicPeriod,
+        ?string $name,
+        mixed $studentsGender,
+        ?string $sameSchoolUuid = null,
+    ): array {
+        return Arr::merge($this->sharedSchoolValues(), [
+            'same_school_uuid' => $sameSchoolUuid,
+            'name' => $name,
+            'academic_period' => $academicPeriod,
+            'students_gender' => $studentsGender,
         ]);
     }
 
@@ -419,14 +428,34 @@ abstract class StoreSchoolRequest extends FormRequest
         return $this->enum('academic_period', SchoolAcademicPeriod::class) === SchoolAcademicPeriod::DUAL_PERIOD;
     }
 
-    protected function usesSharedSchoolName(): bool
+    protected function isSameSchool(): bool
     {
-        return $this->isDualPeriod() && $this->boolean('same_school_name');
+        return $this->isDualPeriod() && $this->boolean('is_same_school');
     }
 
-    protected function usesSeparateSchoolNames(): bool
+    protected function isSeparateSchool(): bool
     {
-        return $this->isDualPeriod() && ! $this->usesSharedSchoolName();
+        return $this->isDualPeriod() && ! $this->isSameSchool();
+    }
+
+    protected function sameSchoolUuid(): ?string
+    {
+        if (! $this->isSameSchool()) {
+            return null;
+        }
+
+        return Str::uuid7()->toString();
+    }
+
+    protected function schoolNameForPeriod(SchoolAcademicPeriod $period): ?string
+    {
+        if ($this->isSameSchool()) {
+            return $this->input('name');
+        }
+
+        return $period === SchoolAcademicPeriod::MORNING
+            ? $this->input('name_morning')
+            : $this->input('name_evening');
     }
 
     protected function monitorHasOffices(): bool

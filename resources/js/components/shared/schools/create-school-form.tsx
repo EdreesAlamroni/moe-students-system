@@ -84,7 +84,7 @@ export function CreateSchoolForm({
 }: CreateSchoolFormProps) {
     const [selectedType, setSelectedType] = React.useState('');
     const [selectedAcademicPeriod, setSelectedAcademicPeriod] = React.useState('');
-    const [sameSchoolName, setSameSchoolName] = React.useState<boolean>(false);
+    const [isSameSchool, setIsSameSchool] = React.useState<boolean>(false);
     const [selectedStages, setSelectedStages] = React.useState<string[]>([]);
     const [selectedStagesMorning, setSelectedStagesMorning] = React.useState<string[]>([]);
     const [selectedStagesEvening, setSelectedStagesEvening] = React.useState<string[]>([]);
@@ -143,7 +143,7 @@ export function CreateSchoolForm({
 
                         {isDualPeriod ? (
                             <>
-                                <input type="hidden" name="same_school_name" value={sameSchoolName ? "1" : "0"} />
+                                <input type="hidden" name="is_same_school" value={isSameSchool ? "1" : "0"} />
                                 <input type="hidden" name="educational_stages_morning" value={JSON.stringify(selectedStagesMorning)} />
                                 <input type="hidden" name="educational_stages_evening" value={JSON.stringify(selectedStagesEvening)} />
                                 <input type="hidden" name="grade_levels_morning" value={JSON.stringify(selectedGradeLevelsMorning)} />
@@ -441,25 +441,25 @@ export function CreateSchoolForm({
                                                 <Field className="col-span-full">
                                                     <div className="flex items-center gap-x-3">
                                                         <Checkbox
-                                                            id="same_school_name"
-                                                            checked={sameSchoolName}
+                                                            id="is_same_school"
+                                                            checked={isSameSchool}
                                                             onCheckedChange={(checked) => {
-                                                                setSameSchoolName(checked === true);
+                                                                setIsSameSchool(checked === true);
                                                             }}
                                                         />
 
                                                         <Label
-                                                            htmlFor="same_school_name"
+                                                            htmlFor="is_same_school"
                                                             style={{ fontWeight: '500' }}
                                                         >
-                                                            كلتا الفترتين تتبعان نفس المدرسة (استخدام نفس الاسم للفترتين)
+                                                            الفترتان الصباحية والمسائية لنفس المدرسة وبنفس الاسم
                                                         </Label>
                                                     </div>
 
-                                                    <InputError message={errors.same_school_name} />
+                                                    <InputError message={errors.is_same_school} />
                                                 </Field>
 
-                                                {sameSchoolName ? (
+                                                {isSameSchool ? (
                                                     <Field className="col-span-full">
                                                         <Label
                                                             htmlFor="name"

@@ -285,6 +285,9 @@ test('authenticated users can store a dual-period school as two records', functi
     $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
     $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
 
+    expect($morningSchool->same_school_uuid)->toBeNull()
+        ->and($eveningSchool->same_school_uuid)->toBeNull();
+
     $this->assertDatabaseHas('grade_level_school', [
         'school_id' => $morningSchool->id,
         'grade_level_id' => $primaryGradeLevel->id,

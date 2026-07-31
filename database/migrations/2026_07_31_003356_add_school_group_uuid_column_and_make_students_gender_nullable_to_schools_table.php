@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('schools', function (Blueprint $table) {
-            $table->uuid('school_group_uuid')->nullable()->index();
+            $table->uuid('same_school_uuid')->nullable()->index();
             $table->string('students_gender')->nullable(true)->change();
         });
     }
@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('schools', function (Blueprint $table) {
-            $table->dropColumn('school_group_uuid');
+            $table->dropColumn('same_school_uuid');
             $table->string('students_gender')->nullable(false)->change();
         });
     }
