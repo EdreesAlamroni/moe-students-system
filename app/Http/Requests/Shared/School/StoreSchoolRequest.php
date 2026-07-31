@@ -221,6 +221,8 @@ abstract class StoreSchoolRequest extends FormRequest
                     'grade_levels_evening',
                     'educational_stages_evening',
                 );
+
+                $this->ensureUniqueGradeLevelsAcrossPeriods($validator);
             },
         ];
     }
@@ -512,6 +514,7 @@ abstract class StoreSchoolRequest extends FormRequest
     protected function buildGradeLevels(string $key): array
     {
         $currentAcademicYearId = AcademicYear::currentId();
+
         $ids = $this->input($key) ?? [];
 
         if (is_null($currentAcademicYearId) || ! is_array($ids) || $ids === []) {
@@ -550,6 +553,27 @@ abstract class StoreSchoolRequest extends FormRequest
                 $gradeLevelsKey,
                 __('validation.custom.grade_levels.must_belong_to_educational_stages'),
             );
+        }
+    }
+
+    protected function ensureUniqueGradeLevelsAcrossPeriods(Validator $validator): void
+    {
+        if (! $this->isSameSchool()) {
+            return;
+        }
+
+        $morningIds = array_map('intval', $this->input('grade_levels_morning') ?? []);
+        $eveningIds = array_map('intval', $this->input('grade_levels_evening') ?? []);
+
+        if ($morningIds === [] || $eveningIds === []) {
+            return;
+        }
+
+        if (array_intersect($morningIds, $eveningIds) !== []) {
+            $message = __('validation.custom.grade_levels.must_be_unique_across_periods');
+
+            $validator->errors()->add('grade_levels_morning', $message);
+            $validator->errors()->add('grade_levels_evening', $message);
         }
     }
 }

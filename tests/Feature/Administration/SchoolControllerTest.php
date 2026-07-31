@@ -398,6 +398,54 @@ test('selected grade levels must belong to the selected educational stages', fun
         ]);
 });
 
+test('same-school dual-period schools cannot share grade levels across periods', function () {
+    $user = createSchoolAdminUser();
+    $monitor = EducationMonitor::factory()->create();
+    $primaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
+    $secondaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::SECONDARY_EDUCATION);
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.schools.store'), [
+            'education_monitor_id' => $monitor->id,
+            'type' => SchoolType::PUBLIC->value,
+            'academic_period' => SchoolAcademicPeriod::DUAL_PERIOD->value,
+            'is_same_school' => '1',
+            'name' => 'مدرسة الوحدة',
+            'students_gender_morning' => SchoolStudentsGender::BOYS->value,
+            'students_gender_evening' => SchoolStudentsGender::GIRLS->value,
+            'educational_stages_morning' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
+            'educational_stages_evening' => [SchoolEducationalStageEnum::SECONDARY_EDUCATION->value],
+            'grade_levels_morning' => [$primaryGradeLevel->id, $secondaryGradeLevel->id],
+            'grade_levels_evening' => [$secondaryGradeLevel->id],
+        ])
+        ->assertSessionHasErrors([
+            'grade_levels_morning' => __('validation.custom.grade_levels.must_be_unique_across_periods'),
+            'grade_levels_evening' => __('validation.custom.grade_levels.must_be_unique_across_periods'),
+        ]);
+});
+
+test('separate dual-period schools can share grade levels across periods', function () {
+    $user = createSchoolAdminUser();
+    $monitor = EducationMonitor::factory()->create();
+    $primaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.schools.store'), [
+            'education_monitor_id' => $monitor->id,
+            'type' => SchoolType::PUBLIC->value,
+            'academic_period' => SchoolAcademicPeriod::DUAL_PERIOD->value,
+            'name_morning' => 'مدرسة الصباح',
+            'name_evening' => 'مدرسة المساء',
+            'students_gender_morning' => SchoolStudentsGender::BOYS->value,
+            'students_gender_evening' => SchoolStudentsGender::GIRLS->value,
+            'educational_stages_morning' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
+            'educational_stages_evening' => [SchoolEducationalStageEnum::PRIMARY_EDUCATION->value],
+            'grade_levels_morning' => [$primaryGradeLevel->id],
+            'grade_levels_evening' => [$primaryGradeLevel->id],
+        ])
+        ->assertRedirect();
+});
+
 test('education services office is required when the monitor has offices', function () {
     $user = createSchoolAdminUser();
     $monitor = EducationMonitor::factory()->create();

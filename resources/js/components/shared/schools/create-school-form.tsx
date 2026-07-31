@@ -68,6 +68,19 @@ function pruneGradeLevelSelections(
     return selectedIds.filter((id) => validIds.has(id));
 }
 
+function excludeGradeLevelsByIds(
+    gradeLevels: GradeLevel[],
+    excludedIds: string[],
+): GradeLevel[] {
+    if (excludedIds.length === 0) {
+        return gradeLevels;
+    }
+
+    const excluded = new Set(excludedIds);
+
+    return gradeLevels.filter((gradeLevel) => !excluded.has(gradeLevel.id.toString()));
+}
+
 export function CreateSchoolForm({
     form,
     indexUrl,
@@ -111,6 +124,22 @@ export function CreateSchoolForm({
         [gradeLevels, selectedStagesEvening],
     );
 
+    const isSameSchool = deferredIsSameSchoolValue === 'yes';
+
+    const selectableGradeLevelsMorning = React.useMemo(
+        () => isSameSchool
+            ? excludeGradeLevelsByIds(availableGradeLevelsMorning, selectedGradeLevelsEvening)
+            : availableGradeLevelsMorning,
+        [availableGradeLevelsMorning, selectedGradeLevelsEvening, isSameSchool],
+    );
+
+    const selectableGradeLevelsEvening = React.useMemo(
+        () => isSameSchool
+            ? excludeGradeLevelsByIds(availableGradeLevelsEvening, selectedGradeLevelsMorning)
+            : availableGradeLevelsEvening,
+        [availableGradeLevelsEvening, selectedGradeLevelsMorning, isSameSchool],
+    );
+
     const handleStagesChange = (stages: string[]) => {
         setSelectedStages(stages);
         setSelectedGradeLevels((current) =>
@@ -130,6 +159,36 @@ export function CreateSchoolForm({
         setSelectedGradeLevelsEvening((current) =>
             pruneGradeLevelSelections(current, filterGradeLevelsByStages(gradeLevels, stages)),
         );
+    };
+
+    const handleGradeLevelsMorningChange = (gradeLevelIds: string[]) => {
+        setSelectedGradeLevelsMorning(gradeLevelIds);
+
+        if (isSameSchool) {
+            setSelectedGradeLevelsEvening((current) =>
+                current.filter((id) => !gradeLevelIds.includes(id)),
+            );
+        }
+    };
+
+    const handleGradeLevelsEveningChange = (gradeLevelIds: string[]) => {
+        setSelectedGradeLevelsEvening(gradeLevelIds);
+
+        if (isSameSchool) {
+            setSelectedGradeLevelsMorning((current) =>
+                current.filter((id) => !gradeLevelIds.includes(id)),
+            );
+        }
+    };
+
+    const handleIsSameSchoolChange = (value: 'yes' | 'no') => {
+        setIsSameSchoolValue(value);
+
+        if (value === 'yes') {
+            setSelectedGradeLevelsEvening((current) =>
+                current.filter((id) => !selectedGradeLevelsMorning.includes(id)),
+            );
+        }
     };
 
     return (
@@ -447,7 +506,7 @@ export function CreateSchoolForm({
                                                     <RadioGroup
                                                         className="grid-cols-2"
                                                         value={isSameSchoolValue}
-                                                        onValueChange={(value) => setIsSameSchoolValue(value as 'yes' | 'no')}
+                                                        onValueChange={(value) => handleIsSameSchoolChange(value as 'yes' | 'no')}
                                                     >
                                                         <RadioGroupItem value="yes">
                                                             نعم، باسم واحد
@@ -650,9 +709,9 @@ export function CreateSchoolForm({
 
                                                     <MultiSelect
                                                         id="grade_levels_morning"
-                                                        options={availableGradeLevelsMorning}
+                                                        options={selectableGradeLevelsMorning}
                                                         defaultValue={selectedGradeLevelsMorning}
-                                                        onValueChange={setSelectedGradeLevelsMorning}
+                                                        onValueChange={handleGradeLevelsMorningChange}
                                                         placeholder="اختر الصفوف الدراسية"
                                                         emptyPlaceholder="يرجى اختيار مرحلة دراسية واحدة أو أكثر أولاً"
                                                         disabled={selectedStagesMorning.length === 0}
@@ -673,9 +732,9 @@ export function CreateSchoolForm({
 
                                                     <MultiSelect
                                                         id="grade_levels_evening"
-                                                        options={availableGradeLevelsEvening}
+                                                        options={selectableGradeLevelsEvening}
                                                         defaultValue={selectedGradeLevelsEvening}
-                                                        onValueChange={setSelectedGradeLevelsEvening}
+                                                        onValueChange={handleGradeLevelsEveningChange}
                                                         placeholder="اختر الصفوف الدراسية"
                                                         emptyPlaceholder="يرجى اختيار مرحلة دراسية واحدة أو أكثر أولاً"
                                                         disabled={selectedStagesEvening.length === 0}
