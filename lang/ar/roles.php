@@ -40,17 +40,7 @@ return [
             'grade-level:role:create' => 'إضافة صفوف دراسية',
             'grade-level:role:update' => 'تعديل الصفوف الدراسية',
             'grade-level:role:delete' => 'حذف الصفوف الدراسية',
-            'grade-level:role:state-update' => 'تحديث حالة الصفوف الدراسية',
-        ],
-    ],
-
-    'subject-classification' => [
-        'label' => 'تصنيف المقررات الدراسية',
-        'values' => [
-            'subject-classification:role:view' => 'عرض تصنيف المقررات الدراسية',
-            'subject-classification:role:create' => 'إضافة تصنيف المقررات الدراسية',
-            'subject-classification:role:update' => 'تعديل تصنيف المقررات الدراسية',
-            'subject-classification:role:delete' => 'حذف تصنيف المقررات الدراسية',
+            'grade-level:role:transfer' => 'نقل الصفوف الدراسية',
         ],
     ],
 

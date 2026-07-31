@@ -3,6 +3,7 @@
 namespace App\Policies\School;
 
 use App\Models\Classroom;
+use App\Models\School;
 use App\Models\User;
 
 class ClassroomPolicy
@@ -14,7 +15,7 @@ class ClassroomPolicy
 
     public function view(User $user, Classroom $classroom): bool
     {
-        if ($classroom->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $classroom)) {
             return false;
         }
 
@@ -28,7 +29,7 @@ class ClassroomPolicy
 
     public function update(User $user, Classroom $classroom): bool
     {
-        if ($classroom->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $classroom)) {
             return false;
         }
 
@@ -45,7 +46,7 @@ class ClassroomPolicy
             return false;
         }
 
-        if ($classroom->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $classroom)) {
             return false;
         }
 
@@ -54,5 +55,10 @@ class ClassroomPolicy
         }
 
         return $user->can('classroom:delete');
+    }
+
+    private function belongsToCurrentSchool(User $user, Classroom $classroom): bool
+    {
+        return $user->organization_type === School::class && $user->organization_id === $classroom->school_id;
     }
 }

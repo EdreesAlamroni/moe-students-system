@@ -3,6 +3,7 @@
 namespace App\Policies\School;
 
 use App\Models\AcademicYear;
+use App\Models\School;
 use App\Models\Student;
 use App\Models\User;
 use App\Services\AcademicRecordService;
@@ -16,7 +17,7 @@ class StudentPolicy
 
     public function view(User $user, Student $student): bool
     {
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -30,7 +31,7 @@ class StudentPolicy
 
     public function update(User $user, Student $student): bool
     {
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -47,7 +48,7 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -70,7 +71,7 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -91,7 +92,7 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -114,7 +115,7 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -137,7 +138,7 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -154,7 +155,7 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -171,7 +172,7 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -194,7 +195,7 @@ class StudentPolicy
 
     public function viewPsychosocialCard(User $user, Student $student): bool
     {
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -215,7 +216,7 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -228,7 +229,7 @@ class StudentPolicy
 
     public function printPsychosocialCard(User $user, Student $student): bool
     {
-        if ($student->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $student)) {
             return false;
         }
 
@@ -237,5 +238,10 @@ class StudentPolicy
         }
 
         return $user->can('student:print-psychosocial-card');
+    }
+
+    private function belongsToCurrentSchool(User $user, Student $student): bool
+    {
+        return $user->organization_type === School::class && $user->organization_id === $student->school_id;
     }
 }

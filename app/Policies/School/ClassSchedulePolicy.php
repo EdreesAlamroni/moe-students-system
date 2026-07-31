@@ -4,13 +4,14 @@ namespace App\Policies\School;
 
 use App\Models\AcademicYear;
 use App\Models\Classroom;
+use App\Models\School;
 use App\Models\User;
 
 class ClassSchedulePolicy
 {
     public function view(User $user, Classroom $classroom): bool
     {
-        if ($classroom->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $classroom)) {
             return false;
         }
 
@@ -23,7 +24,7 @@ class ClassSchedulePolicy
             return false;
         }
 
-        if ($classroom->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $classroom)) {
             return false;
         }
 
@@ -32,10 +33,15 @@ class ClassSchedulePolicy
 
     public function print(User $user, Classroom $classroom): bool
     {
-        if ($classroom->school_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentSchool($user, $classroom)) {
             return false;
         }
 
         return $user->can('class-schedule:print');
+    }
+
+    private function belongsToCurrentSchool(User $user, Classroom $classroom): bool
+    {
+        return $user->organization_type === School::class && $user->organization_id === $classroom->school_id;
     }
 }
