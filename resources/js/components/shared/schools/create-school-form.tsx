@@ -15,9 +15,9 @@ import RequiredFieldsNote from "@/components/ui/display/required-fields-note";
 import Field from "@/components/ui/controls/field";
 import { Label } from "@/components/ui/controls/label";
 import { Input } from "@/components/ui/controls/input";
-import { Checkbox } from "@/components/ui/controls/checkbox";
 import { MultiSelect } from "@/components/ui/controls/multi-select";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/controls/radio-group";
 import InputError from "@/components/ui/controls/input-error";
 
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
@@ -84,7 +84,8 @@ export function CreateSchoolForm({
 }: CreateSchoolFormProps) {
     const [selectedType, setSelectedType] = React.useState('');
     const [selectedAcademicPeriod, setSelectedAcademicPeriod] = React.useState('');
-    const [isSameSchool, setIsSameSchool] = React.useState<boolean>(false);
+    const [isSameSchoolValue, setIsSameSchoolValue] = React.useState<'yes' | 'no'>('no');
+    const deferredIsSameSchoolValue = React.useDeferredValue(isSameSchoolValue);
     const [selectedStages, setSelectedStages] = React.useState<string[]>([]);
     const [selectedStagesMorning, setSelectedStagesMorning] = React.useState<string[]>([]);
     const [selectedStagesEvening, setSelectedStagesEvening] = React.useState<string[]>([]);
@@ -143,7 +144,7 @@ export function CreateSchoolForm({
 
                         {isDualPeriod ? (
                             <>
-                                <input type="hidden" name="is_same_school" value={isSameSchool ? "1" : "0"} />
+                                <input type="hidden" name="is_same_school" value={isSameSchoolValue === "yes" ? "1" : "0"} />
                                 <input type="hidden" name="educational_stages_morning" value={JSON.stringify(selectedStagesMorning)} />
                                 <input type="hidden" name="educational_stages_evening" value={JSON.stringify(selectedStagesEvening)} />
                                 <input type="hidden" name="grade_levels_morning" value={JSON.stringify(selectedGradeLevelsMorning)} />
@@ -439,27 +440,27 @@ export function CreateSchoolForm({
                                         ) : (
                                             <>
                                                 <Field className="col-span-full">
-                                                    <div className="flex items-center gap-x-3">
-                                                        <Checkbox
-                                                            id="is_same_school"
-                                                            checked={isSameSchool}
-                                                            onCheckedChange={(checked) => {
-                                                                setIsSameSchool(checked === true);
-                                                            }}
-                                                        />
+                                                    <Label hasError={!!errors.is_same_school} required>
+                                                        هل الفترتان الصباحية والمسائية لنفس المدرسة وبنفس الاسم؟
+                                                    </Label>
 
-                                                        <Label
-                                                            htmlFor="is_same_school"
-                                                            style={{ fontWeight: '500' }}
-                                                        >
-                                                            الفترتان الصباحية والمسائية لنفس المدرسة وبنفس الاسم
-                                                        </Label>
-                                                    </div>
+                                                    <RadioGroup
+                                                        className="grid-cols-2"
+                                                        value={isSameSchoolValue}
+                                                        onValueChange={(value) => setIsSameSchoolValue(value as 'yes' | 'no')}
+                                                    >
+                                                        <RadioGroupItem value="yes">
+                                                            نعم، باسم واحد
+                                                        </RadioGroupItem>
+                                                        <RadioGroupItem value="no">
+                                                            لا، باسمين مختلفين
+                                                        </RadioGroupItem>
+                                                    </RadioGroup>
 
                                                     <InputError message={errors.is_same_school} />
                                                 </Field>
 
-                                                {isSameSchool ? (
+                                                {deferredIsSameSchoolValue === "yes" ? (
                                                     <Field className="col-span-full">
                                                         <Label
                                                             htmlFor="name"
