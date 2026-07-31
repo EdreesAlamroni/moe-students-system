@@ -81,6 +81,23 @@ function excludeGradeLevelsByIds(
     return gradeLevels.filter((gradeLevel) => !excluded.has(gradeLevel.id.toString()));
 }
 
+function resolveGradeLevelsEmptyPlaceholder(
+    selectedStages: string[],
+    availableGradeLevels: GradeLevel[],
+    selectableGradeLevels: GradeLevel[],
+    isSameSchool: boolean,
+): string {
+    if (selectedStages.length === 0) {
+        return 'يرجى اختيار مرحلة دراسية واحدة أو أكثر أولاً';
+    }
+
+    if (isSameSchool && availableGradeLevels.length > 0 && selectableGradeLevels.length === 0) {
+        return 'جميع الصفوف الدراسية المتاحة لهذه المرحلة تم اختيارها للفترة الأخرى.';
+    }
+
+    return 'لا توجد صفوف دراسية متاحة للاختيار';
+}
+
 export function CreateSchoolForm({
     form,
     indexUrl,
@@ -138,6 +155,20 @@ export function CreateSchoolForm({
             ? excludeGradeLevelsByIds(availableGradeLevelsEvening, selectedGradeLevelsMorning)
             : availableGradeLevelsEvening,
         [availableGradeLevelsEvening, selectedGradeLevelsMorning, isSameSchool],
+    );
+
+    const gradeLevelsMorningEmptyPlaceholder = resolveGradeLevelsEmptyPlaceholder(
+        selectedStagesMorning,
+        availableGradeLevelsMorning,
+        selectableGradeLevelsMorning,
+        isSameSchool,
+    );
+
+    const gradeLevelsEveningEmptyPlaceholder = resolveGradeLevelsEmptyPlaceholder(
+        selectedStagesEvening,
+        availableGradeLevelsEvening,
+        selectableGradeLevelsEvening,
+        isSameSchool,
     );
 
     const handleStagesChange = (stages: string[]) => {
@@ -713,7 +744,7 @@ export function CreateSchoolForm({
                                                         defaultValue={selectedGradeLevelsMorning}
                                                         onValueChange={handleGradeLevelsMorningChange}
                                                         placeholder="اختر الصفوف الدراسية"
-                                                        emptyPlaceholder="يرجى اختيار مرحلة دراسية واحدة أو أكثر أولاً"
+                                                        emptyPlaceholder={gradeLevelsMorningEmptyPlaceholder}
                                                         disabled={selectedStagesMorning.length === 0}
                                                         aria-invalid={!!errors.grade_levels_morning}
                                                     />
@@ -736,7 +767,7 @@ export function CreateSchoolForm({
                                                         defaultValue={selectedGradeLevelsEvening}
                                                         onValueChange={handleGradeLevelsEveningChange}
                                                         placeholder="اختر الصفوف الدراسية"
-                                                        emptyPlaceholder="يرجى اختيار مرحلة دراسية واحدة أو أكثر أولاً"
+                                                        emptyPlaceholder={gradeLevelsEveningEmptyPlaceholder}
                                                         disabled={selectedStagesEvening.length === 0}
                                                         aria-invalid={!!errors.grade_levels_evening}
                                                     />
