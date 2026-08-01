@@ -104,7 +104,7 @@ class ClassroomController extends Controller
                 ClassroomResource::make($classroom),
             ),
             ...[
-                ...ModelAbilityMap::make($classroom, ['update']),
+                ...ModelAbilityMap::make($classroom, ['update', 'delete']),
                 'canViewSchedule' => Gate::allows('view', [ClassSchedule::class, $classroom]),
             ],
         ]);
@@ -132,6 +132,17 @@ class ClassroomController extends Controller
         flash_success('update');
 
         return Redirect::route('school.classrooms.show', ['classroom' => $classroom]);
+    }
+
+    public function destroy(Classroom $classroom): RedirectResponse
+    {
+        Gate::authorize('delete', $classroom);
+
+        $classroom->delete();
+
+        flash_success('delete');
+
+        return Redirect::route('school.classrooms.index');
     }
 
     private function gradeLevels(): array

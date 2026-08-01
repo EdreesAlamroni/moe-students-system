@@ -190,14 +190,20 @@ class Classroom extends Model
     {
         $table = $this->getTable();
 
-        return $this->hasManyThrough(
+        $relation = $this->hasManyThrough(
             Student::class,
             StudentEnrollment::class,
             'classroom_id',
             'id',
             'id',
             'student_id',
-        )->whereColumn('student_enrollments.academic_year_id', "{$table}.academic_year_id");
+        );
+
+        if ($this->exists) {
+            return $relation->where('student_enrollments.academic_year_id', '=', AcademicYear::currentId());
+        }
+
+        return $relation->whereColumn('student_enrollments.academic_year_id', "{$table}.academic_year_id");
     }
 
     /*
@@ -210,7 +216,7 @@ class Classroom extends Model
 
     public function hasAnyRelations(): bool
     {
-        return true;
+        return $this->students()->exists();
     }
 
     public static function list(?callable $callback = null, array $additionalColumns = []): Collection

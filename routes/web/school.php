@@ -50,6 +50,7 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         Route::get('/{classroom}', [ClassroomController::class, 'show'])->name('classrooms.show');
         Route::get('/{classroom}/edit', [ClassroomController::class, 'edit'])->name('classrooms.edit');
         Route::put('/{classroom}', [ClassroomController::class, 'update'])->name('classrooms.update');
+        Route::delete('/{classroom}', [ClassroomController::class, 'destroy'])->name('classrooms.destroy');
 
         // Class Schedules
         Route::get('/{classroom}/schedule', [ClassScheduleController::class, 'show'])->name('classrooms.class-schedules.show');

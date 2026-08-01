@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 
 import type { CanPermissions, GradeLevel } from "@/types";
 
@@ -26,6 +26,8 @@ type PageProps = {
 };
 
 export default function Show({ gradeLevel, canAny, can }: PageProps) {
+    const { currentAcademicYear } = usePage().props;
+
     return (
         <>
             <Head title="عرض بيانات الصف الدراسي" />
@@ -33,7 +35,7 @@ export default function Show({ gradeLevel, canAny, can }: PageProps) {
             <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
-                        {can.delete && (
+                        {(can.delete && currentAcademicYear?.is_active) && (
                             <ConfirmDeleteAction
                                 title="حذف الصف الدراسي"
                                 href={destroy.url({ gradeLevel: gradeLevel })}

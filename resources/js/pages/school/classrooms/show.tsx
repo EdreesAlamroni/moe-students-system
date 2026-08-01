@@ -13,10 +13,11 @@ import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
 
 import { Button } from "@/components/ui/actions/button";
+import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";
 
 import { CalendarDaysIcon, NotepadTextIcon, SquarePenIcon } from "lucide-react";
 
-import { index, show, edit } from "@/routes/school/classrooms";
+import { index, show, edit, destroy } from "@/routes/school/classrooms";
 import { show as classScheduleShow } from "@/routes/school/classrooms/class-schedules";
 
 type PageProps = {
@@ -58,6 +59,13 @@ export default function Show({ classroom, canViewSchedule, canAny, can }: PagePr
                                     <span>تعديل بيانات الفصل الدراسي</span>
                                 </Link>
                             </Button>
+                        )}
+
+                        {(can.delete && currentAcademicYear?.is_active) && (
+                            <ConfirmDeleteAction
+                                title="حذف الفصل الدراسي"
+                                href={destroy.url({ classroom: classroom })}
+                            />
                         )}
                     </ActionsSection>
                 )}
