@@ -38,6 +38,7 @@ use Illuminate\Support\Collection;
  * @property-read EloquentCollection<int, Classroom> $classrooms
  * @property-read EloquentCollection<int, Student> $allStudents
  * @property-read EloquentCollection<int, Student> $students
+ * @property-read int|null $classrooms_count
  * @property-read int|null $students_count
  */
 #[Guarded(['id'])]

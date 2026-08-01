@@ -34,7 +34,6 @@ export default function Show({ classroom, canViewSchedule, canAny, can }: PagePr
             <Head title="عرض بيانات الفصل الدراسي" />
 
             <MainContainer showAcademicYearNotice>
-
                 {canAny && (
                     <ActionsSection>
                         {canViewSchedule && (

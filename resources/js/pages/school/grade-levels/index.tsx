@@ -9,23 +9,29 @@ import type { CanPermissions, Enum, GradeLevel } from "@/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 import ActionsSection from "@/components/ui/structure/actions-section";
 
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellNullableValue } from "@/components/ui/display/table";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellNullableValue, TableCellActions } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
 
 import { Input } from "@/components/ui/controls/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
 
 import { Button } from "@/components/ui/actions/button";
+import ViewDetailsLink from "@/components/ui/actions/view-details-link";
 
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
 import { ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
 import AddGradeLevelsDialog from "@/components/features/school/add-grade-levels-dialog";
 
-import { index } from "@/routes/school/grade-levels";
+import { index, show } from "@/routes/school/grade-levels";
+
+type GradeLevelProps = GradeLevel & {
+    canAny: boolean;
+    can: CanPermissions;
+};
 
 type PageProps = {
-    gradeLevels: GradeLevel[];
+    gradeLevels: GradeLevelProps[];
     educationalStages: Enum[];
     availableGradeLevels: GradeLevel[];
     filter: {
@@ -146,10 +152,11 @@ export default function Index({ gradeLevels, educationalStages, availableGradeLe
                                             <TableHead scope="col">الاسم</TableHead>
                                             <TableHead scope="col">المرحلة الدراسية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" />
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {gradeLevels.map((gradeLevel: GradeLevel, index: number) => (
+                                        {gradeLevels.map((gradeLevel: GradeLevelProps, index: number) => (
                                             <TableRow key={gradeLevel.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
                                                 <TableCell>{gradeLevel.name}</TableCell>
@@ -157,6 +164,17 @@ export default function Index({ gradeLevels, educationalStages, availableGradeLe
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue value={gradeLevel.students_count} className="font-mono" fallback="0" />
                                                 </TableCell>
+                                                <TableCellActions>
+                                                    {gradeLevel.canAny && (
+                                                        <>
+                                                            {gradeLevel.can.view && (
+                                                                <ViewDetailsLink
+                                                                    href={show.url({ gradeLevel: gradeLevel })}
+                                                                />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </TableCellActions>
                                             </TableRow>
                                         ))}
                                     </TableBody>

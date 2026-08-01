@@ -17,9 +17,6 @@ final class ResourcePayloadBuilder
 
     /**
      * Build a resource's array payload, merged with extra attributes.
-     *
-     * @param  array<string, mixed>  $attributes
-     * @return array<string, mixed>
      */
     public static function make(JsonResource $resource, array $attributes = [], ?Request $request = null): array
     {
@@ -33,9 +30,6 @@ final class ResourcePayloadBuilder
 
     /**
      * Build a resource payload with authorization abilities.
-     *
-     * @param  list<string>  $abilities
-     * @return array<string, mixed>
      */
     public static function withAbilities(JsonResource $resource, array $abilities, array $attributes = [], ?Request $request = null): array
     {
@@ -52,9 +46,31 @@ final class ResourcePayloadBuilder
     }
 
     /**
+     * Resolve a non-paginated resource collection into a list payload for Inertia.
+     */
+    public static function collection(ResourceCollection $collection, ?Request $request = null): array
+    {
+        $request ??= request();
+
+        return array_values($collection->resolve($request));
+    }
+
+    /**
+     * Resolve a non-paginated resource collection with row authorization abilities.
+     */
+    public static function collectionWithAbilities(ResourceCollection $collection, array $abilities, ?Request $request = null): array
+    {
+        $request ??= request();
+
+        return self::mapAbilitiesOntoRows(
+            self::collection($collection, $request),
+            $collection->collection->all(),
+            $abilities,
+        );
+    }
+
+    /**
      * Resolve a resource collection into a paginator-shaped payload for Inertia.
-     *
-     * @return array<string, mixed>
      */
     public static function paginate(Paginator&Arrayable $paginator, ResourceCollection $collection, ?Request $request = null): array
     {
@@ -68,9 +84,6 @@ final class ResourcePayloadBuilder
 
     /**
      * Resolve a resource collection into a paginator-shaped payload with row authorization abilities.
-     *
-     * @param  list<string>  $abilities
-     * @return array<string, mixed>
      */
     public static function paginateWithAbilities(Paginator&Arrayable $paginator, ResourceCollection $collection, array $abilities, ?Request $request = null): array
     {
@@ -78,13 +91,28 @@ final class ResourcePayloadBuilder
 
         $payload = self::paginate($paginator, $collection, $request);
 
-        $payload['data'] = collect($payload['data'])
+        $payload['data'] = self::mapAbilitiesOntoRows(
+            $payload['data'],
+            $paginator->items(),
+            $abilities,
+        );
+
+        return $payload;
+    }
+
+    private static function mapAbilitiesOntoRows(array $rows, array $models, array $abilities): array
+    {
+        return collect($rows)
             ->values()
-            ->map(function (array $row, int $index) use ($abilities, $paginator): array {
-                $model = $paginator->items()[$index];
+            ->map(function (array $row, int $index) use ($abilities, $models): array {
+                $model = $models[$index];
 
                 if ($model instanceof JsonResource) {
                     $model = $model->resource;
+                }
+
+                if (! $model instanceof Model) {
+                    throw new InvalidArgumentException('Collection items must wrap Eloquent models.');
                 }
 
                 return [
@@ -93,7 +121,5 @@ final class ResourcePayloadBuilder
                 ];
             })
             ->all();
-
-        return $payload;
     }
 }

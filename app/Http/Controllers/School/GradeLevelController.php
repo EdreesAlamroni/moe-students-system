@@ -7,7 +7,10 @@ use App\Enums\SchoolEducationalStageEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\School\GradeLevel\StoreRequest;
 use App\Http\Resources\School\GradeLevelCollection;
+use App\Http\Resources\School\GradeLevelResource;
+use App\Models\AcademicYear;
 use App\Models\GradeLevel;
+use App\Models\GradeLevelSchool;
 use App\Models\School;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
@@ -56,8 +59,9 @@ class GradeLevelController extends Controller
                 : collect([]);
 
         return Inertia::render('school/grade-levels/index', [
-            'gradeLevels' => ResourcePayloadBuilder::make(
+            'gradeLevels' => ResourcePayloadBuilder::collectionWithAbilities(
                 GradeLevelCollection::make($gradeLevels),
+                ['view'],
             ),
             'educationalStages' => SchoolEducationalStageEnum::optionsArray(),
             'availableGradeLevels' => $availableGradeLevels,
@@ -80,5 +84,37 @@ class GradeLevelController extends Controller
         flash_success('grade-levels-added', ['count' => count($gradeLevels)]);
 
         return Redirect::back();
+    }
+
+    public function show(GradeLevel $gradeLevel): Response
+    {
+        Gate::authorize('view', $gradeLevel);
+
+        $gradeLevel->loadCount([
+            'classrooms',
+            'students',
+        ]);
+
+        return Inertia::render('school/grade-levels/show', [
+            'gradeLevel' => ResourcePayloadBuilder::make(
+                GradeLevelResource::make($gradeLevel),
+            ),
+            ...ModelAbilityMap::make($gradeLevel, ['delete']),
+        ]);
+    }
+
+    public function destroy(GradeLevel $gradeLevel): RedirectResponse
+    {
+        Gate::authorize('delete', $gradeLevel);
+
+        GradeLevelSchool::query()
+            ->where('grade_level_id', '=', $gradeLevel->id)
+            ->where('school_id', '=', auth('school')->user()->organization_id)
+            ->where('academic_year_id', '=', AcademicYear::currentId())
+            ->delete();
+
+        flash_success('delete');
+
+        return Redirect::route('school.grade-levels.index');
     }
 }

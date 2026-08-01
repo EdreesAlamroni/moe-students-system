@@ -95,6 +95,40 @@ it('requires the resource to wrap an eloquent model', function () {
     ResourcePayloadBuilder::withAbilities($resource, ['view']);
 })->throws(InvalidArgumentException::class, 'Resource must wrap an Eloquent model.');
 
+it('resolves a non-paginated resource collection into a list payload', function () {
+    $users = User::factory()->count(2)->create();
+
+    $payload = ResourcePayloadBuilder::collection(
+        UserCollection::make($users),
+    );
+
+    expect($payload)
+        ->toHaveCount(2)
+        ->and($payload[0])->toHaveKeys(['id', 'uuid', 'name', 'username', 'scope'])
+        ->and($payload[0]['uuid'])->toBe($users->first()->uuid);
+});
+
+it('appends row abilities when resolving a non-paginated resource collection', function () {
+    $user = User::factory()->create();
+
+    Gate::define('view', fn () => true);
+
+    $payload = ResourcePayloadBuilder::collectionWithAbilities(
+        UserCollection::make(collect([$user])),
+        ['view'],
+    );
+
+    expect($payload)->toHaveCount(1)
+        ->and($payload[0])->toMatchArray([
+            'id' => $user->id,
+            'uuid' => $user->uuid,
+            'canAny' => false,
+            'can' => [
+                'view' => false,
+            ],
+        ]);
+});
+
 it('preserves paginator metadata when resolving a user collection', function () {
     User::factory()->count(2)->create();
 

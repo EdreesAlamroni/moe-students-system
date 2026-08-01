@@ -146,6 +146,8 @@ test('authenticated school users can visit the grade levels index', function () 
             ->component('school/grade-levels/index')
             ->has('gradeLevels', 1)
             ->where('gradeLevels.0.uuid', $gradeLevel->uuid)
+            ->where('gradeLevels.0.can.view', true)
+            ->where('gradeLevels.0.canAny', true)
             ->has('educationalStages')
             ->where('can.create', false)
             ->has('availableGradeLevels', 0)
@@ -310,6 +312,85 @@ test('grade levels taken by the other period of the same school are not availabl
         ]);
 
     expect($morningSchool->gradeLevels()->count())->toBe(0);
+});
+
+test('guests cannot access school grade level show page', function () {
+    $gradeLevel = GradeLevel::factory()->create();
+
+    $this->get(route('school.grade-levels.show', ['gradeLevel' => $gradeLevel]))
+        ->assertRedirect(route('school.login'));
+});
+
+test('users without permission cannot access school grade level show page', function () {
+    $school = School::factory()->create();
+    $user = User::factory()->create([
+        'scope' => UserScope::SCHOOL,
+        'role' => UserRole::EMPLOYEE,
+        'organization_type' => School::class,
+        'organization_id' => $school->id,
+    ]);
+    $gradeLevel = GradeLevel::factory()->create();
+
+    attachGradeLevelsToSchool($school, $gradeLevel);
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.grade-levels.show', ['gradeLevel' => $gradeLevel]))
+        ->assertForbidden();
+});
+
+test('authenticated school users can visit the grade level show page', function () {
+    $school = School::factory()->create();
+    $user = createSchoolGradeLevelManager($school);
+    $gradeLevel = GradeLevel::factory()->create(['name' => 'الصف الأول']);
+
+    attachGradeLevelsToSchool($school, $gradeLevel);
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.grade-levels.show', ['gradeLevel' => $gradeLevel]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('school/grade-levels/show')
+            ->where('gradeLevel.uuid', $gradeLevel->uuid)
+            ->where('gradeLevel.name', 'الصف الأول')
+            ->has('gradeLevel.educational_stage')
+            ->where('gradeLevel.students_count', 0)
+            ->where('gradeLevel.classrooms_count', 0)
+            ->where('can.delete', false)
+        );
+});
+
+test('school users cannot view grade levels from another school', function () {
+    $school = School::factory()->create();
+    $user = createSchoolGradeLevelManager($school);
+    $otherSchool = School::factory()->create();
+    $gradeLevel = GradeLevel::factory()->create();
+
+    attachGradeLevelsToSchool($otherSchool, $gradeLevel);
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.grade-levels.show', ['gradeLevel' => $gradeLevel]))
+        ->assertForbidden();
+});
+
+test('school users cannot view grade levels assigned to a previous academic year', function () {
+    $school = School::factory()->create();
+    $user = createSchoolGradeLevelManager($school);
+    $gradeLevel = GradeLevel::factory()->create();
+
+    $previousAcademicYear = AcademicYear::query()->create([
+        'name' => '2023-2024',
+        'start_date' => now()->subYear()->startOfYear(),
+        'end_date' => now()->subYear()->endOfYear(),
+        'is_active' => false,
+    ]);
+
+    $school->allGradeLevels()->attach($gradeLevel->id, [
+        'academic_year_id' => $previousAcademicYear->id,
+    ]);
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.grade-levels.show', ['gradeLevel' => $gradeLevel]))
+        ->assertForbidden();
 });
 
 test('separate dual-period schools can add the same grade levels', function () {

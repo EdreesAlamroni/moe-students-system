@@ -38,6 +38,8 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
     Route::prefix('grade-levels')->group(function () {
         Route::get('/', [GradeLevelController::class, 'index'])->name('grade-levels.index');
         Route::post('/', [GradeLevelController::class, 'store'])->name('grade-levels.store');
+        Route::get('/{gradeLevel}', [GradeLevelController::class, 'show'])->name('grade-levels.show');
+        Route::delete('/{gradeLevel}', [GradeLevelController::class, 'destroy'])->name('grade-levels.destroy');
     });
 
     // Classrooms

@@ -5,6 +5,7 @@ namespace App\Policies\School;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\StudentEnrollment;
 use App\Models\User;
 
 class GradeLevelPolicy
@@ -47,6 +48,10 @@ class GradeLevelPolicy
             return false;
         }
 
+        if ($this->hasEnrolledStudents($user, $gradeLevel)) {
+            return false;
+        }
+
         if ($gradeLevel->trashed()) {
             return false;
         }
@@ -85,6 +90,15 @@ class GradeLevelPolicy
 
         return $gradeLevel->schools()
             ->whereKey($user->organization_id)
+            ->exists();
+    }
+
+    private function hasEnrolledStudents(User $user, GradeLevel $gradeLevel): bool
+    {
+        return StudentEnrollment::query()
+            ->where('grade_level_id', '=', $gradeLevel->id)
+            ->where('school_id', '=', $user->organization_id)
+            ->where('academic_year_id', '=', AcademicYear::currentId())
             ->exists();
     }
 }

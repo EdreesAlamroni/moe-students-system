@@ -457,11 +457,10 @@ class Student extends Model
             ->where('academic_year_id', '=', AcademicYear::currentId());
     }
 
-    // TODO: Add academic records relationship when the model and migration are implemented.
-    // public function academicRecords(): HasMany
-    // {
-    //     return $this->hasMany(AcademicRecord::class);
-    // }
+    public function academicRecords(): HasMany
+    {
+        return $this->hasMany(AcademicRecord::class);
+    }
 
     /**
      * Get all book distribution sessions that include this student across all academic years.

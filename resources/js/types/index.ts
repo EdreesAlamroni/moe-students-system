@@ -108,6 +108,7 @@ export type GradeLevel = {
     created_at: string,
     updated_at: string;
     already_distributed: boolean;
+    classrooms_count: number;
     students_count: number;
     distributed_count: number;
     pending_count: number;
