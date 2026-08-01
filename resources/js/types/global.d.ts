@@ -1,9 +1,34 @@
 import '@inertiajs/core';
 
+import type { AcademicYear, Enum } from '@/types';
 import type { Auth, DashboardContext } from '@/types/auth';
-import type { AcademicYear } from '@/types';
 import type { Navigation } from '@/types/navigation';
 import type { FlashMessage } from '@/types/ui';
+
+export type EducationMonitorOrganizationContext = {
+    type: 'education_monitor';
+    id: number;
+    name: string;
+};
+
+export type EducationServicesOfficeOrganizationContext = {
+    type: 'education_services_office';
+    id: number;
+    name: string;
+};
+
+export type SchoolOrganizationContext = {
+    type: 'school';
+    id: number;
+    name: string;
+    students_gender: Enum | null;
+    students_gender_options?: Enum[];
+};
+
+export type OrganizationContext =
+    | SchoolOrganizationContext
+    | EducationMonitorOrganizationContext
+    | EducationServicesOfficeOrganizationContext;
 
 declare module 'react' {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -24,6 +49,7 @@ declare module '@inertiajs/core' {
             currentAcademicYear: AcademicYear | null;
             availableAcademicYears: AcademicYear[];
             flash: FlashMessage;
+            organization: OrganizationContext | null;
         };
     }
 }

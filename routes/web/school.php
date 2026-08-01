@@ -10,6 +10,7 @@ use App\Http\Controllers\School\ClassroomDistributionMethodController;
 use App\Http\Controllers\School\ClassScheduleController;
 use App\Http\Controllers\School\DashboardController;
 use App\Http\Controllers\School\GradeLevelController;
+use App\Http\Controllers\School\SchoolStudentsGenderController;
 use App\Http\Controllers\School\StudentAcademicRecordController;
 use App\Http\Controllers\School\StudentByClassroomReportController;
 use App\Http\Controllers\School\StudentByGradeLevelReportController;
@@ -30,6 +31,8 @@ RegistersDashboardAuthRoutes::registerGuestRoutes(DashboardAuth::school());
 
 Route::middleware(['auth:school', 'ensure.password.changed'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::patch('/students-gender', [SchoolStudentsGenderController::class, 'update'])->name('students-gender.update');
 
     // Grade Levels
     Route::prefix('grade-levels')->group(function () {

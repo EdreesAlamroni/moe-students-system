@@ -94,5 +94,6 @@ return [
         'book-distribution-grade-levels-confirmed' => 'تم تأكيد استلام الكُتب لـ :count صف/صفوف دراسية بنجاح. لا يمكن التراجع عن هذا الإجراء.',
         'book-distribution-no-eligible-grade-levels' => 'لا يوجد صفوف دراسية مؤهلة للتأكيد من بين الصفوف المحددة.',
         'book-distribution-grade-level-not-confirmed' => 'لم يتم تأكيد استلام الكُتب لهذا الصف الدراسي من المخزن بعد. يرجى إتمام عملية الاستلام أولاً.',
+        'school-students-gender-updated' => 'تم تحديد جنس الطلاب الدارسين بالمدرسة بنجاح.',
     ],
 ];

@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\User;
 use App\Support\Auth\DashboardAuth;
 use App\Support\Navigation\NavigationManager;
+use App\Support\Organization\OrganizationContextManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Inertia\Middleware;
@@ -57,6 +58,7 @@ class HandleInertiaRequests extends Middleware
             'navigation' => fn (): array => app(NavigationManager::class)->get($request),
             'currentAcademicYear' => fn (): ?array => AcademicYear::current()?->only(['id', 'name', 'is_active']),
             'availableAcademicYears' => fn (): Collection => AcademicYear::list(),
+            'organization' => fn (): ?array => app(OrganizationContextManager::class)->resolve($request),
             'flash' => flash()->getMessage(),
         ];
     }

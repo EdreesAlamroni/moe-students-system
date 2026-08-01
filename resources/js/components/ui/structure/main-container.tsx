@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 import { FormLayout } from "@/components/ui/structure/form-layout";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alerts/alert";
+import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/ui/alerts/alert";
 
 import { Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/overlay/dialog";
 
@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/actions/button";
 import { UpdateButton } from "@/components/ui/actions/submit-button";
 
 import { InfoIcon } from "lucide-react";
+
+import ConfigureStudentsGenderNotice from "@/components/features/school/configure-students-gender-notice";
 
 import { select as selectAcademicYear } from "@/routes/academic-year";
 
@@ -39,6 +41,7 @@ export default function MainContainer({
             className={cn("flex flex-col gap-6 p-4", className)}
             {...props}
         >
+            <ConfigureStudentsGenderNotice />
             {(showAcademicYearNotice && !changeAcademicYearNotice) && <ShowAcademicYearNotice />}
             {changeAcademicYearNotice && <ChangeAcademicYearNotice />}
             {children}
@@ -56,7 +59,7 @@ function ShowAcademicYearNotice() {
             aria-live="polite"
             aria-atomic="true"
         >
-            <InfoIcon className="mt-px" />
+            <InfoIcon />
             <AlertTitle className="flex flex-wrap items-center gap-2">
                 <span>يتم حالياً عرض بيانات السنة الدراسية</span>
                 {hasCurrentAcademicYear ? (
@@ -67,6 +70,14 @@ function ShowAcademicYearNotice() {
                     </>
                 )}
             </AlertTitle>
+            <AlertAction>
+                <Button
+                    size="xs"
+                    className="bg-foreground hover:bg-foreground/80"
+                >
+                    تغيير
+                </Button>
+            </AlertAction>
         </Alert>
     );
 }
@@ -105,7 +116,7 @@ function ChangeAcademicYearNotice() {
                 aria-live="polite"
                 aria-atomic="true"
             >
-                <InfoIcon className="mt-px" />
+                <InfoIcon />
                 <AlertTitle className="flex flex-wrap items-center gap-2">
                     <span>يتم حالياً عرض بيانات السنة الدراسية</span>
                     {hasCurrentAcademicYear ? (
@@ -120,15 +131,25 @@ function ChangeAcademicYearNotice() {
                     <span>
                         يمكنك اختيار سنة دراسية مختلفة لعرض بياناتها، وسيتم تحديث البيانات بناءً على اختيارك.
                     </span>
-                    <DialogTrigger asChild>
+                    {/* <DialogTrigger asChild>
                         <button
                             type="button"
                             className="cursor-pointer font-medium underline"
                         >
                             تغيير من هنـا
                         </button>
-                    </DialogTrigger>
+                    </DialogTrigger> */}
                 </AlertDescription>
+                <AlertAction>
+                    <DialogTrigger asChild>
+                        <Button
+                            size="xs"
+                            className="bg-foreground hover:bg-foreground/80"
+                        >
+                            تغيير
+                        </Button>
+                    </DialogTrigger>
+                </AlertAction>
             </Alert>
 
             <DialogContent>
