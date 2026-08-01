@@ -4,6 +4,8 @@ import { Link } from "@inertiajs/react";
 
 import { VariantProps } from "class-variance-authority";
 
+import { useDirection } from "@/hooks/use-direction";
+
 import { cn } from "@/lib/utils";
 
 import { Icon } from "@/components/ui/display/icon";
@@ -18,6 +20,7 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
+    AlertDialogMedia,
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alerts/alert-dialog";
@@ -90,6 +93,7 @@ export function ConfirmationAction({
 
     const resolvedMethod = method ?? config.method;
     const resolvedVariant = variant ?? config.variant;
+    const direction = useDirection();
 
     return (
         <AlertDialog>
@@ -99,21 +103,43 @@ export function ConfirmationAction({
                     {title ?? config.buttonTitle}
                 </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+
+            <AlertDialogContent
+                dir={direction}
+                size="sm"
+            >
+
                 <AlertDialogHeader>
+                    <AlertDialogMedia className={cn(`bg-${resolvedVariant}/10 text-${resolvedVariant}`)}>
+                        <Icon iconNode={config.icon} />
+                    </AlertDialogMedia>
+
                     <AlertDialogTitle>{config.title}</AlertDialogTitle>
                     <AlertDialogDescription>{config.description}</AlertDialogDescription>
                 </AlertDialogHeader>
+
                 <AlertDialogFooter>
+
                     <AlertDialogCancel>{config.cancelText}</AlertDialogCancel>
-                    <AlertDialogAction asChild>
-                        <Link href={href} method={resolvedMethod} as="button">
+
+                    <AlertDialogAction
+                        variant={resolvedVariant}
+                        asChild
+                    >
+                        <Link
+                            href={href}
+                            method={resolvedMethod}
+                            as="button"
+                        >
                             <CheckCircleIcon />
                             {config.confirmText}
                         </Link>
                     </AlertDialogAction>
+
                 </AlertDialogFooter>
+
             </AlertDialogContent>
+
         </AlertDialog>
     );
 }
