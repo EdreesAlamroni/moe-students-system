@@ -13,7 +13,7 @@ import DashboardSectionCard, { BarChartSkeleton } from "@/components/shared/dash
 import horizontalBarTick from "@/components/shared/dashboard/horizontal-bar-tick";
 
 const ROW_HEIGHT = 48;
-const LABEL_WIDTH = 170;
+const LABEL_WIDTH = 185;
 
 const chartConfig = {
     males: {

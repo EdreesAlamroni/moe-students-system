@@ -70,14 +70,6 @@ function ShowAcademicYearNotice() {
                     </>
                 )}
             </AlertTitle>
-            <AlertAction>
-                <Button
-                    size="xs"
-                    className="bg-foreground hover:bg-foreground/80"
-                >
-                    تغيير
-                </Button>
-            </AlertAction>
         </Alert>
     );
 }
