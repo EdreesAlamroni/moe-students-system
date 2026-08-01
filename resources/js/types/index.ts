@@ -24,19 +24,19 @@ export type Enum = {
     key: string;
     id: string;
     name: string;
-}
+};
 
 export type ModelState = {
     id: string,
     name: string,
     uiClasses: string,
     action?: string,
-}
+};
 
 export type BooleanSelectOption = {
     id: boolean;
     name: string;
-}
+};
 
 export type PaginationMeta = {
     current_page: number;
@@ -50,19 +50,19 @@ export type PaginationMeta = {
     next_page_url: string | null;
     prev_page_url: string | null;
     path: string;
-}
+};
 
 export type PaginationLink = {
     url: string | null;
     label: string;
     page: number | null;
     active: boolean;
-}
+};
 
 export type Paginated<T> = PaginationMeta & {
     data: T[];
     links: PaginationLink[];
-}
+};
 
 export type Nationality = {
     id: number;
@@ -73,7 +73,7 @@ export type Nationality = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type Municipal = {
     id: number;
@@ -83,7 +83,7 @@ export type Municipal = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown;
-}
+};
 
 export type AcademicYear = {
     id: number;
@@ -96,7 +96,7 @@ export type AcademicYear = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type GradeLevel = {
     id: number;
@@ -112,7 +112,7 @@ export type GradeLevel = {
     distributed_count: number;
     pending_count: number;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type Subject = {
     id: number;
@@ -129,7 +129,7 @@ export type Subject = {
     created_at: string,
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type ClassPeriod = {
     id: number;
@@ -145,7 +145,7 @@ export type ClassPeriod = {
     created_at?: string;
     updated_at?: string;
     [key: string]: unknown;
-}
+};
 
 export interface ClassSchedule {
     id: number;
@@ -165,7 +165,7 @@ export interface ClassSchedule {
     created_at?: string;
     updated_at?: string;
     [key: string]: unknown;
-}
+};
 
 export interface ClassScheduleGridItem {
     id: number;
@@ -173,14 +173,14 @@ export interface ClassScheduleGridItem {
     subject_id?: number;
     subject?: Subject;
     notes?: string;
-}
+};
 
 export interface ClassScheduleGrid {
     classroom: Classroom;
     days: Enum[];
     periods: ClassPeriod[];
     grid: Record<number, Record<number, ClassScheduleGridItem | null | 'break'>>;
-}
+};
 
 export type Warehouse = {
     id: number;
@@ -199,7 +199,7 @@ export type Warehouse = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type EducationMonitor = {
     id: number;
@@ -224,7 +224,7 @@ export type EducationMonitor = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type EducationServicesOffice = {
     id: number;
@@ -251,7 +251,7 @@ export type EducationServicesOffice = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export interface School {
     id: number;
@@ -282,7 +282,7 @@ export interface School {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type Classroom = {
     id: number;
@@ -300,7 +300,7 @@ export type Classroom = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type StudentEnrollment = {
     id: number;
@@ -314,7 +314,7 @@ export type StudentEnrollment = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type Student = {
     id: number;
@@ -352,7 +352,7 @@ export type Student = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 export type StudentTransfer = {
     id: number;
@@ -372,7 +372,7 @@ export type StudentTransfer = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
 
 
 export type StudentPsychosocialCard = {
@@ -417,7 +417,7 @@ export type StudentPsychosocialCard = {
     guardian_representative_id_card_number?: string;
     guardian_representative_phone_number?: string;
     guardian_representative_work_place?: string;
-}
+};
 
 export type SchoolEducationalStage = {
     id: number;
@@ -438,19 +438,19 @@ export type AcademicRecordAttempt = {
     status: Enum;
     rating?: Enum | null;
     created_at?: string;
-}
+};
 
 export type GroupedAcademicRecord = {
     grade_level: GradeLevel;
     attempts: AcademicRecordAttempt[];
     is_passed: boolean;
     is_current?: boolean;
-}
+};
 
 export type AcademicRecordProgress = {
     completed: number;
     total: number;
-}
+};
 
 export type CreateSchoolFormData = {
     education_monitor_id?: string;

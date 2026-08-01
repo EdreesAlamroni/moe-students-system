@@ -2,7 +2,7 @@ import type { Classroom, GradeLevel, Student } from '@/types';
 
 export type ClassroomRow = Classroom & {
     remaining_capacity: number;
-}
+};
 
 export type ListStudent = Student;
 
@@ -12,14 +12,14 @@ export type ClassroomDistributionMethod = {
     description: string;
     icon: string;
     route: string;
-}
+};
 
 export type EnrollmentSummary = {
     totalCount: number;
     eligibleCount: number;
     withoutGradeLevelCount: number;
     withoutClassroomCount: number;
-}
+};
 
 export type IndexPageProps = {
     methods: ClassroomDistributionMethod[];
@@ -30,7 +30,7 @@ export type IndexPageProps = {
         distribute: boolean;
         finalize: boolean;
     };
-}
+};
 
 export type RandomPageProps = {
     gradeLevels: GradeLevel[];
@@ -43,7 +43,7 @@ export type RandomPageProps = {
     can: {
         distribute: boolean;
     };
-}
+};
 
 export type ManualPageProps = {
     gradeLevels: GradeLevel[];
@@ -56,4 +56,4 @@ export type ManualPageProps = {
     can: {
         distribute: boolean;
     };
-}
+};
