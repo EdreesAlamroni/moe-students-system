@@ -21,6 +21,7 @@ import { UpdateButton } from "@/components/ui/actions/submit-button";
 import { InfoIcon } from "lucide-react";
 
 import ConfigureStudentsGenderNotice from "@/components/features/school/configure-students-gender-notice";
+import ConfigureGradeLevelsNotice from "@/components/features/school/configure-grade-levels-notice";
 
 import { select as selectAcademicYear } from "@/routes/academic-year";
 
@@ -42,6 +43,7 @@ export default function MainContainer({
             {...props}
         >
             <ConfigureStudentsGenderNotice />
+            <ConfigureGradeLevelsNotice />
             {(showAcademicYearNotice && !changeAcademicYearNotice) && <ShowAcademicYearNotice />}
             {changeAcademicYearNotice && <ChangeAcademicYearNotice />}
             {children}

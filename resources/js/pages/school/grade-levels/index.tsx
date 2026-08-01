@@ -4,9 +4,10 @@ import { Form, Head, Link } from "@inertiajs/react";
 
 import MainContainer from "@/components/ui/structure/main-container";
 
-import type { Enum, GradeLevel } from "@/types";
+import type { CanPermissions, Enum, GradeLevel } from "@/types";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
+import ActionsSection from "@/components/ui/structure/actions-section";
 
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCellNullableValue } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
@@ -17,28 +18,49 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Button } from "@/components/ui/actions/button";
 
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
-import { ListIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
+import { ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
+
+import AddGradeLevelsDialog from "@/components/features/school/add-grade-levels-dialog";
 
 import { index } from "@/routes/school/grade-levels";
 
 type PageProps = {
     gradeLevels: GradeLevel[];
     educationalStages: Enum[];
+    availableGradeLevels: GradeLevel[];
     filter: {
         name?: string;
         educational_stage?: string;
     };
+    canAny: boolean;
+    can: CanPermissions;
 }
 
-export default function Index({ gradeLevels, educationalStages, filter }: PageProps) {
+export default function Index({ gradeLevels, educationalStages, availableGradeLevels, filter, canAny, can }: PageProps) {
     return (
         <>
             <Head title="الصفوف الدراسية" />
 
             <MainContainer showAcademicYearNotice>
+                {canAny && (
+                    <ActionsSection>
+                        {can.create && (
+                            <AddGradeLevelsDialog gradeLevels={availableGradeLevels}>
+                                <Button
+                                    variant="default"
+                                >
+                                    <PlusIcon />
+                                    <span>إضافة صفوف دراسية</span>
+                                </Button>
+                            </AddGradeLevelsDialog>
+                        )}
+                    </ActionsSection>
+                )}
+
                 <section>
                     <Form
                         {...index.form()}
+                        disableWhileProcessing
                     >
                         <Card>
                             <CardHeader className="border-b">

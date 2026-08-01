@@ -41,6 +41,11 @@ return [
             'morning' => 'صباحية',
             'evening' => 'مسائية',
             'dual_period' => 'فترتين (صباحية و مسائية)',
+
+            'display_names' => [
+                'morning' => 'فترة صباحية',
+                'evening' => 'فترة مسائية',
+            ],
         ],
 
         'school_types' => [

@@ -1,21 +1,31 @@
 <?php
 
+use App\Enums\GradeLevelEnum;
+use App\Enums\SchoolAcademicPeriod;
+use App\Enums\SchoolEducationalStageEnum;
 use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolEducationalStage;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
 /**
  * @param  array<string, mixed>  $attributes
+ * @param  list<string>  $permissions
  */
-function createSchoolGradeLevelManager(School $school, array $attributes = []): User
-{
+function createSchoolGradeLevelManager(
+    School $school,
+    array $attributes = [],
+    array $permissions = ['grade-level:view-any', 'grade-level:view'],
+): User {
     $user = User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
@@ -23,16 +33,63 @@ function createSchoolGradeLevelManager(School $school, array $attributes = []): 
         'organization_id' => $school->id,
     ], $attributes));
 
-    foreach (['grade-level:view-any', 'grade-level:view'] as $permission) {
+    foreach ($permissions as $permission) {
         Permission::findOrCreate($permission, UserScope::SCHOOL->value);
     }
 
-    $user->givePermissionTo([
-        'grade-level:view-any',
-        'grade-level:view',
-    ]);
+    $user->givePermissionTo($permissions);
 
     return $user;
+}
+
+function createSchoolGradeLevelCreator(School $school): User
+{
+    return createSchoolGradeLevelManager($school, [], [
+        'grade-level:view-any',
+        'grade-level:view',
+        'grade-level:create',
+    ]);
+}
+
+/**
+ * Create the grade levels belonging to the given educational stage, ordered as they are expected.
+ *
+ * @return Collection<int, GradeLevel>
+ */
+function createGradeLevelsForStage(SchoolEducationalStageEnum $stage): Collection
+{
+    return GradeLevelEnum::filteredByStage($stage)
+        ->map(fn (GradeLevelEnum $grade): GradeLevel => GradeLevel::factory()->create([
+            'code' => $grade->value,
+            'name' => $grade->label(),
+            'educational_stage' => $grade->stage(),
+            'order' => $grade->order(),
+        ]));
+}
+
+function attachGradeLevelsToSchool(School $school, GradeLevel ...$gradeLevels): void
+{
+    foreach ($gradeLevels as $gradeLevel) {
+        $school->allGradeLevels()->attach($gradeLevel->id, [
+            'academic_year_id' => AcademicYear::currentId(),
+        ]);
+    }
+}
+
+/**
+ * @param  array<string, mixed>  $attributes
+ */
+function createSchoolWithStage(SchoolEducationalStageEnum $stage, array $attributes = []): School
+{
+    $school = School::factory()->create($attributes);
+
+    SchoolEducationalStage::factory()->create([
+        'school_id' => $school->id,
+        'academic_year_id' => AcademicYear::currentId(),
+        'stage' => $stage,
+    ]);
+
+    return $school;
 }
 
 beforeEach(function () {
@@ -90,6 +147,191 @@ test('authenticated school users can visit the grade levels index', function () 
             ->has('gradeLevels', 1)
             ->where('gradeLevels.0.uuid', $gradeLevel->uuid)
             ->has('educationalStages')
+            ->where('can.create', false)
+            ->has('availableGradeLevels', 0)
             ->where('filter', [])
         );
+});
+
+test('the grade levels index offers the grade levels that can still be added', function () {
+    $school = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelCreator($school);
+    $gradeLevels = createGradeLevelsForStage(SchoolEducationalStageEnum::KINDERGARTEN);
+
+    attachGradeLevelsToSchool($school, $gradeLevels->first());
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.grade-levels.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('can.create', true)
+            ->has('availableGradeLevels', 1)
+            ->where('availableGradeLevels.0.id', $gradeLevels->last()->id)
+            ->where('availableGradeLevels.0.name', $gradeLevels->last()->name)
+        );
+});
+
+test('guests cannot add grade levels to the school', function () {
+    $gradeLevel = GradeLevel::factory()->create();
+
+    $this->post(route('school.grade-levels.store'), ['grade_levels' => [$gradeLevel->id]])
+        ->assertRedirect(route('school.login'));
+});
+
+test('school users without the create permission cannot add grade levels', function () {
+    $school = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelManager($school);
+    $gradeLevels = createGradeLevelsForStage(SchoolEducationalStageEnum::KINDERGARTEN);
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), ['grade_levels' => [$gradeLevels->first()->id]])
+        ->assertForbidden();
+
+    $this->assertDatabaseCount('grade_level_school', 0);
+});
+
+test('school users can add the missing grade levels for the current academic year', function () {
+    $school = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelCreator($school);
+    $gradeLevels = createGradeLevelsForStage(SchoolEducationalStageEnum::KINDERGARTEN);
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), [
+            'grade_levels' => $gradeLevels->pluck('id')->all(),
+        ])
+        ->assertRedirect(route('school.dashboard'));
+
+    expect($school->gradeLevels()->pluck('grade_levels.id')->all())
+        ->toEqualCanonicalizing($gradeLevels->pluck('id')->all())
+        ->and($school->availableGradeLevels())->toBeEmpty();
+});
+
+test('school users can add only the remaining grade levels when some are already configured', function () {
+    $school = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelCreator($school);
+    $gradeLevels = createGradeLevelsForStage(SchoolEducationalStageEnum::KINDERGARTEN);
+
+    attachGradeLevelsToSchool($school, $gradeLevels->first());
+
+    expect($school->availableGradeLevels()->pluck('id')->all())->toBe([$gradeLevels->last()->id]);
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), [
+            'grade_levels' => [$gradeLevels->last()->id],
+        ])
+        ->assertRedirect(route('school.dashboard'));
+
+    expect($school->gradeLevels()->count())->toBe($gradeLevels->count());
+});
+
+test('grade levels already added to the school cannot be added again', function () {
+    $school = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelCreator($school);
+    $gradeLevels = createGradeLevelsForStage(SchoolEducationalStageEnum::KINDERGARTEN);
+
+    attachGradeLevelsToSchool($school, $gradeLevels->first());
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), [
+            'grade_levels' => [$gradeLevels->first()->id],
+        ])
+        ->assertSessionHasErrors([
+            'grade_levels' => __('validation.custom.grade_levels.must_be_available_for_school'),
+        ]);
+
+    expect($school->gradeLevels()->count())->toBe(1);
+});
+
+test('grade levels outside the school educational stages cannot be added', function () {
+    $school = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelCreator($school);
+    $primaryGradeLevels = createGradeLevelsForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), [
+            'grade_levels' => [$primaryGradeLevels->first()->id],
+        ])
+        ->assertSessionHasErrors([
+            'grade_levels' => __('validation.custom.grade_levels.must_be_available_for_school'),
+        ]);
+
+    $this->assertDatabaseCount('grade_level_school', 0);
+});
+
+test('adding grade levels requires at least one existing grade level', function () {
+    $school = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelCreator($school);
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), [])
+        ->assertSessionHasErrors('grade_levels');
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), ['grade_levels' => [-1]])
+        ->assertSessionHasErrors('grade_levels.0');
+
+    $this->assertDatabaseCount('grade_level_school', 0);
+});
+
+test('grade levels taken by the other period of the same school are not available', function () {
+    $sameSchoolUuid = Str::uuid7()->toString();
+
+    $morningSchool = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN, [
+        'academic_period' => SchoolAcademicPeriod::MORNING,
+        'same_school_uuid' => $sameSchoolUuid,
+    ]);
+
+    $eveningSchool = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN, [
+        'academic_period' => SchoolAcademicPeriod::EVENING,
+        'same_school_uuid' => $sameSchoolUuid,
+    ]);
+
+    $gradeLevels = createGradeLevelsForStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelCreator($morningSchool);
+
+    attachGradeLevelsToSchool($eveningSchool, $gradeLevels->first());
+
+    expect($morningSchool->availableGradeLevels()->pluck('id')->all())->toBe([$gradeLevels->last()->id]);
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), [
+            'grade_levels' => [$gradeLevels->first()->id],
+        ])
+        ->assertSessionHasErrors([
+            'grade_levels' => __('validation.custom.grade_levels.must_be_available_for_school'),
+        ]);
+
+    expect($morningSchool->gradeLevels()->count())->toBe(0);
+});
+
+test('separate dual-period schools can add the same grade levels', function () {
+    $morningSchool = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN, [
+        'academic_period' => SchoolAcademicPeriod::MORNING,
+    ]);
+
+    $eveningSchool = createSchoolWithStage(SchoolEducationalStageEnum::KINDERGARTEN, [
+        'academic_period' => SchoolAcademicPeriod::EVENING,
+    ]);
+
+    $gradeLevels = createGradeLevelsForStage(SchoolEducationalStageEnum::KINDERGARTEN);
+    $user = createSchoolGradeLevelCreator($morningSchool);
+
+    attachGradeLevelsToSchool($eveningSchool, $gradeLevels->first());
+
+    $this->actingAs($user, 'school')
+        ->from(route('school.dashboard'))
+        ->post(route('school.grade-levels.store'), [
+            'grade_levels' => [$gradeLevels->first()->id],
+        ])
+        ->assertRedirect(route('school.dashboard'));
+
+    expect($morningSchool->gradeLevels()->pluck('grade_levels.id')->all())->toBe([$gradeLevels->first()->id]);
 });

@@ -235,13 +235,20 @@ class EducationMonitor extends Model
         return self::query()
             ->select(['id', 'name'])
             ->ordered()
-            ->with(['schools:id,name,education_monitor_id'])
+            ->with([
+                'schools:id,name,education_monitor_id,academic_period',
+            ])
             ->get()
             ->map(function (EducationMonitor $monitor): array {
                 return [
                     'id' => $monitor->id,
                     'name' => $monitor->name,
-                    'schools' => $monitor->schools->map->only(['id', 'name'])->all(),
+                    'schools' => $monitor->schools->map(function (School $school): array {
+                        return [
+                            'id' => $school->id,
+                            'name' => sprintf('%s (%s)', $school->name, $school->academic_period->displayName()),
+                        ];
+                    })->all(),
                 ];
             })->values();
     }
@@ -252,7 +259,7 @@ class EducationMonitor extends Model
             ->select(['id', 'name'])
             ->with([
                 'offices:id,name,education_monitor_id',
-                'schools:id,name,education_monitor_id',
+                'schools:id,name,education_monitor_id,academic_period',
             ])
             ->ordered()
             ->get()
@@ -261,7 +268,13 @@ class EducationMonitor extends Model
                     'id' => $monitor->id,
                     'name' => $monitor->name,
                     'offices' => $monitor->offices->map->only(['id', 'name'])->all(),
-                    'schools' => $monitor->schools->map->only(['id', 'name'])->all(),
+                    'schools' => $monitor->schools->map(function (School $school): array {
+                        return [
+                            'id' => $school->id,
+                            'name' => sprintf('%s (%s)', $school->name, $school->academic_period->displayName()),
+
+                        ];
+                    })->all(),
                 ];
             })->values();
     }

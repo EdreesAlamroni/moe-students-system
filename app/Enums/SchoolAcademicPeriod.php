@@ -35,6 +35,15 @@ enum SchoolAcademicPeriod: string
         return self::getPrimaryPeriods()->pluck('id')->all();
     }
 
+    public function displayName(): string
+    {
+        return __(sprintf(
+            'app.enums.%s.display_names.%s',
+            $this->getTranslationKey(),
+            $this->value,
+        ));
+    }
+
     public function isMorning(): bool
     {
         return $this === self::MORNING;

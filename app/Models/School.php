@@ -297,7 +297,7 @@ class School extends Model
     public static function list(?callable $callback = null, array $additionalColumns = ['id', 'name']): Collection
     {
         $columns = array_unique(
-            array_merge(['id', 'name'], $additionalColumns)
+            array_merge(['id', 'name', 'academic_period'], $additionalColumns)
         );
 
         $query = self::query()->select($columns);
@@ -359,6 +359,58 @@ class School extends Model
     public function isSinglePeriod(): bool
     {
         return $this->academic_period->isSinglePeriod();
+    }
+
+    /**
+     * IDs of the records representing the same school, including this one.
+     *
+     * A dual-period school registered as a single school is stored as two records sharing
+     * the same `same_school_uuid`, and both records must be treated as one school.
+     *
+     * @return list<int>
+     */
+    public function sameSchoolIds(): array
+    {
+        if ($this->same_school_uuid === null) {
+            return [$this->id];
+        }
+
+        return self::query()
+            ->where('same_school_uuid', '=', $this->same_school_uuid)
+            ->pluck('id')
+            ->all();
+    }
+
+    /**
+     * Grade levels the school can still add for the current academic year, limited to its
+     * educational stages and excluding the ones already assigned to any of its period records.
+     *
+     * @return Collection<int, array{id: int, name: string}>
+     */
+    public function availableGradeLevels(): Collection
+    {
+        $currentAcademicYearId = AcademicYear::currentId();
+
+        if (is_null($currentAcademicYearId)) {
+            return collect([]);
+        }
+
+        $stages = $this->educationalStages()->pluck('stage');
+
+        if ($stages->isEmpty()) {
+            return collect([]);
+        }
+
+        $assignedGradeLevelIds = GradeLevelSchool::query()
+            ->select(['grade_level_id'])
+            ->where('academic_year_id', '=', $currentAcademicYearId)
+            ->whereIn('school_id', $this->sameSchoolIds());
+
+        return GradeLevel::list(function (Builder $query) use ($stages, $assignedGradeLevelIds): void {
+            $query
+                ->whereIn('grade_levels.educational_stage', $stages)
+                ->whereNotIn('grade_levels.id', $assignedGradeLevelIds);
+        });
     }
 
     /*

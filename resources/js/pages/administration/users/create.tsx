@@ -142,8 +142,11 @@ export default function Create({
 
                                     <CardFormContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <Field>
-                                                <Label htmlFor="scope_display" required>
+                                            <Field className="col-span-full">
+                                                <Label
+                                                    htmlFor="scope_display"
+                                                    required
+                                                >
                                                     النطاق
                                                 </Label>
 

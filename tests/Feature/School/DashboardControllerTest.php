@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\Gender;
+use App\Enums\GradeLevelEnum;
+use App\Enums\SchoolEducationalStageEnum;
 use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\AcademicYear;
@@ -8,12 +10,15 @@ use App\Models\Classroom;
 use App\Models\GradeLevel;
 use App\Models\Nationality;
 use App\Models\School;
+use App\Models\SchoolEducationalStage;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Inertia\Testing\AssertableInertia as Assert;
+use Spatie\Permission\Models\Permission;
 
 function createSchoolDashboardUser(School $school): User
 {
@@ -23,6 +28,44 @@ function createSchoolDashboardUser(School $school): User
         'organization_type' => School::class,
         'organization_id' => $school->id,
     ]);
+}
+
+function createSchoolDashboardGradeLevelCreator(School $school): User
+{
+    $user = createSchoolDashboardUser($school);
+
+    Permission::findOrCreate('grade-level:create', UserScope::SCHOOL->value);
+
+    $user->givePermissionTo('grade-level:create');
+
+    return $user;
+}
+
+function createSchoolWithKindergartenStage(): School
+{
+    $school = School::factory()->create();
+
+    SchoolEducationalStage::factory()->create([
+        'school_id' => $school->id,
+        'academic_year_id' => AcademicYear::currentId(),
+        'stage' => SchoolEducationalStageEnum::KINDERGARTEN,
+    ]);
+
+    return $school;
+}
+
+/**
+ * @return Collection<int, GradeLevel>
+ */
+function createKindergartenGradeLevels(): Collection
+{
+    return GradeLevelEnum::filteredByStage(SchoolEducationalStageEnum::KINDERGARTEN)
+        ->map(fn (GradeLevelEnum $grade): GradeLevel => GradeLevel::factory()->create([
+            'code' => $grade->value,
+            'name' => $grade->label(),
+            'educational_stage' => $grade->stage(),
+            'order' => $grade->order(),
+        ]));
 }
 
 beforeEach(function () {
@@ -58,6 +101,50 @@ test('the dashboard renders without statistics in the initial payload', function
                 'classroomOccupancy',
                 'nationalityDistribution',
             ]));
+});
+
+test('every available grade level is shared while the school has none configured', function () {
+    $school = createSchoolWithKindergartenStage();
+    $user = createSchoolDashboardGradeLevelCreator($school);
+    $gradeLevels = createKindergartenGradeLevels();
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.dashboard'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('organization.available_grade_levels', $gradeLevels->count())
+            ->where('organization.available_grade_levels.0.id', $gradeLevels->first()->id)
+            ->where('organization.available_grade_levels.0.name', $gradeLevels->first()->name));
+});
+
+test('no available grade levels are shared once the school has any grade level configured', function () {
+    $school = createSchoolWithKindergartenStage();
+    $user = createSchoolDashboardGradeLevelCreator($school);
+    $gradeLevels = createKindergartenGradeLevels();
+
+    $school->allGradeLevels()->attach($gradeLevels->first()->id, [
+        'academic_year_id' => AcademicYear::currentId(),
+    ]);
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.dashboard'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('organization.available_grade_levels', 0));
+
+    expect($school->availableGradeLevels()->pluck('id')->all())->toBe([$gradeLevels->last()->id]);
+});
+
+test('no available grade levels are shared for users who cannot add them', function () {
+    $school = createSchoolWithKindergartenStage();
+    $user = createSchoolDashboardUser($school);
+    createKindergartenGradeLevels();
+
+    $this->actingAs($user, 'school')
+        ->get(route('school.dashboard'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('organization.available_grade_levels', 0));
 });
 
 test('the summary reports aggregate counts scoped to the current school', function () {

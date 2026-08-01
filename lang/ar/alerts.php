@@ -51,6 +51,7 @@ return [
         'update-settings' => 'تَـمَّ تَـحـدِيـثُ الإِعْدَاداتِ بِـنـجَـاحٍ.',
 
         'grade-level-added' => 'أُضيف الصف الدراسي للمدرسة بنجاح.',
+        'grade-levels-added' => 'تم إضافة :count صف/صفوف دراسية للمدرسة بنجاح.',
         'grade-level-already-added' => 'هذا الصف الدراسي مُضاف بالفعل لهذه المدرسة.',
         'student-transfer-not-found' => 'لم يتم العثور على عملية النقل لهذا الطالب.',
         'add-transferred-student' => 'تم إضافة الطالب المُنتقل بنجاح.',
