@@ -28,12 +28,24 @@ class SchoolPermissionSeeder extends Seeder
         // Permissions
         $viewAny = Permission::findOrCreate('grade-level:view-any', $this->scope);
         $view = Permission::findOrCreate('grade-level:view', $this->scope);
+        $create = Permission::findOrCreate('grade-level:create', $this->scope);
+        $update = Permission::findOrCreate('grade-level:update', $this->scope);
+        $delete = Permission::findOrCreate('grade-level:delete', $this->scope);
+        $transfer = Permission::findOrCreate('grade-level:transfer', $this->scope);
 
         // Roles
         $viewRole = Role::findOrCreate('grade-level:role:view', $this->scope);
+        $createRole = Role::findOrCreate('grade-level:role:create', $this->scope);
+        $updateRole = Role::findOrCreate('grade-level:role:update', $this->scope);
+        $deleteRole = Role::findOrCreate('grade-level:role:delete', $this->scope);
+        $transferRole = Role::findOrCreate('grade-level:role:transfer', $this->scope);
 
         // Sync permissions with roles
         $viewRole->syncPermissions([$viewAny, $view]);
+        $createRole->syncPermissions([$viewAny, $view, $create]);
+        $updateRole->syncPermissions([$viewAny, $view, $update]);
+        $deleteRole->syncPermissions([$viewAny, $view, $delete]);
+        $transferRole->syncPermissions([$viewAny, $view, $transfer]);
     }
 
     private function seedClassroom(): void

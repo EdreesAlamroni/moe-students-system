@@ -23,6 +23,50 @@ class GradeLevelPolicy
         return $user->can('grade-level:view');
     }
 
+    public function create(User $user): bool
+    {
+        return $user->can('grade-level:create');
+    }
+
+    public function update(User $user, GradeLevel $gradeLevel): bool
+    {
+        if (! $this->belongsToCurrentSchool($user, $gradeLevel)) {
+            return false;
+        }
+
+        if ($gradeLevel->trashed()) {
+            return false;
+        }
+
+        return $user->can('grade-level:update');
+    }
+
+    public function delete(User $user, GradeLevel $gradeLevel): bool
+    {
+        if (! $this->belongsToCurrentSchool($user, $gradeLevel)) {
+            return false;
+        }
+
+        if ($gradeLevel->trashed()) {
+            return false;
+        }
+
+        return $user->can('grade-level:delete');
+    }
+
+    public function transfer(User $user, GradeLevel $gradeLevel): bool
+    {
+        if (! $this->belongsToCurrentSchool($user, $gradeLevel)) {
+            return false;
+        }
+
+        if ($gradeLevel->trashed()) {
+            return false;
+        }
+
+        return $user->can('grade-level:transfer');
+    }
+
     private function belongsToCurrentSchool(User $user, GradeLevel $gradeLevel): bool
     {
         if ($user->organization_type !== School::class || $user->organization_id === null) {
