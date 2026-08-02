@@ -69,12 +69,12 @@ class StudentTransfer extends Model
 
     public function fromSchool(): BelongsTo
     {
-        return $this->belongsTo(School::class, 'from_school_id');
+        return $this->belongsTo(School::class, 'from_school_id')->withTrashed();
     }
 
     public function toSchool(): BelongsTo
     {
-        return $this->belongsTo(School::class, 'to_school_id');
+        return $this->belongsTo(School::class, 'to_school_id')->withTrashed();
     }
 
     /*

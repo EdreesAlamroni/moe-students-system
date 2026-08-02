@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('school_educational_stages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('school_id')->constrained('schools')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('school_id')->constrained('schools')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('stage')->index();
             $table->timestamps();
         });
