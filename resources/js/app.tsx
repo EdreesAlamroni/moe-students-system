@@ -36,5 +36,6 @@ createInertiaApp({
     },
     progress: {
         color: "oklch(0.38 0.14 266)",
+        showSpinner: true,
     },
 });
