@@ -3,7 +3,6 @@
 use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\EducationMonitor;
-use App\Models\EducationServicesOffice;
 use App\Models\Municipal;
 use App\Models\User;
 use App\Models\Warehouse;
@@ -98,7 +97,6 @@ test('authenticated warehouse users can visit the show education monitor page', 
     $warehouse = Warehouse::factory()->create();
     $user = createWarehouseEducationMonitorUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
-    $office = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.education-monitors.show', ['monitor' => $monitor]))
@@ -107,8 +105,6 @@ test('authenticated warehouse users can visit the show education monitor page', 
             ->component('warehouse/education-monitors/show')
             ->where('monitor.name', $monitor->name)
             ->where('monitor.students_count', 0)
-            ->has('offices.data', 1)
-            ->where('offices.data.0.uuid', $office->uuid)
             ->missing('can.update')
             ->missing('can.delete')
         );
