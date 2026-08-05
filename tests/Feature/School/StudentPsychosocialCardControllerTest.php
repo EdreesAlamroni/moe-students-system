@@ -200,7 +200,7 @@ test('authorized users can print a student psychosocial card', function () {
         ->assertViewIs('print.school.students.psychosocial-card')
         ->assertViewHas('student', fn ($viewStudent) => $viewStudent->is($student->fresh()))
         ->assertViewHas('psychosocialCard')
-        ->assertViewHas('school', fn ($viewSchool) => $viewSchool->is($schoolPeriod));
+        ->assertViewHas('schoolPeriod', fn ($viewSchool) => $viewSchool->is($schoolPeriod));
 });
 
 test('users without print permission cannot print a psychosocial card', function () {
