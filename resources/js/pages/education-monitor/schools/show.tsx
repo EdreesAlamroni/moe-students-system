@@ -20,9 +20,7 @@ import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action
 
 import ResetClassroomDistributionAction from "@/components/features/education-monitor/schools/reset-classroom-distribution";
 
-import { SchoolPeriodsSummary } from "@/components/shared/schools/school-periods-summary";
-
-import { GraduationCapIcon, PresentationIcon, NotepadTextIcon, SquarePenIcon, UsersIcon } from "lucide-react";
+import { CalendarRangeIcon, GraduationCapIcon, PresentationIcon, NotepadTextIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
 import { destroy, edit, index, show } from "@/routes/education-monitor/schools";
 
@@ -45,6 +43,7 @@ type PageProps = {
 export default function Show({ school, gradeLevels, classroomDistributionReset, canAny, can }: PageProps) {
     const isPrivate = school.is_private === true;
     const hasOffice = !!school.office;
+    const periods = school.periods ?? [];
 
     return (
         <>
@@ -128,15 +127,9 @@ export default function Show({ school, gradeLevels, classroomDistributionReset, 
                                     <DetailValue value={school.type?.name} />
                                 </DetailField>
 
-                                {/* TODO: Review this component and refactor it. */}
-                                <DetailField className="col-span-full">
-                                    <DetailLabel>الفترات الدراسية</DetailLabel>
-                                    <DetailValue>
-                                        <SchoolPeriodsSummary
-                                            periods={school.periods ?? []}
-                                            showStudentCounts
-                                        />
-                                    </DetailValue>
+                                <DetailField>
+                                    <DetailLabel>الفترة الدراسية</DetailLabel>
+                                    <DetailValue value={school.academic_period_label} />
                                 </DetailField>
 
                                 {isPrivate && (
@@ -168,6 +161,56 @@ export default function Show({ school, gradeLevels, classroomDistributionReset, 
                     <Card>
                         <CardHeader className="border-b">
                             <CardTitle>
+                                <CalendarRangeIcon />
+                                <div className="flex items-center gap-x-1.5">
+                                    <span>الفترات الدراسية</span>
+                                    <span className="font-mono">({periods.length})</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        {periods.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">الفترة الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الصفوف الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الفصول الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {periods.map((period, index) => (
+                                            <TableRow key={period.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{period.academic_period.name}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={period.grade_levels_count} className="font-mono" fallback="0" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={period.classrooms_count} className="font-mono" fallback="0" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={period.students_count} className="font-mono" fallback="0" />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState />
+                            </CardContent>
+                        )}
+                    </Card>
+                </section>
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
                                 <GraduationCapIcon />
                                 <div className="flex items-center gap-x-1.5">
                                     <span>الصفوف الدراسية</span>
@@ -183,6 +226,7 @@ export default function Show({ school, gradeLevels, classroomDistributionReset, 
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
                                             <TableHead scope="col">الاسم</TableHead>
                                             <TableHead scope="col">المرحلة الدراسية</TableHead>
+                                            <TableHead scope="col">الفترة الدراسية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -192,6 +236,9 @@ export default function Show({ school, gradeLevels, classroomDistributionReset, 
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
                                                 <TableCell>{gradeLevel.name}</TableCell>
                                                 <TableCell>{gradeLevel.educational_stage.name}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={gradeLevel.academic_period?.name} />
+                                                </TableCell>
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue value={gradeLevel.students_count} className="font-mono" fallback="0" />
                                                 </TableCell>

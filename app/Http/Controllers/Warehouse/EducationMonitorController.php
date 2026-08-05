@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Warehouse;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Administration\EducationServicesOfficeCollection;
 use App\Http\Resources\Warehouse\EducationMonitorCollection;
 use App\Http\Resources\Warehouse\EducationMonitorResource;
 use App\Models\EducationMonitor;
-use App\Models\EducationServicesOffice;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -69,30 +67,9 @@ class EducationMonitorController extends Controller
             'students',
         ]);
 
-        $offices = EducationServicesOffice::query()
-            ->select([
-                'id',
-                'uuid',
-                'education_monitor_id',
-                'name',
-                'created_at',
-                'deleted_at',
-            ])
-            ->whereBelongsTo($monitor, 'monitor')
-            ->ordered()
-            ->paginate(pageName: 'offices')
-            ->withQueryString()
-            ->appends($request->query())
-            ->onEachSide(0);
-
         return Inertia::render('warehouse/education-monitors/show', [
             'monitor' => ResourcePayloadBuilder::make(
                 EducationMonitorResource::make($monitor),
-            ),
-            'offices' => ResourcePayloadBuilder::paginate(
-                $offices,
-                EducationServicesOfficeCollection::make($offices),
-                $request,
             ),
         ]);
     }

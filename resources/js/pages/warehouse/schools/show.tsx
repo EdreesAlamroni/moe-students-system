@@ -2,29 +2,31 @@ import React from 'react'
 
 import { Head } from "@inertiajs/react";
 
-import type { School } from "@/types";
+import type { GradeLevel, School } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import { StatCardsSection } from "@/components/ui/display/stat-card";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
+import { Card, CardContent, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 
 import { DetailField, DetailFields } from "@/components/ui/display/detail-field";
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
+import { Table, TableBody, TableCell, TableCellNullableValue, TableHead, TableHeader, TableRow } from "@/components/ui/display/table";
+import EmptyState from "@/components/ui/display/empty-state";
 
-import { SchoolPeriodsSummary } from '@/components/shared/schools/school-periods-summary';
-
-import { GraduationCapIcon, PresentationIcon, NotepadTextIcon, UsersIcon } from "lucide-react";
+import { CalendarRangeIcon, GraduationCapIcon, PresentationIcon, NotepadTextIcon, UsersIcon } from "lucide-react";
 
 import { index, show } from "@/routes/warehouse/schools";
 
 type PageProps = {
     school: School;
+    gradeLevels: GradeLevel[];
 }
 
-export default function Show({ school }: PageProps) {
+export default function Show({ school, gradeLevels }: PageProps) {
     const isPrivate = school.is_private === true;
     const hasOffice = !!school.office;
+    const periods = school.periods ?? [];
 
     return (
         <>
@@ -77,15 +79,9 @@ export default function Show({ school }: PageProps) {
                                     <DetailValue value={school.type?.name} />
                                 </DetailField>
 
-                                {/* TODO: Review this component and refactor it. */}
                                 <DetailField>
-                                    <DetailLabel>الفترات الدراسية</DetailLabel>
-                                    <DetailValue>
-                                        <SchoolPeriodsSummary
-                                            periods={school.periods ?? []}
-                                            showStudentCounts
-                                        />
-                                    </DetailValue>
+                                    <DetailLabel>الفترة الدراسية</DetailLabel>
+                                    <DetailValue value={school.academic_period_label} />
                                 </DetailField>
 
                                 {isPrivate && (
@@ -110,6 +106,104 @@ export default function Show({ school }: PageProps) {
                                 )}
                             </DetailFields>
                         </CardContent>
+                    </Card>
+                </section>
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <CalendarRangeIcon />
+                                <div className="flex items-center gap-x-1.5">
+                                    <span>الفترات الدراسية</span>
+                                    <span className="font-mono">({periods.length})</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        {periods.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">الفترة الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الصفوف الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الفصول الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {periods.map((period, index) => (
+                                            <TableRow key={period.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{period.academic_period.name}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={period.grade_levels_count} className="font-mono" fallback="0" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={period.classrooms_count} className="font-mono" fallback="0" />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={period.students_count} className="font-mono" fallback="0" />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState />
+                            </CardContent>
+                        )}
+                    </Card>
+                </section>
+
+                <section>
+                    <Card>
+                        <CardHeader className="border-b">
+                            <CardTitle>
+                                <GraduationCapIcon />
+                                <div className="flex items-center gap-x-1.5">
+                                    <span>الصفوف الدراسية</span>
+                                    <span className="font-mono">({gradeLevels.length})</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        {gradeLevels.length > 0 ? (
+                            <CardTableContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">الاسم</TableHead>
+                                            <TableHead scope="col">المرحلة الدراسية</TableHead>
+                                            <TableHead scope="col">الفترة الدراسية</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {gradeLevels.map((gradeLevel: GradeLevel, index: number) => (
+                                            <TableRow key={gradeLevel.uuid}>
+                                                <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell>{gradeLevel.name}</TableCell>
+                                                <TableCell>{gradeLevel.educational_stage.name}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={gradeLevel.academic_period?.name} />
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <TableCellNullableValue value={gradeLevel.students_count} className="font-mono" fallback="0" />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardTableContent>
+                        ) : (
+                            <CardContent>
+                                <EmptyState />
+                            </CardContent>
+                        )}
                     </Card>
                 </section>
             </MainContainer>

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Warehouse;
 
 use App\Enums\SchoolType;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Warehouse\GradeLevelCollection;
 use App\Http\Resources\Warehouse\SchoolCollection;
 use App\Http\Resources\Warehouse\SchoolResource;
+use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
+use App\Models\GradeLevel;
 use App\Models\School;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\Request;
@@ -79,15 +82,43 @@ class SchoolController extends Controller
             'office:id,uuid,name',
             'periods' => function ($query): void {
                 $query
-                    ->with(['educationalStages'])
                     ->withCount(['gradeLevels', 'classrooms', 'students'])
                     ->orderedByAcademicPeriod();
             },
         ]);
 
+        $schoolPeriodIds = $school->periods->pluck('id');
+
+        $gradeLevels = GradeLevel::query()
+            ->select(['grade_levels.id', 'grade_levels.name', 'grade_levels.educational_stage'])
+            ->whereIn('grade_levels.id', function ($query) use ($schoolPeriodIds): void {
+                $query
+                    ->select('grade_level_id')
+                    ->from('grade_level_school_period')
+                    ->where('academic_year_id', '=', AcademicYear::currentId())
+                    ->whereIn('school_period_id', $schoolPeriodIds);
+            })
+            ->with([
+                'schoolPeriods' => function ($query) use ($schoolPeriodIds): void {
+                    $query
+                        ->select(['school_periods.id', 'school_periods.academic_period'])
+                        ->whereIn('school_periods.id', $schoolPeriodIds);
+                },
+            ])
+            ->withCount([
+                'students' => function ($query) use ($schoolPeriodIds): void {
+                    $query->whereIn('students.school_period_id', $schoolPeriodIds);
+                },
+            ])
+            ->ordered()
+            ->get();
+
         return Inertia::render('warehouse/schools/show', [
             'school' => ResourcePayloadBuilder::make(
                 SchoolResource::make($school),
+            ),
+            'gradeLevels' => ResourcePayloadBuilder::make(
+                GradeLevelCollection::make($gradeLevels),
             ),
         ]);
     }

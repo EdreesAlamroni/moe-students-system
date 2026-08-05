@@ -139,7 +139,6 @@ class SchoolController extends Controller
             'office:id,uuid,name',
             'periods' => function ($query): void {
                 $query
-                    ->with(['educationalStages'])
                     ->withCount(['gradeLevels', 'classrooms', 'students'])
                     ->orderedByAcademicPeriod();
             },
@@ -156,6 +155,13 @@ class SchoolController extends Controller
                     ->where('academic_year_id', '=', AcademicYear::currentId())
                     ->whereIn('school_period_id', $schoolPeriodIds);
             })
+            ->with([
+                'schoolPeriods' => function ($query) use ($schoolPeriodIds): void {
+                    $query
+                        ->select(['school_periods.id', 'school_periods.academic_period'])
+                        ->whereIn('school_periods.id', $schoolPeriodIds);
+                },
+            ])
             ->withCount([
                 'students' => function ($query) use ($schoolPeriodIds): void {
                     $query->whereIn('students.school_period_id', $schoolPeriodIds);

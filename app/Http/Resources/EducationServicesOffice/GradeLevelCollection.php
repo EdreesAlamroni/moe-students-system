@@ -10,12 +10,20 @@ class GradeLevelCollection extends DirectModelCollection
 {
     public function toArray(Request $request): array
     {
-        return $this->collection->map(fn (GradeLevel $gradeLevel): array => [
-            'id' => $gradeLevel->id,
-            'uuid' => $gradeLevel->uuid,
-            'name' => $gradeLevel->name,
-            'educational_stage' => $gradeLevel->educational_stage->toArray(),
-            'students_count' => (int) ($gradeLevel->students_count ?? 0),
-        ])->all();
+        return $this->collection->map(function (GradeLevel $gradeLevel): array {
+            $payload = [
+                'id' => $gradeLevel->id,
+                'uuid' => $gradeLevel->uuid,
+                'name' => $gradeLevel->name,
+                'educational_stage' => $gradeLevel->educational_stage->toArray(),
+                'students_count' => (int) ($gradeLevel->students_count ?? 0),
+            ];
+
+            if ($gradeLevel->relationLoaded('schoolPeriods') && ($schoolPeriod = $gradeLevel->schoolPeriods->first())) {
+                $payload['academic_period'] = $schoolPeriod->academic_period->toArray();
+            }
+
+            return $payload;
+        })->all();
     }
 }

@@ -104,6 +104,7 @@ export type GradeLevel = {
     name: string;
     code: string;
     educational_stage: Enum;
+    academic_period?: Enum;
     order: number;
     created_at: string;
     updated_at: string;

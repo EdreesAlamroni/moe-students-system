@@ -9,12 +9,14 @@ use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use App\Enums\UserScope;
 use App\Models\AcademicYear;
+use App\Models\Classroom;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
 use App\Models\SchoolPeriod;
+use App\Models\Student;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
@@ -497,6 +499,35 @@ test('authenticated users can visit the show school page', function () {
             ->component('administration/schools/show')
             ->where('school.uuid', $school->uuid)
             ->where('school.serial_number', $school->serial_number)
+        );
+});
+
+test('show school page includes periods with aggregate counts', function () {
+    $user = createSchoolAdminUser();
+    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->for($school)->create([
+        'academic_period' => SchoolAcademicPeriod::MORNING,
+    ]);
+    $gradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
+
+    $schoolPeriod->gradeLevels()->attach($gradeLevel->id, [
+        'academic_year_id' => AcademicYear::currentId(),
+    ]);
+
+    Classroom::factory()->for($schoolPeriod)->for($gradeLevel)->create();
+    Student::factory()->for($schoolPeriod)->count(2)->create();
+
+    $this->actingAs($user, 'administration')
+        ->get(route('administration.schools.show', ['school' => $school]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('administration/schools/show')
+            ->has('school.periods', 1)
+            ->where('school.periods.0.grade_levels_count', 1)
+            ->where('school.periods.0.classrooms_count', 1)
+            ->where('school.periods.0.students_count', 2)
+            ->has('gradeLevels', 1)
+            ->where('gradeLevels.0.academic_period.id', SchoolAcademicPeriod::MORNING->value)
         );
 });
 

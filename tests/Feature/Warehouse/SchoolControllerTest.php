@@ -1,11 +1,17 @@
 <?php
 
+use App\Enums\GradeLevelEnum;
+use App\Enums\SchoolAcademicPeriod;
+use App\Enums\SchoolEducationalStageEnum;
 use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\AcademicYear;
+use App\Models\Classroom;
 use App\Models\EducationMonitor;
+use App\Models\GradeLevel;
 use App\Models\School;
 use App\Models\SchoolPeriod;
+use App\Models\Student;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Support\PolicyRegistrar;
@@ -31,6 +37,19 @@ function createWarehouseSchoolUser(Warehouse $warehouse, array $attributes = [])
     ]);
 
     return $user;
+}
+
+function createWarehouseGradeLevelForStage(SchoolEducationalStageEnum $stage): GradeLevel
+{
+    $grade = collect(GradeLevelEnum::cases())
+        ->first(fn (GradeLevelEnum $case): bool => $case->stage() === $stage);
+
+    return GradeLevel::factory()->create([
+        'code' => $grade->value,
+        'name' => $grade->label(),
+        'educational_stage' => $grade->stage(),
+        'order' => $grade->order(),
+    ]);
 }
 
 beforeEach(function () {
@@ -146,6 +165,37 @@ test('authenticated warehouse users can visit the show school page', function ()
             ->where('school.students_count', 0)
             ->missing('can.update')
             ->missing('can.delete')
+        );
+});
+
+test('show school page includes periods and grade levels with aggregate counts', function () {
+    $warehouse = Warehouse::factory()->create();
+    $user = createWarehouseSchoolUser($warehouse);
+    $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
+    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for($school)->create([
+        'academic_period' => SchoolAcademicPeriod::MORNING,
+    ]);
+    $gradeLevel = createWarehouseGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
+
+    $schoolPeriod->gradeLevels()->attach($gradeLevel->id, [
+        'academic_year_id' => AcademicYear::currentId(),
+    ]);
+
+    Classroom::factory()->for($schoolPeriod)->for($gradeLevel)->create();
+    Student::factory()->for($schoolPeriod)->count(2)->create();
+
+    $this->actingAs($user, 'warehouse')
+        ->get(route('warehouse.schools.show', ['school' => $school]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('warehouse/schools/show')
+            ->has('school.periods', 1)
+            ->where('school.periods.0.grade_levels_count', 1)
+            ->where('school.periods.0.classrooms_count', 1)
+            ->where('school.periods.0.students_count', 2)
+            ->has('gradeLevels', 1)
+            ->where('gradeLevels.0.academic_period.id', SchoolAcademicPeriod::MORNING->value)
         );
 });
 
