@@ -4,7 +4,7 @@ import { decimalInputConstraints, libyanNationalIdInputConstraints, passportNumb
 
 import { Form, Head, Link, router } from "@inertiajs/react";
 
-import type { CanPermissions, Enum, Nationality, Paginated, School, Student } from "@/types";
+import type { CanPermissions, Enum, Nationality, Paginated, SchoolPeriod, Student } from "@/types";
 
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,6 @@ import { Building2Icon, ListIcon, RefreshCcwIcon, SearchIcon } from "lucide-reac
 
 import { index, show } from "@/routes/education-services-office/students";
 
-type OrganizationOption = Pick<School, "id" | "name">;
 
 type StudentProps = Student & {
     canAny: boolean;
@@ -40,10 +39,10 @@ type StudentProps = Student & {
 
 type PageProps = {
     students?: Paginated<StudentProps>;
-    schools: OrganizationOption[];
+    schoolPeriods: SchoolPeriod[];
     nationalities?: Pick<Nationality, "id" | "name">[];
     registrationStatuses?: Enum[];
-    school_id?: number | null;
+    school_period_id?: number | null;
     filter: {
         name?: string;
         registration_status?: string;
@@ -103,10 +102,10 @@ function StudentsSectionSkeleton() {
 
 export default function Index({
     students,
-    schools,
+    schoolPeriods,
     nationalities,
     registrationStatuses,
-    school_id,
+    school_period_id,
     filter,
 }: PageProps) {
     const [pendingSchoolId, setPendingSchoolId] = useState<string | undefined>();
@@ -125,7 +124,7 @@ export default function Index({
         };
     }, []);
 
-    const schoolId = school_id?.toString();
+    const schoolId = school_period_id?.toString();
     const schoolPending = pendingSchoolId !== undefined && pendingSchoolId !== schoolId;
     const activeSchoolId = schoolId ?? pendingSchoolId;
     const studentsStale = isNavigating && schoolPending;
@@ -139,7 +138,7 @@ export default function Index({
         setPendingSchoolId(value);
 
         router.get(index.url(), {
-            school_id: value,
+            school_period_id: value,
         }, visitOptions);
     };
 
@@ -153,28 +152,34 @@ export default function Index({
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <Building2Icon />
-                                <span>اختيار الجهة التعليمية</span>
+                                <span>اختيار المؤسسة التعليمية</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Field>
-                                    <Label htmlFor="school_id">
+                                    <Label
+                                        htmlFor="school_period_id"
+                                    >
                                         المدرسة
                                     </Label>
 
-                                    {schools.length > 0 ? (
+                                    {schoolPeriods.length > 0 ? (
                                         <Select
                                             value={activeSchoolId}
                                             disabled={isNavigating}
                                             onValueChange={handleSchoolChange}
                                         >
-                                            <SelectTrigger id="school_id">
-                                                <SelectValue placeholder="اختر المدرسة" />
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المدرسة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {schools.map((school) => (
+                                                    {schoolPeriods.map((school) => (
                                                         <SelectItem
                                                             key={school.id}
                                                             value={school.id.toString()}
@@ -187,7 +192,7 @@ export default function Index({
                                         </Select>
                                     ) : (
                                         <EmptyOptionsInput
-                                            id="school_id"
+                                            id="school_period_id"
                                             placeholder="لا توجد مدارس متاحة للاختيار"
                                         />
                                     )}
@@ -231,7 +236,7 @@ export default function Index({
                             <Form
                                 {...index.form()}
                             >
-                                <input type="hidden" name="school_id" value={activeSchoolId} />
+                                <input type="hidden" name="school_period_id" value={activeSchoolId} />
 
                                 <Card>
                                     <CardHeader className="border-b">
@@ -265,7 +270,10 @@ export default function Index({
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         {(registrationStatuses ?? []).map((status) => (
-                                                            <SelectItem key={status.id} value={status.id}>
+                                                            <SelectItem
+                                                                key={status.id}
+                                                                value={status.id}
+                                                            >
                                                                 {status.name}
                                                             </SelectItem>
                                                         ))}
@@ -279,7 +287,9 @@ export default function Index({
                                                     defaultValue={filter.nationality_id || undefined}
                                                 >
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="الجنسية" />
+                                                        <SelectValue
+                                                            placeholder="الجنسية"
+                                                        />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectGroup>
@@ -343,7 +353,7 @@ export default function Index({
                                             <Button type="reset" variant="outline" asChild>
                                                 <Link href={index.url({
                                                     query: {
-                                                        school_id: activeSchoolId,
+                                                        school_period_id: activeSchoolId,
                                                     },
                                                 })}
                                                 >

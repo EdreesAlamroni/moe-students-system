@@ -29,11 +29,11 @@ import { create, index, show } from "@/routes/education-monitor/schools";
 type SchoolProps = School & {
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 type PageProps = {
     schools: Paginated<SchoolProps>;
-    offices: Pick<EducationServicesOffice, "id" | "name">[];
+    offices: EducationServicesOffice[];
     types: Enum[];
     filter: {
         education_services_office_id?: string;
@@ -42,7 +42,7 @@ type PageProps = {
     };
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 export default function Index({ schools, offices, types, filter, canAny, can }: PageProps) {
     const { data, links, ...meta } = schools;
@@ -75,6 +75,7 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
                 <section>
                     <Form
                         {...index.form()}
+                        disableWhileProcessing
                     >
                         <Card>
                             <CardHeader className="border-b">
@@ -203,7 +204,9 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
                                                         {`مدرسة ${school.type.name}`}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{school.academic_period.name}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={school.academic_period_label} />
+                                                </TableCell>
                                                 <TableCell>
                                                     <TableCellNullableValue value={school.office?.name} />
                                                 </TableCell>
@@ -245,7 +248,7 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
                 </section>
             </MainContainer>
         </>
-    )
+    );
 }
 
 Index.layout = () => ({

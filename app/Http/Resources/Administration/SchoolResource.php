@@ -5,10 +5,8 @@ namespace App\Http\Resources\Administration;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
-use App\Models\SchoolEducationalStage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Collection;
 
 class SchoolResource extends JsonResource
 {
@@ -23,8 +21,6 @@ class SchoolResource extends JsonResource
             'serial_number' => $school->serial_number,
             'name' => $school->name,
             'type' => $school->type->toArray(),
-            'academic_period' => $school->academic_period->toArray(),
-            'students_gender' => $school->students_gender?->toArray(),
             'educational_company_name' => $school->educational_company_name,
             'branch_type' => $school->branch_type?->toArray(),
             'building_type' => $school->building_type?->toArray(),
@@ -36,17 +32,26 @@ class SchoolResource extends JsonResource
             'office' => $this->whenLoaded('office', function (EducationServicesOffice $office): array {
                 return $office->only(['id', 'uuid', 'name']);
             }),
-            'educational_stages' => $this->whenLoaded('educationalStages', function (Collection $educationalStages): array {
-                return $educationalStages->map(function (SchoolEducationalStage $educationalStage): array {
-                    return [
-                        'id' => $educationalStage->id,
-                        'stage' => $educationalStage->stage->toArray(),
-                    ];
-                })->all();
+            'academic_period_label' => $school->academic_period_label,
+            'periods' => $this->whenLoaded('periods', function () use ($request, $school): array {
+                return SchoolPeriodResource::collection($school->periods)->resolve($request);
             }),
-            'grade_levels_count' => (int) ($school->grade_levels_count ?? 0),
-            'classrooms_count' => (int) ($school->classrooms_count ?? 0),
-            'students_count' => (int) ($school->students_count ?? 0),
+            'grade_levels_count' => $this->aggregatePeriodCount($school, 'grade_levels_count'),
+            'classrooms_count' => $this->aggregatePeriodCount($school, 'classrooms_count'),
+            'students_count' => $this->aggregatePeriodCount($school, 'students_count'),
         ];
+    }
+
+    private function aggregatePeriodCount(School $school, string $attribute): int
+    {
+        if ($school->hasAttribute($attribute)) {
+            return (int) $school->getAttribute($attribute);
+        }
+
+        if (! $school->relationLoaded('periods')) {
+            return 0;
+        }
+
+        return (int) $school->periods->sum($attribute);
     }
 }

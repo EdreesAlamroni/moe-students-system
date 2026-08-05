@@ -22,15 +22,15 @@ class BookDistributionController extends Controller
         Gate::authorize('view', BookDistribution::class);
 
         $organization = app(BookDistributionOrganizationSelection::class)->resolve($request->getAttributes());
-        $schoolId = $organization['schoolId'];
+        $schoolPeriodId = $organization['schoolPeriodId'];
 
-        $gradeLevels = filled($schoolId)
-            ? app(BookDistributionGradeLevelStats::class)->forDistribution($schoolId)
+        $gradeLevels = filled($schoolPeriodId)
+            ? app(BookDistributionGradeLevelStats::class)->forDistribution($schoolPeriodId)
             : collect([]);
 
         return Inertia::render('warehouse/book-distributions/index', [
             'monitors' => $organization['monitors'],
-            'schools' => $organization['schools'],
+            'schools' => $organization['schoolPeriods'],
             'gradeLevels' => $gradeLevels,
             'selected' => $organization['selected'],
             'can' => [
@@ -47,7 +47,7 @@ class BookDistributionController extends Controller
 
         $count = app(DistributeBooksToGradeLevels::class)->execute(
             monitorId: $attributes['education_monitor_id'],
-            schoolId: $attributes['school_id'],
+            schoolPeriodId: $attributes['school_period_id'],
             warehouseId: auth('warehouse')->user()->organization_id,
             gradeLevelIds: $attributes['grade_level_ids'],
         );
@@ -60,7 +60,7 @@ class BookDistributionController extends Controller
 
         return Redirect::route('warehouse.book-distributions.index', [
             'education_monitor_id' => $attributes['education_monitor_id'],
-            'school_id' => $attributes['school_id'],
+            'school_period_id' => $attributes['school_period_id'],
         ]);
     }
 }

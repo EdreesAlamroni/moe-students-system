@@ -65,7 +65,7 @@ class BookDistributionController extends Controller
         $attributes = $request->getAttributes();
 
         $count = app(DistributeBooksToStudents::class)->execute(
-            schoolId: auth('school')->user()->organization_id,
+            schoolPeriodId: auth('school')->user()->organization_id,
             gradeLevelId: $attributes['grade_level_id'],
             studentIds: $attributes['student_ids'],
             classroomId: $attributes['classroom_id'],

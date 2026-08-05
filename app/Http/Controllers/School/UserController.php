@@ -9,7 +9,7 @@ use App\Http\Requests\School\User\UpdateRequest;
 use App\Http\Resources\School\UserCollection;
 use App\Http\Resources\School\UserFormResource;
 use App\Http\Resources\School\UserResource;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
@@ -72,12 +72,12 @@ class UserController extends Controller
     {
         Gate::authorize('create', User::class);
 
-        /** @var School $school */
-        $school = auth('school')->user()->organization;
+        /** @var SchoolPeriod $schoolPeriod */
+        $schoolPeriod = auth('school')->user()->organization;
 
         return Inertia::render('school/users/create', [
             'scope' => UserScope::SCHOOL->toArray(),
-            'school' => $school->only(['id', 'name']),
+            'schoolPeriod' => $schoolPeriod->only(['id', 'name']),
             'groupedRoles' => $this->getGroupedRoles(),
         ]);
     }

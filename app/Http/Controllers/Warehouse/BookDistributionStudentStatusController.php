@@ -29,30 +29,30 @@ class BookDistributionStudentStatusController extends Controller
 
         $selectedAttributes = $request->getAttributes();
         $organization = app(BookDistributionOrganizationSelection::class)->resolve($selectedAttributes);
-        $schoolId = $organization['schoolId'];
+        $schoolPeriodId = $organization['schoolPeriodId'];
         $gradeLevelId = $selectedAttributes['grade_level_id'];
 
-        $hasCompleteSelection = filled($organization['monitorId']) && filled($schoolId) && filled($gradeLevelId);
+        $hasCompleteSelection = filled($organization['monitorId']) && filled($schoolPeriodId) && filled($gradeLevelId);
 
-        $gradeLevels = filled($schoolId)
-            ? $this->gradeLevelsForSchool($schoolId)
+        $gradeLevels = filled($schoolPeriodId)
+            ? $this->gradeLevelsForSchoolPeriod($schoolPeriodId)
             : collect([]);
 
         return Inertia::render('warehouse/book-distributions/student-status', [
             'monitors' => $organization['monitors'],
-            'schools' => $organization['schools'],
+            'schools' => $organization['schoolPeriods'],
             'gradeLevels' => $gradeLevels,
             'selected' => $organization['selected'],
             'filter' => $request->input('filter', []),
             ...($hasCompleteSelection ? [
-                'students' => $this->getPaginatedStudents($request, $schoolId, $gradeLevelId),
+                'students' => $this->getPaginatedStudents($request, $schoolPeriodId, $gradeLevelId),
                 'registrationStatuses' => StudentRegistrationStatus::optionsArray(),
                 'nationalities' => Nationality::list(),
             ] : []),
         ]);
     }
 
-    private function gradeLevelsForSchool(int $schoolId): Collection
+    private function gradeLevelsForSchoolPeriod(int $schoolPeriodId): Collection
     {
         $currentAcademicYearId = AcademicYear::currentId();
 
@@ -60,16 +60,16 @@ class BookDistributionStudentStatusController extends Controller
             return collect([]);
         }
 
-        return GradeLevel::list(function ($query) use ($schoolId, $currentAcademicYearId): void {
-            $query->join('grade_level_school', function (JoinClause $join) use ($schoolId, $currentAcademicYearId): void {
-                $join->on('grade_levels.id', '=', 'grade_level_school.grade_level_id')
-                    ->where('grade_level_school.school_id', '=', $schoolId)
-                    ->where('grade_level_school.academic_year_id', '=', $currentAcademicYearId);
+        return GradeLevel::list(function ($query) use ($schoolPeriodId, $currentAcademicYearId): void {
+            $query->join('grade_level_school_period', function (JoinClause $join) use ($schoolPeriodId, $currentAcademicYearId): void {
+                $join->on('grade_levels.id', '=', 'grade_level_school_period.grade_level_id')
+                    ->where('grade_level_school_period.school_period_id', '=', $schoolPeriodId)
+                    ->where('grade_level_school_period.academic_year_id', '=', $currentAcademicYearId);
             });
         });
     }
 
-    private function getPaginatedStudents(StudentStatusRequest $request, int $schoolId, int $gradeLevelId): LengthAwarePaginator
+    private function getPaginatedStudents(StudentStatusRequest $request, int $schoolPeriodId, int $gradeLevelId): LengthAwarePaginator
     {
         return QueryBuilder::for(Student::class)
             ->select([
@@ -82,11 +82,11 @@ class BookDistributionStudentStatusController extends Controller
                 'students.surname',
                 'students.gender',
             ])
-            ->where('school_id', '=', $schoolId)
-            ->whereHas('enrollments', function (Builder $query) use ($gradeLevelId, $schoolId): void {
+            ->where('school_period_id', '=', $schoolPeriodId)
+            ->whereHas('enrollments', function (Builder $query) use ($gradeLevelId, $schoolPeriodId): void {
                 $query
                     ->where('grade_level_id', '=', $gradeLevelId)
-                    ->where('school_id', '=', $schoolId)
+                    ->where('school_period_id', '=', $schoolPeriodId)
                     ->where('academic_year_id', '=', AcademicYear::currentId());
             })
             ->withExists(['bookDistributionItem as already_distributed'])

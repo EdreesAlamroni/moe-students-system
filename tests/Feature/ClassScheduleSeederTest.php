@@ -7,7 +7,7 @@ use App\Models\ClassPeriod;
 use App\Models\Classroom;
 use App\Models\ClassSchedule;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Subject;
 use Database\Seeders\ClassScheduleSeeder;
 
@@ -19,8 +19,8 @@ beforeEach(function () {
 test('class schedule seeder creates schedules for every school classroom weekday and teaching period', function () {
     $academicYearId = AcademicYear::currentId();
 
-    $morningSchool = School::factory()->create(['academic_period' => SchoolAcademicPeriod::MORNING]);
-    $eveningSchool = School::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
+    $morningSchoolPeriod = SchoolPeriod::factory()->create(['academic_period' => SchoolAcademicPeriod::MORNING]);
+    $eveningSchoolPeriod = SchoolPeriod::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
     $gradeLevel = GradeLevel::factory()->create();
 
     Subject::factory()->count(3)->create(['grade_level_id' => $gradeLevel->id]);
@@ -34,13 +34,13 @@ test('class schedule seeder creates schedules for every school classroom weekday
     ]);
 
     $morningClassrooms = Classroom::factory()->count(2)->create([
-        'school_id' => $morningSchool->id,
+        'school_period_id' => $morningSchoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     $eveningClassrooms = Classroom::factory()->create([
-        'school_id' => $eveningSchool->id,
+        'school_period_id' => $eveningSchoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevel->id,
     ]);
@@ -65,16 +65,16 @@ test('class schedule seeder creates schedules for every school classroom weekday
             expect($schedule->subject->grade_level_id)->toBe($gradeLevel->id);
         });
 
-    expect(ClassSchedule::query()->where('school_id', '=', $morningSchool->id)->count())
+    expect(ClassSchedule::query()->where('school_period_id', '=', $morningSchoolPeriod->id)->count())
         ->toBe($morningClassrooms->count() * $morningTeachingPeriodCount * $schoolDayCount)
-        ->and(ClassSchedule::query()->where('school_id', '=', $eveningSchool->id)->count())
+        ->and(ClassSchedule::query()->where('school_period_id', '=', $eveningSchoolPeriod->id)->count())
         ->toBe($eveningTeachingPeriodCount * $schoolDayCount);
 });
 
 test('class schedule seeder does not create schedules for break periods', function () {
     $academicYearId = AcademicYear::currentId();
 
-    $school = School::factory()->create(['academic_period' => SchoolAcademicPeriod::MORNING]);
+    $schoolPeriod = SchoolPeriod::factory()->create(['academic_period' => SchoolAcademicPeriod::MORNING]);
     $gradeLevel = GradeLevel::factory()->create();
 
     Subject::factory()->create(['grade_level_id' => $gradeLevel->id]);
@@ -94,7 +94,7 @@ test('class schedule seeder does not create schedules for break periods', functi
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevel->id,
     ]);
@@ -107,7 +107,7 @@ test('class schedule seeder does not create schedules for break periods', functi
 test('class schedule seeder is idempotent for classrooms that already have schedules', function () {
     $academicYearId = AcademicYear::currentId();
 
-    $school = School::factory()->create(['academic_period' => SchoolAcademicPeriod::MORNING]);
+    $schoolPeriod = SchoolPeriod::factory()->create(['academic_period' => SchoolAcademicPeriod::MORNING]);
     $gradeLevel = GradeLevel::factory()->create();
 
     Subject::factory()->create(['grade_level_id' => $gradeLevel->id]);
@@ -120,7 +120,7 @@ test('class schedule seeder is idempotent for classrooms that already have sched
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevel->id,
     ]);
@@ -137,7 +137,7 @@ test('class schedule seeder is idempotent for classrooms that already have sched
 test('class schedule seeder skips classrooms without subjects for their grade level', function () {
     $academicYearId = AcademicYear::currentId();
 
-    $school = School::factory()->create(['academic_period' => SchoolAcademicPeriod::MORNING]);
+    $schoolPeriod = SchoolPeriod::factory()->create(['academic_period' => SchoolAcademicPeriod::MORNING]);
     $gradeLevelWithSubjects = GradeLevel::factory()->create();
     $gradeLevelWithoutSubjects = GradeLevel::factory()->create();
 
@@ -151,13 +151,13 @@ test('class schedule seeder skips classrooms without subjects for their grade le
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevelWithSubjects->id,
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevelWithoutSubjects->id,
     ]);

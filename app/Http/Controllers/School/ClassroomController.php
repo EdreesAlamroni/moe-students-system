@@ -32,7 +32,7 @@ class ClassroomController extends Controller
             ->select([
                 'classrooms.id',
                 'classrooms.uuid',
-                'classrooms.school_id',
+                'classrooms.school_period_id',
                 'classrooms.academic_year_id',
                 'classrooms.grade_level_id',
                 'classrooms.name',

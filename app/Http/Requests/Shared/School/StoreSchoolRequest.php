@@ -14,7 +14,6 @@ use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
@@ -233,12 +232,16 @@ abstract class StoreSchoolRequest extends FormRequest
             $academicPeriod = $this->input('academic_period');
 
             $attributes = [
-                'schools' => [
-                    $academicPeriod => $this->buildSchoolRecord(
-                        academicPeriod: $academicPeriod,
-                        name: $this->input('name'),
-                        studentsGender: $this->input('students_gender'),
-                    ),
+                'school_aggregates' => [
+                    [
+                        'school' => $this->buildSchoolRecord($this->input('name')),
+                        'periods' => [
+                            $academicPeriod => $this->buildSchoolPeriodRecord(
+                                academicPeriod: $academicPeriod,
+                                studentsGender: $this->input('students_gender'),
+                            ),
+                        ],
+                    ],
                 ],
                 'educational_stages' => [
                     $academicPeriod => $this->buildEducationalStages('educational_stages'),
@@ -253,23 +256,12 @@ abstract class StoreSchoolRequest extends FormRequest
 
         $morningPeriod = SchoolAcademicPeriod::MORNING->value;
         $eveningPeriod = SchoolAcademicPeriod::EVENING->value;
-        $sameSchoolUuid = $this->sameSchoolUuid();
 
         $attributes = [
-            'schools' => [
-                $morningPeriod => $this->buildSchoolRecord(
-                    academicPeriod: $morningPeriod,
-                    name: $this->schoolNameForPeriod(SchoolAcademicPeriod::MORNING),
-                    studentsGender: $this->input('students_gender_morning'),
-                    sameSchoolUuid: $sameSchoolUuid,
-                ),
-                $eveningPeriod => $this->buildSchoolRecord(
-                    academicPeriod: $eveningPeriod,
-                    name: $this->schoolNameForPeriod(SchoolAcademicPeriod::EVENING),
-                    studentsGender: $this->input('students_gender_evening'),
-                    sameSchoolUuid: $sameSchoolUuid,
-                ),
-            ],
+            'school_aggregates' => $this->buildDualPeriodSchoolAggregates(
+                morningPeriod: $morningPeriod,
+                eveningPeriod: $eveningPeriod,
+            ),
             'educational_stages' => [
                 $morningPeriod => $this->buildEducationalStages('educational_stages_morning'),
                 $eveningPeriod => $this->buildEducationalStages('educational_stages_evening'),
@@ -332,18 +324,60 @@ abstract class StoreSchoolRequest extends FormRequest
     /**
      * @return array<string, mixed>
      */
-    protected function buildSchoolRecord(
-        string $academicPeriod,
-        ?string $name,
-        mixed $studentsGender,
-        ?string $sameSchoolUuid = null,
-    ): array {
+    protected function buildSchoolRecord(?string $name): array
+    {
         return Arr::merge($this->sharedSchoolValues(), [
-            'same_school_uuid' => $sameSchoolUuid,
             'name' => $name,
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function buildSchoolPeriodRecord(string $academicPeriod, mixed $studentsGender): array
+    {
+        return [
             'academic_period' => $academicPeriod,
             'students_gender' => $studentsGender,
-        ]);
+        ];
+    }
+
+    /**
+     * @return array<int, array{school: array<string, mixed>, periods: array<string, array<string, mixed>>}>
+     */
+    protected function buildDualPeriodSchoolAggregates(string $morningPeriod, string $eveningPeriod): array
+    {
+        $morning = $this->buildSchoolPeriodRecord(
+            academicPeriod: $morningPeriod,
+            studentsGender: $this->input('students_gender_morning'),
+        );
+        $evening = $this->buildSchoolPeriodRecord(
+            academicPeriod: $eveningPeriod,
+            studentsGender: $this->input('students_gender_evening'),
+        );
+
+        if ($this->isSameSchool()) {
+            return [
+                [
+                    'school' => $this->buildSchoolRecord($this->input('name')),
+                    'periods' => [
+                        $morningPeriod => $morning,
+                        $eveningPeriod => $evening,
+                    ],
+                ],
+            ];
+        }
+
+        return [
+            [
+                'school' => $this->buildSchoolRecord($this->input('name_morning')),
+                'periods' => [$morningPeriod => $morning],
+            ],
+            [
+                'school' => $this->buildSchoolRecord($this->input('name_evening')),
+                'periods' => [$eveningPeriod => $evening],
+            ],
+        ];
     }
 
     /**
@@ -438,26 +472,6 @@ abstract class StoreSchoolRequest extends FormRequest
     protected function isSeparateSchool(): bool
     {
         return $this->isDualPeriod() && ! $this->isSameSchool();
-    }
-
-    protected function sameSchoolUuid(): ?string
-    {
-        if (! $this->isSameSchool()) {
-            return null;
-        }
-
-        return Str::uuid7()->toString();
-    }
-
-    protected function schoolNameForPeriod(SchoolAcademicPeriod $period): ?string
-    {
-        if ($this->isSameSchool()) {
-            return $this->input('name');
-        }
-
-        return $period === SchoolAcademicPeriod::MORNING
-            ? $this->input('name_morning')
-            : $this->input('name_evening');
     }
 
     protected function monitorHasOffices(): bool

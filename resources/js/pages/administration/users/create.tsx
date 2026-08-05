@@ -6,7 +6,7 @@ import { usernameInputConstraints } from "@/lib/input-constraints";
 
 import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
 
-import type { EducationMonitor, EducationServicesOffice, Enum, School, Warehouse } from "@/types";
+import type { EducationMonitor, EducationServicesOffice, Enum, SchoolPeriod, Warehouse } from "@/types";
 import type { RoleGroup } from "@/types/auth";
 
 import MainContainer from "@/components/ui/structure/main-container";
@@ -35,7 +35,7 @@ import { ReplyIcon } from "lucide-react";
 
 import { index, create, store } from "@/routes/administration/users";
 
-type OrganizationOption = Pick<Warehouse | EducationMonitor | EducationServicesOffice | School, "id" | "name">;
+type OrganizationOption = Pick<Warehouse | EducationMonitor | EducationServicesOffice | SchoolPeriod, "id" | "name">;
 
 type MonitorWithOffices = Pick<EducationMonitor, "id" | "name"> & {
     offices: OrganizationOption[];
@@ -69,7 +69,7 @@ export default function Create({
     const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>();
     const [selectedMonitorId, setSelectedMonitorId] = useState<string>();
     const [selectedOfficeId, setSelectedOfficeId] = useState<string>();
-    const [selectedSchoolId, setSelectedSchoolId] = useState<string>();
+    const [selectedSchoolPeriodId, setSelectedSchoolPeriodId] = useState<string>();
 
     const {
         selectedRoles,
@@ -109,7 +109,7 @@ export default function Create({
     const handleMonitorChange = (value: string) => {
         setSelectedMonitorId(value);
         setSelectedOfficeId(undefined);
-        setSelectedSchoolId(undefined);
+        setSelectedSchoolPeriodId(undefined);
     };
 
     const pageTitle = `إضافة ${creationLabel}`;
@@ -311,8 +311,8 @@ export default function Create({
                                             {isSchool && (
                                                 <Field>
                                                     <Label
-                                                        htmlFor="school_id"
-                                                        hasError={!!errors.school_id}
+                                                        htmlFor="school_period_id"
+                                                        hasError={!!errors.school_period_id}
                                                         required
                                                     >
                                                         المدرسة
@@ -321,15 +321,17 @@ export default function Create({
                                                     {selectedMonitorId ? (
                                                         availableSchools.length > 0 ? (
                                                             <Select
-                                                                name="school_id"
-                                                                value={selectedSchoolId}
-                                                                onValueChange={setSelectedSchoolId}
+                                                                name="school_period_id"
+                                                                value={selectedSchoolPeriodId}
+                                                                onValueChange={setSelectedSchoolPeriodId}
                                                             >
                                                                 <SelectTrigger
-                                                                    id="school_id"
-                                                                    hasError={!!errors.school_id}
+                                                                    id="school_period_id"
+                                                                    hasError={!!errors.school_period_id}
                                                                 >
-                                                                    <SelectValue placeholder="اختر المدرسة" />
+                                                                    <SelectValue
+                                                                        placeholder="اختر المدرسة"
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     <SelectGroup>
@@ -346,20 +348,20 @@ export default function Create({
                                                             </Select>
                                                         ) : (
                                                             <EmptyOptionsInput
-                                                                id="school_id"
+                                                                id="school_period_id"
                                                                 placeholder="لا توجد مدارس متاحة للاختيار"
-                                                                aria-invalid={!!errors.school_id}
+                                                                hasError={!!errors.school_period_id}
                                                             />
                                                         )
                                                     ) : (
                                                         <EmptyOptionsInput
-                                                            id="school_id"
+                                                            id="school_period_id"
                                                             placeholder="يرجى اختيار المُراقبة أولاً"
-                                                            aria-invalid={!!errors.school_id}
+                                                            hasError={!!errors.school_period_id}
                                                         />
                                                     )}
 
-                                                    <InputError message={errors.school_id} />
+                                                    <InputError message={errors.school_period_id} />
                                                 </Field>
                                             )}
 

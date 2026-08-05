@@ -5,7 +5,7 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -14,23 +14,20 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @return array{school: School, gradeLevel: GradeLevel, user: User}
- */
 function createSchoolClassroomEnrollmentContext(): array
 {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::factory()->create();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     foreach ([
@@ -49,7 +46,7 @@ function createSchoolClassroomEnrollmentContext(): array
         'student:transfer-classroom',
     ]);
 
-    return compact('school', 'gradeLevel', 'user');
+    return compact('schoolPeriod', 'gradeLevel', 'user');
 }
 
 beforeEach(function () {
@@ -66,18 +63,18 @@ beforeEach(function () {
 });
 
 test('authorized users can enroll a student in a classroom', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -95,23 +92,23 @@ test('authorized users can enroll a student in a classroom', function () {
 });
 
 test('authorized users can transfer a student to another classroom in the same grade level', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $currentClassroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
     $targetClassroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '2',
     ]);
 
     $enrollment = StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $currentClassroom->id,
     ]);
@@ -129,33 +126,33 @@ test('authorized users can transfer a student to another classroom in the same g
 });
 
 test('users without transfer permission cannot move a student to another classroom', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel] = createSchoolClassroomEnrollmentContext();
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     Permission::findOrCreate('student:enroll-in-classroom', UserScope::SCHOOL->value);
     $user->givePermissionTo('student:enroll-in-classroom');
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $currentClassroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
     $targetClassroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '2',
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $currentClassroom->id,
     ]);
@@ -170,18 +167,18 @@ test('users without transfer permission cannot move a student to another classro
 });
 
 test('transferring a student to the same classroom is rejected', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroom->id,
     ]);
@@ -196,28 +193,28 @@ test('transferring a student to the same classroom is rejected', function () {
 });
 
 test('transferring a student to a classroom in another grade level is rejected', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
 
     $otherGradeLevel = GradeLevel::factory()->create();
-    $school->allGradeLevels()->attach($otherGradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($otherGradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $currentClassroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
     $otherClassroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $otherGradeLevel->id,
         'name' => '2',
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $currentClassroom->id,
     ]);
@@ -234,11 +231,11 @@ test('transferring a student to a classroom in another grade level is rejected',
 });
 
 test('guests cannot enroll or transfer students between classrooms', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel] = createSchoolClassroomEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
@@ -253,25 +250,25 @@ test('guests cannot enroll or transfer students between classrooms', function ()
 });
 
 test('users without enroll permission cannot assign a student to a classroom', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel] = createSchoolClassroomEnrollmentContext();
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -286,13 +283,13 @@ test('users without enroll permission cannot assign a student to a classroom', f
 });
 
 test('classroom enrollment validates required fields', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -305,19 +302,19 @@ test('classroom enrollment validates required fields', function () {
 });
 
 test('classroom enrollment rejects classrooms from another school', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
-    $otherSchool = School::factory()->create();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $foreignClassroom = Classroom::factory()->create([
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '9',
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -334,18 +331,18 @@ test('classroom enrollment rejects classrooms from another school', function () 
 });
 
 test('classroom enrollment is blocked when the selected academic year is inactive', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -372,13 +369,13 @@ test('classroom enrollment is blocked when the selected academic year is inactiv
 });
 
 test('student show page exposes classroom enrollment ability when authorized', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -394,18 +391,18 @@ test('student show page exposes classroom enrollment ability when authorized', f
 });
 
 test('student show page exposes classroom transfer ability when authorized', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolClassroomEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroom->id,
     ]);

@@ -9,7 +9,7 @@ use App\Enums\UserScope;
 use App\Models\AcademicRecord;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -18,12 +18,9 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @return array{school: School, enrollmentGradeLevel: GradeLevel, user: User, firstGradeLevel: GradeLevel, secondGradeLevel: GradeLevel, firstAcademicYear: AcademicYear, secondAcademicYear: AcademicYear}
- */
 function createSchoolAcademicRecordContext(): array
 {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
 
     $firstGradeLevel = GradeLevel::query()->firstOrCreate(
         ['code' => GradeLevelEnum::GRADE_1->value],
@@ -53,7 +50,7 @@ function createSchoolAcademicRecordContext(): array
     );
 
     foreach ([$firstGradeLevel, $secondGradeLevel, $enrollmentGradeLevel] as $gradeLevel) {
-        $school->allGradeLevels()->syncWithoutDetaching([
+        $schoolPeriod->allGradeLevels()->syncWithoutDetaching([
             $gradeLevel->id => ['academic_year_id' => AcademicYear::currentId()],
         ]);
     }
@@ -75,8 +72,8 @@ function createSchoolAcademicRecordContext(): array
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     foreach (['student:view', 'student:view-academic-record', 'student:create-academic-record'] as $permission) {
@@ -90,7 +87,7 @@ function createSchoolAcademicRecordContext(): array
     ]);
 
     return compact(
-        'school',
+        'schoolPeriod',
         'enrollmentGradeLevel',
         'user',
         'firstGradeLevel',
@@ -101,17 +98,17 @@ function createSchoolAcademicRecordContext(): array
 }
 
 function createStudentRequiringAcademicRecords(
-    School $school,
+    SchoolPeriod $schoolPeriod,
     GradeLevel $enrollmentGradeLevel,
     StudentRegistrationStatus $registrationStatus = StudentRegistrationStatus::NEW,
 ): Student {
-    $student = Student::factory()->for($school)->create([
+    $student = Student::factory()->for($schoolPeriod)->create([
         'registration_status' => $registrationStatus,
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $enrollmentGradeLevel->id,
         'classroom_id' => null,
         'academic_year_id' => AcademicYear::currentId(),
@@ -135,12 +132,12 @@ beforeEach(function () {
 
 test('authorized users can view the academic record page for enrolled students', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.academic-record.show', ['student' => $student]))
@@ -157,17 +154,17 @@ test('authorized users can view the academic record page for enrolled students',
 
 test('users without permission cannot view academic records', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'school')
@@ -176,8 +173,8 @@ test('users without permission cannot view academic records', function () {
 });
 
 test('academic record show is forbidden for students without enrollment', function () {
-    ['school' => $school, 'user' => $user] = createSchoolAcademicRecordContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolAcademicRecordContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.academic-record.show', ['student' => $student]))
@@ -186,13 +183,13 @@ test('academic record show is forbidden for students without enrollment', functi
 
 test('authorized users can visit the academic record create page', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
         'firstGradeLevel' => $firstGradeLevel,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.academic-record.create', ['student' => $student]))
@@ -210,14 +207,14 @@ test('authorized users can visit the academic record create page', function () {
 
 test('store creates the first academic record and redirects back to create', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
         'firstGradeLevel' => $firstGradeLevel,
         'firstAcademicYear' => $firstAcademicYear,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     $this->actingAs($user, 'school')
         ->post(route('school.students.academic-record.store', ['student' => $student]), [
@@ -241,7 +238,7 @@ test('store creates the first academic record and redirects back to create', fun
 
 test('store completes required academic records and redirects to show', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
         'firstGradeLevel' => $firstGradeLevel,
@@ -250,7 +247,7 @@ test('store completes required academic records and redirects to show', function
         'secondAcademicYear' => $secondAcademicYear,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     AcademicRecord::factory()->passed()->create([
         'student_id' => $student->id,
@@ -272,14 +269,14 @@ test('store completes required academic records and redirects to show', function
 
 test('store failed academic records do not update registration status', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
         'firstGradeLevel' => $firstGradeLevel,
         'firstAcademicYear' => $firstAcademicYear,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel, StudentRegistrationStatus::REPEATER);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel, StudentRegistrationStatus::REPEATER);
 
     $this->actingAs($user, 'school')
         ->post(route('school.students.academic-record.store', ['student' => $student]), [
@@ -302,14 +299,14 @@ test('store failed academic records do not update registration status', function
 
 test('store validates rating is required when status is passed', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
         'firstGradeLevel' => $firstGradeLevel,
         'firstAcademicYear' => $firstAcademicYear,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     $this->actingAs($user, 'school')
         ->from(route('school.students.academic-record.create', ['student' => $student]))
@@ -324,14 +321,14 @@ test('store validates rating is required when status is passed', function () {
 
 test('store rejects duplicate academic year records', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
         'firstGradeLevel' => $firstGradeLevel,
         'firstAcademicYear' => $firstAcademicYear,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     AcademicRecord::factory()->failed()->create([
         'student_id' => $student->id,
@@ -353,14 +350,14 @@ test('store rejects duplicate academic year records', function () {
 
 test('store rejects academic records for grade levels that are not current', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
         'secondGradeLevel' => $secondGradeLevel,
         'firstAcademicYear' => $firstAcademicYear,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     $this->actingAs($user, 'school')
         ->from(route('school.students.academic-record.create', ['student' => $student]))
@@ -376,12 +373,12 @@ test('store rejects academic records for grade levels that are not current', fun
 
 test('academic record pages are blocked when the selected academic year is inactive', function () {
     [
-        'school' => $school,
+        'schoolPeriod' => $schoolPeriod,
         'enrollmentGradeLevel' => $enrollmentGradeLevel,
         'user' => $user,
     ] = createSchoolAcademicRecordContext();
 
-    $student = createStudentRequiringAcademicRecords($school, $enrollmentGradeLevel);
+    $student = createStudentRequiringAcademicRecords($schoolPeriod, $enrollmentGradeLevel);
 
     $inactiveYear = AcademicYear::factory()->create([
         'name' => '2021-2022',

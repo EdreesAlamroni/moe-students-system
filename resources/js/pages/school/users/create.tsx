@@ -6,7 +6,7 @@ import { usernameInputConstraints } from "@/lib/input-constraints";
 
 import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
 
-import type { Enum, School } from "@/types";
+import type { Enum, SchoolPeriod } from "@/types";
 import type { RoleGroup } from "@/types/auth";
 
 import MainContainer from "@/components/ui/structure/main-container";
@@ -38,15 +38,11 @@ import { create, index, store } from "@/routes/school/users";
 
 type PageProps = {
     scope: Enum;
-    school: School;
+    schoolPeriod: SchoolPeriod;
     groupedRoles: RoleGroup[];
 };
 
-export default function Create({
-    scope,
-    school,
-    groupedRoles,
-}: PageProps) {
+export default function Create({ scope, schoolPeriod, groupedRoles }: PageProps) {
     const {
         selectedRoles,
         allRolesChecked,
@@ -92,7 +88,7 @@ export default function Create({
 
                                             <DetailField>
                                                 <DetailLabel>المدرسة</DetailLabel>
-                                                <DetailValue value={school?.name} />
+                                                <DetailValue value={schoolPeriod.name} />
                                             </DetailField>
 
                                             <Separator className="col-span-full" />
@@ -244,7 +240,7 @@ export default function Create({
                 </Form>
             </MainContainer>
         </>
-    )
+    );
 }
 
 Create.layout = () => ({

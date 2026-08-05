@@ -6,8 +6,8 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
-use App\Models\School;
 use App\Models\SchoolEducationalStage;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -16,16 +16,13 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
-function createSchoolClassroomManager(School $school, array $attributes = []): User
+function createSchoolClassroomManager(SchoolPeriod $schoolPeriod, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ], $attributes));
 
     foreach ([
@@ -66,12 +63,12 @@ test('guests cannot access school classrooms index', function () {
 });
 
 test('users without permission cannot access school classrooms index', function () {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'school')
@@ -80,15 +77,15 @@ test('users without permission cannot access school classrooms index', function 
 });
 
 test('authenticated school users can visit the classrooms index', function () {
-    $school = School::factory()->create();
-    $user = createSchoolClassroomManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolClassroomManager($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create([
         'code' => 'kg_1',
         'name' => 'روضة - المستوى الأول',
         'educational_stage' => SchoolEducationalStageEnum::KINDERGARTEN,
         'order' => 1,
     ]);
-    $otherSchool = School::factory()->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
     $otherGradeLevel = GradeLevel::factory()->create([
         'code' => 'grade_1',
         'name' => 'الصف الأول',
@@ -96,24 +93,24 @@ test('authenticated school users can visit the classrooms index', function () {
         'order' => 3,
     ]);
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     SchoolEducationalStage::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => AcademicYear::currentId(),
         'stage' => SchoolEducationalStageEnum::KINDERGARTEN,
     ]);
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
         'grade_level_id' => $otherGradeLevel->id,
         'name' => '2',
     ]);
@@ -133,8 +130,8 @@ test('authenticated school users can visit the classrooms index', function () {
 });
 
 test('authenticated school users can create a classroom', function () {
-    $school = School::factory()->create();
-    $user = createSchoolClassroomManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolClassroomManager($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create([
         'code' => 'kg_1',
         'name' => 'روضة - المستوى الأول',
@@ -142,12 +139,12 @@ test('authenticated school users can create a classroom', function () {
         'order' => 1,
     ]);
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     SchoolEducationalStage::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => AcademicYear::currentId(),
         'stage' => SchoolEducationalStageEnum::KINDERGARTEN,
     ]);
@@ -174,15 +171,15 @@ test('guests cannot access school classroom show page', function () {
 });
 
 test('users without permission cannot access school classroom show page', function () {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'school')
@@ -191,8 +188,8 @@ test('users without permission cannot access school classroom show page', functi
 });
 
 test('authenticated school users can visit the classroom show page', function () {
-    $school = School::factory()->create();
-    $user = createSchoolClassroomManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolClassroomManager($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create([
         'code' => 'kg_1',
         'name' => 'روضة - المستوى الأول',
@@ -200,12 +197,12 @@ test('authenticated school users can visit the classroom show page', function ()
         'order' => 1,
     ]);
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
         'capacity' => 30,
@@ -226,29 +223,29 @@ test('authenticated school users can visit the classroom show page', function ()
 });
 
 test('classroom index includes students count for the classroom academic year', function () {
-    $school = School::factory()->create();
-    $user = createSchoolClassroomManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolClassroomManager($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create([
         'code' => 'kg_1',
         'name' => 'روضة - المستوى الأول',
         'educational_stage' => SchoolEducationalStageEnum::KINDERGARTEN,
         'order' => 1,
     ]);
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => $classroom->academic_year_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroom->id,
         'student_id' => $student->id,
@@ -264,29 +261,29 @@ test('classroom index includes students count for the classroom academic year', 
 });
 
 test('classroom show page evaluates delete authorization when students are enrolled', function () {
-    $school = School::factory()->create();
-    $user = createSchoolClassroomManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolClassroomManager($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create([
         'code' => 'kg_1',
         'name' => 'روضة - المستوى الأول',
         'educational_stage' => SchoolEducationalStageEnum::KINDERGARTEN,
         'order' => 1,
     ]);
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => $classroom->academic_year_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroom->id,
         'student_id' => $student->id,

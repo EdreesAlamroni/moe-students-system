@@ -16,13 +16,13 @@ use Illuminate\Support\Carbon;
  * @property string $uuid
  * @property int $book_distribution_id
  * @property int $academic_year_id
- * @property int $school_id
+ * @property int $school_period_id
  * @property int $student_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read BookDistribution $bookDistribution
  * @property-read AcademicYear $academicYear
- * @property-read School $school
+ * @property-read SchoolPeriod $schoolPeriod
  * @property-read Student $student
  */
 #[Guarded(['id'])]
@@ -36,7 +36,7 @@ class BookDistributionItem extends Model
         return [
             'book_distribution_id' => 'integer',
             'academic_year_id' => 'integer',
-            'school_id' => 'integer',
+            'school_period_id' => 'integer',
             'student_id' => 'integer',
         ];
     }
@@ -69,9 +69,9 @@ class BookDistributionItem extends Model
         return $this->belongsTo(AcademicYear::class);
     }
 
-    public function school(): BelongsTo
+    public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class)->withTrashed();
+        return $this->belongsTo(SchoolPeriod::class)->withTrashed();
     }
 
     public function student(): BelongsTo

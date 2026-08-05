@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $academic_year_id
- * @property int $school_id
+ * @property int $school_period_id
  * @property SchoolEducationalStageEnum $stage
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -24,11 +24,11 @@ class SchoolEducationalStage extends Model
     /** @use HasFactory<\Database\Factories\SchoolEducationalStageFactory> */
     use HasFactory;
 
-    protected function casts()
+    protected function casts(): array
     {
         return [
             'academic_year_id' => 'integer',
-            'school_id' => 'integer',
+            'school_period_id' => 'integer',
             'stage' => SchoolEducationalStageEnum::class,
         ];
     }
@@ -42,9 +42,9 @@ class SchoolEducationalStage extends Model
         return $this->belongsTo(AcademicYear::class);
     }
 
-    public function school(): BelongsTo
+    public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class);
+        return $this->belongsTo(SchoolPeriod::class);
     }
 
     /*

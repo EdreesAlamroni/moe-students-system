@@ -6,7 +6,7 @@ use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\ModelStates\User\RequestState\Approved;
@@ -22,9 +22,9 @@ class UserSeeder extends Seeder
         $office = EducationServicesOffice::query()
             ->whereBelongsTo($monitor, 'monitor')
             ->firstOrFail();
-        $school = School::query()->firstOrFail();
+        $schoolPeriod = SchoolPeriod::query()->firstOrFail();
 
-        foreach ($this->userDefinitions($monitor, $office, $school) as $attributes) {
+        foreach ($this->userDefinitions($monitor, $office, $schoolPeriod) as $attributes) {
             $this->createUser($attributes);
         }
     }
@@ -35,14 +35,14 @@ class UserSeeder extends Seeder
     protected function userDefinitions(
         EducationMonitor $monitor,
         EducationServicesOffice $office,
-        School $school,
+        SchoolPeriod $schoolPeriod,
     ): array {
         return [
             $this->administratorUser(),
             $this->warehouseUser($monitor),
             $this->educationMonitorUser($monitor),
             $this->educationServicesOfficeUser($office),
-            $this->schoolUser($school),
+            $this->schoolUser($schoolPeriod),
         ];
     }
 
@@ -133,15 +133,15 @@ class UserSeeder extends Seeder
     /**
      * @return array<string, mixed>
      */
-    protected function schoolUser(School $school): array
+    protected function schoolUser(SchoolPeriod $schoolPeriod): array
     {
         return [
             'name' => 'مُستخدم مدرسة',
             'username' => 'school',
             'email' => 'school@example.com',
             'scope' => UserScope::SCHOOL,
-            'organization_id' => $school->id,
-            'organization_type' => School::class,
+            'organization_id' => $schoolPeriod->id,
+            'organization_type' => SchoolPeriod::class,
         ];
     }
 

@@ -29,7 +29,7 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property string $uuid
  * @property int|null $education_monitor_id
- * @property int|null $school_id
+ * @property int|null $school_period_id
  * @property int $nationality_id
  * @property string $number
  * @property StudentRegistrationStatus $registration_status
@@ -52,7 +52,7 @@ use Illuminate\Support\Str;
  * @property-read bool $is_libyan
  * @property-read bool $already_distributed
  * @property-read EducationMonitor|null $monitor
- * @property-read School|null $school
+ * @property-read SchoolPeriod|null $schoolPeriod
  * @property-read Nationality $nationality
  * @property-read Collection<int, StudentEnrollment> $enrollments
  * @property-read StudentEnrollment|null $enrollment
@@ -71,7 +71,7 @@ class Student extends Model
     {
         return [
             'education_monitor_id' => 'integer',
-            'school_id' => 'integer',
+            'school_period_id' => 'integer',
             'nationality_id' => 'integer',
             'registration_status' => StudentRegistrationStatus::class,
             'exam_enrollment_status' => StudentExamEnrollmentStatus::class,
@@ -161,7 +161,7 @@ class Student extends Model
             return $query;
         }
 
-        return $query->whereHas('school', function (Builder $query) use ($id): void {
+        return $query->whereHas('schoolPeriod.school', function (Builder $query) use ($id): void {
             $query->where('education_services_office_id', '=', $id);
         });
     }
@@ -175,7 +175,7 @@ class Student extends Model
             return $query;
         }
 
-        return $query->where($query->getModel()->qualifyColumn('school_id'), '=', $id);
+        return $query->where($query->qualifyColumn('school_period_id'), '=', $id);
     }
 
     #[Scope]
@@ -231,7 +231,7 @@ class Student extends Model
     #[Scope]
     protected function unassignedToSchool(Builder $query): Builder
     {
-        return $query->whereNull($query->qualifyColumn('school_id'));
+        return $query->whereNull($query->qualifyColumn('school_period_id'));
     }
 
     #[Scope]
@@ -262,27 +262,28 @@ class Student extends Model
     }
 
     #[Scope]
-    protected function eligibleForSchoolTransfer(Builder $query, School $school): Builder
+    protected function eligibleForSchoolTransfer(Builder $query, SchoolPeriod $schoolPeriod): Builder
     {
-        $currentAcademicYearId = AcademicYear::currentConstraintId();
         $table = $query->getModel()->getTable();
 
+        $currentAcademicYearId = AcademicYear::currentConstraintId();
+
         return $query
-            ->whereNull("{$table}.school_id")
-            ->where(function (Builder $query) use ($school, $table): void {
+            ->whereNull("{$table}.school_period_id")
+            ->where(function (Builder $query) use ($schoolPeriod, $table): void {
                 $query
                     ->whereNull("{$table}.education_monitor_id")
-                    ->orWhere("{$table}.education_monitor_id", '=', $school->education_monitor_id);
+                    ->orWhere("{$table}.education_monitor_id", '=', $schoolPeriod->education_monitor_id);
             })
-            ->whereExists(function (QueryBuilder $subquery) use ($school, $currentAcademicYearId, $table): void {
+            ->whereExists(function (QueryBuilder $subquery) use ($schoolPeriod, $currentAcademicYearId, $table): void {
                 $subquery
                     ->selectRaw('1')
                     ->from('student_enrollments')
-                    ->join('grade_level_school', function (JoinClause $join) use ($school, $currentAcademicYearId): void {
+                    ->join('grade_level_school_period', function (JoinClause $join) use ($schoolPeriod, $currentAcademicYearId): void {
                         $join
-                            ->on('grade_level_school.grade_level_id', '=', 'student_enrollments.grade_level_id')
-                            ->where('grade_level_school.school_id', '=', $school->id)
-                            ->where('grade_level_school.academic_year_id', '=', $currentAcademicYearId);
+                            ->on('grade_level_school_period.grade_level_id', '=', 'student_enrollments.grade_level_id')
+                            ->where('grade_level_school_period.school_period_id', '=', $schoolPeriod->id)
+                            ->where('grade_level_school_period.academic_year_id', '=', $currentAcademicYearId);
                     })
                     ->whereColumn('student_enrollments.student_id', "{$table}.id")
                     ->where('student_enrollments.academic_year_id', '=', $currentAcademicYearId)
@@ -297,13 +298,13 @@ class Student extends Model
             $query
                 ->whereNotNull([
                     'left_academic_year_id',
-                    'from_school_id',
-                    'left_school_at',
+                    'from_school_period_id',
+                    'left_school_period_at',
                 ])
                 ->whereNull([
                     'joined_academic_year_id',
-                    'to_school_id',
-                    'joined_school_at',
+                    'to_school_period_id',
+                    'joined_school_period_at',
                 ]);
         });
     }
@@ -400,9 +401,9 @@ class Student extends Model
         return $this->belongsTo(EducationMonitor::class, 'education_monitor_id');
     }
 
-    public function school(): BelongsTo
+    public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class);
+        return $this->belongsTo(SchoolPeriod::class);
     }
 
     /**
@@ -558,11 +559,11 @@ class Student extends Model
         }
 
         return ! is_null($transfer->left_academic_year_id)
-            && ! is_null($transfer->from_school_id)
-            && ! is_null($transfer->left_school_at)
+            && ! is_null($transfer->from_school_period_id)
+            && ! is_null($transfer->left_school_period_at)
             && is_null($transfer->joined_academic_year_id)
-            && is_null($transfer->to_school_id)
-            && is_null($transfer->joined_school_at);
+            && is_null($transfer->to_school_period_id)
+            && is_null($transfer->joined_school_period_at);
     }
 
     /*

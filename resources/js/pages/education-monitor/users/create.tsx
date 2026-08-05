@@ -6,7 +6,7 @@ import { usernameInputConstraints } from "@/lib/input-constraints";
 
 import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
 
-import type { EducationMonitor, EducationServicesOffice, Enum, School } from "@/types";
+import type { EducationMonitor, EducationServicesOffice, Enum, SchoolPeriod } from "@/types";
 import type { RoleGroup } from "@/types/auth";
 
 import MainContainer from "@/components/ui/structure/main-container";
@@ -38,14 +38,12 @@ import { ReplyIcon } from "lucide-react";
 
 import { create, index, store } from "@/routes/education-monitor/users";
 
-type OrganizationOption = Pick<EducationServicesOffice | School, "id" | "name">;
-
 type PageProps = {
     scope: Enum;
     creationLabel: string;
-    monitor: Pick<EducationMonitor, "id" | "name">;
-    offices: OrganizationOption[];
-    schools: OrganizationOption[];
+    monitor: EducationMonitor;
+    offices: EducationServicesOffice[];
+    schools: SchoolPeriod[];
     groupedRoles: RoleGroup[];
 };
 
@@ -61,7 +59,7 @@ export default function Create({
     const isSchool = scope.id === "school";
 
     const [selectedOfficeId, setSelectedOfficeId] = useState<string>();
-    const [selectedSchoolId, setSelectedSchoolId] = useState<string>();
+    const [selectedSchoolPeriodId, setSelectedSchoolPeriodId] = useState<string>();
 
     const {
         selectedRoles,
@@ -134,7 +132,9 @@ export default function Create({
                                                                 id="education_services_office_id"
                                                                 hasError={!!errors.education_services_office_id}
                                                             >
-                                                                <SelectValue placeholder="اختر مكتب الخدمات التعليمية" />
+                                                                <SelectValue
+                                                                    placeholder="اختر مكتب الخدمات التعليمية"
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 <SelectGroup>
@@ -164,8 +164,8 @@ export default function Create({
                                             {isSchool && (
                                                 <Field className="col-span-full">
                                                     <Label
-                                                        htmlFor="school_id"
-                                                        hasError={!!errors.school_id}
+                                                        htmlFor="school_period_id"
+                                                        hasError={!!errors.school_period_id}
                                                         required
                                                     >
                                                         المدرسة
@@ -173,15 +173,17 @@ export default function Create({
 
                                                     {schools.length > 0 ? (
                                                         <Select
-                                                            name="school_id"
-                                                            value={selectedSchoolId}
-                                                            onValueChange={setSelectedSchoolId}
+                                                            name="school_period_id"
+                                                            value={selectedSchoolPeriodId}
+                                                            onValueChange={setSelectedSchoolPeriodId}
                                                         >
                                                             <SelectTrigger
-                                                                id="school_id"
-                                                                hasError={!!errors.school_id}
+                                                                id="school_period_id"
+                                                                hasError={!!errors.school_period_id}
                                                             >
-                                                                <SelectValue placeholder="اختر المدرسة" />
+                                                                <SelectValue
+                                                                    placeholder="اختر المدرسة والفترة الدراسية"
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 <SelectGroup>
@@ -198,13 +200,13 @@ export default function Create({
                                                         </Select>
                                                     ) : (
                                                         <EmptyOptionsInput
-                                                            id="school_id"
+                                                            id="school_period_id"
                                                             placeholder="لا توجد مدارس متاحة للاختيار"
-                                                            aria-invalid={!!errors.school_id}
+                                                            aria-invalid={!!errors.school_period_id}
                                                         />
                                                     )}
 
-                                                    <InputError message={errors.school_id} />
+                                                    <InputError message={errors.school_period_id} />
                                                 </Field>
                                             )}
 

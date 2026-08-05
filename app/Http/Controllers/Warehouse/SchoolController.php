@@ -30,13 +30,18 @@ class SchoolController extends Controller
                 'schools.name',
                 'schools.serial_number',
                 'schools.type',
-                'schools.academic_period',
                 'schools.created_at',
                 'schools.deleted_at',
             ])
             ->forCurrentWarehouse()
-            ->with(['monitor'])
-            ->withCount(['students'])
+            ->with([
+                'monitor:id,uuid,name',
+                'periods' => function ($query): void {
+                    $query
+                        ->select(['id', 'uuid', 'school_id', 'name', 'academic_period'])
+                        ->withCount(['students']);
+                },
+            ])
             ->allowedFilters(
                 AllowedFilter::exact('education_monitor_id'),
                 AllowedFilter::exact('type'),
@@ -72,11 +77,12 @@ class SchoolController extends Controller
         $school->load([
             'monitor:id,uuid,name',
             'office:id,uuid,name',
-            'educationalStages',
-        ])->loadCount([
-            'gradeLevels',
-            'classrooms',
-            'students',
+            'periods' => function ($query): void {
+                $query
+                    ->with(['educationalStages'])
+                    ->withCount(['gradeLevels', 'classrooms', 'students'])
+                    ->orderedByAcademicPeriod();
+            },
         ]);
 
         return Inertia::render('warehouse/schools/show', [

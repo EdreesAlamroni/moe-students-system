@@ -24,7 +24,6 @@ class AdministrationPermissionSeeder extends Seeder
         $this->seedEducationServicesOffice();
         $this->seedSchool();
         $this->seedStudent();
-        $this->seedSubjectClassification();
         $this->seedReports();
     }
 
@@ -304,28 +303,6 @@ class AdministrationPermissionSeeder extends Seeder
 
         // Sync psychosocial card permissions with roles
         $viewPsychosocialCardRole->syncPermissions([$viewAny, $view, $viewPsychosocialCard]);
-    }
-
-    private function seedSubjectClassification(): void
-    {
-        // Permissions
-        $viewAny = Permission::findOrCreate('subject-classification:view-any', $this->scope);
-        $view = Permission::findOrCreate('subject-classification:view', $this->scope);
-        $create = Permission::findOrCreate('subject-classification:create', $this->scope);
-        $update = Permission::findOrCreate('subject-classification:update', $this->scope);
-        $delete = Permission::findOrCreate('subject-classification:delete', $this->scope);
-
-        // Roles
-        $viewRole = Role::findOrCreate('subject-classification:role:view', $this->scope);
-        $createRole = Role::findOrCreate('subject-classification:role:create', $this->scope);
-        $updateRole = Role::findOrCreate('subject-classification:role:update', $this->scope);
-        $deleteRole = Role::findOrCreate('subject-classification:role:delete', $this->scope);
-
-        // Sync permissions with roles
-        $viewRole->syncPermissions([$viewAny, $view]);
-        $createRole->syncPermissions([$viewAny, $create]);
-        $updateRole->syncPermissions([$viewAny, $view, $update]);
-        $deleteRole->syncPermissions([$viewAny, $view, $delete]);
     }
 
     private function seedReports(): void

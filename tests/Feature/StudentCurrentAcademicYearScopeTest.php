@@ -3,7 +3,7 @@
 use App\Enums\Gender;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 
@@ -28,10 +28,10 @@ test('current constraint id returns zero when no academic year is selected', fun
 });
 
 test('with current grade level returns an empty result without sql errors when no academic year exists', function () {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::factory()->create();
     $student = Student::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'gender' => Gender::MALE,
     ]);
 
@@ -44,7 +44,7 @@ test('with current grade level returns an empty result without sql errors when n
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYear->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
         'student_id' => $student->id,

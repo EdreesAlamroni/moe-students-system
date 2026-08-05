@@ -2,10 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolBranchType;
 use App\Enums\SchoolBuildingType;
-use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
@@ -31,8 +29,6 @@ class SchoolFactory extends Factory
             },
             'type' => fake()->randomElement(SchoolType::cases()),
             'name' => fake()->unique()->company(),
-            'academic_period' => fake()->randomElement(SchoolAcademicPeriod::getPrimaryValues()),
-            'students_gender' => fake()->randomElement(SchoolStudentsGender::cases()),
         ];
     }
 

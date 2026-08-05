@@ -2,7 +2,7 @@
     <x-slot:content>
         <x-print.report-table
             :title="__('تقرير المدارس')"
-            :colspan="4"
+            :colspan="5"
             :organization-lines="auth('education_monitor')->user()->organization->printOrganizationLines()"
         >
             <x-slot:headerRight>
@@ -14,6 +14,7 @@
                 <th scope="col">{{ __('ر.م') }}</th>
                 <th scope="col">{{ __('اسم المدرسة') }}</th>
                 <th scope="col">{{ __('نوع المدرسة') }}</th>
+                <th scope="col">{{ __('الفترة الدراسية') }}</th>
                 <th scope="col" class="text-center">{{ __('عدد الطلاب') }}</th>
             </x-slot:columns>
 
@@ -22,11 +23,12 @@
                     <td class="font-mono">{{ $loop->iteration }}</td>
                     <td>{{ $school->name }}</td>
                     <td>{{ $school->type->label() }}</td>
-                    <td class="text-center font-mono">{{ $school->students_count ?? 0 }}</td>
+                    <td>{{ $school->academic_period_label }}</td>
+                    <td class="text-center font-mono">{{ $school->periods->sum('students_count') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="print-empty-cell">
+                    <td colspan="5" class="print-empty-cell">
                         <x-empty-state class="justify-center" />
                     </td>
                 </tr>

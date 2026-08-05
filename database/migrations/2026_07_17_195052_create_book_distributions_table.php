@@ -16,13 +16,13 @@ return new class extends Migration
             $table->uuid()->unique();
             $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('education_monitor_id')->constrained('education_monitors')->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('school_id')->constrained('schools')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('school_period_id')->constrained('school_periods')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('grade_level_id')->constrained('grade_levels')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('warehouse_id')->constrained('warehouses')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamp('distributed_at');
             $table->timestamps();
 
-            $table->unique(['school_id', 'grade_level_id', 'academic_year_id'], 'book_distributions_school_grade_ay_uq');
+            $table->unique(['school_period_id', 'grade_level_id', 'academic_year_id'], 'book_distributions_school_period_grade_ay_uq');
         });
     }
 

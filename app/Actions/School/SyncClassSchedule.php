@@ -23,7 +23,7 @@ class SyncClassSchedule
                     'class_period_id' => $item['class_period_id'],
                     'day_of_week' => $item['day_of_week'],
                     'academic_year_id' => $classroom->academic_year_id,
-                    'school_id' => $classroom->school_id,
+                    'school_period_id' => $classroom->school_period_id,
                 ], [
                     'subject_id' => $item['subject_id'],
                     'notes' => $item['notes'] ?? null,

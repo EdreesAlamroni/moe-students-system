@@ -7,14 +7,20 @@ use Illuminate\Support\Collection;
 
 class CreateSchools
 {
-    public function execute(array $schools): Collection
+    public function execute(array $attributes): Collection
     {
-        $created = collect([]);
+        $schoolPeriods = collect([]);
 
-        foreach ($schools as $academicPeriod => $attributes) {
-            $created->put($academicPeriod, School::create($attributes));
+        foreach ($attributes as $schoolAttributes) {
+            /** @var School $school */
+            $school = School::create($schoolAttributes['school']);
+
+            foreach ($schoolAttributes['periods'] as $academicPeriod => $periodAttributes) {
+                $schoolPeriod = $school->periods()->create($periodAttributes);
+                $schoolPeriods->put($academicPeriod, $schoolPeriod);
+            }
         }
 
-        return $created;
+        return $schoolPeriods;
     }
 }

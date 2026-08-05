@@ -7,6 +7,7 @@ use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -15,9 +16,6 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationMonitorStudentCountByGradeLevelReportUser(EducationMonitor $monitor, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -75,23 +73,23 @@ test('authenticated users can visit the student count by grade level report page
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentCountByGradeLevelReportUser($monitor);
     $office = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->for($office, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor')->for($office, 'office'), 'school')->create();
     $gradeLevel = GradeLevel::factory()->create(['name' => 'الصف الأول']);
     $otherGradeLevel = GradeLevel::factory()->create(['name' => 'صف غير مرتبط']);
     $academicYearId = AcademicYear::currentId();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => $academicYearId,
     ]);
 
     $student = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'student_id' => $student->id,
         'classroom_id' => null,
@@ -141,11 +139,11 @@ test('authenticated users can print the student count by grade level report', fu
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentCountByGradeLevelReportUser($monitor);
     $office = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->for($office, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor')->for($office, 'office'), 'school')->create();
     $gradeLevel = GradeLevel::factory()->create(['name' => 'الصف الأول']);
     $academicYearId = AcademicYear::currentId();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => $academicYearId,
     ]);
 

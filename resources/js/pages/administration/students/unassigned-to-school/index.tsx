@@ -152,7 +152,7 @@ export default function Index({
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <Building2Icon />
-                                <span>اختيار الجهة التعليمية</span>
+                                <span>اختيار المؤسسة التعليمية</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -202,7 +202,7 @@ export default function Index({
                             <CardContent>
                                 <EmptyState
                                     icon={Building2Icon}
-                                    text="ابدأ باختيار الجهة التعليمية"
+                                    text="ابدأ باختيار المؤسسة التعليمية"
                                     description="اختر المُراقبة لعرض قائمة الطلاب غير المسجّلين في مدارس وتطبيق فلاتر البحث."
                                     className="[&>:last-child]:max-w-md"
                                 />

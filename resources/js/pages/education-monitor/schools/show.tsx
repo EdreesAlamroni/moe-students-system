@@ -20,6 +20,8 @@ import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action
 
 import ResetClassroomDistributionAction from "@/components/features/education-monitor/schools/reset-classroom-distribution";
 
+import { SchoolPeriodsSummary } from "@/components/shared/schools/school-periods-summary";
+
 import { GraduationCapIcon, PresentationIcon, NotepadTextIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
 import { destroy, edit, index, show } from "@/routes/education-monitor/schools";
@@ -126,9 +128,15 @@ export default function Show({ school, gradeLevels, classroomDistributionReset, 
                                     <DetailValue value={school.type?.name} />
                                 </DetailField>
 
-                                <DetailField>
-                                    <DetailLabel>الفترة الدراسية</DetailLabel>
-                                    <DetailValue value={school.academic_period?.name} />
+                                {/* TODO: Review this component and refactor it. */}
+                                <DetailField className="col-span-full">
+                                    <DetailLabel>الفترات الدراسية</DetailLabel>
+                                    <DetailValue>
+                                        <SchoolPeriodsSummary
+                                            periods={school.periods ?? []}
+                                            showStudentCounts
+                                        />
+                                    </DetailValue>
                                 </DetailField>
 
                                 {isPrivate && (
@@ -151,25 +159,6 @@ export default function Show({ school, gradeLevels, classroomDistributionReset, 
                                         </DetailField>
                                     </>
                                 )}
-
-                                <DetailField>
-                                    <DetailLabel>جنس الطلاب الدارسين بالمدرسة</DetailLabel>
-                                    <DetailValue value={school.students_gender?.name} />
-                                </DetailField>
-
-                                <DetailField>
-                                    <DetailLabel>المراحل الدراسية</DetailLabel>
-                                    <DetailValue className="gap-0">
-                                        {school.educational_stages?.map((educationalStage, index, arr) => (
-                                            <span key={index}>
-                                                {educationalStage.stage.name}
-                                                {index < arr.length - 1 && (
-                                                    <span className="font-mono mx-1">،</span>
-                                                )}
-                                            </span>
-                                        ))}
-                                    </DetailValue>
-                                </DetailField>
                             </DetailFields>
                         </CardContent>
                     </Card>

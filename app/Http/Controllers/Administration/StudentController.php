@@ -9,12 +9,11 @@ use App\Http\Resources\Administration\StudentResource;
 use App\Http\Resources\Administration\StudentTransferCollection;
 use App\Models\EducationMonitor;
 use App\Models\Nationality;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentTransfer;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -32,27 +31,27 @@ class StudentController extends Controller
             ? $request->integer('education_monitor_id')
             : null;
 
-        $schoolId = $request->filled('school_id')
-            ? $request->integer('school_id')
+        $schoolPeriodId = $request->filled('school_period_id')
+            ? $request->integer('school_period_id')
             : null;
 
         $schools = $monitorId !== null
-            ? School::list(function (Builder $query) use ($monitorId) {
-                return $query->where('education_monitor_id', '=', $monitorId);
+            ? SchoolPeriod::list(function ($query) use ($monitorId): void {
+                $query->where('education_monitor_id', '=', $monitorId);
             }, ['education_monitor_id'])
             : collect([]);
 
-        if ($schoolId !== null && ! $schools->contains('id', '=', $schoolId)) {
-            $schoolId = null;
+        if ($schoolPeriodId !== null && ! $schools->contains('id', '=', $schoolPeriodId)) {
+            $schoolPeriodId = null;
         }
 
-        $students = $this->getPaginatedStudents($request, $schoolId);
+        $students = $this->getPaginatedStudents($request, $schoolPeriodId);
 
         return Inertia::render('administration/students/index', [
             'monitors' => EducationMonitor::list(),
             'schools' => $schools,
             'education_monitor_id' => $monitorId,
-            'school_id' => $schoolId,
+            'school_period_id' => $schoolPeriodId,
             'filter' => $request->input('filter', []),
             ...($students !== null ? [
                 'nationalities' => Nationality::list(),
@@ -73,7 +72,7 @@ class StudentController extends Controller
 
         $student->load([
             'monitor:id,uuid,name',
-            'school:id,uuid,name',
+            'schoolPeriod:id,uuid,name',
             'nationality:id,uuid,name,code',
             'enrollment',
             'enrollment.gradeLevel',
@@ -91,9 +90,9 @@ class StudentController extends Controller
         ]);
     }
 
-    private function getPaginatedStudents(Request $request, ?int $schoolId)
+    private function getPaginatedStudents(Request $request, ?int $schoolPeriodId)
     {
-        if ($schoolId === null) {
+        if ($schoolPeriodId === null) {
             return null;
         }
 
@@ -102,7 +101,7 @@ class StudentController extends Controller
                 'students.id',
                 'students.uuid',
                 'students.education_monitor_id',
-                'students.school_id',
+                'students.school_period_id',
                 'students.nationality_id',
                 'students.number',
                 'students.registration_status',
@@ -117,7 +116,7 @@ class StudentController extends Controller
                 'students.created_at',
                 'students.deleted_at',
             ])
-            ->where('students.school_id', '=', $schoolId)
+            ->where('students.school_period_id', '=', $schoolPeriodId)
             ->with(['nationality:id,name,code'])
             ->allowedFilters(
                 AllowedFilter::scope('name', 'byFullName'),
@@ -143,10 +142,10 @@ class StudentController extends Controller
                 'left_academic_year_id',
                 'joined_academic_year_id',
                 'student_id',
-                'from_school_id',
-                'to_school_id',
-                'left_school_at',
-                'joined_school_at',
+                'from_school_period_id',
+                'to_school_period_id',
+                'left_school_period_at',
+                'joined_school_period_at',
                 'created_at',
                 'deleted_at',
             ])
@@ -155,8 +154,8 @@ class StudentController extends Controller
                 'leftAcademicYear',
                 'joinedAcademicYear',
                 'student',
-                'fromSchool.monitor',
-                'toSchool.monitor',
+                'fromSchoolPeriod.monitor',
+                'toSchoolPeriod.monitor',
             ])
             ->paginate()
             ->withQueryString()

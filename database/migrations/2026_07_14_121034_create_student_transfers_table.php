@@ -17,10 +17,10 @@ return new class extends Migration
             $table->foreignId('left_academic_year_id')->nullable()->constrained('academic_years')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('joined_academic_year_id')->nullable()->constrained('academic_years')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('student_id')->constrained('students')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('from_school_id')->nullable()->constrained('schools')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('to_school_id')->nullable()->constrained('schools')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->timestamp('left_school_at')->nullable();
-            $table->timestamp('joined_school_at')->nullable();
+            $table->foreignId('from_school_period_id')->nullable()->constrained('school_periods')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('to_school_period_id')->nullable()->constrained('school_periods')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->timestamp('left_school_period_at')->nullable();
+            $table->timestamp('joined_school_period_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

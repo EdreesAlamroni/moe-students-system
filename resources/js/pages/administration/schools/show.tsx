@@ -15,9 +15,10 @@ import { DetailValue } from "@/components/ui/display/detail-value";
 import { Table, TableBody, TableCell, TableCellNullableValue, TableHead, TableHeader, TableRow } from "@/components/ui/display/table";
 import EmptyState from "@/components/ui/display/empty-state";
 
-
 import { Button } from "@/components/ui/actions/button";
 import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";
+
+import { SchoolPeriodsSummary } from "@/components/shared/schools/school-periods-summary";
 
 import { GraduationCapIcon, PresentationIcon, NotepadTextIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
@@ -108,9 +109,15 @@ export default function Show({ school, gradeLevels, canAny, can }: PageProps) {
                                     <DetailValue value={school.type?.name} />
                                 </DetailField>
 
-                                <DetailField>
-                                    <DetailLabel>الفترة الدراسية</DetailLabel>
-                                    <DetailValue value={school.academic_period?.name} />
+                                {/* TODO: Review this component and refactor it. */}
+                                <DetailField className="col-span-full">
+                                    <DetailLabel>الفترات الدراسية</DetailLabel>
+                                    <DetailValue>
+                                        <SchoolPeriodsSummary
+                                            periods={school.periods ?? []}
+                                            showStudentCounts
+                                        />
+                                    </DetailValue>
                                 </DetailField>
 
                                 {isPrivate && (
@@ -133,25 +140,6 @@ export default function Show({ school, gradeLevels, canAny, can }: PageProps) {
                                         </DetailField>
                                     </>
                                 )}
-
-                                <DetailField>
-                                    <DetailLabel>جنس الطلاب الدارسين بالمدرسة</DetailLabel>
-                                    <DetailValue value={school.students_gender?.name} />
-                                </DetailField>
-
-                                <DetailField>
-                                    <DetailLabel>المراحل الدراسية</DetailLabel>
-                                    <DetailValue className="gap-0">
-                                        {school.educational_stages?.map((educationalStage, index, arr) => (
-                                            <span key={index}>
-                                                {educationalStage.stage.name}
-                                                {index < arr.length - 1 && (
-                                                    <span className="font-mono mx-1">،</span>
-                                                )}
-                                            </span>
-                                        ))}
-                                    </DetailValue>
-                                </DetailField>
                             </DetailFields>
                         </CardContent>
                     </Card>

@@ -28,7 +28,7 @@ class TransferClassroomRequest extends FormRequest
                 'required',
                 Rule::exists(Classroom::class, 'id')
                     ->where('academic_year_id', AcademicYear::currentId())
-                    ->where('school_id', auth('school')->user()->organization_id)
+                    ->where('school_period_id', auth('school')->user()->organization_id)
                     ->where('grade_level_id', $student->enrollment?->grade_level_id),
                 function (string $attribute, mixed $value, Closure $fail) use ($student): void {
                     if ((int) $value === (int) $student->enrollment?->classroom_id) {

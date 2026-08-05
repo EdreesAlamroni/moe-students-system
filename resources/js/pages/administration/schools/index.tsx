@@ -29,11 +29,11 @@ import { create, index, show } from "@/routes/administration/schools";
 type SchoolProps = School & {
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 type PageProps = {
     schools: Paginated<SchoolProps>;
-    monitors: Pick<EducationMonitor, "id" | "name">[];
+    monitors: EducationMonitor[];
     types: Enum[];
     filter: {
         education_monitor_id?: string;
@@ -42,7 +42,7 @@ type PageProps = {
     };
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 export default function Index({ schools, monitors, types, filter, canAny, can }: PageProps) {
     const { data, links, ...meta } = schools;
@@ -75,6 +75,7 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
                 <section>
                     <Form
                         {...index.form()}
+                        disableWhileProcessing
                     >
                         <Card>
                             <CardHeader className="border-b">
@@ -203,7 +204,9 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
                                                         {`مدرسة ${school.type.name}`}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{school.academic_period.name}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={school.academic_period_label} />
+                                                </TableCell>
                                                 <TableCell>{school.monitor?.name}</TableCell>
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue className="font-mono" value={school.students_count} fallback={0} />
@@ -243,7 +246,7 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
                 </section>
             </MainContainer>
         </>
-    )
+    );
 }
 
 Index.layout = () => ({

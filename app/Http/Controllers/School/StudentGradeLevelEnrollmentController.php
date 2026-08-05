@@ -18,7 +18,7 @@ class StudentGradeLevelEnrollmentController extends Controller
 
         $student->enrollment()->create([
             'academic_year_id' => AcademicYear::currentId(),
-            'school_id' => auth('school')->user()->organization_id,
+            'school_period_id' => auth('school')->user()->organization_id,
             'grade_level_id' => $request->validated('grade_level_id'),
         ]);
 

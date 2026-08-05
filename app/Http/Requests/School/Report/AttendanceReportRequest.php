@@ -22,7 +22,7 @@ class AttendanceReportRequest extends FormRequest
                 'integer',
                 Rule::exists(Classroom::class, 'id')
                     ->where('academic_year_id', AcademicYear::currentId())
-                    ->where('school_id', $this->user()->organization_id),
+                    ->where('school_period_id', auth('school')->user()->organization_id),
             ],
             'month' => [
                 'required',

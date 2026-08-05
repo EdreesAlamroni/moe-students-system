@@ -59,7 +59,6 @@ class SchoolPolicy
 
     private function belongsToCurrentOffice(User $user, School $school): bool
     {
-        return $user->organization_type === EducationServicesOffice::class
-            && $user->organization_id === $school->education_services_office_id;
+        return $user->organization_type === EducationServicesOffice::class && $user->organization_id === $school->education_services_office_id;
     }
 }

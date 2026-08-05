@@ -7,7 +7,7 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
 use App\Models\Nationality;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -17,17 +17,13 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  list<string>  $permissions
- * @param  array<string, mixed>  $attributes
- */
-function createSchoolStudentManager(School $school, array $permissions, array $attributes = []): User
+function createSchoolStudentManager(SchoolPeriod $schoolPeriod, array $permissions, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ], $attributes));
 
     foreach ($permissions as $permission) {
@@ -47,7 +43,7 @@ function seedLibyanNationality(): Nationality
     );
 }
 
-function createSchoolGradeLevel(School $school, GradeLevelEnum $grade): GradeLevel
+function createSchoolGradeLevel(SchoolPeriod $schoolPeriod, GradeLevelEnum $grade): GradeLevel
 {
     $gradeLevel = GradeLevel::query()->firstOrCreate(
         ['code' => $grade->value],
@@ -58,21 +54,18 @@ function createSchoolGradeLevel(School $school, GradeLevelEnum $grade): GradeLev
         ],
     );
 
-    $school->allGradeLevels()->syncWithoutDetaching([
+    $schoolPeriod->allGradeLevels()->syncWithoutDetaching([
         $gradeLevel->id => ['academic_year_id' => AcademicYear::currentId()],
     ]);
 
     return $gradeLevel;
 }
 
-/**
- * @return array{school: School, gradeLevel: GradeLevel, user: User}
- */
 function createSchoolStudentContext(): array
 {
-    $school = School::factory()->create();
-    $gradeLevel = createSchoolGradeLevel($school, GradeLevelEnum::GRADE_1);
-    $user = createSchoolStudentManager($school, [
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $gradeLevel = createSchoolGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
+    $user = createSchoolStudentManager($schoolPeriod, [
         'student:view-any',
         'student:view',
         'student:create',
@@ -85,13 +78,9 @@ function createSchoolStudentContext(): array
         'student:view-academic-record',
     ]);
 
-    return compact('school', 'gradeLevel', 'user');
+    return compact('schoolPeriod', 'gradeLevel', 'user');
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function schoolStudentStorePayload(GradeLevel $gradeLevel, array $overrides = []): array
 {
     $gender = 'male';
@@ -113,10 +102,6 @@ function schoolStudentStorePayload(GradeLevel $gradeLevel, array $overrides = []
     ], $overrides);
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function schoolStudentUpdatePayload(Student $student, array $overrides = []): array
 {
     return array_merge([
@@ -162,14 +147,14 @@ test('guests are redirected from school student pages', function () {
 });
 
 test('users without permission cannot access school student pages', function () {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.index'))
@@ -185,11 +170,11 @@ test('users without permission cannot access school student pages', function () 
 });
 
 test('authenticated school users can visit the students index', function () {
-    ['school' => $school, 'user' => $user] = createSchoolStudentContext();
-    $otherSchool = School::factory()->create();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolStudentContext();
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
 
-    $students = Student::factory()->count(2)->for($school)->create();
-    Student::factory()->for($otherSchool)->create();
+    $students = Student::factory()->count(2)->for($schoolPeriod)->create();
+    Student::factory()->for($otherSchoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.index'))
@@ -208,15 +193,15 @@ test('authenticated school users can visit the students index', function () {
 });
 
 test('student index filters students by registration status and nationality', function () {
-    ['school' => $school, 'user' => $user] = createSchoolStudentContext();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolStudentContext();
     $nationality = Nationality::factory()->create();
 
-    $matchingStudent = Student::factory()->for($school)->create([
+    $matchingStudent = Student::factory()->for($schoolPeriod)->create([
         'nationality_id' => $nationality->id,
         'registration_status' => StudentRegistrationStatus::NEW,
     ]);
 
-    Student::factory()->for($school)->create([
+    Student::factory()->for($schoolPeriod)->create([
         'registration_status' => StudentRegistrationStatus::REPEATER,
     ]);
 
@@ -235,7 +220,7 @@ test('student index filters students by registration status and nationality', fu
 });
 
 test('authenticated school users can visit the create student page', function () {
-    ['school' => $school, 'user' => $user] = createSchoolStudentContext();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolStudentContext();
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.create'))
@@ -250,7 +235,7 @@ test('authenticated school users can visit the create student page', function ()
 });
 
 test('authenticated school users can store a student with grade level enrollment', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolStudentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolStudentContext();
     $payload = schoolStudentStorePayload($gradeLevel, [
         'student_first_name' => 'Khaled',
     ]);
@@ -261,11 +246,11 @@ test('authenticated school users can store a student with grade level enrollment
     $student = Student::query()->where('first_name', 'Khaled')->first();
 
     expect($student)->not->toBeNull()
-        ->and($student->school_id)->toBe($school->id)
-        ->and($student->education_monitor_id)->toBe($school->education_monitor_id)
+        ->and($student->school_period_id)->toBe($schoolPeriod->id)
+        ->and($student->education_monitor_id)->toBe($schoolPeriod->education_monitor_id)
         ->and($student->enrollment)->not->toBeNull()
         ->and($student->enrollment->grade_level_id)->toBe($gradeLevel->id)
-        ->and($student->enrollment->school_id)->toBe($school->id);
+        ->and($student->enrollment->school_period_id)->toBe($schoolPeriod->id);
 
     $response->assertRedirect(route('school.students.show', ['student' => $student]));
 });
@@ -301,13 +286,13 @@ test('store rejects grade levels that are not assigned to the school', function 
 });
 
 test('authenticated school users can visit the show student page', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolStudentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolStudentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -327,8 +312,8 @@ test('authenticated school users can visit the show student page', function () {
 
 test('school users cannot view students from another school', function () {
     ['user' => $user] = createSchoolStudentContext();
-    $otherSchool = School::factory()->create();
-    $student = Student::factory()->for($otherSchool)->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    $student = Student::factory()->for($otherSchoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.show', ['student' => $student]))
@@ -336,8 +321,8 @@ test('school users cannot view students from another school', function () {
 });
 
 test('authenticated school users can visit the edit student page', function () {
-    ['school' => $school, 'user' => $user] = createSchoolStudentContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolStudentContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.edit', ['student' => $student]))
@@ -351,8 +336,8 @@ test('authenticated school users can visit the edit student page', function () {
 });
 
 test('authenticated school users can update a student', function () {
-    ['school' => $school, 'user' => $user] = createSchoolStudentContext();
-    $student = Student::factory()->for($school)->create([
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolStudentContext();
+    $student = Student::factory()->for($schoolPeriod)->create([
         'first_name' => 'Old Name',
     ]);
 
@@ -364,8 +349,8 @@ test('authenticated school users can update a student', function () {
 });
 
 test('update validates required fields', function () {
-    ['school' => $school, 'user' => $user] = createSchoolStudentContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolStudentContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->put(route('school.students.update', ['student' => $student]), [])
@@ -383,8 +368,8 @@ test('update validates required fields', function () {
 
 test('school users cannot update students from another school', function () {
     ['user' => $user] = createSchoolStudentContext();
-    $otherSchool = School::factory()->create();
-    $student = Student::factory()->for($otherSchool)->create([
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    $student = Student::factory()->for($otherSchoolPeriod)->create([
         'first_name' => 'Protected',
     ]);
 

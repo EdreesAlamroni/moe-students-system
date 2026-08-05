@@ -6,20 +6,20 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\Organization\OrganizationContextManager;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 
-function createSchoolUser(School $school): User
+function createSchoolUser(SchoolPeriod $schoolPeriod): User
 {
     return User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 }
 
@@ -43,8 +43,8 @@ test('guests cannot update school students gender', function () {
 });
 
 test('authenticated school users can update school students gender when it is not configured', function () {
-    $school = School::factory()->create(['students_gender' => null]);
-    $user = createSchoolUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create(['students_gender' => null]);
+    $user = createSchoolUser($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->from(route('school.dashboard'))
@@ -53,14 +53,14 @@ test('authenticated school users can update school students gender when it is no
         ])
         ->assertRedirect(route('school.dashboard'));
 
-    expect($school->fresh()->students_gender)->toBe(SchoolStudentsGender::GIRLS);
+    expect($schoolPeriod->fresh()->students_gender)->toBe(SchoolStudentsGender::GIRLS);
 });
 
 test('school users cannot update students gender when it is already configured', function () {
-    $school = School::factory()->create([
+    $schoolPeriod = SchoolPeriod::factory()->create([
         'students_gender' => SchoolStudentsGender::BOYS,
     ]);
-    $user = createSchoolUser($school);
+    $user = createSchoolUser($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->from(route('school.dashboard'))
@@ -69,40 +69,40 @@ test('school users cannot update students gender when it is already configured',
         ])
         ->assertForbidden();
 
-    expect($school->fresh()->students_gender)->toBe(SchoolStudentsGender::BOYS);
+    expect($schoolPeriod->fresh()->students_gender)->toBe(SchoolStudentsGender::BOYS);
 });
 
 test('students gender update requires a valid value', function () {
-    $school = School::factory()->create(['students_gender' => null]);
-    $user = createSchoolUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create(['students_gender' => null]);
+    $user = createSchoolUser($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->from(route('school.dashboard'))
         ->patch(route('school.students-gender.update'), [])
         ->assertSessionHasErrors('students_gender');
 
-    expect($school->fresh()->students_gender)->toBeNull();
+    expect($schoolPeriod->fresh()->students_gender)->toBeNull();
 });
 
 test('school organization context is shared when students gender is not configured', function () {
-    $school = School::factory()->create(['students_gender' => null]);
-    $user = createSchoolUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create(['students_gender' => null]);
+    $user = createSchoolUser($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->get(route('school.dashboard'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->where('organization.type', 'school')
-            ->where('organization.id', $school->id)
+            ->where('organization.id', $schoolPeriod->id)
             ->where('organization.students_gender', null)
             ->has('organization.students_gender_options', 3));
 });
 
 test('school organization context omits gender options when students gender is configured', function () {
-    $school = School::factory()->create([
+    $schoolPeriod = SchoolPeriod::factory()->create([
         'students_gender' => SchoolStudentsGender::MIXED,
     ]);
-    $user = createSchoolUser($school);
+    $user = createSchoolUser($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->get(route('school.dashboard'))
@@ -165,8 +165,8 @@ it('resolves education services office organization context for the education se
 });
 
 it('returns null when the authenticated user belongs to a different organization type', function () {
-    $school = School::factory()->create();
-    $user = createSchoolUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolUser($schoolPeriod);
 
     $request = Request::create('/education-monitor/dashboard', 'GET');
     $request->setUserResolver(fn (?string $guard = null): ?User => $guard === 'education_monitor' ? $user : null);

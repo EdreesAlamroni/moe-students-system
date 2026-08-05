@@ -1,6 +1,6 @@
 import '@inertiajs/core';
 
-import type { AcademicYear, Enum, GradeLevel } from '@/types';
+import type { AcademicYear, Enum, GradeLevel, SchoolPeriod } from '@/types';
 import type { Auth, DashboardContext } from '@/types/auth';
 import type { Navigation } from '@/types/navigation';
 import type { FlashMessage } from '@/types/ui';
@@ -17,11 +17,8 @@ export type EducationServicesOfficeOrganizationContext = {
     name: string;
 };
 
-export type SchoolOrganizationContext = {
+export type SchoolOrganizationContext = SchoolPeriod & {
     type: 'school';
-    id: number;
-    name: string;
-    students_gender: Enum | null;
     students_gender_options?: Enum[];
     available_grade_levels: GradeLevel[];
 };

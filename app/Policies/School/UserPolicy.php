@@ -2,7 +2,7 @@
 
 namespace App\Policies\School;
 
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 
 class UserPolicy
@@ -23,10 +23,6 @@ class UserPolicy
 
     public function create(User $user): bool
     {
-        if (! $this->hasSchoolContext($user)) {
-            return false;
-        }
-
         return $user->can('user:create');
     }
 
@@ -79,17 +75,8 @@ class UserPolicy
 
     private function sharesOrganizationWith(User $user, User $target): bool
     {
-        return $target->organization_type === School::class
-            && $user->organization_type === School::class
+        return $target->organization_type === SchoolPeriod::class
+            && $user->organization_type === SchoolPeriod::class
             && $user->organization_id === $target->organization_id;
-    }
-
-    private function hasSchoolContext(User $user): bool
-    {
-        if ($user->organization_type !== School::class || $user->organization_id === null) {
-            return false;
-        }
-
-        return $user->organization()->exists();
     }
 }

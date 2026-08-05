@@ -16,16 +16,17 @@ class IndexRequest extends FormRequest
 
     public function rules(): array
     {
-        $schoolId = auth('school')->user()->organization_id;
         $currentAcademicYearId = AcademicYear::currentId();
+
+        $schoolPeriodId = auth('school')->user()->organization_id;
 
         return [
             'grade_level_id' => [
                 'nullable',
                 'integer',
-                Rule::exists('grade_level_school', 'grade_level_id')
-                    ->where('school_id', $schoolId)
-                    ->where('academic_year_id', $currentAcademicYearId),
+                Rule::exists('grade_level_school_period', 'grade_level_id')
+                    ->where('academic_year_id', $currentAcademicYearId)
+                    ->where('school_period_id', $schoolPeriodId),
             ],
             'classroom_id' => [
                 'nullable',
@@ -34,8 +35,8 @@ class IndexRequest extends FormRequest
                     return ! $this->filled('grade_level_id');
                 }),
                 Rule::exists(Classroom::class, 'id')
-                    ->where('school_id', $schoolId)
                     ->where('academic_year_id', $currentAcademicYearId)
+                    ->where('school_period_id', $schoolPeriodId)
                     ->where('grade_level_id', $this->integer('grade_level_id')),
             ],
         ];

@@ -5,7 +5,7 @@ namespace Database\Factories;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,8 +21,8 @@ class ClassroomFactory extends Factory
     public function definition(): array
     {
         return [
-            'academic_year_id' => AcademicYear::currentId(),
-            'school_id' => School::factory(),
+            'academic_year_id' => AcademicYear::currentId() ?? AcademicYear::factory(),
+            'school_period_id' => SchoolPeriod::factory(),
             'grade_level_id' => GradeLevel::factory(),
             'name' => fake()->unique()->randomLetter(),
             'capacity' => fake()->numberBetween(20, 40),

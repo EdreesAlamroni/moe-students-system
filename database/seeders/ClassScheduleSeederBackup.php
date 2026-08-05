@@ -8,7 +8,7 @@ use App\Models\AcademicYear;
 use App\Models\ClassPeriod;
 use App\Models\Classroom;
 use App\Models\ClassSchedule;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
 
@@ -16,21 +16,21 @@ class ClassScheduleSeederBackup extends Seeder
 {
     public function run(): void
     {
-        $schools = School::query()->get();
+        $schoolPeriods = SchoolPeriod::query()->get();
 
-        if ($schools->isEmpty()) {
+        if ($schoolPeriods->isEmpty()) {
             return;
         }
 
-        foreach ($schools as $school) {
+        foreach ($schoolPeriods as $schoolPeriod) {
             $currentAcademicYearId = AcademicYear::currentId();
 
-            $this->createPeriodsForSchool($school, $currentAcademicYearId);
-            $this->createSchedulesForSchool($school, $currentAcademicYearId);
+            $this->createPeriodsForSchoolPeriod($currentAcademicYearId);
+            $this->createSchedulesForSchoolPeriod($schoolPeriod, $currentAcademicYearId);
         }
     }
 
-    private function createPeriodsForSchool(School $school, ?int $currentAcademicYearId): void
+    private function createPeriodsForSchoolPeriod(?int $currentAcademicYearId): void
     {
         if (is_null($currentAcademicYearId)) {
             return;
@@ -71,7 +71,7 @@ class ClassScheduleSeederBackup extends Seeder
         }
     }
 
-    private function createSchedulesForSchool(School $school, ?int $currentAcademicYearId): void
+    private function createSchedulesForSchoolPeriod(SchoolPeriod $schoolPeriod, ?int $currentAcademicYearId): void
     {
         if (is_null($currentAcademicYearId)) {
             return;
@@ -79,7 +79,7 @@ class ClassScheduleSeederBackup extends Seeder
 
         $classrooms = Classroom::query()
             ->where('academic_year_id', '=', $currentAcademicYearId)
-            ->where('school_id', '=', $school->id)
+            ->where('school_period_id', '=', $schoolPeriod->id)
             // ->limit(2)
             ->get();
 
@@ -89,7 +89,7 @@ class ClassScheduleSeederBackup extends Seeder
 
         $periods = ClassPeriod::query()
             ->where('academic_year_id', '=', $currentAcademicYearId)
-            ->where('academic_period', '=', $school->academic_period)
+            ->where('academic_period', '=', $schoolPeriod->academic_period)
             ->where('is_break', '=', false)
             ->ordered()
             ->get();
@@ -119,7 +119,7 @@ class ClassScheduleSeederBackup extends Seeder
                     $subject = $subjects->random();
 
                     ClassSchedule::create([
-                        'school_id' => $school->id,
+                        'school_period_id' => $schoolPeriod->id,
                         'academic_year_id' => $currentAcademicYearId,
                         'classroom_id' => $classroom->id,
                         'class_period_id' => $period->id,

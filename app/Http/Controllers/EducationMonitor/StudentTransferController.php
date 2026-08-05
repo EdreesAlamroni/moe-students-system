@@ -33,7 +33,7 @@ class StudentTransferController extends Controller
         ])) {
             $students = QueryBuilder::for(Student::class)
                 ->whereNull('students.education_monitor_id')
-                ->whereNull('students.school_id')
+                ->whereNull('students.school_period_id')
                 ->awaitingSchoolTransfer()
                 ->with(['nationality', 'enrollment.gradeLevel'])
                 ->allowedFilters(
@@ -62,7 +62,7 @@ class StudentTransferController extends Controller
             Student::query()
                 ->whereIn('id', $request->validated('student_ids'))
                 ->whereNull('education_monitor_id')
-                ->whereNull('school_id')
+                ->whereNull('school_period_id')
                 ->update([
                     'education_monitor_id' => auth('education_monitor')->user()->organization_id,
                 ]);

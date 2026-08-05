@@ -177,13 +177,15 @@ export default function Index({
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <Building2Icon />
-                                <span>اختيار الجهة التعليمية</span>
+                                <span>اختيار المؤسسة التعليمية</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Field>
-                                    <Label htmlFor="school_id">
+                                    <Label
+                                        htmlFor="school_id"
+                                    >
                                         المدرسة
                                     </Label>
 
@@ -193,8 +195,12 @@ export default function Index({
                                             disabled={isNavigating}
                                             onValueChange={handleSchoolChange}
                                         >
-                                            <SelectTrigger id="school_id">
-                                                <SelectValue placeholder="اختر المدرسة" />
+                                            <SelectTrigger
+                                                id="school_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المدرسة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -284,12 +290,17 @@ export default function Index({
                                                 defaultValue={filter.registration_status || undefined}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="صفة القيد" />
+                                                    <SelectValue
+                                                        placeholder="صفة القيد"
+                                                    />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         {(registrationStatuses ?? []).map((status) => (
-                                                            <SelectItem key={status.id} value={status.id}>
+                                                            <SelectItem
+                                                                key={status.id}
+                                                                value={status.id}
+                                                            >
                                                                 {status.name}
                                                             </SelectItem>
                                                         ))}
@@ -303,7 +314,9 @@ export default function Index({
                                                     defaultValue={filter.nationality_id || undefined}
                                                 >
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="الجنسية" />
+                                                        <SelectValue
+                                                            placeholder="الجنسية"
+                                                        />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectGroup>
@@ -453,7 +466,10 @@ export default function Index({
                                 )}
                                 {hasPagination && students && (
                                     <CardFooter className="border-t">
-                                        <Paginator links={students.links} meta={students} />
+                                        <Paginator
+                                            links={students.links}
+                                            meta={students}
+                                        />
                                     </CardFooter>
                                 )}
                             </Card>

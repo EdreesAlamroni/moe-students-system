@@ -14,6 +14,7 @@ use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
@@ -36,9 +37,6 @@ function bindEducationServicesOfficeSchoolBinding(School $school, bool $hasAnyRe
     return $mock;
 }
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationServicesOfficeSchoolManager(EducationServicesOffice $office, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -78,10 +76,6 @@ if (! function_exists('createGradeLevelForStage')) {
     }
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function educationServicesOfficePublicSchoolPayload(array $overrides = []): array
 {
     $payload = [
@@ -136,9 +130,9 @@ test('users without school permissions cannot view schools', function () {
 test('authenticated users can visit the schools index page', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create();
     $otherOffice = EducationServicesOffice::factory()->create();
-    School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.schools.index'))
@@ -156,11 +150,11 @@ test('authenticated users can filter schools by type and name', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
 
-    School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create([
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create([
         'name' => 'مدرسة أ',
         'type' => SchoolType::PUBLIC->value,
     ]);
-    School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create([
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create([
         'name' => 'مدرسة ب',
         'type' => SchoolType::PRIVATE->value,
     ]);
@@ -204,21 +198,23 @@ test('authenticated users can store a public single-period school', function () 
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 1);
+    $this->assertDatabaseCount('school_periods', 1);
 
     $school = School::query()->firstOrFail();
+    $schoolPeriod = $school->periods()->firstOrFail();
 
-    expect($school->education_monitor_id)->toBe($office->education_monitor_id)
-        ->and($school->education_services_office_id)->toBe($office->id)
+    expect($schoolPeriod->education_monitor_id)->toBe($office->education_monitor_id)
+        ->and($schoolPeriod->education_services_office_id)->toBe($office->id)
         ->and($school->type)->toBe(SchoolType::PUBLIC)
-        ->and($school->academic_period)->toBe(SchoolAcademicPeriod::MORNING);
+        ->and($schoolPeriod->academic_period)->toBe(SchoolAcademicPeriod::MORNING);
 
     $this->assertDatabaseHas('school_educational_stages', [
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'stage' => SchoolEducationalStageEnum::PRIMARY_EDUCATION->value,
     ]);
 
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $school->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'academic_year_id' => AcademicYear::currentId(),
     ]);
@@ -242,7 +238,7 @@ test('store associates the school with the current office even if another office
         ->and($school->education_monitor_id)->toBe($office->education_monitor_id);
 });
 
-test('authenticated users can store a dual-period school as two records', function () {
+test('authenticated users can store separate dual-period schools', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
     $primaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
@@ -266,15 +262,22 @@ test('authenticated users can store a dual-period school as two records', functi
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 2);
+    $this->assertDatabaseCount('school_periods', 2);
 
     $this->assertDatabaseHas('schools', [
         'education_services_office_id' => $office->id,
         'name' => 'مدرسة الصباح',
-        'academic_period' => SchoolAcademicPeriod::MORNING->value,
-        'students_gender' => SchoolStudentsGender::BOYS->value,
     ]);
     $this->assertDatabaseHas('schools', [
         'education_services_office_id' => $office->id,
+        'name' => 'مدرسة المساء',
+    ]);
+    $this->assertDatabaseHas('school_periods', [
+        'name' => 'مدرسة الصباح',
+        'academic_period' => SchoolAcademicPeriod::MORNING->value,
+        'students_gender' => SchoolStudentsGender::BOYS->value,
+    ]);
+    $this->assertDatabaseHas('school_periods', [
         'name' => 'مدرسة المساء',
         'academic_period' => SchoolAcademicPeriod::EVENING->value,
         'students_gender' => SchoolStudentsGender::GIRLS->value,
@@ -282,18 +285,17 @@ test('authenticated users can store a dual-period school as two records', functi
 
     expect(SchoolEducationalStage::query()->count())->toBe(2);
 
-    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
-    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+    $morningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::MORNING)->firstOrFail();
+    $eveningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::EVENING)->firstOrFail();
 
-    expect($morningSchool->same_school_uuid)->toBeNull()
-        ->and($eveningSchool->same_school_uuid)->toBeNull();
+    expect($morningSchoolPeriod->school_id)->not->toBe($eveningSchoolPeriod->school_id);
 
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $morningSchool->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $morningSchoolPeriod->id,
         'grade_level_id' => $primaryGradeLevel->id,
     ]);
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $eveningSchool->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $eveningSchoolPeriod->id,
         'grade_level_id' => $secondaryGradeLevel->id,
     ]);
 });
@@ -321,14 +323,15 @@ test('authenticated users can store a single-period school without students gend
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 1);
+    $this->assertDatabaseCount('school_periods', 1);
 
-    $school = School::query()->firstOrFail();
+    $schoolPeriod = SchoolPeriod::query()->firstOrFail();
 
-    expect($school->students_gender)->toBeNull()
-        ->and($school->gradeLevels()->count())->toBe(0);
+    expect($schoolPeriod->students_gender)->toBeNull()
+        ->and($schoolPeriod->gradeLevels()->count())->toBe(0);
 
     $this->assertDatabaseHas('school_educational_stages', [
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'stage' => SchoolEducationalStageEnum::PRIMARY_EDUCATION->value,
     ]);
 });
@@ -353,14 +356,15 @@ test('authenticated users can store a dual-period school without students gender
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 2);
+    $this->assertDatabaseCount('school_periods', 2);
 
-    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
-    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+    $morningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::MORNING)->firstOrFail();
+    $eveningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::EVENING)->firstOrFail();
 
-    expect($morningSchool->students_gender)->toBeNull()
-        ->and($eveningSchool->students_gender)->toBeNull()
-        ->and($morningSchool->gradeLevels()->count())->toBe(0)
-        ->and($eveningSchool->gradeLevels()->count())->toBe(0);
+    expect($morningSchoolPeriod->students_gender)->toBeNull()
+        ->and($eveningSchoolPeriod->students_gender)->toBeNull()
+        ->and($morningSchoolPeriod->gradeLevels()->count())->toBe(0)
+        ->and($eveningSchoolPeriod->gradeLevels()->count())->toBe(0);
 
     expect(SchoolEducationalStage::query()->count())->toBe(2);
 });
@@ -383,7 +387,7 @@ test('selected grade levels must belong to the selected educational stages', fun
 test('authenticated users can visit the show school page', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create();
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.schools.show', ['school' => $school]))
@@ -400,7 +404,7 @@ test('users cannot view schools from another office', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
     $otherOffice = EducationServicesOffice::factory()->create();
-    $school = School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.schools.show', ['school' => $school]))
@@ -410,7 +414,7 @@ test('users cannot view schools from another office', function () {
 test('authenticated users can visit the edit school page', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create();
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.schools.edit', ['school' => $school]))
@@ -427,7 +431,7 @@ test('users cannot edit schools from another office', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
     $otherOffice = EducationServicesOffice::factory()->create();
-    $school = School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.schools.edit', ['school' => $school]))
@@ -437,7 +441,7 @@ test('users cannot edit schools from another office', function () {
 test('authenticated users can update the school name for a public school', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create([
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create([
         'type' => SchoolType::PUBLIC->value,
         'name' => 'الاسم القديم',
     ]);
@@ -454,7 +458,7 @@ test('authenticated users can update the school name for a public school', funct
 test('authenticated users can update private school specific fields', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create([
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create([
         'type' => SchoolType::PRIVATE->value,
         'educational_company_name' => 'الشركة القديمة',
         'branch_type' => SchoolBranchType::MAIN->value,
@@ -482,7 +486,7 @@ test('authenticated users can delete a school without relations', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
     $school = bindEducationServicesOfficeSchoolBinding(
-        School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create(),
+        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create(),
         hasAnyRelations: false,
     );
 
@@ -497,7 +501,7 @@ test('schools with relations cannot be deleted', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeSchoolManager($office);
     $school = bindEducationServicesOfficeSchoolBinding(
-        School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create(),
+        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($office->monitor, 'monitor')->for($office, 'office')->create(),
         hasAnyRelations: true,
     );
 
@@ -513,7 +517,7 @@ test('users cannot delete schools from another office', function () {
     $user = createEducationServicesOfficeSchoolManager($office);
     $otherOffice = EducationServicesOffice::factory()->create();
     $school = bindEducationServicesOfficeSchoolBinding(
-        School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create(),
+        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create(),
         hasAnyRelations: false,
     );
 

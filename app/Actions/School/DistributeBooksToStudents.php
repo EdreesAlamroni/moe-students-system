@@ -22,7 +22,7 @@ class DistributeBooksToStudents
      * @param  array<int, int>  $studentIds
      * @return int Number of students marked as having received books.
      */
-    public function execute(int $schoolId, int $gradeLevelId, array $studentIds, ?int $classroomId = null): int
+    public function execute(int $schoolPeriodId, int $gradeLevelId, array $studentIds, ?int $classroomId = null): int
     {
         $currentAcademicYearId = AcademicYear::currentId();
 
@@ -34,7 +34,7 @@ class DistributeBooksToStudents
 
         $distribution = BookDistribution::query()
             ->where('academic_year_id', '=', $currentAcademicYearId)
-            ->where('school_id', '=', $schoolId)
+            ->where('school_period_id', '=', $schoolPeriodId)
             ->where('grade_level_id', '=', $gradeLevelId)
             ->first();
 
@@ -44,14 +44,14 @@ class DistributeBooksToStudents
             ]);
         }
 
-        return DB::transaction(function () use ($distribution, $gradeLevelId, $schoolId, $studentIds, $currentAcademicYearId, $classroomId): int {
+        return DB::transaction(function () use ($distribution, $gradeLevelId, $schoolPeriodId, $studentIds, $currentAcademicYearId, $classroomId): int {
             $eligibleStudentIds = Student::query()
                 ->whereIn('id', $studentIds)
-                ->where('school_id', '=', $schoolId)
-                ->whereHas('enrollment', function (Builder $query) use ($gradeLevelId, $schoolId, $classroomId): void {
+                ->where('school_period_id', '=', $schoolPeriodId)
+                ->whereHas('enrollment', function (Builder $query) use ($gradeLevelId, $schoolPeriodId, $classroomId): void {
                     $query
                         ->where('grade_level_id', '=', $gradeLevelId)
-                        ->where('school_id', '=', $schoolId)
+                        ->where('school_period_id', '=', $schoolPeriodId)
                         ->when(filled($classroomId), function (Builder $query) use ($classroomId): void {
                             $query->where('classroom_id', '=', $classroomId);
                         });
@@ -65,12 +65,12 @@ class DistributeBooksToStudents
 
             $now = now();
 
-            $rows = $eligibleStudentIds->map(function (int $studentId) use ($distribution, $currentAcademicYearId, $schoolId, $now): array {
+            $rows = $eligibleStudentIds->map(function (int $studentId) use ($distribution, $currentAcademicYearId, $schoolPeriodId, $now): array {
                 return [
                     'uuid' => Str::uuid()->toString(),
                     'book_distribution_id' => $distribution->id,
                     'academic_year_id' => $currentAcademicYearId,
-                    'school_id' => $schoolId,
+                    'school_period_id' => $schoolPeriodId,
                     'student_id' => $studentId,
                     'created_at' => $now,
                     'updated_at' => $now,

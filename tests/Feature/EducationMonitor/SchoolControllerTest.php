@@ -15,6 +15,7 @@ use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
@@ -37,9 +38,6 @@ function bindEducationMonitorSchoolBinding(School $school, bool $hasAnyRelations
     return $mock;
 }
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationMonitorSchoolManager(EducationMonitor $monitor, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -79,10 +77,6 @@ if (! function_exists('createGradeLevelForStage')) {
     }
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function educationMonitorPublicSchoolPayload(array $overrides = []): array
 {
     $payload = [
@@ -138,9 +132,9 @@ test('users without school permissions cannot view schools', function () {
 test('authenticated users can visit the schools index page', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create();
     $otherMonitor = EducationMonitor::factory()->create();
-    School::factory()->for($otherMonitor, 'monitor')->create();
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherMonitor, 'monitor')->create();
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.schools.index'))
@@ -161,8 +155,8 @@ test('authenticated users can filter schools by education services office', func
     $officeA = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
     $officeB = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
 
-    School::factory()->for($monitor, 'monitor')->for($officeA, 'office')->create(['name' => 'مدرسة أ']);
-    School::factory()->for($monitor, 'monitor')->for($officeB, 'office')->create(['name' => 'مدرسة ب']);
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->for($officeA, 'office')->create(['name' => 'مدرسة أ']);
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->for($officeB, 'office')->create(['name' => 'مدرسة ب']);
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.schools.index', ['filter' => ['education_services_office_id' => $officeA->id]]))
@@ -204,20 +198,22 @@ test('authenticated users can store a public single-period school', function () 
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 1);
+    $this->assertDatabaseCount('school_periods', 1);
 
     $school = School::query()->firstOrFail();
+    $schoolPeriod = $school->periods()->firstOrFail();
 
-    expect($school->education_monitor_id)->toBe($monitor->id)
+    expect($schoolPeriod->education_monitor_id)->toBe($monitor->id)
         ->and($school->type)->toBe(SchoolType::PUBLIC)
-        ->and($school->academic_period)->toBe(SchoolAcademicPeriod::MORNING);
+        ->and($schoolPeriod->academic_period)->toBe(SchoolAcademicPeriod::MORNING);
 
     $this->assertDatabaseHas('school_educational_stages', [
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'stage' => SchoolEducationalStageEnum::PRIMARY_EDUCATION->value,
     ]);
 
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $school->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'academic_year_id' => AcademicYear::currentId(),
     ]);
@@ -239,7 +235,7 @@ test('store associates the school with the current education monitor even if ano
     expect($school->education_monitor_id)->toBe($monitor->id);
 });
 
-test('authenticated users can store a dual-period school as two records', function () {
+test('authenticated users can store separate dual-period schools', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
     $primaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
@@ -263,15 +259,22 @@ test('authenticated users can store a dual-period school as two records', functi
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 2);
+    $this->assertDatabaseCount('school_periods', 2);
 
     $this->assertDatabaseHas('schools', [
         'education_monitor_id' => $monitor->id,
         'name' => 'مدرسة الصباح',
-        'academic_period' => SchoolAcademicPeriod::MORNING->value,
-        'students_gender' => SchoolStudentsGender::BOYS->value,
     ]);
     $this->assertDatabaseHas('schools', [
         'education_monitor_id' => $monitor->id,
+        'name' => 'مدرسة المساء',
+    ]);
+    $this->assertDatabaseHas('school_periods', [
+        'name' => 'مدرسة الصباح',
+        'academic_period' => SchoolAcademicPeriod::MORNING->value,
+        'students_gender' => SchoolStudentsGender::BOYS->value,
+    ]);
+    $this->assertDatabaseHas('school_periods', [
         'name' => 'مدرسة المساء',
         'academic_period' => SchoolAcademicPeriod::EVENING->value,
         'students_gender' => SchoolStudentsGender::GIRLS->value,
@@ -279,18 +282,17 @@ test('authenticated users can store a dual-period school as two records', functi
 
     expect(SchoolEducationalStage::query()->count())->toBe(2);
 
-    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
-    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+    $morningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::MORNING)->firstOrFail();
+    $eveningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::EVENING)->firstOrFail();
 
-    expect($morningSchool->same_school_uuid)->toBeNull()
-        ->and($eveningSchool->same_school_uuid)->toBeNull();
+    expect($morningSchoolPeriod->school_id)->not->toBe($eveningSchoolPeriod->school_id);
 
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $morningSchool->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $morningSchoolPeriod->id,
         'grade_level_id' => $primaryGradeLevel->id,
     ]);
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $eveningSchool->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $eveningSchoolPeriod->id,
         'grade_level_id' => $secondaryGradeLevel->id,
     ]);
 });
@@ -318,26 +320,28 @@ test('authenticated users can store a dual-period school sharing the same name',
         ->post(route('education-monitor.schools.store'), $payload)
         ->assertRedirect();
 
-    $this->assertDatabaseCount('schools', 2);
+    $this->assertDatabaseCount('schools', 1);
+    $this->assertDatabaseCount('school_periods', 2);
 
     $this->assertDatabaseHas('schools', [
         'education_monitor_id' => $monitor->id,
         'name' => 'مدرسة الوحدة',
+    ]);
+    $this->assertDatabaseHas('school_periods', [
+        'name' => 'مدرسة الوحدة',
         'academic_period' => SchoolAcademicPeriod::MORNING->value,
         'students_gender' => SchoolStudentsGender::BOYS->value,
     ]);
-    $this->assertDatabaseHas('schools', [
-        'education_monitor_id' => $monitor->id,
+    $this->assertDatabaseHas('school_periods', [
         'name' => 'مدرسة الوحدة',
         'academic_period' => SchoolAcademicPeriod::EVENING->value,
         'students_gender' => SchoolStudentsGender::GIRLS->value,
     ]);
 
-    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
-    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+    $morningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::MORNING)->firstOrFail();
+    $eveningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::EVENING)->firstOrFail();
 
-    expect($morningSchool->same_school_uuid)->not->toBeNull()
-        ->and($eveningSchool->same_school_uuid)->toBe($morningSchool->same_school_uuid);
+    expect($morningSchoolPeriod->school_id)->toBe($eveningSchoolPeriod->school_id);
 });
 
 test('dual-period school with shared name requires the single name field', function () {
@@ -373,14 +377,15 @@ test('authenticated users can store a single-period school without students gend
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 1);
+    $this->assertDatabaseCount('school_periods', 1);
 
-    $school = School::query()->firstOrFail();
+    $schoolPeriod = SchoolPeriod::query()->firstOrFail();
 
-    expect($school->students_gender)->toBeNull()
-        ->and($school->gradeLevels()->count())->toBe(0);
+    expect($schoolPeriod->students_gender)->toBeNull()
+        ->and($schoolPeriod->gradeLevels()->count())->toBe(0);
 
     $this->assertDatabaseHas('school_educational_stages', [
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'stage' => SchoolEducationalStageEnum::PRIMARY_EDUCATION->value,
     ]);
 });
@@ -405,14 +410,15 @@ test('authenticated users can store a dual-period school without students gender
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 2);
+    $this->assertDatabaseCount('school_periods', 2);
 
-    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
-    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+    $morningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::MORNING)->firstOrFail();
+    $eveningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::EVENING)->firstOrFail();
 
-    expect($morningSchool->students_gender)->toBeNull()
-        ->and($eveningSchool->students_gender)->toBeNull()
-        ->and($morningSchool->gradeLevels()->count())->toBe(0)
-        ->and($eveningSchool->gradeLevels()->count())->toBe(0);
+    expect($morningSchoolPeriod->students_gender)->toBeNull()
+        ->and($eveningSchoolPeriod->students_gender)->toBeNull()
+        ->and($morningSchoolPeriod->gradeLevels()->count())->toBe(0)
+        ->and($eveningSchoolPeriod->gradeLevels()->count())->toBe(0);
 
     expect(SchoolEducationalStage::query()->count())->toBe(2);
 });
@@ -458,7 +464,7 @@ test('private school requires company name and branch and building types', funct
 test('authenticated users can visit the show school page', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create();
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.schools.show', ['school' => $school]))
@@ -475,7 +481,7 @@ test('users cannot view schools from another monitor', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
     $otherMonitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($otherMonitor, 'monitor')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherMonitor, 'monitor')->create();
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.schools.show', ['school' => $school]))
@@ -485,7 +491,7 @@ test('users cannot view schools from another monitor', function () {
 test('authenticated users can visit the edit school page', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create();
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.schools.edit', ['school' => $school]))
@@ -502,7 +508,7 @@ test('users cannot edit schools from another monitor', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
     $otherMonitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($otherMonitor, 'monitor')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherMonitor, 'monitor')->create();
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.schools.edit', ['school' => $school]))
@@ -512,7 +518,7 @@ test('users cannot edit schools from another monitor', function () {
 test('authenticated users can update the school name for a public school', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create([
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create([
         'type' => SchoolType::PUBLIC->value,
         'name' => 'الاسم القديم',
     ]);
@@ -529,7 +535,7 @@ test('authenticated users can update the school name for a public school', funct
 test('authenticated users can update private school specific fields', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create([
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create([
         'type' => SchoolType::PRIVATE->value,
         'educational_company_name' => 'الشركة القديمة',
         'branch_type' => SchoolBranchType::MAIN->value,
@@ -557,7 +563,7 @@ test('update does not allow moving a school to another education monitor', funct
     $monitor = EducationMonitor::factory()->create();
     $otherMonitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create([
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create([
         'type' => SchoolType::PUBLIC->value,
         'name' => 'مدرسة قديمة',
     ]);
@@ -579,7 +585,7 @@ test('authenticated users can delete a school without relations', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
     $school = bindEducationMonitorSchoolBinding(
-        School::factory()->for($monitor, 'monitor')->create(),
+        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create(),
         hasAnyRelations: false,
     );
 
@@ -594,7 +600,7 @@ test('schools with relations cannot be deleted', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
     $school = bindEducationMonitorSchoolBinding(
-        School::factory()->for($monitor, 'monitor')->create(),
+        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create(),
         hasAnyRelations: true,
     );
 
@@ -610,7 +616,7 @@ test('users cannot delete schools from another monitor', function () {
     $user = createEducationMonitorSchoolManager($monitor);
     $otherMonitor = EducationMonitor::factory()->create();
     $school = bindEducationMonitorSchoolBinding(
-        School::factory()->for($otherMonitor, 'monitor')->create(),
+        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherMonitor, 'monitor')->create(),
         hasAnyRelations: false,
     );
 

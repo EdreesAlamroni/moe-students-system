@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,6 +34,8 @@ use Illuminate\Support\Str;
  * @property Carbon|null $deleted_at
  * @property-read string|null $formatted_whatsapp_phone_number
  * @property-read EducationMonitor $monitor
+ * @property-read EloquentCollection<int, School> $schools
+ * @property-read EloquentCollection<int, SchoolPeriod> $schoolPeriods
  * @property-read int|null $schools_count
  * @property-read int|null $students_count
  */
@@ -128,9 +131,19 @@ class EducationServicesOffice extends Model
         return $this->hasMany(School::class);
     }
 
+    public function schoolPeriods(): HasMany
+    {
+        return $this->hasMany(SchoolPeriod::class);
+    }
+
     public function students(): HasManyThrough
     {
-        return $this->hasManyThrough(Student::class, School::class);
+        return $this->hasManyThrough(
+            Student::class,
+            SchoolPeriod::class,
+            'education_services_office_id',
+            'school_period_id',
+        );
     }
 
     /*
@@ -192,13 +205,18 @@ class EducationServicesOffice extends Model
     {
         return self::query()
             ->select(['id', 'name'])
-            ->with(['schools:id,name,education_services_office_id'])
+            ->with(['schoolPeriods:id,name,education_services_office_id,academic_period'])
             ->get()
             ->map(function (EducationServicesOffice $office): array {
                 return [
                     'id' => $office->id,
                     'name' => $office->name,
-                    'schools' => $office->schools->map->only(['id', 'name'])->all(),
+                    'schools' => $office->schoolPeriods->map(function (SchoolPeriod $schoolPeriod): array {
+                        return [
+                            'id' => $schoolPeriod->id,
+                            'name' => sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->displayName()),
+                        ];
+                    })->all(),
                 ];
             })->values();
     }

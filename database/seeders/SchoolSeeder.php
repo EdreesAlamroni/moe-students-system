@@ -2,15 +2,18 @@
 
 namespace Database\Seeders;
 
+use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolEducationalStageEnum;
+use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
-use App\Models\GradeLevelSchool;
+use App\Models\GradeLevelSchoolPeriod;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
+use App\Models\SchoolPeriod;
 use Illuminate\Database\Seeder;
 
 class SchoolSeeder extends Seeder
@@ -52,8 +55,17 @@ class SchoolSeeder extends Seeder
             ],
             [
                 'type' => $attributes['type'],
-                'academic_period' => $attributes['academic_period'],
-                'students_gender' => $attributes['students_gender'],
+            ],
+        );
+
+        $schoolPeriod = SchoolPeriod::query()->firstOrCreate(
+            [
+                'school_id' => $school->id,
+                'academic_period' => collect(SchoolAcademicPeriod::values())->random(),
+            ],
+            [
+                'students_gender' => collect(SchoolStudentsGender::values())->random(),
+
             ],
         );
 
@@ -62,7 +74,7 @@ class SchoolSeeder extends Seeder
         foreach ($stages as $stage) {
             SchoolEducationalStage::query()->updateOrCreate([
                 'academic_year_id' => $currentAcademicYearId,
-                'school_id' => $school->id,
+                'school_period_id' => $schoolPeriod->id,
                 'stage' => $stage,
             ], []);
         }
@@ -72,9 +84,9 @@ class SchoolSeeder extends Seeder
             ->get();
 
         foreach ($gradeLevels as $gradeLevel) {
-            GradeLevelSchool::query()->updateOrCreate([
+            GradeLevelSchoolPeriod::query()->updateOrCreate([
                 'grade_level_id' => $gradeLevel->id,
-                'school_id' => $school->id,
+                'school_period_id' => $schoolPeriod->id,
                 'academic_year_id' => $currentAcademicYearId,
             ], []);
         }

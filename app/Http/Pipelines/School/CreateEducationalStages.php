@@ -4,7 +4,7 @@ namespace App\Http\Pipelines\School;
 
 use App\Actions\School\CreateEducationalStages as CreateEducationalStagesAction;
 use App\Http\Requests\Shared\School\StoreSchoolRequest;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -15,11 +15,11 @@ class CreateEducationalStages
         /** @var StoreSchoolRequest $request */
         $attributes = $request->getAttributes('educational_stages');
 
-        /** @var Collection<string, School> $schools */
-        $schools = $request->input('moe.schools');
+        /** @var Collection<string, SchoolPeriod> $schoolPeriods */
+        $schoolPeriods = $request->input('moe.school_periods');
 
-        $schools->each(function (School $school, string $academicPeriod) use ($attributes): void {
-            app(CreateEducationalStagesAction::class)->execute($school, $attributes[$academicPeriod] ?? []);
+        $schoolPeriods->each(function (SchoolPeriod $schoolPeriod, string $academicPeriod) use ($attributes): void {
+            app(CreateEducationalStagesAction::class)->execute($schoolPeriod, $attributes[$academicPeriod] ?? []);
         });
 
         return $next($request);

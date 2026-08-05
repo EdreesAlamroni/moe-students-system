@@ -1,4 +1,4 @@
-import type { Enum, ModelState } from "@/types/index";
+import type { Enum, ModelState } from '@/types/index';
 
 /** Display-friendly reference to an organizational entity. */
 export type EntityReference = {
@@ -11,7 +11,7 @@ export type UserOrganizationType =
     | "App\\Models\\EducationMonitor"
     | "App\\Models\\Warehouse"
     | "App\\Models\\EducationServicesOffice"
-    | "App\\Models\\School"
+    | "App\\Models\\SchoolPeriod"
     | (string & {});
 
 /** Shared parent for organizations that report to an education monitor. */
@@ -40,10 +40,10 @@ export type SchoolOrganization = EducationMonitorParent & {
  * Root organizations have no parent; child organizations include their education monitor.
  */
 export type UserOrganizationContext =
-    | { type: "education_monitor"; organization: EducationMonitorOrganization }
-    | { type: "education_services_office"; organization: EducationServicesOfficeOrganization }
-    | { type: "school"; organization: SchoolOrganization }
-    | { type: "warehouse"; organization: WarehouseOrganization };
+    | { type: "education_monitor"; organization: EducationMonitorOrganization; }
+    | { type: "education_services_office"; organization: EducationServicesOfficeOrganization; }
+    | { type: "school"; organization: SchoolOrganization; }
+    | { type: "warehouse"; organization: WarehouseOrganization; };
 
 export type UserScope = {
     id: string | number;

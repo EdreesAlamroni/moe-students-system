@@ -7,15 +7,13 @@ use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationMonitorSchoolReportUser(EducationMonitor $monitor, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -75,12 +73,12 @@ test('authenticated users can visit the school report page', function () {
     $office = EducationServicesOffice::factory()->for($monitor, 'monitor')->create([
         'name' => 'مكتب الخدمات التعليمية المركز',
     ]);
-    $school = School::factory()->for($monitor, 'monitor')->for($office, 'office')->create([
+    $school = School::factory()->for($monitor, 'monitor')->for($office, 'office')->has(SchoolPeriod::factory(), 'periods')->create([
         'name' => 'مدرسة الأمل',
         'type' => SchoolType::PUBLIC,
     ]);
     $otherMonitor = EducationMonitor::factory()->create();
-    School::factory()->for($otherMonitor, 'monitor')->create();
+    School::factory()->for($otherMonitor, 'monitor')->has(SchoolPeriod::factory(), 'periods')->create();
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.reports.schools.index'))
@@ -125,7 +123,7 @@ test('authenticated users can print the school report', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolReportUser($monitor);
     $office = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    School::factory()->for($monitor, 'monitor')->for($office, 'office')->create([
+    School::factory()->for($monitor, 'monitor')->for($office, 'office')->has(SchoolPeriod::factory(), 'periods')->create([
         'name' => 'مدرسة الأمل',
     ]);
 

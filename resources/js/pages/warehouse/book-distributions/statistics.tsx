@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 
 import { Head, router } from '@inertiajs/react';
 
-import type { EducationMonitor, GradeLevel, School } from '@/types';
+import type { EducationMonitor, GradeLevel, SchoolPeriod } from '@/types';
 
 import { Card, CardContent, CardHeader, CardTableContent, CardTitle } from '@/components/ui/structure/card';
 import MainContainer from '@/components/ui/structure/main-container';
@@ -22,17 +22,15 @@ import { BarChart3Icon, Building2Icon, ClockIcon, LoaderIcon } from 'lucide-reac
 
 import { statistics } from '@/routes/warehouse/book-distributions';
 
-type OrganizationOption = Pick<EducationMonitor | School, 'id' | 'name'>;
-
 type BookDistributionStatistic = GradeLevel;
 
 type StatisticsPageProps = {
-    monitors: OrganizationOption[];
-    schools: OrganizationOption[];
+    monitors: EducationMonitor[];
+    schools: SchoolPeriod[];
     statistics: BookDistributionStatistic[];
     selected: {
         education_monitor_id: number | null;
-        school_id: number | null;
+        school_period_id: number | null;
     };
 };
 
@@ -50,7 +48,7 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
     const [pendingSchoolId, setPendingSchoolId] = useState<string>();
 
     const monitorId = pendingMonitorId ?? selected.education_monitor_id?.toString() ?? '';
-    const schoolId = pendingSchoolId ?? selected.school_id?.toString() ?? '';
+    const schoolId = pendingSchoolId ?? selected.school_period_id?.toString() ?? '';
     const isLoadingSchools = loading === 'schools';
     const isLoadingStatistics = loading === 'statistics';
     const showStatistics = Boolean(schoolId);
@@ -85,7 +83,7 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
 
         router.get(statistics.url(), {
             education_monitor_id: monitorId,
-            school_id: value,
+            school_period_id: value,
         }, {
             ...visitOptions,
             onFinish: () => {
@@ -120,7 +118,7 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <Building2Icon />
-                                <span>اختيار الجهة التعليمية</span>
+                                <span>اختيار المؤسسة التعليمية</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -158,15 +156,24 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                                 </Field>
 
                                 <Field>
-                                    <Label htmlFor="school_id" required>
+                                    <Label
+                                        htmlFor="school_period_id"
+                                        required
+                                    >
                                         المدرسة
                                     </Label>
 
                                     {!monitorId ? (
-                                        <EmptyOptionsInput id="school_id" placeholder="اختر المُراقبة أولاً" />
+                                        <EmptyOptionsInput
+                                            id="school_period_id"
+                                            placeholder="اختر المُراقبة أولاً"
+                                        />
                                     ) : isLoadingSchools ? (
                                         <Select disabled open={false}>
-                                            <SelectTrigger id="school_id" aria-busy="true">
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                                aria-busy="true"
+                                            >
                                                 <span className="flex items-center gap-2 text-muted-foreground">
                                                     <LoaderIcon className="size-3.5 shrink-0 animate-spin" />
                                                     <span>جارٍ تحميل المدارس…</span>
@@ -179,8 +186,12 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                                             disabled={loading !== null}
                                             onValueChange={selectSchool}
                                         >
-                                            <SelectTrigger id="school_id">
-                                                <SelectValue placeholder="اختر المدرسة" />
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المدرسة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -194,7 +205,7 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                                         </Select>
                                     ) : (
                                         <EmptyOptionsInput
-                                            id="school_id"
+                                            id="school_period_id"
                                             placeholder="لا توجد مدارس متاحة لهذه المُراقبة"
                                         />
                                     )}
@@ -210,7 +221,7 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                             <CardContent>
                                 <EmptyState
                                     icon={Building2Icon}
-                                    text={monitorId ? 'اختر المدرسة للمتابعة' : 'ابدأ باختيار الجهة التعليمية'}
+                                    text={monitorId ? 'اختر المدرسة للمتابعة' : 'ابدأ باختيار المؤسسة التعليمية'}
                                     description={
                                         monitorId
                                             ? 'بعد اختيار المدرسة، ستظهر إحصائيات توزيع الكُتب لكل صف دراسي.'
@@ -253,15 +264,9 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                                                 <TableHead scope="col" className="w-24 font-mono">#</TableHead>
                                                 <TableHead scope="col">الصف الدراسي</TableHead>
                                                 <TableHead scope="col">المرحلة التعليمية</TableHead>
-                                                <TableHead scope="col" className="text-center">
-                                                    عدد الطلاب
-                                                </TableHead>
-                                                <TableHead scope="col" className="text-center">
-                                                    المُوزَّع
-                                                </TableHead>
-                                                <TableHead scope="col" className="text-center">
-                                                    المُعلَّق
-                                                </TableHead>
+                                                <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                                <TableHead scope="col" className="text-center">المُوزَّع</TableHead>
+                                                <TableHead scope="col" className="text-center">المُعلَّق</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>

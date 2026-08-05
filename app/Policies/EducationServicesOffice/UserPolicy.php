@@ -4,7 +4,7 @@ namespace App\Policies\EducationServicesOffice;
 
 use App\Enums\UserScope;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 
 class UserPolicy
@@ -89,14 +89,14 @@ class UserPolicy
             return $user->organization_id === $target->organization_id;
         }
 
-        if (! $target->isSchoolStaff() || $target->organization_id === null) {
+        if (! $target->isSchoolStaff() || is_null($target->organization_id)) {
             return false;
         }
 
         $targetOfficeId = $target->relationLoaded('organization')
             ? $target->organization?->education_services_office_id
-            : School::query()
-                ->whereKey($target->organization_id)
+            : SchoolPeriod::query()
+                ->where('id', '=', $target->organization_id)
                 ->value('education_services_office_id');
 
         if (is_null($targetOfficeId)) {
@@ -108,7 +108,7 @@ class UserPolicy
 
     private function hasEducationServicesOfficeContext(User $user): bool
     {
-        if ($user->organization_type !== EducationServicesOffice::class || $user->organization_id === null) {
+        if ($user->organization_type !== EducationServicesOffice::class || is_null($user->organization_id)) {
             return false;
         }
 

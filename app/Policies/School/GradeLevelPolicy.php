@@ -4,7 +4,7 @@ namespace App\Policies\School;
 
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\StudentEnrollment;
 use App\Models\User;
 
@@ -74,31 +74,29 @@ class GradeLevelPolicy
 
     private function belongsToCurrentSchool(User $user, GradeLevel $gradeLevel): bool
     {
-        if ($user->organization_type !== School::class || $user->organization_id === null) {
+        if ($user->organization_type !== SchoolPeriod::class || is_null($user->organization_id)) {
             return false;
         }
 
-        if (AcademicYear::currentId() === null) {
+        if (is_null(AcademicYear::currentId())) {
             return false;
         }
 
-        if ($gradeLevel->relationLoaded('schools')) {
-            return $gradeLevel->schools->contains(function (School $school) use ($user): bool {
-                return $school->id === $user->organization_id;
-            });
+        if ($gradeLevel->relationLoaded('schoolPeriods')) {
+            return $gradeLevel->schoolPeriods->contains('id', '=', $user->organization_id);
         }
 
-        return $gradeLevel->schools()
-            ->whereKey($user->organization_id)
+        return $gradeLevel->schoolPeriods()
+            ->where('school_periods.id', '=', $user->organization_id)
             ->exists();
     }
 
     private function hasEnrolledStudents(User $user, GradeLevel $gradeLevel): bool
     {
         return StudentEnrollment::query()
-            ->where('grade_level_id', '=', $gradeLevel->id)
-            ->where('school_id', '=', $user->organization_id)
             ->where('academic_year_id', '=', AcademicYear::currentId())
+            ->where('school_period_id', '=', $user->organization_id)
+            ->where('grade_level_id', '=', $gradeLevel->id)
             ->exists();
     }
 }

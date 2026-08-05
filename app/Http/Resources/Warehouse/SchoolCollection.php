@@ -16,11 +16,13 @@ class SchoolCollection extends DirectModelCollection
             'serial_number' => $school->serial_number,
             'name' => $school->name,
             'type' => $school->type->toArray(),
-            'academic_period' => $school->academic_period->toArray(),
             'monitor' => $school->relationLoaded('monitor')
                 ? $school->monitor->only(['id', 'uuid', 'name'])
                 : null,
-            'students_count' => (int) ($school->students_count ?? 0),
+            'academic_period_label' => $school->academic_period_label,
+            'students_count' => $school->relationLoaded('periods')
+                ? (int) $school->periods->sum('students_count')
+                : 0,
         ])->all();
     }
 }

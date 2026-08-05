@@ -36,6 +36,7 @@ use Illuminate\Support\Str;
  * @property-read string|null $formatted_whatsapp_phone_number
  * @property-read EloquentCollection<int, EducationServicesOffice> $offices
  * @property-read EloquentCollection<int, School> $schools
+ * @property-read EloquentCollection<int, SchoolPeriod> $schoolPeriods
  * @property-read int|null $offices_count
  * @property-read int|null $schools_count
  * @property-read int|null $students_count
@@ -141,9 +142,19 @@ class EducationMonitor extends Model
         return $this->hasMany(School::class);
     }
 
+    public function schoolPeriods(): HasMany
+    {
+        return $this->hasMany(SchoolPeriod::class);
+    }
+
     public function students(): HasManyThrough
     {
-        return $this->hasManyThrough(Student::class, School::class);
+        return $this->hasManyThrough(
+            Student::class,
+            SchoolPeriod::class,
+            'education_monitor_id',
+            'school_period_id',
+        );
     }
 
     /*
@@ -239,17 +250,17 @@ class EducationMonitor extends Model
             ->select(['id', 'name'])
             ->ordered()
             ->with([
-                'schools:id,name,education_monitor_id,academic_period',
+                'schoolPeriods:id,name,education_monitor_id,academic_period',
             ])
             ->get()
             ->map(function (EducationMonitor $monitor): array {
                 return [
                     'id' => $monitor->id,
                     'name' => $monitor->name,
-                    'schools' => $monitor->schools->map(function (School $school): array {
+                    'schools' => $monitor->schoolPeriods->map(function (SchoolPeriod $schoolPeriod): array {
                         return [
-                            'id' => $school->id,
-                            'name' => sprintf('%s (%s)', $school->name, $school->academic_period->displayName()),
+                            'id' => $schoolPeriod->id,
+                            'name' => sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->displayName()),
                         ];
                     })->all(),
                 ];
@@ -262,7 +273,7 @@ class EducationMonitor extends Model
             ->select(['id', 'name'])
             ->with([
                 'offices:id,name,education_monitor_id',
-                'schools:id,name,education_monitor_id,academic_period',
+                'schoolPeriods:id,name,education_monitor_id,academic_period',
             ])
             ->ordered()
             ->get()
@@ -271,10 +282,10 @@ class EducationMonitor extends Model
                     'id' => $monitor->id,
                     'name' => $monitor->name,
                     'offices' => $monitor->offices->map->only(['id', 'name'])->all(),
-                    'schools' => $monitor->schools->map(function (School $school): array {
+                    'schools' => $monitor->schoolPeriods->map(function (SchoolPeriod $schoolPeriod): array {
                         return [
-                            'id' => $school->id,
-                            'name' => sprintf('%s (%s)', $school->name, $school->academic_period->displayName()),
+                            'id' => $schoolPeriod->id,
+                            'name' => sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->displayName()),
 
                         ];
                     })->all(),

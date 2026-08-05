@@ -51,7 +51,7 @@ class FinalizeClassroomDistribution
 
         DB::transaction(function () use ($currentAcademicYearId) {
             ClassroomDistributionCompletion::create([
-                'school_id' => auth('school')->user()->organization_id,
+                'school_period_id' => auth('school')->user()->organization_id,
                 'academic_year_id' => $currentAcademicYearId,
                 'completed_at' => now(),
             ]);

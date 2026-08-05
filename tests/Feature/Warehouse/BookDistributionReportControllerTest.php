@@ -9,6 +9,7 @@ use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -18,9 +19,6 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createWarehouseBookDistributionReportUser(Warehouse $warehouse, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -86,7 +84,7 @@ test('authenticated warehouse users can visit the book distribution report page'
             ->has('schools', 0)
             ->has('statistics', 0)
             ->where('selected.education_monitor_id', null)
-            ->where('selected.school_id', null)
+            ->where('selected.school_period_id', null)
             ->where('canPrint', false)
         );
 });
@@ -99,8 +97,8 @@ test('selecting a monitor loads its warehouse schools on the report page', funct
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
     EducationServicesOffice::factory()->for($otherMonitor, 'monitor')->create();
 
-    $school = School::factory()->for($monitor, 'monitor')->create(['name' => 'مدرسة الأمل']);
-    School::factory()->for($otherMonitor, 'monitor')->create(['name' => 'مدرسة أخرى']);
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor')->state(['name' => 'مدرسة الأمل']), 'school')->create();
+    SchoolPeriod::factory()->for(School::factory()->for($otherMonitor, 'monitor')->state(['name' => 'مدرسة أخرى']), 'school')->create();
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.reports.book-distributions.index', [
@@ -110,11 +108,11 @@ test('selecting a monitor loads its warehouse schools on the report page', funct
         ->assertInertia(fn (Assert $page) => $page
             ->component('warehouse/book-distributions/report')
             ->has('schools', 1)
-            ->where('schools.0.id', $school->id)
-            ->where('schools.0.name', $school->name)
+            ->where('schools.0.id', $schoolPeriod->id)
+            ->where('schools.0.name', sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->isMorning() ? 'فترة صباحية' : 'فترة مسائية'))
             ->has('statistics', 0)
             ->where('selected.education_monitor_id', $monitor->id)
-            ->where('selected.school_id', null)
+            ->where('selected.school_period_id', null)
             ->where('canPrint', false)
         );
 });
@@ -124,39 +122,39 @@ test('selecting a school loads grade level statistics on the report page', funct
     $user = createWarehouseBookDistributionReportUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
     $confirmedGradeLevel = GradeLevel::factory()->create();
     $pendingGradeLevel = GradeLevel::factory()->create();
     $academicYearId = AcademicYear::currentId();
 
-    $school->allGradeLevels()->attach($confirmedGradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($confirmedGradeLevel->id, [
         'academic_year_id' => $academicYearId,
     ]);
-    $school->allGradeLevels()->attach($pendingGradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($pendingGradeLevel->id, [
         'academic_year_id' => $academicYearId,
     ]);
 
-    $confirmedStudent = Student::factory()->for($school)->create();
-    $distributedStudent = Student::factory()->for($school)->create();
-    $pendingStudent = Student::factory()->for($school)->create();
+    $confirmedStudent = Student::factory()->for($schoolPeriod)->create();
+    $distributedStudent = Student::factory()->for($schoolPeriod)->create();
+    $pendingStudent = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'student_id' => $confirmedStudent->id,
         'classroom_id' => null,
     ]);
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'student_id' => $distributedStudent->id,
         'classroom_id' => null,
     ]);
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $pendingGradeLevel->id,
         'student_id' => $pendingStudent->id,
         'classroom_id' => null,
@@ -165,7 +163,7 @@ test('selecting a school loads grade level statistics on the report page', funct
     $bookDistribution = BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'warehouse_id' => $warehouse->id,
     ]);
@@ -173,21 +171,21 @@ test('selecting a school loads grade level statistics on the report page', funct
     BookDistributionItem::factory()->create([
         'book_distribution_id' => $bookDistribution->id,
         'academic_year_id' => $academicYearId,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'student_id' => $distributedStudent->id,
     ]);
 
     $response = $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.reports.book-distributions.index', [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('warehouse/book-distributions/report')
             ->has('statistics', 2)
             ->where('selected.education_monitor_id', $monitor->id)
-            ->where('selected.school_id', $school->id)
+            ->where('selected.school_period_id', $schoolPeriod->id)
             ->where('canPrint', true)
         );
 
@@ -210,7 +208,7 @@ test('selecting a school loads grade level statistics on the report page', funct
 test('guests are redirected from the book distribution report print page', function () {
     $this->get(route('warehouse.reports.book-distributions.print', [
         'education_monitor_id' => 1,
-        'school_id' => 1,
+        'school_period_id' => 1,
     ]))
         ->assertRedirect(route('warehouse.login'));
 });
@@ -225,12 +223,12 @@ test('users without book distribution statistics permissions cannot print the re
     ]);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.reports.book-distributions.print', [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertForbidden();
 });
@@ -244,7 +242,7 @@ test('print page requires a selected school', function () {
         ->get(route('warehouse.reports.book-distributions.print', [
             'education_monitor_id' => $monitor->id,
         ]))
-        ->assertSessionHasErrors('school_id');
+        ->assertSessionHasErrors('school_period_id');
 });
 
 test('authenticated warehouse users can print the book distribution report for a selected school', function () {
@@ -252,19 +250,19 @@ test('authenticated warehouse users can print the book distribution report for a
     $user = createWarehouseBookDistributionReportUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create(['name' => 'مدرسة الأمل']);
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor')->state(['name' => 'مدرسة الأمل']), 'school')->create();
     $gradeLevel = GradeLevel::factory()->create(['name' => 'الصف الأول']);
     $academicYearId = AcademicYear::currentId();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => $academicYearId,
     ]);
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => $academicYearId,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'student_id' => $student->id,
         'classroom_id' => null,
@@ -273,7 +271,7 @@ test('authenticated warehouse users can print the book distribution report for a
     BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'warehouse_id' => $warehouse->id,
     ]);
@@ -281,7 +279,7 @@ test('authenticated warehouse users can print the book distribution report for a
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.reports.book-distributions.print', [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertViewIs('print.warehouse.reports.book-distributions')

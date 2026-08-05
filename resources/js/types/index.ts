@@ -16,7 +16,7 @@ export const PERMISSION_ACTIONS = [
     'close',
 ] as const;
 
-export type PermissionAction = typeof PERMISSION_ACTIONS[number];
+export type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
 
 export type CanPermissions = Record<PermissionAction, boolean>;
 
@@ -27,10 +27,10 @@ export type Enum = {
 };
 
 export type ModelState = {
-    id: string,
-    name: string,
-    uiClasses: string,
-    action?: string,
+    id: string;
+    name: string;
+    uiClasses: string;
+    action?: string;
 };
 
 export type BooleanSelectOption = {
@@ -105,7 +105,7 @@ export type GradeLevel = {
     code: string;
     educational_stage: Enum;
     order: number;
-    created_at: string,
+    created_at: string;
     updated_at: string;
     already_distributed: boolean;
     classrooms_count: number;
@@ -127,7 +127,7 @@ export type Subject = {
     needs_lab: boolean;
     needs_lab_label: string;
     description?: string;
-    created_at: string,
+    created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 };
@@ -148,11 +148,11 @@ export type ClassPeriod = {
     [key: string]: unknown;
 };
 
-export interface ClassSchedule {
+export type ClassSchedule = {
     id: number;
     uuid: string;
-    school_id: number;
-    school?: School;
+    school_period_id: number;
+    school_period?: SchoolPeriod;
     academic_year_id: number;
     academic_year?: AcademicYear;
     classroom_id: number;
@@ -168,7 +168,7 @@ export interface ClassSchedule {
     [key: string]: unknown;
 };
 
-export interface ClassScheduleGridItem {
+export type ClassScheduleGridItem = {
     id: number;
     uuid: string;
     subject_id?: number;
@@ -176,11 +176,14 @@ export interface ClassScheduleGridItem {
     notes?: string;
 };
 
-export interface ClassScheduleGrid {
+export type ClassScheduleGrid = {
     classroom: Classroom;
     days: Enum[];
     periods: ClassPeriod[];
-    grid: Record<number, Record<number, ClassScheduleGridItem | null | 'break'>>;
+    grid: Record<
+        number,
+        Record<number, ClassScheduleGridItem | null | 'break'>
+    >;
 };
 
 export type Warehouse = {
@@ -254,7 +257,7 @@ export type EducationServicesOffice = {
     [key: string]: unknown; // This allows for additional properties...
 };
 
-export interface School {
+export type School = {
     id: number;
     uuid: string;
     education_monitor_id: number;
@@ -263,18 +266,40 @@ export interface School {
     education_services_office_id?: number;
     office?: EducationServicesOffice;
     education_services_office?: EducationServicesOffice;
-    educational_stages?: SchoolEducationalStage[];
-    educational_stages_labels?: string;
     serial_number: string;
     type: Enum;
     educational_company_name?: string;
     branch_type?: Enum;
     building_type?: Enum;
     name: string;
-    academic_period: Enum;
-    students_gender?: Enum;
+    academic_period_label?: string | null;
+    periods?: SchoolPeriod[];
     is_public?: boolean;
     is_private?: boolean;
+    grade_levels_count?: number;
+    classrooms_count?: number;
+    students_count?: number;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+};
+
+export type SchoolPeriod = {
+    id: number;
+    uuid: string;
+    education_monitor_id: number;
+    monitor?: EducationMonitor;
+    education_monitor?: EducationMonitor;
+    education_services_office_id?: number;
+    office?: EducationServicesOffice;
+    education_services_office?: EducationServicesOffice;
+    school_id: number;
+    school?: School;
+    name: string;
+    academic_period: Enum;
+    students_gender?: Enum | null;
+    educational_stages?: SchoolEducationalStage[];
+    educational_stages_labels?: string;
     is_morning_period?: boolean;
     is_evening_period?: boolean;
     grade_levels_count?: number;
@@ -290,8 +315,8 @@ export type Classroom = {
     uuid: string;
     academic_year_id: number;
     academic_year: AcademicYear;
-    school_id: number;
-    school: School;
+    school_period_id: number;
+    school_period: SchoolPeriod;
     grade_level_id: number;
     grade_level: GradeLevel;
     name: string;
@@ -323,8 +348,8 @@ export type Student = {
     education_monitor_id?: number;
     monitor?: EducationMonitor;
     education_monitor?: EducationMonitor;
-    school_id?: number;
-    school?: School;
+    school_period_id?: number;
+    school_period?: SchoolPeriod;
     nationality_id: number;
     nationality: Nationality;
     enrollment: StudentEnrollment;
@@ -333,7 +358,7 @@ export type Student = {
     classroom?: Classroom;
     number: string;
     registration_status: Enum;
-    exam_enrollment_status: Enum
+    exam_enrollment_status: Enum;
     first_name: string;
     father_name: string;
     grandfather_name: string;
@@ -364,17 +389,16 @@ export type StudentTransfer = {
     joined_academic_year?: AcademicYear;
     student_id: number;
     student: Student;
-    from_school_id: number;
-    from_school: School;
-    to_school_id?: number;
-    to_school?: School;
+    from_school_period_id: number;
+    from_school_period: SchoolPeriod;
+    to_school_period_id?: number;
+    to_school_period?: SchoolPeriod;
     left_school_at: string;
     joined_school_at?: string;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 };
-
 
 export type StudentPsychosocialCard = {
     id?: number;
@@ -412,7 +436,12 @@ export type StudentPsychosocialCard = {
     family_income?: Enum;
     accommodation_type?: Enum;
     accommodation_form?: Enum;
-    behavioral_problems?: Array<{ label?: string; behavior: string; has_problem: boolean; notes?: string }>;
+    behavioral_problems?: Array<{
+        label?: string;
+        behavior: string;
+        has_problem: boolean;
+        notes?: string;
+    }>;
     guardian_representative_name?: string;
     guardian_representative_relationship?: string;
     guardian_representative_id_card_number?: string;
@@ -422,8 +451,8 @@ export type StudentPsychosocialCard = {
 
 export type SchoolEducationalStage = {
     id: number;
-    school_id: number;
-    school?: School;
+    school_period_id: number;
+    school_period?: SchoolPeriod;
     academic_year_id?: number;
     academic_year?: AcademicYear;
     stage: Enum;

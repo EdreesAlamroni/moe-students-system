@@ -8,7 +8,7 @@ use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
 use App\Models\Nationality;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -17,17 +17,13 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  list<string>  $permissions
- * @param  array<string, mixed>  $attributes
- */
-function createSchoolUnenrolledFromClassroomManager(School $school, array $permissions = ['student:view-any', 'student:view'], array $attributes = []): User
+function createSchoolUnenrolledFromClassroomManager(SchoolPeriod $schoolPeriod, array $permissions = ['student:view-any', 'student:view'], array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ], $attributes));
 
     foreach ($permissions as $permission) {
@@ -39,7 +35,7 @@ function createSchoolUnenrolledFromClassroomManager(School $school, array $permi
     return $user;
 }
 
-function createSchoolUnenrolledFromClassroomGradeLevel(School $school, GradeLevelEnum $grade): GradeLevel
+function createSchoolUnenrolledFromClassroomGradeLevel(SchoolPeriod $schoolPeriod, GradeLevelEnum $grade): GradeLevel
 {
     $gradeLevel = GradeLevel::query()->firstOrCreate(
         ['code' => $grade->value],
@@ -50,7 +46,7 @@ function createSchoolUnenrolledFromClassroomGradeLevel(School $school, GradeLeve
         ],
     );
 
-    $school->allGradeLevels()->syncWithoutDetaching([
+    $schoolPeriod->allGradeLevels()->syncWithoutDetaching([
         $gradeLevel->id => ['academic_year_id' => AcademicYear::currentId()],
     ]);
 
@@ -76,12 +72,12 @@ test('guests cannot access unenrolled from classroom students page', function ()
 });
 
 test('users without permission cannot access unenrolled from classroom students page', function () {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'school')
@@ -90,39 +86,39 @@ test('users without permission cannot access unenrolled from classroom students 
 });
 
 test('unenrolled from classroom index lists only current school students enrolled in grade level without classroom', function () {
-    $school = School::factory()->create();
-    $otherSchool = School::factory()->create();
-    $user = createSchoolUnenrolledFromClassroomManager($school);
-    $gradeLevel = createSchoolUnenrolledFromClassroomGradeLevel($school, GradeLevelEnum::GRADE_1);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolUnenrolledFromClassroomManager($schoolPeriod);
+    $gradeLevel = createSchoolUnenrolledFromClassroomGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
-    $unenrolledStudents = Student::factory()->count(2)->for($school)->create();
+    $unenrolledStudents = Student::factory()->count(2)->for($schoolPeriod)->create();
     foreach ($unenrolledStudents as $student) {
         StudentEnrollment::factory()->create([
             'student_id' => $student->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
             'grade_level_id' => $gradeLevel->id,
             'classroom_id' => null,
         ]);
     }
 
-    $enrolledInClassroom = Student::factory()->for($school)->create();
+    $enrolledInClassroom = Student::factory()->for($schoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'student_id' => $enrolledInClassroom->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroom->id,
     ]);
 
-    Student::factory()->for($school)->create();
+    Student::factory()->for($schoolPeriod)->create();
 
-    $otherSchoolStudent = Student::factory()->for($otherSchool)->create();
+    $otherSchoolStudent = Student::factory()->for($otherSchoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'student_id' => $otherSchoolStudent->id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -147,23 +143,23 @@ test('unenrolled from classroom index lists only current school students enrolle
 });
 
 test('unenrolled from classroom index filters by grade level', function () {
-    $school = School::factory()->create();
-    $user = createSchoolUnenrolledFromClassroomManager($school);
-    $gradeOne = createSchoolUnenrolledFromClassroomGradeLevel($school, GradeLevelEnum::GRADE_1);
-    $gradeTwo = createSchoolUnenrolledFromClassroomGradeLevel($school, GradeLevelEnum::GRADE_2);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolUnenrolledFromClassroomManager($schoolPeriod);
+    $gradeOne = createSchoolUnenrolledFromClassroomGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
+    $gradeTwo = createSchoolUnenrolledFromClassroomGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_2);
 
-    $matchingStudent = Student::factory()->for($school)->create();
+    $matchingStudent = Student::factory()->for($schoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'student_id' => $matchingStudent->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeOne->id,
         'classroom_id' => null,
     ]);
 
-    $otherStudent = Student::factory()->for($school)->create();
+    $otherStudent = Student::factory()->for($schoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'student_id' => $otherStudent->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeTwo->id,
         'classroom_id' => null,
     ]);
@@ -183,28 +179,28 @@ test('unenrolled from classroom index filters by grade level', function () {
 });
 
 test('unenrolled from classroom index filters by registration status and nationality', function () {
-    $school = School::factory()->create();
-    $user = createSchoolUnenrolledFromClassroomManager($school);
-    $gradeLevel = createSchoolUnenrolledFromClassroomGradeLevel($school, GradeLevelEnum::GRADE_1);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolUnenrolledFromClassroomManager($schoolPeriod);
+    $gradeLevel = createSchoolUnenrolledFromClassroomGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
     $nationality = Nationality::factory()->create();
 
-    $matchingStudent = Student::factory()->for($school)->create([
+    $matchingStudent = Student::factory()->for($schoolPeriod)->create([
         'nationality_id' => $nationality->id,
         'registration_status' => StudentRegistrationStatus::NEW,
     ]);
     StudentEnrollment::factory()->create([
         'student_id' => $matchingStudent->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
 
-    $otherStudent = Student::factory()->for($school)->create([
+    $otherStudent = Student::factory()->for($schoolPeriod)->create([
         'registration_status' => StudentRegistrationStatus::REPEATER,
     ]);
     StudentEnrollment::factory()->create([
         'student_id' => $otherStudent->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -224,14 +220,14 @@ test('unenrolled from classroom index filters by registration status and nationa
 });
 
 test('view details navigates to existing school student show page', function () {
-    $school = School::factory()->create();
-    $user = createSchoolUnenrolledFromClassroomManager($school);
-    $gradeLevel = createSchoolUnenrolledFromClassroomGradeLevel($school, GradeLevelEnum::GRADE_1);
-    $student = Student::factory()->for($school)->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolUnenrolledFromClassroomManager($schoolPeriod);
+    $gradeLevel = createSchoolUnenrolledFromClassroomGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -246,10 +242,10 @@ test('view details navigates to existing school student show page', function () 
 });
 
 test('school users cannot view unenrolled classroom students belonging to another school', function () {
-    $school = School::factory()->create();
-    $user = createSchoolUnenrolledFromClassroomManager($school);
-    $otherSchool = School::factory()->create();
-    $student = Student::factory()->for($otherSchool)->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolUnenrolledFromClassroomManager($schoolPeriod);
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    $student = Student::factory()->for($otherSchoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.show', ['student' => $student]))

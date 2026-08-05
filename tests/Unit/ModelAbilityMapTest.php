@@ -52,6 +52,7 @@ it('resolves the user from an explicit guard with can', function () {
 });
 
 it('maps abilities for a model class with can', function () {
+
     /** @var User $user */
     $user = User::factory()->makeOne();
 
@@ -65,6 +66,7 @@ it('maps abilities for a model class with can', function () {
 });
 
 it('returns true from canAny when any ability is granted', function () {
+
     /** @var User $user */
     $user = User::factory()->makeOne();
 
@@ -75,6 +77,7 @@ it('returns true from canAny when any ability is granted', function () {
 });
 
 it('returns false from canAny when no abilities are granted', function () {
+
     /** @var User $user */
     $user = User::factory()->makeOne();
 
@@ -85,6 +88,7 @@ it('returns false from canAny when no abilities are granted', function () {
 });
 
 it('returns both can and canAny from make', function () {
+
     /** @var User $user */
     $user = User::factory()->makeOne();
 
@@ -101,6 +105,7 @@ it('returns both can and canAny from make', function () {
 });
 
 it('returns canAny false from make when no abilities are granted', function () {
+
     /** @var User $user */
     $user = User::factory()->makeOne();
 
@@ -117,6 +122,7 @@ it('returns canAny false from make when no abilities are granted', function () {
 });
 
 it('maps abilities for multiple subject arguments through the bound policy', function () {
+
     /** @var User $user */
     $user = User::factory()->makeOne();
 
@@ -134,6 +140,7 @@ it('maps abilities for multiple subject arguments through the bound policy', fun
 });
 
 it('maps abilities for an authorization resource class through its bound policy', function () {
+
     /** @var User $user */
     $user = User::factory()->makeOne();
 

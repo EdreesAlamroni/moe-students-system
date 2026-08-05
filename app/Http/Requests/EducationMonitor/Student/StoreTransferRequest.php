@@ -91,7 +91,7 @@ class StoreTransferRequest extends FormRequest
 
     private function resolveTransferEligibilityError(Student $student): ?string
     {
-        if (! is_null($student->school_id)) {
+        if (! is_null($student->school_period_id)) {
             return __('validation.custom.student_transfer.already_in_school', [
                 'name' => $student->full_name,
             ]);

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 
 import { Head, router } from '@inertiajs/react';
 
-import type { EducationMonitor, GradeLevel, School } from '@/types';
+import type { EducationMonitor, GradeLevel, SchoolPeriod } from '@/types';
 
 import ActionsSection from '@/components/ui/structure/actions-section';
 import { Card, CardContent, CardHeader, CardTableContent, CardTitle } from '@/components/ui/structure/card';
@@ -25,17 +25,15 @@ import { Building2Icon, ClockIcon, LoaderIcon, PrinterIcon } from 'lucide-react'
 
 import { index, print } from '@/routes/warehouse/reports/book-distributions';
 
-type OrganizationOption = Pick<EducationMonitor | School, 'id' | 'name'>;
-
 type BookDistributionStatistic = GradeLevel;
 
 type ReportPageProps = {
-    monitors: OrganizationOption[];
-    schools: OrganizationOption[];
+    monitors: EducationMonitor[];
+    schools: SchoolPeriod[];
     statistics: BookDistributionStatistic[];
     selected: {
         education_monitor_id: number | null;
-        school_id: number | null;
+        school_period_id: number | null;
     };
     canPrint: boolean;
 };
@@ -54,7 +52,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
     const [pendingSchoolId, setPendingSchoolId] = useState<string>();
 
     const monitorId = pendingMonitorId ?? selected.education_monitor_id?.toString() ?? '';
-    const schoolId = pendingSchoolId ?? selected.school_id?.toString() ?? '';
+    const schoolId = pendingSchoolId ?? selected.school_period_id?.toString() ?? '';
     const isLoadingSchools = loading === 'schools';
     const isLoadingStatistics = loading === 'statistics';
     const showReport = Boolean(schoolId);
@@ -89,7 +87,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
 
         router.get(index.url(), {
             education_monitor_id: monitorId,
-            school_id: value,
+            school_period_id: value,
         }, {
             ...visitOptions,
             onFinish: () => {
@@ -125,7 +123,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                                 href={print.url({
                                     query: {
                                         education_monitor_id: monitorId,
-                                        school_id: schoolId,
+                                        school_period_id: schoolId,
                                     },
                                 })}
                                 target="_blank"
@@ -142,7 +140,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <Building2Icon />
-                                <span>اختيار الجهة التعليمية</span>
+                                <span>اختيار المؤسسة التعليمية</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -158,8 +156,12 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                                             disabled={loading !== null}
                                             onValueChange={selectMonitor}
                                         >
-                                            <SelectTrigger id="education_monitor_id">
-                                                <SelectValue placeholder="اختر المُراقبة" />
+                                            <SelectTrigger
+                                                id="education_monitor_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المُراقبة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -180,15 +182,27 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                                 </Field>
 
                                 <Field>
-                                    <Label htmlFor="school_id" required>
+                                    <Label
+                                        htmlFor="school_period_id"
+                                        required
+                                    >
                                         المدرسة
                                     </Label>
 
                                     {!monitorId ? (
-                                        <EmptyOptionsInput id="school_id" placeholder="اختر المُراقبة أولاً" />
+                                        <EmptyOptionsInput
+                                            id="school_period_id"
+                                            placeholder="اختر المُراقبة أولاً"
+                                        />
                                     ) : isLoadingSchools ? (
-                                        <Select disabled open={false}>
-                                            <SelectTrigger id="school_id" aria-busy="true">
+                                        <Select
+                                            disabled
+                                            open={false}
+                                        >
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                                aria-busy="true"
+                                            >
                                                 <span className="flex items-center gap-2 text-muted-foreground">
                                                     <LoaderIcon className="size-3.5 shrink-0 animate-spin" />
                                                     <span>جارٍ تحميل المدارس…</span>
@@ -201,13 +215,20 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                                             disabled={loading !== null}
                                             onValueChange={selectSchool}
                                         >
-                                            <SelectTrigger id="school_id">
-                                                <SelectValue placeholder="اختر المدرسة" />
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المدرسة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     {schools.map((school) => (
-                                                        <SelectItem key={school.id} value={String(school.id)}>
+                                                        <SelectItem
+                                                            key={school.id}
+                                                            value={school.id.toString()}
+                                                        >
                                                             {school.name}
                                                         </SelectItem>
                                                     ))}
@@ -216,7 +237,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                                         </Select>
                                     ) : (
                                         <EmptyOptionsInput
-                                            id="school_id"
+                                            id="school_period_id"
                                             placeholder="لا توجد مدارس متاحة لهذه المُراقبة"
                                         />
                                     )}
@@ -232,7 +253,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                             <CardContent>
                                 <EmptyState
                                     icon={Building2Icon}
-                                    text={monitorId ? 'اختر المدرسة للمتابعة' : 'ابدأ باختيار الجهة التعليمية'}
+                                    text={monitorId ? 'اختر المدرسة للمتابعة' : 'ابدأ باختيار المؤسسة التعليمية'}
                                     description={
                                         monitorId
                                             ? 'بعد اختيار المدرسة، ستظهر إحصائيات توزيع الكُتب لكل صف دراسي.'
@@ -273,15 +294,9 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead scope="col">الصف الدراسي</TableHead>
-                                                <TableHead scope="col" className="text-center">
-                                                    عدد الطلاب
-                                                </TableHead>
-                                                <TableHead scope="col" className="text-center">
-                                                    المُوزَّع
-                                                </TableHead>
-                                                <TableHead scope="col" className="text-center">
-                                                    المُعلَّق
-                                                </TableHead>
+                                                <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                                <TableHead scope="col" className="text-center">المُوزَّع</TableHead>
+                                                <TableHead scope="col" className="text-center">المُعلَّق</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>

@@ -11,7 +11,7 @@ use App\Http\Resources\EducationMonitor\UserFormResource;
 use App\Http\Resources\EducationMonitor\UserResource;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
@@ -58,7 +58,7 @@ class UserController extends Controller
                         EducationServicesOffice::class => function (Builder $query): void {
                             $query->select(['id', 'education_monitor_id']);
                         },
-                        School::class => function (Builder $query): void {
+                        SchoolPeriod::class => function (Builder $query): void {
                             $query->select(['id', 'education_monitor_id']);
                         },
                         EducationMonitor::class => function (Builder $query): void {
@@ -99,16 +99,16 @@ class UserController extends Controller
         $monitor = auth('education_monitor')->user()->organization;
 
         $offices = $scope->isEducationServicesOffice()
-            ? EducationServicesOffice::list(function (Builder $query) use ($monitor) {
-                $query->where('education_monitor_id', '=', $monitor->id);
+            ? EducationServicesOffice::list(function ($query) {
+                $query->forCurrentEducationMonitor();
             }, ['education_monitor_id'])
-            : [];
+            : collect([]);
 
         $schools = $scope->isSchool()
-            ? School::list(function (Builder $query) use ($monitor) {
-                $query->where('education_monitor_id', '=', $monitor->id);
+            ? SchoolPeriod::list(function ($query) {
+                $query->forCurrentEducationMonitor();
             }, ['education_monitor_id'])
-            : [];
+            : collect([]);
 
         return Inertia::render('education-monitor/users/create', [
             'scope' => $scope->toArray(),
@@ -205,7 +205,7 @@ class UserController extends Controller
         }
 
         $user->loadMissing(match ($user->organization_type) {
-            EducationServicesOffice::class, School::class => ['organization.monitor'],
+            EducationServicesOffice::class, SchoolPeriod::class => ['organization.monitor'],
             default => ['organization'],
         });
     }

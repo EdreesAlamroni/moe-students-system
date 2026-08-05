@@ -5,7 +5,7 @@ use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -14,12 +14,9 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @return array{school: School, gradeLevel: GradeLevel, user: User}
- */
 function createSchoolGradeLevelEnrollmentContext(): array
 {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::query()->firstOrCreate(
         ['code' => GradeLevelEnum::GRADE_1->value],
         [
@@ -29,15 +26,15 @@ function createSchoolGradeLevelEnrollmentContext(): array
         ],
     );
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     foreach (['student:view-any', 'student:view', 'student:enroll-in-grade-level'] as $permission) {
@@ -50,7 +47,7 @@ function createSchoolGradeLevelEnrollmentContext(): array
         'student:enroll-in-grade-level',
     ]);
 
-    return compact('school', 'gradeLevel', 'user');
+    return compact('schoolPeriod', 'gradeLevel', 'user');
 }
 
 beforeEach(function () {
@@ -67,9 +64,9 @@ beforeEach(function () {
 });
 
 test('authorized users can enroll a student in a grade level', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->post(route('school.students.grade-level-enrollments.store', ['student' => $student]), [
@@ -80,21 +77,21 @@ test('authorized users can enroll a student in a grade level', function () {
     expect($student->fresh()->enrollment)
         ->not->toBeNull()
         ->grade_level_id->toBe($gradeLevel->id)
-        ->school_id->toBe($school->id)
+        ->school_period_id->toBe($schoolPeriod->id)
         ->classroom_id->toBeNull();
 });
 
 test('users without enroll permission cannot enroll a student in a grade level', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel] = createSchoolGradeLevelEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel] = createSchoolGradeLevelEnrollmentContext();
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->post(route('school.students.grade-level-enrollments.store', ['student' => $student]), [
@@ -106,8 +103,8 @@ test('users without enroll permission cannot enroll a student in a grade level',
 });
 
 test('enrolling a student in a grade level validates required fields', function () {
-    ['school' => $school, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->from(route('school.students.show', ['student' => $student]))
@@ -117,8 +114,8 @@ test('enrolling a student in a grade level validates required fields', function 
 });
 
 test('enrolling a student rejects grade levels that are not assigned to the school', function () {
-    ['school' => $school, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
     $foreignGradeLevel = GradeLevel::factory()->create();
 
     $this->actingAs($user, 'school')
@@ -133,18 +130,18 @@ test('enrolling a student rejects grade levels that are not assigned to the scho
 });
 
 test('enrolling a student who already has an enrollment is forbidden', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
 
     $otherGradeLevel = GradeLevel::factory()->create();
-    $school->allGradeLevels()->attach($otherGradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($otherGradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
@@ -158,8 +155,8 @@ test('enrolling a student who already has an enrollment is forbidden', function 
 });
 
 test('grade level enrollment is blocked when the selected academic year is inactive', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $inactiveYear = AcademicYear::factory()->create([
         'name' => '2023-2024',
@@ -183,8 +180,8 @@ test('grade level enrollment is blocked when the selected academic year is inact
 });
 
 test('student show page exposes grade level enrollment ability when authorized', function () {
-    ['school' => $school, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolGradeLevelEnrollmentContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.show', ['student' => $student]))

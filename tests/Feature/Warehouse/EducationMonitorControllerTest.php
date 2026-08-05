@@ -11,9 +11,6 @@ use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createWarehouseEducationMonitorUser(Warehouse $warehouse, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([

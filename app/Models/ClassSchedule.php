@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property string $uuid
- * @property int $school_id
+ * @property int $school_period_id
  * @property int $academic_year_id
  * @property int $classroom_id
  * @property int $class_period_id
@@ -26,7 +26,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read AcademicYear $academicYear
- * @property-read School $school
+ * @property-read SchoolPeriod $schoolPeriod
  * @property-read Classroom $classroom
  * @property-read ClassPeriod $classPeriod
  * @property-read Subject $subject
@@ -40,7 +40,7 @@ class ClassSchedule extends Model
     protected function casts(): array
     {
         return [
-            'school_id' => 'integer',
+            'school_period_id' => 'integer',
             'academic_year_id' => 'integer',
             'classroom_id' => 'integer',
             'class_period_id' => 'integer',
@@ -77,7 +77,7 @@ class ClassSchedule extends Model
             return $query;
         }
 
-        return $query->where('school_id', '=', $id);
+        return $query->where('school_period_id', '=', $id);
     }
 
     #[Scope]
@@ -91,7 +91,7 @@ class ClassSchedule extends Model
 
         return $query
             ->where('academic_year_id', '=', AcademicYear::currentConstraintId())
-            ->where('school_id', '=', $id);
+            ->where('school_period_id', '=', $id);
     }
 
     #[Scope]
@@ -115,9 +115,9 @@ class ClassSchedule extends Model
         return $this->belongsTo(AcademicYear::class);
     }
 
-    public function school(): BelongsTo
+    public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class);
+        return $this->belongsTo(SchoolPeriod::class);
     }
 
     public function classroom(): BelongsTo

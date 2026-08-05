@@ -20,7 +20,7 @@ class StudentAcademicRecordController extends Controller
         $student->load([
             'nationality',
             'enrollment.gradeLevel',
-            'school:id,education_services_office_id',
+            'schoolPeriod',
         ]);
 
         $pageData = app(AcademicRecordService::class)->resolveShowPageData($student);

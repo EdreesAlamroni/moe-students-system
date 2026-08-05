@@ -11,9 +11,6 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationMonitorOfficeReportUser(EducationMonitor $monitor, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([

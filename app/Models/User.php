@@ -45,7 +45,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property Warehouse|EducationMonitor|EducationServicesOffice|School|null $organization
+ * @property Warehouse|EducationMonitor|EducationServicesOffice|SchoolPeriod|null $organization
  */
 #[Guarded(['id'])]
 #[Hidden(['password', 'remember_token'])]
@@ -115,7 +115,7 @@ class User extends Authenticatable
 
         $descendants = [
             EducationServicesOffice::class => 'education_monitor_id',
-            School::class => 'education_monitor_id',
+            SchoolPeriod::class => 'education_monitor_id',
         ];
 
         return $this->scopedToOrganization($query, $organizationId, EducationMonitor::class, $descendants);
@@ -127,7 +127,7 @@ class User extends Authenticatable
         $organizationId = $this->authenticatedOrganizationId(UserScope::EDUCATION_SERVICES_OFFICE);
 
         $descendants = [
-            School::class => 'education_services_office_id',
+            SchoolPeriod::class => 'education_services_office_id',
         ];
 
         return $this->scopedToOrganization($query, $organizationId, EducationServicesOffice::class, $descendants);
@@ -138,7 +138,7 @@ class User extends Authenticatable
     {
         $organizationId = $this->authenticatedOrganizationId(UserScope::SCHOOL);
 
-        return $this->scopedToOrganization($query, $organizationId, School::class);
+        return $this->scopedToOrganization($query, $organizationId, SchoolPeriod::class);
     }
 
     #[Scope]
@@ -211,12 +211,67 @@ class User extends Authenticatable
 
     public function belongsToDeletedOrganization(): bool
     {
-        return $this->hasOrganization() && $this->organization()->onlyTrashed()->exists();
+        if (! $this->hasOrganization()) {
+            return false;
+        }
+
+        if ($this->organization()->onlyTrashed()->exists()) {
+            return true;
+        }
+
+        if ($this->organization_type !== SchoolPeriod::class) {
+            return false;
+        }
+
+        $schoolPeriod = SchoolPeriod::query()->withTrashed()->find($this->organization_id);
+
+        if ($schoolPeriod === null) {
+            return false;
+        }
+
+        return School::query()->onlyTrashed()->whereKey($schoolPeriod->school_id)->exists();
     }
 
     public function hasOrphanedOrganization(): bool
     {
-        return $this->hasOrganization() && ! $this->organization()->exists();
+        if (! $this->hasOrganization()) {
+            return false;
+        }
+
+        if (! $this->organization()->exists()) {
+            return true;
+        }
+
+        if ($this->organization_type !== SchoolPeriod::class) {
+            return false;
+        }
+
+        $schoolPeriod = $this->organization;
+
+        if (! $schoolPeriod instanceof SchoolPeriod) {
+            return true;
+        }
+
+        return ! School::query()->withTrashed()->whereKey($schoolPeriod->school_id)->exists();
+    }
+
+    public function hasValidOrganizationContext(): bool
+    {
+        if ($this->scope === UserScope::ADMINISTRATION) {
+            return ! $this->hasOrganization();
+        }
+
+        $expectedType = match ($this->scope) {
+            UserScope::WAREHOUSE => Warehouse::class,
+            UserScope::EDUCATION_MONITOR => EducationMonitor::class,
+            UserScope::EDUCATION_SERVICES_OFFICE => EducationServicesOffice::class,
+            UserScope::SCHOOL => SchoolPeriod::class,
+        };
+
+        return $this->organization_type === $expectedType
+            && $this->organization_id !== null
+            && ! $this->belongsToDeletedOrganization()
+            && ! $this->hasOrphanedOrganization();
     }
 
     /**
@@ -230,7 +285,7 @@ class User extends Authenticatable
     public function resolvedOrganization(): ?array
     {
         $this->loadMissing(match ($this->organization_type) {
-            EducationServicesOffice::class, School::class => ['organization.monitor'],
+            EducationServicesOffice::class, SchoolPeriod::class => ['organization.monitor'],
             default => ['organization'],
         });
 
@@ -265,10 +320,14 @@ class User extends Authenticatable
                     'education_monitor' => $reference($organization->monitor),
                 ],
             ],
-            $this->scope === UserScope::SCHOOL && $organization instanceof School => [
+            $this->scope === UserScope::SCHOOL && $organization instanceof SchoolPeriod => [
                 'type' => 'school',
                 'organization' => [
-                    'school' => $reference($organization),
+                    'school' => [
+                        ...$reference($organization),
+                        'school_id' => $organization->school_id,
+                        'academic_period' => $organization->academic_period->toArray(),
+                    ],
                     'education_monitor' => $reference($organization->monitor),
                 ],
             ],
@@ -286,7 +345,7 @@ class User extends Authenticatable
     private function scopedToOrganization(Builder $query, int|string|null $organizationId, string $organizationClass, array $descendants = []): Builder
     {
         if ($organizationId === null) {
-            return $query;
+            return $query->whereRaw('1 = 0');
         }
 
         return $query->where(function (Builder $query) use ($organizationId, $organizationClass, $descendants): void {
@@ -304,7 +363,13 @@ class User extends Authenticatable
 
     private function authenticatedOrganizationId(UserScope $scope): ?int
     {
-        return auth($scope->guard())->user()?->organization_id;
+        $user = auth($scope->guard())->user();
+
+        if (! $user instanceof self || $user->scope !== $scope || ! $user->hasValidOrganizationContext()) {
+            return null;
+        }
+
+        return $user->organization_id;
     }
 
     public function hasAnyRelations(): bool

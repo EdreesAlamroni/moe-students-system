@@ -5,7 +5,7 @@ namespace App\Http\Requests\EducationServicesOffice\User;
 use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,9 +28,9 @@ class StoreRequest extends FormRequest
         $scopeIsSchool = $this->scopeIs(UserScope::SCHOOL);
 
         return [
-            'school_id' => Rule::when($scopeIsSchool, [
+            'school_period_id' => Rule::when($scopeIsSchool, [
                 'required',
-                Rule::exists(School::class, 'id')
+                Rule::exists(SchoolPeriod::class, 'id')
                     ->where('education_services_office_id', $officeId),
             ]),
             'name' => [
@@ -92,7 +92,7 @@ class StoreRequest extends FormRequest
         $scope = UserScope::from($validated['scope']);
 
         $attributes = Arr::except($validated, [
-            'school_id',
+            'school_period_id',
             'roles',
             'password_confirmation',
         ]);
@@ -103,8 +103,8 @@ class StoreRequest extends FormRequest
                 EducationServicesOffice::class,
             ],
             UserScope::SCHOOL => [
-                $validated['school_id'] ?? null,
-                School::class,
+                $validated['school_period_id'] ?? null,
+                SchoolPeriod::class,
             ],
             default => [null, null],
         };

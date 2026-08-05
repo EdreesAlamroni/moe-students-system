@@ -14,6 +14,7 @@ use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
@@ -120,7 +121,10 @@ test('users without school permissions cannot view schools', function () {
 test('authenticated users can visit the schools index page', function () {
     $user = createSchoolAdminUser();
     $monitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $school = School::factory()
+        ->for($monitor, 'monitor')
+        ->has(SchoolPeriod::factory(), 'periods')
+        ->create();
 
     $this->actingAs($user, 'administration')
         ->get(route('administration.schools.index'))
@@ -140,8 +144,8 @@ test('authenticated users can filter schools by education monitor', function () 
     $monitorA = EducationMonitor::factory()->create();
     $monitorB = EducationMonitor::factory()->create();
 
-    School::factory()->for($monitorA, 'monitor')->create(['name' => 'مدرسة أ']);
-    School::factory()->for($monitorB, 'monitor')->create(['name' => 'مدرسة ب']);
+    School::factory()->for($monitorA, 'monitor')->has(SchoolPeriod::factory(), 'periods')->create(['name' => 'مدرسة أ']);
+    School::factory()->for($monitorB, 'monitor')->has(SchoolPeriod::factory(), 'periods')->create(['name' => 'مدرسة ب']);
 
     $this->actingAs($user, 'administration')
         ->get(route('administration.schools.index', ['filter' => ['education_monitor_id' => $monitorA->id]]))
@@ -184,26 +188,28 @@ test('authenticated users can store a public single-period school', function () 
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 1);
+    $this->assertDatabaseCount('school_periods', 1);
 
     $school = School::query()->firstOrFail();
+    $schoolPeriod = $school->periods()->firstOrFail();
 
-    expect($school->education_monitor_id)->toBe($monitor->id)
+    expect($schoolPeriod->education_monitor_id)->toBe($monitor->id)
         ->and($school->type)->toBe(SchoolType::PUBLIC)
-        ->and($school->academic_period)->toBe(SchoolAcademicPeriod::MORNING);
+        ->and($schoolPeriod->academic_period)->toBe(SchoolAcademicPeriod::MORNING);
 
     $this->assertDatabaseHas('school_educational_stages', [
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'stage' => SchoolEducationalStageEnum::PRIMARY_EDUCATION->value,
     ]);
 
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $school->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 });
 
-test('authenticated users can store a dual-period school as two records', function () {
+test('authenticated users can store separate dual-period schools', function () {
     $user = createSchoolAdminUser();
     $monitor = EducationMonitor::factory()->create();
     $primaryGradeLevel = createGradeLevelForStage(SchoolEducationalStageEnum::PRIMARY_EDUCATION);
@@ -228,15 +234,22 @@ test('authenticated users can store a dual-period school as two records', functi
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 2);
+    $this->assertDatabaseCount('school_periods', 2);
 
     $this->assertDatabaseHas('schools', [
         'education_monitor_id' => $monitor->id,
         'name' => 'مدرسة الصباح',
-        'academic_period' => SchoolAcademicPeriod::MORNING->value,
-        'students_gender' => SchoolStudentsGender::BOYS->value,
     ]);
     $this->assertDatabaseHas('schools', [
         'education_monitor_id' => $monitor->id,
+        'name' => 'مدرسة المساء',
+    ]);
+    $this->assertDatabaseHas('school_periods', [
+        'name' => 'مدرسة الصباح',
+        'academic_period' => SchoolAcademicPeriod::MORNING->value,
+        'students_gender' => SchoolStudentsGender::BOYS->value,
+    ]);
+    $this->assertDatabaseHas('school_periods', [
         'name' => 'مدرسة المساء',
         'academic_period' => SchoolAcademicPeriod::EVENING->value,
         'students_gender' => SchoolStudentsGender::GIRLS->value,
@@ -244,18 +257,17 @@ test('authenticated users can store a dual-period school as two records', functi
 
     expect(SchoolEducationalStage::query()->count())->toBe(2);
 
-    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
-    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+    $morningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::MORNING)->firstOrFail();
+    $eveningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::EVENING)->firstOrFail();
 
-    expect($morningSchool->same_school_uuid)->toBeNull()
-        ->and($eveningSchool->same_school_uuid)->toBeNull();
+    expect($morningSchoolPeriod->school_id)->not->toBe($eveningSchoolPeriod->school_id);
 
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $morningSchool->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $morningSchoolPeriod->id,
         'grade_level_id' => $primaryGradeLevel->id,
     ]);
-    $this->assertDatabaseHas('grade_level_school', [
-        'school_id' => $eveningSchool->id,
+    $this->assertDatabaseHas('grade_level_school_period', [
+        'school_period_id' => $eveningSchoolPeriod->id,
         'grade_level_id' => $secondaryGradeLevel->id,
     ]);
 });
@@ -284,24 +296,27 @@ test('authenticated users can store a dual-period school sharing the same name',
         ->post(route('administration.schools.store'), $payload)
         ->assertRedirect();
 
-    $this->assertDatabaseCount('schools', 2);
+    $this->assertDatabaseCount('schools', 1);
+    $this->assertDatabaseCount('school_periods', 2);
 
     $this->assertDatabaseHas('schools', [
+        'name' => 'مدرسة الوحدة',
+    ]);
+    $this->assertDatabaseHas('school_periods', [
         'name' => 'مدرسة الوحدة',
         'academic_period' => SchoolAcademicPeriod::MORNING->value,
         'students_gender' => SchoolStudentsGender::BOYS->value,
     ]);
-    $this->assertDatabaseHas('schools', [
+    $this->assertDatabaseHas('school_periods', [
         'name' => 'مدرسة الوحدة',
         'academic_period' => SchoolAcademicPeriod::EVENING->value,
         'students_gender' => SchoolStudentsGender::GIRLS->value,
     ]);
 
-    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
-    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+    $morningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::MORNING)->firstOrFail();
+    $eveningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::EVENING)->firstOrFail();
 
-    expect($morningSchool->same_school_uuid)->not->toBeNull()
-        ->and($eveningSchool->same_school_uuid)->toBe($morningSchool->same_school_uuid);
+    expect($morningSchoolPeriod->school_id)->toBe($eveningSchoolPeriod->school_id);
 });
 
 test('dual-period school with shared name requires the single name field', function () {
@@ -338,14 +353,15 @@ test('authenticated users can store a single-period school without students gend
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 1);
+    $this->assertDatabaseCount('school_periods', 1);
 
-    $school = School::query()->firstOrFail();
+    $schoolPeriod = SchoolPeriod::query()->firstOrFail();
 
-    expect($school->students_gender)->toBeNull()
-        ->and($school->gradeLevels()->count())->toBe(0);
+    expect($schoolPeriod->students_gender)->toBeNull()
+        ->and($schoolPeriod->gradeLevels()->count())->toBe(0);
 
     $this->assertDatabaseHas('school_educational_stages', [
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'stage' => SchoolEducationalStageEnum::PRIMARY_EDUCATION->value,
     ]);
 });
@@ -371,14 +387,15 @@ test('authenticated users can store a dual-period school without students gender
         ->assertRedirect();
 
     $this->assertDatabaseCount('schools', 2);
+    $this->assertDatabaseCount('school_periods', 2);
 
-    $morningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::MORNING->value)->firstOrFail();
-    $eveningSchool = School::query()->where('academic_period', SchoolAcademicPeriod::EVENING->value)->firstOrFail();
+    $morningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::MORNING)->firstOrFail();
+    $eveningSchoolPeriod = SchoolPeriod::query()->where('academic_period', SchoolAcademicPeriod::EVENING)->firstOrFail();
 
-    expect($morningSchool->students_gender)->toBeNull()
-        ->and($eveningSchool->students_gender)->toBeNull()
-        ->and($morningSchool->gradeLevels()->count())->toBe(0)
-        ->and($eveningSchool->gradeLevels()->count())->toBe(0);
+    expect($morningSchoolPeriod->students_gender)->toBeNull()
+        ->and($eveningSchoolPeriod->students_gender)->toBeNull()
+        ->and($morningSchoolPeriod->gradeLevels()->count())->toBe(0)
+        ->and($eveningSchoolPeriod->gradeLevels()->count())->toBe(0);
 
     expect(SchoolEducationalStage::query()->count())->toBe(2);
 });
@@ -471,7 +488,7 @@ test('private school requires company name and branch and building types', funct
 
 test('authenticated users can visit the show school page', function () {
     $user = createSchoolAdminUser();
-    $school = School::factory()->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->create();
 
     $this->actingAs($user, 'administration')
         ->get(route('administration.schools.show', ['school' => $school]))
@@ -485,7 +502,7 @@ test('authenticated users can visit the show school page', function () {
 
 test('authenticated users can visit the edit school page', function () {
     $user = createSchoolAdminUser();
-    $school = School::factory()->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->create();
 
     $this->actingAs($user, 'administration')
         ->get(route('administration.schools.edit', ['school' => $school]))
@@ -500,7 +517,7 @@ test('authenticated users can visit the edit school page', function () {
 
 test('authenticated users can update the school name for a public school', function () {
     $user = createSchoolAdminUser();
-    $school = School::factory()->create([
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->create([
         'type' => SchoolType::PUBLIC->value,
         'name' => 'الاسم القديم',
     ]);
@@ -516,7 +533,7 @@ test('authenticated users can update the school name for a public school', funct
 
 test('authenticated users can update private school specific fields', function () {
     $user = createSchoolAdminUser();
-    $school = School::factory()->create([
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->create([
         'type' => SchoolType::PRIVATE->value,
         'educational_company_name' => 'الشركة القديمة',
         'branch_type' => SchoolBranchType::MAIN->value,

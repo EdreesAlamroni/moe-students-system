@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid()->unique();
             $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('school_id')->nullable()->constrained('schools')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('school_period_id')->nullable()->constrained('school_periods')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('grade_level_id')->constrained('grade_levels')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('classroom_id')->nullable()->constrained('classrooms')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('student_id')->constrained('students')->cascadeOnUpdate()->cascadeOnDelete();

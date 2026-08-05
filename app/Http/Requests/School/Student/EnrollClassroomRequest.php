@@ -21,7 +21,7 @@ class EnrollClassroomRequest extends FormRequest
                 'required',
                 Rule::exists(Classroom::class, 'id')
                     ->where('academic_year_id', AcademicYear::currentId())
-                    ->where('school_id', auth('school')->user()->organization_id),
+                    ->where('school_period_id', auth('school')->user()->organization_id),
             ],
         ];
     }

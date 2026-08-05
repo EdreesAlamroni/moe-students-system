@@ -59,7 +59,6 @@ class EducationServicesOfficePolicy
 
     private function belongsToCurrentMonitor(User $user, EducationServicesOffice $office): bool
     {
-        return $user->organization_type === EducationMonitor::class
-            && $user->organization_id === $office->education_monitor_id;
+        return $user->organization_type === EducationMonitor::class && $user->organization_id === $office->education_monitor_id;
     }
 }

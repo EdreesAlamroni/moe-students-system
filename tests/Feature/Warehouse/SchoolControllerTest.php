@@ -5,15 +5,13 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createWarehouseSchoolUser(Warehouse $warehouse, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -73,8 +71,8 @@ test('authenticated warehouse users can visit the schools index', function () {
     $user = createWarehouseSchoolUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     $otherMonitor = EducationMonitor::factory()->for($otherWarehouse, 'warehouse')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
-    School::factory()->for($otherMonitor, 'monitor')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create();
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherMonitor, 'monitor')->create();
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.schools.index'))
@@ -98,8 +96,8 @@ test('authenticated warehouse users can filter schools by education monitor', fu
     $monitorA = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     $monitorB = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
 
-    School::factory()->for($monitorA, 'monitor')->create(['name' => 'مدرسة أ']);
-    School::factory()->for($monitorB, 'monitor')->create(['name' => 'مدرسة ب']);
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitorA, 'monitor')->create(['name' => 'مدرسة أ']);
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitorB, 'monitor')->create(['name' => 'مدرسة ب']);
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.schools.index', ['filter' => ['education_monitor_id' => $monitorA->id]]))
@@ -117,8 +115,8 @@ test('authenticated warehouse users can filter schools by name', function () {
     $user = createWarehouseSchoolUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
 
-    School::factory()->for($monitor, 'monitor')->create(['name' => 'مدرسة الشهداء']);
-    School::factory()->for($monitor, 'monitor')->create(['name' => 'مدرسة النصر']);
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create(['name' => 'مدرسة الشهداء']);
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create(['name' => 'مدرسة النصر']);
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.schools.index', ['filter' => ['name' => 'الشهداء']]))
@@ -135,7 +133,7 @@ test('authenticated warehouse users can visit the show school page', function ()
     $warehouse = Warehouse::factory()->create();
     $user = createWarehouseSchoolUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create();
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.schools.show', ['school' => $school]))
@@ -156,7 +154,7 @@ test('warehouse users cannot view schools from another warehouse', function () {
     $otherWarehouse = Warehouse::factory()->create();
     $user = createWarehouseSchoolUser($warehouse);
     $monitor = EducationMonitor::factory()->for($otherWarehouse, 'warehouse')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create();
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.schools.show', ['school' => $school]))
@@ -168,7 +166,7 @@ test('warehouse users cannot view schools from another warehouse on the index', 
     $otherWarehouse = Warehouse::factory()->create();
     $user = createWarehouseSchoolUser($warehouse);
     $monitor = EducationMonitor::factory()->for($otherWarehouse, 'warehouse')->create();
-    School::factory()->for($monitor, 'monitor')->create();
+    School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create();
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.schools.index'))

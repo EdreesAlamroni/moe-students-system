@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\AcademicYear;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentTransfer;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -24,20 +25,25 @@ class StudentTransferFactory extends Factory
             'left_academic_year_id' => AcademicYear::currentId() ?? AcademicYear::factory(),
             'joined_academic_year_id' => fn (array $attributes) => $attributes['left_academic_year_id'],
 
-            'from_school_id' => School::factory(),
-            'to_school_id' => function (array $attributes) {
-                return School::factory()->state([
-                    'education_monitor_id' => School::query()
-                        ->whereKey($attributes['from_school_id'])
-                        ->value('education_monitor_id'),
-                ]);
+            'from_school_period_id' => SchoolPeriod::factory(),
+            'to_school_period_id' => function (array $attributes) {
+                $fromSchoolPeriod = SchoolPeriod::query()
+                    ->findOrFail($attributes['from_school_period_id']);
+
+                return SchoolPeriod::factory()->for(
+                    School::factory()->state([
+                        'education_monitor_id' => $fromSchoolPeriod->education_monitor_id,
+                        'education_services_office_id' => $fromSchoolPeriod->education_services_office_id,
+                    ]),
+                    'school',
+                );
             },
 
             'student_id' => fn (array $attributes) => Student::factory()->state([
-                'school_id' => $attributes['to_school_id'],
+                'school_period_id' => $attributes['to_school_period_id'],
             ]),
 
-            'left_school_at' => function (array $attributes) {
+            'left_school_period_at' => function (array $attributes) {
                 $academicYear = AcademicYear::query()->find($attributes['left_academic_year_id']);
 
                 return fake()->dateTimeBetween(
@@ -45,11 +51,11 @@ class StudentTransferFactory extends Factory
                     $academicYear->end_date,
                 );
             },
-            'joined_school_at' => function (array $attributes) {
+            'joined_school_period_at' => function (array $attributes) {
                 $academicYear = AcademicYear::query()->find($attributes['joined_academic_year_id']);
 
                 return fake()->dateTimeBetween(
-                    $attributes['left_school_at'],
+                    $attributes['left_school_period_at'],
                     $academicYear->end_date,
                 );
             },
@@ -63,10 +69,10 @@ class StudentTransferFactory extends Factory
     {
         return $this->state(fn (): array => [
             'joined_academic_year_id' => null,
-            'to_school_id' => null,
-            'joined_school_at' => null,
+            'to_school_period_id' => null,
+            'joined_school_period_at' => null,
             'student_id' => fn (array $attributes) => Student::factory()->state([
-                'school_id' => $attributes['from_school_id'],
+                'school_period_id' => $attributes['from_school_period_id'],
             ]),
         ]);
     }

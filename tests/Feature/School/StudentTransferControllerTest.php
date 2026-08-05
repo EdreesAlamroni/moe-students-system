@@ -6,6 +6,7 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\StudentTransfer;
@@ -15,12 +16,9 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @return array{school: School, gradeLevel: GradeLevel, user: User}
- */
 function createSchoolTransferContext(): array
 {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::query()->firstOrCreate(
         ['code' => GradeLevelEnum::GRADE_1->value],
         [
@@ -30,15 +28,15 @@ function createSchoolTransferContext(): array
         ],
     );
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     foreach ([
@@ -55,26 +53,23 @@ function createSchoolTransferContext(): array
         'student:transfer-student-out-of-school',
     ]);
 
-    return compact('school', 'gradeLevel', 'user');
+    return compact('schoolPeriod', 'gradeLevel', 'user');
 }
 
-/**
- * @return array{student: Student, fromSchool: School}
- */
-function createAwaitingSchoolTransferStudent(School $targetSchool, GradeLevel $gradeLevel): array
+function createAwaitingSchoolTransferStudent(SchoolPeriod $targetSchoolPeriod, GradeLevel $gradeLevel): array
 {
-    $fromSchool = School::factory()->create([
-        'education_monitor_id' => $targetSchool->education_monitor_id,
-    ]);
+    $fromSchoolPeriod = SchoolPeriod::factory()->for(School::factory()->state([
+        'education_monitor_id' => $targetSchoolPeriod->education_monitor_id,
+    ]), 'school')->create();
 
     $student = Student::factory()->create([
-        'education_monitor_id' => $targetSchool->education_monitor_id,
-        'school_id' => null,
+        'education_monitor_id' => $targetSchoolPeriod->education_monitor_id,
+        'school_period_id' => null,
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => null,
+        'school_period_id' => null,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
         'academic_year_id' => AcademicYear::currentId(),
@@ -84,13 +79,13 @@ function createAwaitingSchoolTransferStudent(School $targetSchool, GradeLevel $g
         'student_id' => $student->id,
         'left_academic_year_id' => AcademicYear::currentId(),
         'joined_academic_year_id' => null,
-        'from_school_id' => $fromSchool->id,
-        'to_school_id' => null,
-        'left_school_at' => now(),
-        'joined_school_at' => null,
+        'from_school_period_id' => $fromSchoolPeriod->id,
+        'to_school_period_id' => null,
+        'left_school_period_at' => now(),
+        'joined_school_period_at' => null,
     ]);
 
-    return compact('student', 'fromSchool');
+    return compact('student', 'fromSchoolPeriod');
 }
 
 beforeEach(function () {
@@ -120,8 +115,8 @@ test('transfer create page returns no students without search filters', function
 });
 
 test('transfer create page lists eligible students when filters are provided', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
-    ['student' => $student] = createAwaitingSchoolTransferStudent($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
+    ['student' => $student] = createAwaitingSchoolTransferStudent($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.transfers.create', [
@@ -138,8 +133,8 @@ test('transfer create page lists eligible students when filters are provided', f
 });
 
 test('authorized users can add transferred students to their school', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
-    ['student' => $student] = createAwaitingSchoolTransferStudent($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
+    ['student' => $student] = createAwaitingSchoolTransferStudent($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->post(route('school.students.transfers.store'), [
@@ -150,13 +145,13 @@ test('authorized users can add transferred students to their school', function (
     $student->refresh();
     $transfer = $student->transfer;
 
-    expect($student->school_id)->toBe($school->id)
-        ->and($student->education_monitor_id)->toBe($school->education_monitor_id)
-        ->and($student->enrollment?->school_id)->toBe($school->id)
+    expect($student->school_period_id)->toBe($schoolPeriod->id)
+        ->and($student->education_monitor_id)->toBe($schoolPeriod->education_monitor_id)
+        ->and($student->enrollment?->school_period_id)->toBe($schoolPeriod->id)
         ->and($transfer)->not->toBeNull()
-        ->and($transfer->to_school_id)->toBe($school->id)
+        ->and($transfer->to_school_period_id)->toBe($schoolPeriod->id)
         ->and($transfer->joined_academic_year_id)->toBe(AcademicYear::currentId())
-        ->and($transfer->joined_school_at)->not->toBeNull();
+        ->and($transfer->joined_school_period_at)->not->toBeNull();
 });
 
 test('store transfer validates required student ids', function () {
@@ -170,12 +165,12 @@ test('store transfer validates required student ids', function () {
 });
 
 test('store transfer rejects students who are already assigned to a school', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
@@ -189,17 +184,18 @@ test('store transfer rejects students who are already assigned to a school', fun
 });
 
 test('store transfer rejects students who are not awaiting school transfer', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
 
     $student = Student::factory()->create([
-        'education_monitor_id' => $school->education_monitor_id,
-        'school_id' => null,
+        'education_monitor_id' => $schoolPeriod->education_monitor_id,
+        'school_period_id' => null,
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => null,
+        'school_period_id' => null,
         'grade_level_id' => $gradeLevel->id,
+        'classroom_id' => null,
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
@@ -213,12 +209,12 @@ test('store transfer rejects students who are not awaiting school transfer', fun
 });
 
 test('authorized users can transfer a student out of their school', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -230,23 +226,23 @@ test('authorized users can transfer a student out of their school', function () 
     $student->refresh();
     $transfer = $student->transfer;
 
-    expect($student->school_id)->toBeNull()
-        ->and($student->enrollment?->school_id)->toBeNull()
+    expect($student->school_period_id)->toBeNull()
+        ->and($student->enrollment?->school_period_id)->toBeNull()
         ->and($student->enrollment?->classroom_id)->toBeNull()
         ->and($transfer)->not->toBeNull()
-        ->and($transfer->from_school_id)->toBe($school->id)
+        ->and($transfer->from_school_period_id)->toBe($schoolPeriod->id)
         ->and($transfer->left_academic_year_id)->toBe(AcademicYear::currentId())
-        ->and($transfer->left_school_at)->not->toBeNull()
-        ->and($transfer->joined_school_id)->toBeNull();
+        ->and($transfer->left_school_period_at)->not->toBeNull()
+        ->and($transfer->joined_school_period_id)->toBeNull();
 });
 
 test('users without transfer out permission cannot remove a student from the school', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel] = createSchoolTransferContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel] = createSchoolTransferContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
@@ -255,8 +251,8 @@ test('users without transfer out permission cannot remove a student from the sch
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
     $user->givePermissionTo('student:view-any');
 
@@ -264,16 +260,16 @@ test('users without transfer out permission cannot remove a student from the sch
         ->delete(route('school.students.transfers.destroy', ['student' => $student]))
         ->assertForbidden();
 
-    expect($student->fresh()->school_id)->toBe($school->id);
+    expect($student->fresh()->school_period_id)->toBe($schoolPeriod->id);
 });
 
 test('transferring a student out is blocked when the selected academic year is inactive', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolTransferContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
@@ -293,5 +289,5 @@ test('transferring a student out is blocked when the selected academic year is i
         ->delete(route('school.students.transfers.destroy', ['student' => $student]))
         ->assertForbidden();
 
-    expect($student->fresh()->school_id)->toBe($school->id);
+    expect($student->fresh()->school_period_id)->toBe($schoolPeriod->id);
 });

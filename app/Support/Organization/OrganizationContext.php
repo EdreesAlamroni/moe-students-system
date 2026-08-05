@@ -3,6 +3,7 @@
 namespace App\Support\Organization;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class OrganizationContext
@@ -22,6 +23,11 @@ abstract class OrganizationContext
      */
     abstract protected function build(Model $organization): array;
 
+    protected function query(): Builder
+    {
+        return $this->organizationType()::query();
+    }
+
     /**
      * @return array<string, mixed>|null
      */
@@ -31,7 +37,7 @@ abstract class OrganizationContext
             return null;
         }
 
-        $organization = $this->organizationType()::query()
+        $organization = $this->query()
             ->select($this->columns())
             ->find($user->organization_id);
 

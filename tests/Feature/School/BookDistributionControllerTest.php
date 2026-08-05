@@ -6,7 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\BookDistribution;
 use App\Models\BookDistributionItem;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -15,16 +15,13 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<int, string>  $permissions
- */
-function createSchoolBookDistributionUser(School $school, array $permissions = ['book-distribution:view', 'book-distribution:distribute']): User
+function createSchoolBookDistributionUser(SchoolPeriod $schoolPeriod, array $permissions = ['book-distribution:view', 'book-distribution:distribute']): User
 {
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     foreach ($permissions as $permission) {
@@ -36,27 +33,27 @@ function createSchoolBookDistributionUser(School $school, array $permissions = [
     return $user;
 }
 
-function attachGradeLevelToSchool(School $school, GradeLevel $gradeLevel): void
+function attachGradeLevelToSchool(SchoolPeriod $schoolPeriod, GradeLevel $gradeLevel): void
 {
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 }
 
-function confirmBookDistributionForSchool(School $school, GradeLevel $gradeLevel): BookDistribution
+function confirmBookDistributionForSchool(SchoolPeriod $schoolPeriod, GradeLevel $gradeLevel): BookDistribution
 {
     return BookDistribution::factory()->create([
         'academic_year_id' => AcademicYear::currentId(),
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 }
 
-function enrollStudentInGradeLevel(School $school, GradeLevel $gradeLevel, Student $student): void
+function enrollStudentInGradeLevel(SchoolPeriod $schoolPeriod, GradeLevel $gradeLevel, Student $student): void
 {
     StudentEnrollment::factory()->create([
         'academic_year_id' => AcademicYear::currentId(),
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'student_id' => $student->id,
     ]);
@@ -81,12 +78,12 @@ test('guests are redirected from the school book distribution page', function ()
 });
 
 test('users without book distribution permissions cannot view the page', function () {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'school')
@@ -95,10 +92,10 @@ test('users without book distribution permissions cannot view the page', functio
 });
 
 test('authenticated school users can visit the book distribution page', function () {
-    $school = School::factory()->create();
-    $user = createSchoolBookDistributionUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolBookDistributionUser($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create();
-    attachGradeLevelToSchool($school, $gradeLevel);
+    attachGradeLevelToSchool($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.book-distributions.index'))
@@ -114,19 +111,19 @@ test('authenticated school users can visit the book distribution page', function
 });
 
 test('selecting a grade level loads its students with distribution status', function () {
-    $school = School::factory()->create();
-    $user = createSchoolBookDistributionUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolBookDistributionUser($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create();
-    attachGradeLevelToSchool($school, $gradeLevel);
-    confirmBookDistributionForSchool($school, $gradeLevel);
+    attachGradeLevelToSchool($schoolPeriod, $gradeLevel);
+    confirmBookDistributionForSchool($schoolPeriod, $gradeLevel);
 
-    $distributedStudent = Student::factory()->for($school)->create();
-    $pendingStudent = Student::factory()->for($school)->create();
-    enrollStudentInGradeLevel($school, $gradeLevel, $distributedStudent);
-    enrollStudentInGradeLevel($school, $gradeLevel, $pendingStudent);
+    $distributedStudent = Student::factory()->for($schoolPeriod)->create();
+    $pendingStudent = Student::factory()->for($schoolPeriod)->create();
+    enrollStudentInGradeLevel($schoolPeriod, $gradeLevel, $distributedStudent);
+    enrollStudentInGradeLevel($schoolPeriod, $gradeLevel, $pendingStudent);
 
     BookDistributionItem::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'student_id' => $distributedStudent->id,
         'academic_year_id' => AcademicYear::currentId(),
     ]);
@@ -150,26 +147,26 @@ test('selecting a grade level loads its students with distribution status', func
 });
 
 test('the page filters students by name', function () {
-    $school = School::factory()->create();
-    $user = createSchoolBookDistributionUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolBookDistributionUser($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create();
-    attachGradeLevelToSchool($school, $gradeLevel);
-    confirmBookDistributionForSchool($school, $gradeLevel);
+    attachGradeLevelToSchool($schoolPeriod, $gradeLevel);
+    confirmBookDistributionForSchool($schoolPeriod, $gradeLevel);
 
-    $matchingStudent = Student::factory()->for($school)->create([
+    $matchingStudent = Student::factory()->for($schoolPeriod)->create([
         'first_name' => 'أحمد',
         'father_name' => 'محمد',
         'grandfather_name' => 'علي',
         'surname' => 'السالم',
     ]);
-    $otherStudent = Student::factory()->for($school)->create([
+    $otherStudent = Student::factory()->for($schoolPeriod)->create([
         'first_name' => 'خالد',
         'father_name' => 'سالم',
         'grandfather_name' => 'عمر',
         'surname' => 'الجبل',
     ]);
-    enrollStudentInGradeLevel($school, $gradeLevel, $matchingStudent);
-    enrollStudentInGradeLevel($school, $gradeLevel, $otherStudent);
+    enrollStudentInGradeLevel($schoolPeriod, $gradeLevel, $matchingStudent);
+    enrollStudentInGradeLevel($schoolPeriod, $gradeLevel, $otherStudent);
 
     $this->actingAs($user, 'school')
         ->get(route('school.book-distributions.index', [
@@ -184,19 +181,19 @@ test('the page filters students by name', function () {
 });
 
 test('the page filters students by distribution status', function () {
-    $school = School::factory()->create();
-    $user = createSchoolBookDistributionUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolBookDistributionUser($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create();
-    attachGradeLevelToSchool($school, $gradeLevel);
-    confirmBookDistributionForSchool($school, $gradeLevel);
+    attachGradeLevelToSchool($schoolPeriod, $gradeLevel);
+    confirmBookDistributionForSchool($schoolPeriod, $gradeLevel);
 
-    $distributedStudent = Student::factory()->for($school)->create();
-    $pendingStudent = Student::factory()->for($school)->create();
-    enrollStudentInGradeLevel($school, $gradeLevel, $distributedStudent);
-    enrollStudentInGradeLevel($school, $gradeLevel, $pendingStudent);
+    $distributedStudent = Student::factory()->for($schoolPeriod)->create();
+    $pendingStudent = Student::factory()->for($schoolPeriod)->create();
+    enrollStudentInGradeLevel($schoolPeriod, $gradeLevel, $distributedStudent);
+    enrollStudentInGradeLevel($schoolPeriod, $gradeLevel, $pendingStudent);
 
     BookDistributionItem::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'student_id' => $distributedStudent->id,
         'academic_year_id' => AcademicYear::currentId(),
     ]);
@@ -225,14 +222,14 @@ test('the page filters students by distribution status', function () {
 });
 
 test('school users can distribute books to selected students', function () {
-    $school = School::factory()->create();
-    $user = createSchoolBookDistributionUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolBookDistributionUser($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create();
-    attachGradeLevelToSchool($school, $gradeLevel);
-    confirmBookDistributionForSchool($school, $gradeLevel);
+    attachGradeLevelToSchool($schoolPeriod, $gradeLevel);
+    confirmBookDistributionForSchool($schoolPeriod, $gradeLevel);
 
-    $student = Student::factory()->for($school)->create();
-    enrollStudentInGradeLevel($school, $gradeLevel, $student);
+    $student = Student::factory()->for($schoolPeriod)->create();
+    enrollStudentInGradeLevel($schoolPeriod, $gradeLevel, $student);
 
     $this->actingAs($user, 'school')
         ->post(route('school.book-distributions.store'), [

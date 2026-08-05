@@ -98,7 +98,7 @@ export default function Show({ student, transfers, canAny, can }: PageProps) {
 
                                 <DetailField>
                                     <DetailLabel>المدرسة</DetailLabel>
-                                    <DetailValue value={student.school?.name} />
+                                    <DetailValue value={student.school_period?.name} />
                                 </DetailField>
 
                                 <StudentGradeLevelField student={student} />
@@ -204,18 +204,18 @@ export default function Show({ student, transfers, canAny, can }: PageProps) {
                                             <TableRow key={transfer.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
                                                 <TableCell>
-                                                    <TableCellNullableValue value={transfer.from_school.name} />
-                                                    {transfer.from_school?.monitor && (
+                                                    <TableCellNullableValue value={transfer.from_school_period.name} />
+                                                    {transfer.from_school_period?.monitor && (
                                                         <div className="mt-2 text-xs text-muted-foreground">
-                                                            <span>{transfer.from_school?.monitor?.name}</span>
+                                                            <span>{transfer.from_school_period?.monitor?.name}</span>
                                                         </div>
                                                     )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <TableCellNullableValue value={transfer.to_school?.name} />
-                                                    {transfer.to_school?.monitor && (
+                                                    <TableCellNullableValue value={transfer.to_school_period?.name} />
+                                                    {transfer.to_school_period?.monitor && (
                                                         <div className="mt-2 text-xs text-muted-foreground">
-                                                            <span>{transfer.to_school?.monitor?.name}</span>
+                                                            <span>{transfer.to_school_period?.monitor?.name}</span>
                                                         </div>
                                                     )}
                                                 </TableCell>

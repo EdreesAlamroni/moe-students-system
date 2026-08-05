@@ -3,7 +3,7 @@
         <x-print.report-table
             :title="__('الجدول الدراسي')"
             :colspan="count($days) + 1"
-            :organization-lines="$classroom->school->printOrganizationLines()"
+            :organization-lines="$classroom->schoolPeriod->printOrganizationLines()"
         >
             <x-slot:headerRight>
                 <span>{{ __('السنة الدراسية') }}:</span>

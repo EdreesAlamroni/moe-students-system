@@ -11,7 +11,7 @@ use App\Http\Resources\Administration\UserFormResource;
 use App\Http\Resources\Administration\UserResource;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Support\ModelAbilityMap;
@@ -175,7 +175,7 @@ class UserController extends Controller
         }
 
         $user->loadMissing(match ($user->organization_type) {
-            EducationServicesOffice::class, School::class => ['organization.monitor'],
+            EducationServicesOffice::class, SchoolPeriod::class => ['organization.monitor'],
             default => ['organization'],
         });
     }

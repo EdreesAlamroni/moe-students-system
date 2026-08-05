@@ -5,7 +5,7 @@ namespace App\Policies\EducationMonitor;
 use App\Enums\UserScope;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 
 class UserPolicy
@@ -90,18 +90,14 @@ class UserPolicy
             return $user->organization_id === $target->organization_id;
         }
 
-        if ($target->organization_id === null) {
+        if (is_null($target->organization_id)) {
             return false;
         }
 
         $targetMonitorId = match (true) {
             $target->relationLoaded('organization') => $target->organization?->education_monitor_id,
-            $target->isEducationServicesOfficeStaff() => EducationServicesOffice::query()
-                ->whereKey($target->organization_id)
-                ->value('education_monitor_id'),
-            $target->isSchoolStaff() => School::query()
-                ->whereKey($target->organization_id)
-                ->value('education_monitor_id'),
+            $target->isEducationServicesOfficeStaff() => EducationServicesOffice::query()->where('id', '=', $target->organization_id)->value('education_monitor_id'),
+            $target->isSchoolStaff() => SchoolPeriod::query()->where('id', '=', $target->organization_id)->value('education_monitor_id'),
             default => null,
         };
 
@@ -114,7 +110,7 @@ class UserPolicy
 
     private function hasEducationMonitorContext(User $user): bool
     {
-        if ($user->organization_type !== EducationMonitor::class || $user->organization_id === null) {
+        if ($user->organization_type !== EducationMonitor::class || is_null($user->organization_id)) {
             return false;
         }
 

@@ -20,14 +20,14 @@ class StudentTransferCollection extends DirectModelCollection
             'joined_academic_year' => $transfer->relationLoaded('joinedAcademicYear')
             ? $transfer->joinedAcademicYear->only(['id', 'name']) : null,
 
-            'from_school' => $transfer->relationLoaded('fromSchool')
-            ? $transfer->fromSchool->only(['id', 'name', 'monitor']) : null,
+            'from_school_period' => $transfer->relationLoaded('fromSchoolPeriod')
+            ? $transfer->fromSchoolPeriod->only(['id', 'name', 'monitor']) : null,
 
-            'to_school' => $transfer->relationLoaded('toSchool')
-                ? $transfer->toSchool->only(['id', 'name', 'monitor']) : null,
+            'to_school_period' => $transfer->relationLoaded('toSchoolPeriod')
+                ? $transfer->toSchoolPeriod->only(['id', 'name', 'monitor']) : null,
 
-            'left_school_at' => $transfer->left_school_at?->toDateString(),
-            'joined_school_at' => $transfer->joined_school_at?->toDateString(),
+            'left_school_at' => $transfer->left_school_period_at?->toDateString(),
+            'joined_school_at' => $transfer->joined_school_period_at?->toDateString(),
         ])->all();
     }
 }

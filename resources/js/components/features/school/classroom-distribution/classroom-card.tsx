@@ -82,8 +82,8 @@ export default function ClassroomCard({
                 >
                     <div
                         className={cn(
-                            'h-full rounded-none transition-all',
-                            isFull && 'bg-primary',
+                            'h-full rounded-none transition-all bg-primary',
+                            // isFull && 'bg-primary',
                         )}
                         style={{ width: `${occupancyPercentage}%` }}
                     />

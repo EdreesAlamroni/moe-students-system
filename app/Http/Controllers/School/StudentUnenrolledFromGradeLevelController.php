@@ -25,7 +25,7 @@ class StudentUnenrolledFromGradeLevelController extends Controller
                 'students.id',
                 'students.uuid',
                 'students.education_monitor_id',
-                'students.school_id',
+                'students.school_period_id',
                 'students.nationality_id',
                 'students.number',
                 'students.registration_status',

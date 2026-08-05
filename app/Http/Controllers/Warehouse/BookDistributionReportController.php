@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Warehouse\BookDistribution\IndexRequest;
 use App\Http\Requests\Warehouse\BookDistribution\PrintReportRequest;
 use App\Models\BookDistribution;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Services\Warehouse\BookDistributionGradeLevelStats;
 use App\Services\Warehouse\BookDistributionOrganizationSelection;
 use Illuminate\Contracts\View\View;
@@ -21,18 +21,18 @@ class BookDistributionReportController extends Controller
         Gate::authorize('viewStatistics', BookDistribution::class);
 
         $organization = app(BookDistributionOrganizationSelection::class)->resolve($request->getAttributes());
-        $schoolId = $organization['schoolId'];
+        $schoolPeriodId = $organization['schoolPeriodId'];
 
-        $statistics = filled($schoolId)
-            ? app(BookDistributionGradeLevelStats::class)->forSchool($schoolId)
+        $statistics = filled($schoolPeriodId)
+            ? app(BookDistributionGradeLevelStats::class)->forSchoolPeriod($schoolPeriodId)
             : collect([]);
 
         return Inertia::render('warehouse/book-distributions/report', [
             'monitors' => $organization['monitors'],
-            'schools' => $organization['schools'],
+            'schools' => $organization['schoolPeriods'],
             'statistics' => $statistics,
             'selected' => $organization['selected'],
-            'canPrint' => filled($schoolId) && $statistics->isNotEmpty(),
+            'canPrint' => filled($schoolPeriodId) && $statistics->isNotEmpty(),
         ]);
     }
 
@@ -40,19 +40,19 @@ class BookDistributionReportController extends Controller
     {
         Gate::authorize('viewStatistics', BookDistribution::class);
 
-        $schoolId = $request->integer('school_id');
+        $schoolPeriodId = $request->integer('school_period_id');
         $statsService = app(BookDistributionGradeLevelStats::class);
-        $statistics = $statsService->forSchool($schoolId);
+        $statistics = $statsService->forSchoolPeriod($schoolPeriodId);
 
-        $school = School::query()
+        $schoolPeriod = SchoolPeriod::query()
             ->select(['id', 'name', 'education_monitor_id'])
             ->with(['monitor:id,name'])
-            ->findOrFail($schoolId);
+            ->findOrFail($schoolPeriodId);
 
         return view('print.warehouse.reports.book-distributions', [
             'statistics' => $statistics,
             'totals' => $statsService->totals($statistics),
-            'school' => $school,
+            'schoolPeriod' => $schoolPeriod,
         ]);
     }
 }

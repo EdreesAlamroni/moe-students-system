@@ -4,6 +4,7 @@ use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
 use App\Support\PolicyRegistrar;
@@ -12,9 +13,6 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationServicesOfficeManager(EducationServicesOffice $office, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -39,10 +37,16 @@ function createEducationServicesOfficeManager(EducationServicesOffice $office, a
     return $user;
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
+function createEducationServicesOfficeSchoolPeriod(EducationServicesOffice $office): SchoolPeriod
+{
+    $school = School::factory()
+        ->for($office->monitor, 'monitor')
+        ->for($office, 'office')
+        ->create();
+
+    return SchoolPeriod::factory()->for($school)->create();
+}
+
 function educationServicesOfficeDashboardUserPayload(array $overrides = []): array
 {
     $scope = $overrides['scope'] ?? UserScope::EDUCATION_SERVICES_OFFICE->value;
@@ -59,9 +63,6 @@ function educationServicesOfficeDashboardUserPayload(array $overrides = []): arr
     ], $overrides);
 }
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationServicesOfficePeer(EducationServicesOffice $office, array $attributes = []): User
 {
     return User::factory()->create(array_merge([
@@ -123,15 +124,12 @@ test('authenticated education services office users can visit the users index', 
         'name' => 'Other Office User',
         'username' => 'other.office.user',
     ]);
-    $school = School::factory()->create([
-        'education_monitor_id' => $office->education_monitor_id,
-        'education_services_office_id' => $office->id,
-    ]);
+    $schoolPeriod = createEducationServicesOfficeSchoolPeriod($office);
     $schoolUser = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
         'name' => 'School User',
         'username' => 'school.user',
     ]);
@@ -167,15 +165,9 @@ test('authenticated education services office users can visit the create office 
 test('create school user page loads schools for the current office', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeManager($office);
-    $school = School::factory()->create([
-        'education_monitor_id' => $office->education_monitor_id,
-        'education_services_office_id' => $office->id,
-    ]);
+    $schoolPeriod = createEducationServicesOfficeSchoolPeriod($office);
     $otherOffice = EducationServicesOffice::factory()->create();
-    School::factory()->create([
-        'education_monitor_id' => $otherOffice->education_monitor_id,
-        'education_services_office_id' => $otherOffice->id,
-    ]);
+    createEducationServicesOfficeSchoolPeriod($otherOffice);
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.users.create', ['scope' => UserScope::SCHOOL->value]))
@@ -184,7 +176,7 @@ test('create school user page loads schools for the current office', function ()
             ->component('education-services-office/users/create')
             ->where('scope.id', UserScope::SCHOOL->value)
             ->has('schools', 1)
-            ->where('schools.0.id', $school->id)
+            ->where('schools.0.id', $schoolPeriod->id)
         );
 });
 
@@ -230,13 +222,10 @@ test('authenticated education services office users can store a user for their o
 test('authenticated education services office users can store a school user under their office', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeManager($office);
-    $school = School::factory()->create([
-        'education_monitor_id' => $office->education_monitor_id,
-        'education_services_office_id' => $office->id,
-    ]);
+    $schoolPeriod = createEducationServicesOfficeSchoolPeriod($office);
     $payload = educationServicesOfficeDashboardUserPayload([
         'scope' => UserScope::SCHOOL->value,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'username' => 'school.dashboard.user',
         'email' => 'school.dashboard.user@example.com',
     ]);
@@ -249,8 +238,8 @@ test('authenticated education services office users can store a school user unde
     expect($createdUser)->not->toBeNull()
         ->and($createdUser->scope)->toBe(UserScope::SCHOOL)
         ->and($createdUser->request_state)->toBeInstanceOf(Pending::class)
-        ->and($createdUser->organization_id)->toBe($school->id)
-        ->and($createdUser->organization_type)->toBe(School::class);
+        ->and($createdUser->organization_id)->toBe($schoolPeriod->id)
+        ->and($createdUser->organization_type)->toBe(SchoolPeriod::class);
 
     $response->assertRedirect(route('education-services-office.users.show', ['user' => $createdUser]));
 });
@@ -259,18 +248,15 @@ test('store rejects schools that do not belong to the current office', function 
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeManager($office);
     $otherOffice = EducationServicesOffice::factory()->create();
-    $foreignSchool = School::factory()->create([
-        'education_monitor_id' => $otherOffice->education_monitor_id,
-        'education_services_office_id' => $otherOffice->id,
-    ]);
+    $foreignSchoolPeriod = createEducationServicesOfficeSchoolPeriod($otherOffice);
 
     $this->actingAs($user, 'education_services_office')
         ->post(route('education-services-office.users.store'), educationServicesOfficeDashboardUserPayload([
             'scope' => UserScope::SCHOOL->value,
-            'school_id' => $foreignSchool->id,
+            'school_period_id' => $foreignSchoolPeriod->id,
             'username' => 'foreign.school.user',
         ]))
-        ->assertSessionHasErrors('school_id');
+        ->assertSessionHasErrors('school_period_id');
 });
 
 test('store requires a school when the field is omitted', function () {
@@ -288,7 +274,7 @@ test('store requires a school when the field is omitted', function () {
 
     $this->actingAs($user, 'education_services_office')
         ->post(route('education-services-office.users.store'), $payload)
-        ->assertSessionHasErrors('school_id');
+        ->assertSessionHasErrors('school_period_id');
 
     expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
 });
@@ -443,27 +429,30 @@ test('users index does not query schools per user when resolving view abilities'
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeManager($office);
 
-    $schools = School::factory()->count(5)->create([
-        'education_monitor_id' => $office->education_monitor_id,
-        'education_services_office_id' => $office->id,
-    ]);
+    $schools = School::factory()
+        ->count(5)
+        ->for($office->monitor, 'monitor')
+        ->for($office, 'office')
+        ->has(SchoolPeriod::factory(), 'periods')
+        ->create()
+        ->flatMap->periods;
 
-    foreach ($schools as $index => $school) {
+    foreach ($schools as $index => $schoolPeriod) {
         User::factory()->create([
             'scope' => UserScope::SCHOOL,
             'role' => UserRole::EMPLOYEE,
-            'organization_type' => School::class,
-            'organization_id' => $school->id,
+            'organization_type' => SchoolPeriod::class,
+            'organization_id' => $schoolPeriod->id,
             'name' => "School User {$index}",
             'username' => "school.user.{$index}",
         ]);
     }
 
-    $schoolEagerLoadQueries = 0;
+    $schoolPeriodEagerLoadQueries = 0;
 
-    DB::listen(function ($query) use (&$schoolEagerLoadQueries): void {
-        if (preg_match('/^select\b.+\bfrom\s+[`"]?schools[`"]?\s+where\s+[`"]?schools[`"]?[.][`"]?id[`"]?\s+in\s*\(/i', $query->sql) === 1) {
-            $schoolEagerLoadQueries++;
+    DB::listen(function ($query) use (&$schoolPeriodEagerLoadQueries): void {
+        if (preg_match('/^select\b.+\bfrom\s+[`"]?school_periods[`"]?\s+where\s+[`"]?school_periods[`"]?[.][`"]?id[`"]?\s+in\s*\(/i', $query->sql) === 1) {
+            $schoolPeriodEagerLoadQueries++;
         }
     });
 
@@ -475,6 +464,6 @@ test('users index does not query schools per user when resolving view abilities'
             ->where('users.data', fn ($data) => collect($data)->every(fn ($row) => $row['can']['view'] === true))
         );
 
-    // Morph eager-load should issue a single schools lookup, not one per school user.
-    expect($schoolEagerLoadQueries)->toBe(1);
+    // Morph eager-load should issue a single school periods lookup, not one per school user.
+    expect($schoolPeriodEagerLoadQueries)->toBe(1);
 });

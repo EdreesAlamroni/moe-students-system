@@ -16,18 +16,18 @@ use Illuminate\Support\Carbon;
  * @property int|null $left_academic_year_id
  * @property int|null $joined_academic_year_id
  * @property int $student_id
- * @property int|null $from_school_id
- * @property int|null $to_school_id
- * @property Carbon|null $left_school_at
- * @property Carbon|null $joined_school_at
+ * @property int|null $from_school_period_id
+ * @property int|null $to_school_period_id
+ * @property Carbon|null $left_school_period_at
+ * @property Carbon|null $joined_school_period_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read AcademicYear|null $leftAcademicYear
  * @property-read AcademicYear|null $joinedAcademicYear
  * @property-read Student $student
- * @property-read School|null $fromSchool
- * @property-read School|null $toSchool
+ * @property-read SchoolPeriod|null $fromSchoolPeriod
+ * @property-read SchoolPeriod|null $toSchoolPeriod
  */
 #[Guarded(['id'])]
 class StudentTransfer extends Model
@@ -41,10 +41,10 @@ class StudentTransfer extends Model
             'left_academic_year_id' => 'integer',
             'joined_academic_year_id' => 'integer',
             'student_id' => 'integer',
-            'from_school_id' => 'integer',
-            'to_school_id' => 'integer',
-            'left_school_at' => 'datetime',
-            'joined_school_at' => 'datetime',
+            'from_school_period_id' => 'integer',
+            'to_school_period_id' => 'integer',
+            'left_school_period_at' => 'datetime',
+            'joined_school_period_at' => 'datetime',
         ];
     }
 
@@ -67,14 +67,14 @@ class StudentTransfer extends Model
         return $this->belongsTo(Student::class);
     }
 
-    public function fromSchool(): BelongsTo
+    public function fromSchoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class, 'from_school_id')->withTrashed();
+        return $this->belongsTo(SchoolPeriod::class, 'from_school_period_id')->withTrashed();
     }
 
-    public function toSchool(): BelongsTo
+    public function toSchoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class, 'to_school_id')->withTrashed();
+        return $this->belongsTo(SchoolPeriod::class, 'to_school_period_id')->withTrashed();
     }
 
     /*

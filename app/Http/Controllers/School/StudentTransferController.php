@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\School\Student\StoreTransferRequest;
 use App\Http\Resources\School\TransferableStudentCollection;
 use App\Models\AcademicYear;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\StudentTransfer;
@@ -35,11 +35,11 @@ class StudentTransferController extends Controller
             'filter.national_id',
             'filter.family_registration_number',
         ])) {
-            /** @var School $school */
-            $school = auth('school')->user()->organization;
+            /** @var SchoolPeriod $schoolPeriod */
+            $schoolPeriod = auth('school')->user()->organization;
 
             $students = QueryBuilder::for(Student::class)
-                ->eligibleForSchoolTransfer($school)
+                ->eligibleForSchoolTransfer($schoolPeriod)
                 ->awaitingSchoolTransfer()
                 ->with(['nationality', 'enrollment.gradeLevel'])
                 ->allowedFilters(
@@ -67,8 +67,8 @@ class StudentTransferController extends Controller
         // TODO: Handle the case where a student does not have an enrollment but needs to be transferred to a school.
 
         DB::transaction(function () use ($request): void {
-            /** @var School $school */
-            $school = auth('school')->user()->organization;
+            /** @var SchoolPeriod $schoolPeriod */
+            $schoolPeriod = auth('school')->user()->organization;
 
             /** @var array<int, int> $studentIds */
             $studentIds = $request->validated('student_ids', []);
@@ -78,33 +78,33 @@ class StudentTransferController extends Controller
             Student::query()
                 ->whereIn('id', $studentIds)
                 ->update([
-                    'education_monitor_id' => $school->education_monitor_id,
-                    'school_id' => $school->id,
+                    'education_monitor_id' => $schoolPeriod->education_monitor_id,
+                    'school_period_id' => $schoolPeriod->id,
                 ]);
 
             StudentEnrollment::query()
                 ->whereIn('student_id', $studentIds)
                 ->where('academic_year_id', '=', $currentAcademicYearId)
                 ->update([
-                    'school_id' => $school->id,
+                    'school_period_id' => $schoolPeriod->id,
                 ]);
 
             StudentTransfer::query()
                 ->whereIn('student_id', $studentIds)
                 ->whereNotNull([
                     'left_academic_year_id',
-                    'from_school_id',
-                    'left_school_at',
+                    'from_school_period_id',
+                    'left_school_period_at',
                 ])
                 ->whereNull([
                     'joined_academic_year_id',
-                    'to_school_id',
-                    'joined_school_at',
+                    'to_school_period_id',
+                    'joined_school_period_at',
                 ])
                 ->update([
                     'joined_academic_year_id' => $currentAcademicYearId,
-                    'to_school_id' => $school->id,
-                    'joined_school_at' => now(),
+                    'to_school_period_id' => $schoolPeriod->id,
+                    'joined_school_period_at' => now(),
                 ]);
         });
 
@@ -119,20 +119,20 @@ class StudentTransferController extends Controller
 
         DB::transaction(function () use ($student) {
             $student->update([
-                'school_id' => null,
+                'school_period_id' => null,
             ]);
 
             if ($student->enrollment()->exists()) {
                 $student->enrollment()->update([
-                    'school_id' => null,
+                    'school_period_id' => null,
                     'classroom_id' => null,
                 ]);
             }
 
             $student->transfers()->create([
                 'left_academic_year_id' => AcademicYear::currentId(),
-                'from_school_id' => auth('school')->user()->organization_id,
-                'left_school_at' => now(),
+                'from_school_period_id' => auth('school')->user()->organization_id,
+                'left_school_period_at' => now(),
             ]);
         });
 

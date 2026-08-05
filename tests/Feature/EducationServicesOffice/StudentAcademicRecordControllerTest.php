@@ -7,6 +7,7 @@ use App\Models\AcademicYear;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -15,13 +16,10 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @return array{office: EducationServicesOffice, school: School, user: User}
- */
 function createEducationServicesOfficeAcademicRecordContext(): array
 {
     $office = EducationServicesOffice::factory()->create();
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($office->monitor, 'monitor')->for($office, 'office'), 'school')->create();
 
     $user = User::factory()->create([
         'scope' => UserScope::EDUCATION_SERVICES_OFFICE,
@@ -39,7 +37,7 @@ function createEducationServicesOfficeAcademicRecordContext(): array
         'student:view-academic-record',
     ]);
 
-    return compact('office', 'school', 'user');
+    return compact('office', 'schoolPeriod', 'user');
 }
 
 beforeEach(function () {
@@ -63,7 +61,7 @@ test('guests cannot view education services office academic records', function (
 });
 
 test('users without permission cannot view education services office academic records', function () {
-    ['office' => $office, 'school' => $school] = createEducationServicesOfficeAcademicRecordContext();
+    ['office' => $office, 'schoolPeriod' => $schoolPeriod] = createEducationServicesOfficeAcademicRecordContext();
 
     $user = User::factory()->create([
         'scope' => UserScope::EDUCATION_SERVICES_OFFICE,
@@ -74,7 +72,7 @@ test('users without permission cannot view education services office academic re
 
     $student = Student::factory()->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')
@@ -83,7 +81,7 @@ test('users without permission cannot view education services office academic re
 });
 
 test('authorized users can view education services office academic records', function () {
-    ['office' => $office, 'school' => $school, 'user' => $user] = createEducationServicesOfficeAcademicRecordContext();
+    ['office' => $office, 'schoolPeriod' => $schoolPeriod, 'user' => $user] = createEducationServicesOfficeAcademicRecordContext();
 
     foreach ([GradeLevelEnum::GRADE_1, GradeLevelEnum::GRADE_2, GradeLevelEnum::GRADE_3] as $gradeLevelEnum) {
         GradeLevel::query()->firstOrCreate(
@@ -100,12 +98,12 @@ test('authorized users can view education services office academic records', fun
 
     $student = Student::factory()->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
         'academic_year_id' => AcademicYear::currentId(),
@@ -125,11 +123,11 @@ test('authorized users can view education services office academic records', fun
 test('users cannot view academic records for students outside their education services office', function () {
     ['user' => $user] = createEducationServicesOfficeAcademicRecordContext();
     $otherOffice = EducationServicesOffice::factory()->create();
-    $otherSchool = School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office'), 'school')->create();
 
     $student = Student::factory()->create([
         'education_monitor_id' => $otherOffice->education_monitor_id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')

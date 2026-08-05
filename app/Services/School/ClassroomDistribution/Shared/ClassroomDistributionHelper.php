@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 final class ClassroomDistributionHelper
 {
-    public static function getCurrentSchoolId(): int
+    public static function getCurrentSchoolPeriodId(): int
     {
         return once(function (): int {
             return auth('school')->user()->organization_id;
@@ -23,11 +23,11 @@ final class ClassroomDistributionHelper
      */
     public static function getClassroomsForGrade(int $gradeLevelId, array $classroomIds = []): EloquentCollection
     {
-        $schoolId = self::getCurrentSchoolId();
+        $schoolPeriodId = self::getCurrentSchoolPeriodId();
 
         return Classroom::query()
             ->select(['id', 'uuid', 'grade_level_id', 'name', 'capacity'])
-            ->where('school_id', '=', $schoolId)
+            ->where('school_period_id', '=', $schoolPeriodId)
             ->where('academic_year_id', '=', AcademicYear::currentId())
             ->where('grade_level_id', '=', $gradeLevelId)
             ->when(! empty($classroomIds), function (Builder $query) use ($classroomIds): void {
@@ -168,10 +168,10 @@ final class ClassroomDistributionHelper
      */
     protected static function getStudentsWithoutClassroomQuery(int $gradeLevelId): Builder
     {
-        $schoolId = self::getCurrentSchoolId();
+        $schoolPeriodId = self::getCurrentSchoolPeriodId();
 
         return Student::query()
-            ->where('school_id', '=', $schoolId)
+            ->where('school_period_id', '=', $schoolPeriodId)
             ->whereHas('enrollments', function (Builder $query) use ($gradeLevelId): void {
                 $query
                     ->where('academic_year_id', '=', AcademicYear::currentId())
@@ -185,10 +185,10 @@ final class ClassroomDistributionHelper
      */
     protected static function enrollmentQueryForCurrentSchoolAndYear(): Builder
     {
-        $schoolId = self::getCurrentSchoolId();
+        $schoolPeriodId = self::getCurrentSchoolPeriodId();
 
         return StudentEnrollment::query()
             ->where('academic_year_id', '=', AcademicYear::currentConstraintId())
-            ->where('school_id', '=', $schoolId);
+            ->where('school_period_id', '=', $schoolPeriodId);
     }
 }

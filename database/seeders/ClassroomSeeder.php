@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\AcademicYear;
 use App\Models\Classroom;
-use App\Models\GradeLevelSchool;
-use App\Models\School;
+use App\Models\GradeLevelSchoolPeriod;
+use App\Models\SchoolPeriod;
 use Illuminate\Database\Seeder;
 
 class ClassroomSeeder extends Seeder
@@ -25,30 +25,30 @@ class ClassroomSeeder extends Seeder
             return;
         }
 
-        $schools = School::query()->get(['id']);
+        $schoolPeriods = SchoolPeriod::query()->get(['id']);
 
-        if ($schools->isEmpty()) {
+        if ($schoolPeriods->isEmpty()) {
             return;
         }
 
-        $gradeLevelsBySchool = GradeLevelSchool::query()
+        $gradeLevelsBySchoolPeriod = GradeLevelSchoolPeriod::query()
             ->where('academic_year_id', '=', $currentAcademicYearId)
-            ->get(['school_id', 'grade_level_id'])
-            ->groupBy('school_id');
+            ->get(['school_period_id', 'grade_level_id'])
+            ->groupBy('school_period_id');
 
-        foreach ($schools as $school) {
-            $gradeLevels = $gradeLevelsBySchool->get($school->id, collect([]));
+        foreach ($schoolPeriods as $schoolPeriod) {
+            $gradeLevels = $gradeLevelsBySchoolPeriod->get($schoolPeriod->id, collect([]));
 
             if ($gradeLevels->isEmpty()) {
                 continue;
             }
 
-            foreach ($gradeLevels as $gradeLevelSchool) {
+            foreach ($gradeLevels as $gradeLevelSchoolPeriod) {
                 foreach (self::CLASSROOM_NAMES as $name) {
                     Classroom::query()->firstOrCreate([
                         'academic_year_id' => $currentAcademicYearId,
-                        'school_id' => $school->id,
-                        'grade_level_id' => $gradeLevelSchool->grade_level_id,
+                        'school_period_id' => $schoolPeriod->id,
+                        'grade_level_id' => $gradeLevelSchoolPeriod->grade_level_id,
                         'name' => $name,
                     ], [
                         'capacity' => self::DEFAULT_CAPACITY,

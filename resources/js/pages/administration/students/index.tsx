@@ -4,7 +4,7 @@ import { Form, Head, Link, router } from "@inertiajs/react";
 
 import { decimalInputConstraints, libyanNationalIdInputConstraints, passportNumberInputConstraints } from "@/lib/input-constraints";
 
-import type { CanPermissions, EducationMonitor, Enum, Nationality, Paginated, School, Student } from "@/types";
+import type { CanPermissions, EducationMonitor, Enum, Nationality, Paginated, SchoolPeriod, Student } from "@/types";
 
 import { cn } from "@/lib/utils";
 
@@ -31,8 +31,6 @@ import { Building2Icon, ListIcon, LoaderIcon, RefreshCcwIcon, SearchIcon } from 
 
 import { index, show } from "@/routes/administration/students";
 
-type OrganizationOption = Pick<EducationMonitor | School, "id" | "name">;
-
 type StudentProps = Student & {
     canAny: boolean;
     can: CanPermissions;
@@ -40,12 +38,12 @@ type StudentProps = Student & {
 
 type PageProps = {
     students?: Paginated<StudentProps>;
-    monitors: OrganizationOption[];
-    schools: OrganizationOption[];
-    nationalities?: Pick<Nationality, "id" | "name">[];
+    monitors: EducationMonitor[];
+    schools: SchoolPeriod[];
+    nationalities?: Nationality[];
     registrationStatuses?: Enum[];
     education_monitor_id?: number | null;
-    school_id?: number | null;
+    school_period_id?: number | null;
     filter: {
         name?: string;
         registration_status?: string;
@@ -115,7 +113,7 @@ export default function Index({
     nationalities,
     registrationStatuses,
     education_monitor_id,
-    school_id,
+    school_period_id,
     filter,
 }: PageProps) {
     const [pendingOrganization, setPendingOrganization] = useState<PendingOrg>({});
@@ -135,17 +133,12 @@ export default function Index({
     }, []);
 
     const monitorId = education_monitor_id?.toString();
-    const schoolId = school_id?.toString();
+    const schoolId = school_period_id?.toString();
     const monitorPending = pendingOrganization.monitorId !== undefined && pendingOrganization.monitorId !== monitorId;
     const schoolPending = pendingOrganization.schoolId !== undefined && pendingOrganization.schoolId !== schoolId;
     const activeMonitorId = pendingOrganization.monitorId ?? monitorId;
-    const candidateSchoolId = monitorPending
-        ? undefined
-        : (pendingOrganization.schoolId ?? schoolId);
-    const activeSchoolId =
-        candidateSchoolId && schools.some((school) => school.id.toString() === candidateSchoolId)
-            ? candidateSchoolId
-            : undefined;
+    const candidateSchoolId = monitorPending ? undefined : (pendingOrganization.schoolId ?? schoolId);
+    const activeSchoolId = candidateSchoolId && schools.some((school) => school.id.toString() === candidateSchoolId) ? candidateSchoolId : undefined;
     const isLoadingSchools = Boolean(activeMonitorId && monitorPending);
     const studentsStale = isNavigating && (schoolPending || monitorPending);
     const studentsLoading = Boolean(activeSchoolId && (!students || studentsStale));
@@ -167,7 +160,7 @@ export default function Index({
 
         router.get(index.url(), {
             education_monitor_id: activeMonitorId,
-            school_id: value,
+            school_period_id: value,
         }, visitOptions);
     };
 
@@ -181,13 +174,16 @@ export default function Index({
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <Building2Icon />
-                                <span>اختيار الجهة التعليمية</span>
+                                <span>اختيار المؤسسة التعليمية</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Field>
-                                    <Label htmlFor="education_monitor_id" required>
+                                    <Label
+                                        htmlFor="education_monitor_id"
+                                        required
+                                    >
                                         المُراقبة
                                     </Label>
 
@@ -197,8 +193,12 @@ export default function Index({
                                             disabled={isNavigating}
                                             onValueChange={handleMonitorChange}
                                         >
-                                            <SelectTrigger id="education_monitor_id">
-                                                <SelectValue placeholder="اختر المُراقبة" />
+                                            <SelectTrigger
+                                                id="education_monitor_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المُراقبة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -222,18 +222,27 @@ export default function Index({
                                 </Field>
 
                                 <Field>
-                                    <Label htmlFor="school_id" required>
+                                    <Label
+                                        htmlFor="school_period_id"
+                                        required
+                                    >
                                         المدرسة
                                     </Label>
 
                                     {!activeMonitorId ? (
                                         <EmptyOptionsInput
-                                            id="school_id"
+                                            id="school_period_id"
                                             placeholder="اختر المُراقبة أولاً"
                                         />
                                     ) : isLoadingSchools ? (
-                                        <Select disabled open={false}>
-                                            <SelectTrigger id="school_id" aria-busy="true">
+                                        <Select
+                                            open={false}
+                                            disabled
+                                        >
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                                aria-busy="true"
+                                            >
                                                 <span className="flex items-center gap-2 text-muted-foreground">
                                                     <LoaderIcon className="size-3.5 shrink-0 animate-spin" />
                                                     <span>جارٍ تحميل المدارس…</span>
@@ -247,8 +256,12 @@ export default function Index({
                                             disabled={isNavigating}
                                             onValueChange={handleSchoolChange}
                                         >
-                                            <SelectTrigger id="school_id">
-                                                <SelectValue placeholder="اختر المدرسة" />
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المدرسة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -265,7 +278,7 @@ export default function Index({
                                         </Select>
                                     ) : (
                                         <EmptyOptionsInput
-                                            id="school_id"
+                                            id="school_period_id"
                                             placeholder="لا توجد مدارس متاحة لهذه المُراقبة"
                                         />
                                     )}
@@ -284,7 +297,7 @@ export default function Index({
                                     text={
                                         activeMonitorId
                                             ? "اختر المدرسة للمتابعة"
-                                            : "ابدأ باختيار الجهة التعليمية"
+                                            : "ابدأ باختيار المؤسسة التعليمية"
                                     }
                                     description={
                                         activeMonitorId
@@ -318,7 +331,7 @@ export default function Index({
                                 {...index.form()}
                             >
                                 <input type="hidden" name="education_monitor_id" value={activeMonitorId} />
-                                <input type="hidden" name="school_id" value={activeSchoolId} />
+                                <input type="hidden" name="school_period_id" value={activeSchoolId} />
 
                                 <Card>
                                     <CardHeader className="border-b">
@@ -347,12 +360,17 @@ export default function Index({
                                                 defaultValue={filter.registration_status || undefined}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="صفة القيد" />
+                                                    <SelectValue
+                                                        placeholder="صفة القيد"
+                                                    />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         {(registrationStatuses ?? []).map((status) => (
-                                                            <SelectItem key={status.id} value={status.id}>
+                                                            <SelectItem
+                                                                key={status.id}
+                                                                value={status.id}
+                                                            >
                                                                 {status.name}
                                                             </SelectItem>
                                                         ))}
@@ -423,15 +441,22 @@ export default function Index({
                                     </CardContent>
                                     <CardFooter className="border-t">
                                         <div className="flex items-center gap-x-3">
-                                            <Button type="submit" variant="default">
+                                            <Button
+                                                type="submit"
+                                                variant="default"
+                                            >
                                                 <SearchIcon />
                                                 <span>بحث</span>
                                             </Button>
-                                            <Button type="reset" variant="outline" asChild>
+                                            <Button
+                                                type="reset"
+                                                variant="outline"
+                                                asChild
+                                            >
                                                 <Link href={index.url({
                                                     query: {
                                                         education_monitor_id: activeMonitorId,
-                                                        school_id: activeSchoolId,
+                                                        school_period_id: activeSchoolId,
                                                     },
                                                 })}
                                                 >
@@ -517,7 +542,10 @@ export default function Index({
                                 )}
                                 {hasPagination && students && (
                                     <CardFooter className="border-t">
-                                        <Paginator links={students.links} meta={students} />
+                                        <Paginator
+                                            links={students.links}
+                                            meta={students}
+                                        />
                                     </CardFooter>
                                 )}
                             </Card>

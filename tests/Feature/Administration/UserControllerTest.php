@@ -5,6 +5,7 @@ use App\Enums\UserScope;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\ModelStates\User\RequestState\Approved;
@@ -44,10 +45,6 @@ function createUserAdminUser(): User
     return $user;
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function administrationUserPayload(array $overrides = []): array
 {
     $role = Role::findOrCreate('user:role:view', UserScope::ADMINISTRATION->value);
@@ -63,10 +60,6 @@ function administrationUserPayload(array $overrides = []): array
     ], $overrides);
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function warehouseUserPayload(Warehouse $warehouse, array $overrides = []): array
 {
     $role = Role::findOrCreate('user:role:view', UserScope::WAREHOUSE->value);
@@ -83,10 +76,6 @@ function warehouseUserPayload(Warehouse $warehouse, array $overrides = []): arra
     ], $overrides);
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function educationMonitorUserPayload(EducationMonitor $monitor, array $overrides = []): array
 {
     $role = Role::findOrCreate('user:role:view', UserScope::EDUCATION_MONITOR->value);
@@ -103,10 +92,6 @@ function educationMonitorUserPayload(EducationMonitor $monitor, array $overrides
     ], $overrides);
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function educationServicesOfficeUserPayload(
     EducationMonitor $monitor,
     EducationServicesOffice $office,
@@ -127,18 +112,14 @@ function educationServicesOfficeUserPayload(
     ], $overrides);
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
-function schoolUserPayload(EducationMonitor $monitor, School $school, array $overrides = []): array
+function schoolUserPayload(EducationMonitor $monitor, SchoolPeriod $schoolPeriod, array $overrides = []): array
 {
     $role = Role::findOrCreate('user:role:view', UserScope::SCHOOL->value);
 
     return array_merge([
         'scope' => UserScope::SCHOOL->value,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'name' => 'New School User',
         'username' => 'school.user.create',
         'email' => null,
@@ -246,7 +227,7 @@ test('create education services office user page loads monitors with offices', f
 test('create school user page loads monitors with schools', function () {
     $user = createUserAdminUser();
     $monitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
 
     $this->actingAs($user, 'administration')
         ->get(route('administration.users.create', ['scope' => UserScope::SCHOOL->value]))
@@ -257,7 +238,7 @@ test('create school user page loads monitors with schools', function () {
             ->has('monitors', 1)
             ->where('monitors.0.id', $monitor->id)
             ->has('monitors.0.schools', 1)
-            ->where('monitors.0.schools.0.id', $school->id)
+            ->where('monitors.0.schools.0.id', $schoolPeriod->id)
         );
 });
 
@@ -392,7 +373,7 @@ test('store requires an education monitor and school when school fields are omit
 
     $this->actingAs($user, 'administration')
         ->post(route('administration.users.store'), $payload)
-        ->assertSessionHasErrors(['education_monitor_id', 'school_id']);
+        ->assertSessionHasErrors(['education_monitor_id', 'school_period_id']);
 
     expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
 });
@@ -439,8 +420,8 @@ test('authenticated users can store an education services office user', function
 test('authenticated users can store a school user', function () {
     $user = createUserAdminUser();
     $monitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
-    $payload = schoolUserPayload($monitor, $school, [
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
+    $payload = schoolUserPayload($monitor, $schoolPeriod, [
         'username' => 'school.user.store',
     ]);
 
@@ -452,8 +433,8 @@ test('authenticated users can store a school user', function () {
 
     expect($createdUser)->not->toBeNull()
         ->and($createdUser->scope)->toBe(UserScope::SCHOOL)
-        ->and($createdUser->organization_id)->toBe($school->id)
-        ->and($createdUser->organization_type)->toBe(School::class);
+        ->and($createdUser->organization_id)->toBe($schoolPeriod->id)
+        ->and($createdUser->organization_type)->toBe(SchoolPeriod::class);
 });
 
 test('store rejects roles that do not belong to the selected scope', function () {
@@ -538,12 +519,12 @@ test('show page resolves warehouse organization context', function () {
 test('show page resolves school organization with parent monitor', function () {
     $user = createUserAdminUser();
     $monitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($monitor, 'monitor')->create(['name' => 'School One']);
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor')->state(['name' => 'School One']), 'school')->create();
     $target = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'administration')

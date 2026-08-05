@@ -32,7 +32,7 @@
             @include('print.school.students.partials.psychosocial-card-header', [
                 'title' => 'بطاقة الطالب الاجتماعية والنفسية',
                 'academicYearName' => $academicYearName,
-                'school' => $school,
+                'schoolPeriod' => $schoolPeriod,
             ])
 
             <section class="print-section">
@@ -169,7 +169,7 @@
             @include('print.school.students.partials.psychosocial-card-header', [
                 'title' => 'بطاقة الطالب الاجتماعية والنفسية',
                 'academicYearName' => $academicYearName,
-                'school' => $school,
+                'schoolPeriod' => $schoolPeriod,
             ])
 
             <section class="print-section">
@@ -338,7 +338,7 @@
             @include('print.school.students.partials.psychosocial-card-header', [
                 'title' => 'الجانب النفسي',
                 'academicYearName' => $academicYearName,
-                'school' => $school,
+                'schoolPeriod' => $schoolPeriod,
             ])
 
             <p class="print-keep-together mt-3 text-xs leading-relaxed text-black">
@@ -378,7 +378,7 @@
             @include('print.school.students.partials.psychosocial-card-header', [
                 'title' => 'الجانب النفسي (تابع)',
                 'academicYearName' => $academicYearName,
-                'school' => $school,
+                'schoolPeriod' => $schoolPeriod,
             ])
 
             <section class="print-keep-together mt-3 space-y-3 text-xs">

@@ -3,7 +3,9 @@
 namespace App\Http\Requests\EducationMonitor\School;
 
 use App\Enums\ClassroomDistributionResetScope;
+use App\Models\AcademicYear;
 use App\Models\GradeLevel;
+use App\Models\GradeLevelSchoolPeriod;
 use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -42,7 +44,7 @@ class ResetClassroomDistributionRequest extends FormRequest
                 'integer',
                 'distinct',
                 Rule::exists(GradeLevel::class, 'id')
-                    ->whereIn('id', $school->gradeLevels()->pluck('grade_levels.id')->all()),
+                    ->whereIn('id', $this->schoolGradeLevelIds($school)),
             ],
         ];
     }
@@ -61,9 +63,9 @@ class ResetClassroomDistributionRequest extends FormRequest
             /** @var School $school */
             $school = $this->route('school');
 
-            $schoolGradeLevelIds = $school->gradeLevels()->pluck('grade_levels.id')->all();
+            $schoolGradeLevelIds = $this->schoolGradeLevelIds($school);
 
-            if ($schoolGradeLevelIds === []) {
+            if (empty($schoolGradeLevelIds)) {
                 $validator->errors()->add('grade_level_ids', __('alerts.messages.classroom-distribution-reset-no-grade-levels'));
             }
         });
@@ -91,5 +93,15 @@ class ResetClassroomDistributionRequest extends FormRequest
         }
 
         return $scope->requiresGradeLevelSelection();
+    }
+
+    private function schoolGradeLevelIds(School $school): array
+    {
+        return GradeLevelSchoolPeriod::query()
+            ->where('academic_year_id', '=', AcademicYear::currentId())
+            ->whereIn('school_period_id', $school->periods()->select('school_periods.id'))
+            ->distinct()
+            ->pluck('grade_level_id')
+            ->all();
     }
 }

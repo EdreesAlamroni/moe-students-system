@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use Illuminate\Database\Seeder;
 
@@ -12,21 +12,21 @@ class StudentSeeder extends Seeder
 {
     public function run(): void
     {
-        $school = School::first();
+        $schoolPeriod = SchoolPeriod::first();
 
-        if ($school === null) {
+        if ($schoolPeriod === null) {
             return;
         }
 
-        $school->gradeLevels()->each(function (GradeLevel $gradeLevel) use ($school) {
+        $schoolPeriod->gradeLevels()->each(function (GradeLevel $gradeLevel) use ($schoolPeriod) {
             Student::factory(50)
-                ->recycle($school->monitor)
-                ->recycle($school)
+                ->recycle($schoolPeriod->monitor)
+                ->recycle($schoolPeriod)
                 ->create()
                 ->each(function (Student $student) use ($gradeLevel) {
                     $student->enrollments()->create([
                         'academic_year_id' => AcademicYear::currentId(),
-                        'school_id' => $student->school_id,
+                        'school_period_id' => $student->school_period_id,
                         'grade_level_id' => $gradeLevel->id,
                     ]);
                 });

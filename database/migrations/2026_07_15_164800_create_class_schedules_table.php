@@ -14,16 +14,16 @@ return new class extends Migration
         Schema::create('class_schedules', function (Blueprint $table) {
             $table->id();
             $table->uuid()->unique();
-            $table->foreignId('school_id')->constrained('schools')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('classroom_id')->constrained('classrooms')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('school_period_id')->constrained('school_periods')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('class_period_id')->constrained('class_periods')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('classroom_id')->constrained('classrooms')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('subject_id')->constrained('subjects')->cascadeOnUpdate()->nullOnDelete();
             $table->unsignedTinyInteger('day_of_week')->index();
             $table->string('notes')->nullable();
             $table->timestamps();
 
-            $table->unique(['classroom_id', 'class_period_id', 'day_of_week'], 'class_schedules_unique');
+            $table->unique(['class_period_id', 'classroom_id', 'day_of_week'], 'class_schedules_unique');
         });
     }
 

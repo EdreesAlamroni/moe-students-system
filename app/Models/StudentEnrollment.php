@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
  * @property-read int $id
  * @property-read string $uuid
  * @property-read int $academic_year_id
- * @property-read int|null $school_id
+ * @property-read int|null $school_period_id
  * @property-read int $grade_level_id
  * @property-read int|null $classroom_id
  * @property-read int $student_id
@@ -22,7 +22,7 @@ use Illuminate\Support\Carbon;
  * @property-read Carbon|null $updated_at
  * @property-read Carbon|null $deleted_at
  * @property-read AcademicYear $academicYear
- * @property-read School|null $school
+ * @property-read SchoolPeriod|null $schoolPeriod
  * @property-read GradeLevel $gradeLevel
  * @property-read Classroom|null $classroom
  * @property-read Student $student
@@ -37,7 +37,7 @@ class StudentEnrollment extends Model
     {
         return [
             'academic_year_id' => 'integer',
-            'school_id' => 'integer',
+            'school_period_id' => 'integer',
             'grade_level_id' => 'integer',
             'classroom_id' => 'integer',
             'student_id' => 'integer',
@@ -53,9 +53,9 @@ class StudentEnrollment extends Model
         return $this->belongsTo(AcademicYear::class);
     }
 
-    public function school(): BelongsTo
+    public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class);
+        return $this->belongsTo(SchoolPeriod::class);
     }
 
     public function gradeLevel(): BelongsTo

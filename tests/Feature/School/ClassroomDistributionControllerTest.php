@@ -6,7 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\ClassroomDistributionCompletion;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -15,28 +15,24 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<int, string>  $permissions
- * @return array{school: School, gradeLevel: GradeLevel, user: User}
- */
 function createClassroomDistributionContext(array $permissions = [
     'classroom-distribution:view',
     'classroom-distribution:distribute',
     'classroom-distribution:finalize',
 ]): array
 {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::factory()->create();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     foreach ($permissions as $permission) {
@@ -45,19 +41,19 @@ function createClassroomDistributionContext(array $permissions = [
 
     $user->givePermissionTo($permissions);
 
-    return compact('school', 'gradeLevel', 'user');
+    return compact('schoolPeriod', 'gradeLevel', 'user');
 }
 
 function enrollStudentInGradeLevelWithoutClassroom(
-    School $school,
+    SchoolPeriod $schoolPeriod,
     GradeLevel $gradeLevel,
     ?Student $student = null,
 ): Student {
-    $student ??= Student::factory()->for($school)->create();
+    $student ??= Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => AcademicYear::currentId(),
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
         'student_id' => $student->id,
@@ -66,19 +62,19 @@ function enrollStudentInGradeLevelWithoutClassroom(
     return $student;
 }
 
-function createClassroomForGradeLevel(School $school, GradeLevel $gradeLevel, array $attributes = []): Classroom
+function createClassroomForGradeLevel(SchoolPeriod $schoolPeriod, GradeLevel $gradeLevel, array $attributes = []): Classroom
 {
     return Classroom::factory()->create(array_merge([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'academic_year_id' => AcademicYear::currentId(),
     ], $attributes));
 }
 
-function completeClassroomDistributionForSchool(School $school): ClassroomDistributionCompletion
+function completeClassroomDistributionForSchool(SchoolPeriod $schoolPeriod): ClassroomDistributionCompletion
 {
     return ClassroomDistributionCompletion::query()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => AcademicYear::currentId(),
         'completed_at' => now(),
     ]);
@@ -103,12 +99,12 @@ test('guests are redirected from the classroom distribution page', function () {
 });
 
 test('users without classroom distribution permissions cannot view the page', function () {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'school')
@@ -117,10 +113,10 @@ test('users without classroom distribution permissions cannot view the page', fu
 });
 
 test('authenticated school users can visit the classroom distribution page', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
 
-    enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
-    createClassroomForGradeLevel($school, $gradeLevel);
+    enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
+    createClassroomForGradeLevel($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.index'))
@@ -142,17 +138,17 @@ test('authenticated school users can visit the classroom distribution page', fun
 });
 
 test('the index page reflects enrollment summary counts accurately', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
 
-    $classroom = createClassroomForGradeLevel($school, $gradeLevel);
+    $classroom = createClassroomForGradeLevel($schoolPeriod, $gradeLevel);
 
-    enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
-    enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
+    enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
+    enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
 
-    $assignedStudent = Student::factory()->for($school)->create();
+    $assignedStudent = Student::factory()->for($schoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'academic_year_id' => AcademicYear::currentId(),
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroom->id,
         'student_id' => $assignedStudent->id,
@@ -171,10 +167,10 @@ test('the index page reflects enrollment summary counts accurately', function ()
 });
 
 test('the index page shows distribution as completed when finalized', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
 
-    enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
-    completeClassroomDistributionForSchool($school);
+    enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
+    completeClassroomDistributionForSchool($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.index'))
@@ -186,11 +182,11 @@ test('the index page shows distribution as completed when finalized', function (
 });
 
 test('the index page respects granular permissions', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext([
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext([
         'classroom-distribution:view',
     ]);
 
-    enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
+    enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.index'))
@@ -207,13 +203,13 @@ test('guests cannot finalize classroom distribution', function () {
 });
 
 test('users without finalize permission cannot finalize classroom distribution', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext([
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext([
         'classroom-distribution:view',
         'classroom-distribution:distribute',
     ]);
 
-    $classroom = createClassroomForGradeLevel($school, $gradeLevel);
-    $student = enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
+    $classroom = createClassroomForGradeLevel($schoolPeriod, $gradeLevel);
+    $student = enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
 
     StudentEnrollment::query()
         ->where('student_id', $student->id)
@@ -225,10 +221,10 @@ test('users without finalize permission cannot finalize classroom distribution',
 });
 
 test('school users can finalize classroom distribution when all eligible students are assigned', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
 
-    $classroom = createClassroomForGradeLevel($school, $gradeLevel);
-    $student = enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
+    $classroom = createClassroomForGradeLevel($schoolPeriod, $gradeLevel);
+    $student = enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
 
     StudentEnrollment::query()
         ->where('student_id', $student->id)
@@ -240,17 +236,17 @@ test('school users can finalize classroom distribution when all eligible student
         ->assertSessionHas('laravel_flash_message.level', 'success');
 
     expect(ClassroomDistributionCompletion::query()
-        ->where('school_id', $school->id)
+        ->where('school_period_id', $schoolPeriod->id)
         ->where('academic_year_id', AcademicYear::currentId())
         ->whereNotNull('completed_at')
         ->exists())->toBeTrue();
 });
 
 test('finalize redirects with an error when students remain unassigned', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
 
-    enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
-    createClassroomForGradeLevel($school, $gradeLevel);
+    enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
+    createClassroomForGradeLevel($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->post(route('school.classroom-distribution.finalize'))
@@ -258,7 +254,7 @@ test('finalize redirects with an error when students remain unassigned', functio
         ->assertSessionHas('laravel_flash_message.level', 'error');
 
     expect(ClassroomDistributionCompletion::query()
-        ->where('school_id', $school->id)
+        ->where('school_period_id', $schoolPeriod->id)
         ->exists())->toBeFalse();
 });
 
@@ -272,16 +268,16 @@ test('finalize redirects with an error when there are no enrollments', function 
 });
 
 test('finalize redirects with an error when distribution is already finalized', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
 
-    $classroom = createClassroomForGradeLevel($school, $gradeLevel);
-    $student = enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
+    $classroom = createClassroomForGradeLevel($schoolPeriod, $gradeLevel);
+    $student = enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
 
     StudentEnrollment::query()
         ->where('student_id', $student->id)
         ->update(['classroom_id' => $classroom->id]);
 
-    completeClassroomDistributionForSchool($school);
+    completeClassroomDistributionForSchool($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->post(route('school.classroom-distribution.finalize'))
@@ -289,13 +285,13 @@ test('finalize redirects with an error when distribution is already finalized', 
 });
 
 test('the complete classroom distribution workflow assigns students and finalizes successfully', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionContext();
 
-    $classroomA = createClassroomForGradeLevel($school, $gradeLevel, ['name' => 'A', 'capacity' => 30]);
-    $classroomB = createClassroomForGradeLevel($school, $gradeLevel, ['name' => 'B', 'capacity' => 30]);
+    $classroomA = createClassroomForGradeLevel($schoolPeriod, $gradeLevel, ['name' => 'A', 'capacity' => 30]);
+    $classroomB = createClassroomForGradeLevel($schoolPeriod, $gradeLevel, ['name' => 'B', 'capacity' => 30]);
 
-    $manualStudent = enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
-    $randomStudent = enrollStudentInGradeLevelWithoutClassroom($school, $gradeLevel);
+    $manualStudent = enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
+    $randomStudent = enrollStudentInGradeLevelWithoutClassroom($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.index'))
@@ -336,9 +332,9 @@ test('the complete classroom distribution workflow assigns students and finalize
         ->assertRedirect(route('school.classroom-distribution.index'))
         ->assertSessionHas('laravel_flash_message.level', 'success');
 
-    expect(ClassroomDistributionCompletion::isCompleteForSchoolAndYear(
-        $school->id,
+    expect(ClassroomDistributionCompletion::isCompleteForSchoolPeriodAndYear(
         AcademicYear::currentId(),
+        $schoolPeriod->id,
     ))->toBeTrue();
 
     $this->actingAs($user, 'school')

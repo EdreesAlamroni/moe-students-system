@@ -6,7 +6,7 @@ use App\Enums\StudentExamEnrollmentStatus;
 use App\Enums\StudentRegistrationStatus;
 use App\Models\EducationMonitor;
 use App\Models\Nationality;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Support\Helpers\FakeDataGenerator;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -35,8 +35,12 @@ class StudentFactory extends Factory
         );
 
         return [
-            'education_monitor_id' => EducationMonitor::factory(),
-            'school_id' => School::factory(),
+            'school_period_id' => SchoolPeriod::factory(),
+            'education_monitor_id' => function (array $attributes) {
+                return SchoolPeriod::query()
+                    ->whereKey($attributes['school_period_id'])
+                    ->value('education_monitor_id');
+            },
             'nationality_id' => Nationality::libyanId() ?? Nationality::factory(),
             'number' => null,
             'registration_status' => fake()->randomElement(StudentRegistrationStatus::cases()),
@@ -61,5 +65,21 @@ class StudentFactory extends Factory
             'family_registration_number' => fake()->randomNumber(8, true),
             'passport_number' => Str::upper(fake()->regexify('[A-Z0-9]{8}')),
         ];
+    }
+
+    public function unassignedToSchool(): static
+    {
+        return $this->state([
+            'education_monitor_id' => EducationMonitor::factory(),
+            'school_period_id' => null,
+        ]);
+    }
+
+    public function unassignedToEducationMonitor(): static
+    {
+        return $this->state([
+            'education_monitor_id' => null,
+            'school_period_id' => null,
+        ]);
     }
 }

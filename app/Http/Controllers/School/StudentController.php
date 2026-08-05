@@ -39,7 +39,7 @@ class StudentController extends Controller
                 'id',
                 'uuid',
                 'education_monitor_id',
-                'school_id',
+                'school_period_id',
                 'nationality_id',
                 'number',
                 'registration_status',
@@ -106,7 +106,7 @@ class StudentController extends Controller
 
             $student->enrollment()->create([
                 'academic_year_id' => AcademicYear::currentId(),
-                'school_id' => $student->school_id,
+                'school_period_id' => $student->school_period_id,
                 'grade_level_id' => $request->validated('grade_level_id'),
             ]);
 
@@ -194,10 +194,10 @@ class StudentController extends Controller
                 'left_academic_year_id',
                 'joined_academic_year_id',
                 'student_id',
-                'from_school_id',
-                'to_school_id',
-                'left_school_at',
-                'joined_school_at',
+                'from_school_period_id',
+                'to_school_period_id',
+                'left_school_period_at',
+                'joined_school_period_at',
                 'created_at',
                 'deleted_at',
             ])
@@ -206,8 +206,10 @@ class StudentController extends Controller
                 'leftAcademicYear',
                 'joinedAcademicYear',
                 'student',
-                'fromSchool.monitor',
-                'toSchool.monitor',
+                'fromSchoolPeriod.school',
+                'toSchoolPeriod.school',
+                'fromSchoolPeriod.monitor',
+                'toSchoolPeriod.monitor',
             ])
             ->paginate()
             ->withQueryString()

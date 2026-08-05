@@ -10,7 +10,7 @@ use App\Http\Resources\EducationServicesOffice\UserCollection;
 use App\Http\Resources\EducationServicesOffice\UserFormResource;
 use App\Http\Resources\EducationServicesOffice\UserResource;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
@@ -54,7 +54,7 @@ class UserController extends Controller
                     assert($morphTo instanceof MorphTo);
 
                     $morphTo->constrain([
-                        School::class => function (Builder $query): void {
+                        SchoolPeriod::class => function (Builder $query): void {
                             $query->select(['id', 'education_services_office_id']);
                         },
                         EducationServicesOffice::class => function (Builder $query): void {
@@ -95,10 +95,10 @@ class UserController extends Controller
         $office = auth('education_services_office')->user()->organization;
 
         $schools = $scope->isSchool()
-            ? School::list(function (Builder $query) use ($office) {
-                $query->where('education_services_office_id', '=', $office->id);
+            ? SchoolPeriod::list(function ($query) {
+                $query->forCurrentEducationServicesOffice();
             }, ['education_services_office_id'])
-            : [];
+            : collect([]);
 
         return Inertia::render('education-services-office/users/create', [
             'scope' => $scope->toArray(),
@@ -194,7 +194,7 @@ class UserController extends Controller
         }
 
         $user->loadMissing(match ($user->organization_type) {
-            EducationServicesOffice::class, School::class => ['organization.monitor'],
+            EducationServicesOffice::class, SchoolPeriod::class => ['organization.monitor'],
             default => ['organization'],
         });
     }

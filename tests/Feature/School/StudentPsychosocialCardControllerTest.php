@@ -4,7 +4,7 @@ use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\StudentPsychosocialCard;
@@ -15,23 +15,20 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @return array{school: School, gradeLevel: GradeLevel, user: User}
- */
 function createSchoolPsychosocialCardContext(): array
 {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::factory()->create();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     foreach ([
@@ -50,19 +47,16 @@ function createSchoolPsychosocialCardContext(): array
         'student:print-psychosocial-card',
     ]);
 
-    return compact('school', 'gradeLevel', 'user');
+    return compact('schoolPeriod', 'gradeLevel', 'user');
 }
 
-/**
- * @return array{student: Student, enrollment: StudentEnrollment}
- */
-function createEnrolledStudentForPsychosocialCard(School $school, GradeLevel $gradeLevel): array
+function createEnrolledStudentForPsychosocialCard(SchoolPeriod $schoolPeriod, GradeLevel $gradeLevel): array
 {
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $enrollment = StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
     ]);
@@ -84,8 +78,8 @@ beforeEach(function () {
 });
 
 test('authorized users can view a student psychosocial card', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
-    ['student' => $student] = createEnrolledStudentForPsychosocialCard($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
+    ['student' => $student] = createEnrolledStudentForPsychosocialCard($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.psychosocial-card.show', ['student' => $student]))
@@ -99,14 +93,14 @@ test('authorized users can view a student psychosocial card', function () {
 });
 
 test('users without view permission cannot access the psychosocial card show page', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel] = createSchoolPsychosocialCardContext();
-    ['student' => $student] = createEnrolledStudentForPsychosocialCard($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel] = createSchoolPsychosocialCardContext();
+    ['student' => $student] = createEnrolledStudentForPsychosocialCard($schoolPeriod, $gradeLevel);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'school')
@@ -116,8 +110,8 @@ test('users without view permission cannot access the psychosocial card show pag
 
 test('school users cannot view psychosocial cards for students from another school', function () {
     ['gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
-    $otherSchool = School::factory()->create();
-    ['student' => $student] = createEnrolledStudentForPsychosocialCard($otherSchool, $gradeLevel);
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    ['student' => $student] = createEnrolledStudentForPsychosocialCard($otherSchoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.psychosocial-card.show', ['student' => $student]))
@@ -125,8 +119,8 @@ test('school users cannot view psychosocial cards for students from another scho
 });
 
 test('authorized users can visit the psychosocial card edit page', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
-    ['student' => $student] = createEnrolledStudentForPsychosocialCard($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
+    ['student' => $student] = createEnrolledStudentForPsychosocialCard($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.students.psychosocial-card.edit', ['student' => $student]))
@@ -142,8 +136,8 @@ test('authorized users can visit the psychosocial card edit page', function () {
 });
 
 test('authorized users can update a student psychosocial card', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
-    ['student' => $student, 'enrollment' => $enrollment] = createEnrolledStudentForPsychosocialCard($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
+    ['student' => $student, 'enrollment' => $enrollment] = createEnrolledStudentForPsychosocialCard($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->put(route('school.students.psychosocial-card.update', ['student' => $student]), [
@@ -165,8 +159,8 @@ test('authorized users can update a student psychosocial card', function () {
 });
 
 test('updating a psychosocial card without enrollment is forbidden', function () {
-    ['school' => $school, 'user' => $user] = createSchoolPsychosocialCardContext();
-    $student = Student::factory()->for($school)->create();
+    ['schoolPeriod' => $schoolPeriod, 'user' => $user] = createSchoolPsychosocialCardContext();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'school')
         ->put(route('school.students.psychosocial-card.update', ['student' => $student]), [
@@ -178,8 +172,8 @@ test('updating a psychosocial card without enrollment is forbidden', function ()
 });
 
 test('updating a psychosocial card validates representative phone numbers', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
-    ['student' => $student] = createEnrolledStudentForPsychosocialCard($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
+    ['student' => $student] = createEnrolledStudentForPsychosocialCard($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->from(route('school.students.psychosocial-card.edit', ['student' => $student]))
@@ -191,8 +185,8 @@ test('updating a psychosocial card validates representative phone numbers', func
 });
 
 test('authorized users can print a student psychosocial card', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
-    ['student' => $student] = createEnrolledStudentForPsychosocialCard($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
+    ['student' => $student] = createEnrolledStudentForPsychosocialCard($schoolPeriod, $gradeLevel);
 
     StudentPsychosocialCard::factory()->create([
         'student_id' => $student->id,
@@ -206,20 +200,20 @@ test('authorized users can print a student psychosocial card', function () {
         ->assertViewIs('print.school.students.psychosocial-card')
         ->assertViewHas('student', fn ($viewStudent) => $viewStudent->is($student->fresh()))
         ->assertViewHas('psychosocialCard')
-        ->assertViewHas('school', fn ($viewSchool) => $viewSchool->is($school));
+        ->assertViewHas('school', fn ($viewSchool) => $viewSchool->is($schoolPeriod));
 });
 
 test('users without print permission cannot print a psychosocial card', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel] = createSchoolPsychosocialCardContext();
-    ['student' => $student] = createEnrolledStudentForPsychosocialCard($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel] = createSchoolPsychosocialCardContext();
+    ['student' => $student] = createEnrolledStudentForPsychosocialCard($schoolPeriod, $gradeLevel);
 
     Permission::findOrCreate('student:view-psychosocial-card', UserScope::SCHOOL->value);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
     $user->givePermissionTo('student:view-psychosocial-card');
 
@@ -229,8 +223,8 @@ test('users without print permission cannot print a psychosocial card', function
 });
 
 test('psychosocial card update is blocked when the selected academic year is inactive', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
-    ['student' => $student] = createEnrolledStudentForPsychosocialCard($school, $gradeLevel);
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolPsychosocialCardContext();
+    ['student' => $student] = createEnrolledStudentForPsychosocialCard($schoolPeriod, $gradeLevel);
 
     $inactiveYear = AcademicYear::factory()->create([
         'name' => '2023-2024',

@@ -11,14 +11,17 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $grade_level_id
- * @property int $school_id
+ * @property int $school_period_id
  * @property int $academic_year_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read GradeLevel $gradeLevel
+ * @property-read SchoolPeriod $schoolPeriod
+ * @property-read AcademicYear $academicYear
  */
-#[Table('grade_level_school')]
+#[Table('grade_level_school_period')]
 #[Guarded(['id'])]
-class GradeLevelSchool extends Pivot
+class GradeLevelSchoolPeriod extends Pivot
 {
     public $incrementing = true;
 
@@ -28,7 +31,7 @@ class GradeLevelSchool extends Pivot
     {
         return [
             'grade_level_id' => 'integer',
-            'school_id' => 'integer',
+            'school_period_id' => 'integer',
             'academic_year_id' => 'integer',
         ];
     }
@@ -42,9 +45,9 @@ class GradeLevelSchool extends Pivot
         return $this->belongsTo(GradeLevel::class, 'grade_level_id');
     }
 
-    public function school(): BelongsTo
+    public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class, 'school_id');
+        return $this->belongsTo(SchoolPeriod::class, 'school_period_id');
     }
 
     public function academicYear(): BelongsTo

@@ -4,7 +4,7 @@ namespace App\Http\Requests\School\GradeLevel;
 
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
@@ -43,10 +43,10 @@ class StoreRequest extends FormRequest
                     return;
                 }
 
-                /** @var School $school */
-                $school = auth('school')->user()->organization;
+                /** @var SchoolPeriod $schoolPeriod */
+                $schoolPeriod = auth('school')->user()->organization;
 
-                $availableGradeLevelIds = $school->availableGradeLevels()->pluck('id');
+                $availableGradeLevelIds = $schoolPeriod->availableGradeLevels()->pluck('id');
 
                 if ($gradeLevelIds->diff($availableGradeLevelIds)->isNotEmpty()) {
                     $validator->errors()->add(

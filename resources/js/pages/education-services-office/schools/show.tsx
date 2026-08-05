@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 import { Head, Link } from "@inertiajs/react";
 
@@ -6,14 +6,17 @@ import type { CanPermissions, School } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import ActionsSection from "@/components/ui/structure/actions-section";
-import { StatCardsSection } from "@/components/ui/display/stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
+
+import { StatCardsSection } from "@/components/ui/display/stat-card";
 import { DetailField, DetailFields } from "@/components/ui/display/detail-field";
 import { DetailLabel } from "@/components/ui/display/detail-label";
 import { DetailValue } from "@/components/ui/display/detail-value";
 
 import { Button } from "@/components/ui/actions/button";
 import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";
+
+import { SchoolPeriodsSummary } from "@/components/shared/schools/school-periods-summary";
 
 import { GraduationCapIcon, PresentationIcon, NotepadTextIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
@@ -23,7 +26,7 @@ type PageProps = {
     school: School;
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 export default function Show({ school, canAny, can }: PageProps) {
     const isPrivate = school.is_private === true;
@@ -100,9 +103,15 @@ export default function Show({ school, canAny, can }: PageProps) {
                                     <DetailValue value={school.type?.name} />
                                 </DetailField>
 
-                                <DetailField>
-                                    <DetailLabel>الفترة الدراسية</DetailLabel>
-                                    <DetailValue value={school.academic_period?.name} />
+                                {/* TODO: Review this component and refactor it. */}
+                                <DetailField className="col-span-full">
+                                    <DetailLabel>الفترات الدراسية</DetailLabel>
+                                    <DetailValue>
+                                        <SchoolPeriodsSummary
+                                            periods={school.periods ?? []}
+                                            showStudentCounts
+                                        />
+                                    </DetailValue>
                                 </DetailField>
 
                                 {isPrivate && (
@@ -125,32 +134,13 @@ export default function Show({ school, canAny, can }: PageProps) {
                                         </DetailField>
                                     </>
                                 )}
-
-                                <DetailField>
-                                    <DetailLabel>جنس الطلاب الدارسين بالمدرسة</DetailLabel>
-                                    <DetailValue value={school.students_gender?.name} />
-                                </DetailField>
-
-                                <DetailField>
-                                    <DetailLabel>المراحل الدراسية</DetailLabel>
-                                    <DetailValue className="gap-0">
-                                        {school.educational_stages?.map((educationalStage, index, arr) => (
-                                            <span key={index}>
-                                                {educationalStage.stage.name}
-                                                {index < arr.length - 1 && (
-                                                    <span className="font-mono mx-1">،</span>
-                                                )}
-                                            </span>
-                                        ))}
-                                    </DetailValue>
-                                </DetailField>
                             </DetailFields>
                         </CardContent>
                     </Card>
                 </section>
             </MainContainer>
         </>
-    )
+    );
 }
 
 Show.layout = (props: PageProps) => ({

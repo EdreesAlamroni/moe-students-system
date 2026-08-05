@@ -6,19 +6,18 @@ use App\Concerns\HasUuid;
 use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolBranchType;
 use App\Enums\SchoolBuildingType;
-use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -27,7 +26,6 @@ use Illuminate\Support\Str;
 /**
  * @property int $id
  * @property string $uuid
- * @property string|null $same_school_uuid
  * @property int $education_monitor_id
  * @property int|null $education_services_office_id
  * @property string $serial_number
@@ -36,39 +34,27 @@ use Illuminate\Support\Str;
  * @property SchoolBranchType|null $branch_type
  * @property SchoolBuildingType|null $building_type
  * @property string $name
- * @property SchoolAcademicPeriod $academic_period
- * @property SchoolStudentsGender|null $students_gender
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read EloquentCollection<int, User> $users
+ * @property-read string|null $academic_period_label
  * @property-read EducationMonitor $monitor
  * @property-read EducationServicesOffice|null $office
- * @property-read Collection<int, SchoolEducationalStage> $educationalStages
- * @property-read EloquentCollection<int, GradeLevel> $allGradeLevels
- * @property-read EloquentCollection<int, GradeLevel> $gradeLevels
- * @property-read EloquentCollection<int, Classroom> $allClassrooms
- * @property-read EloquentCollection<int, Classroom> $classrooms
- * @property-read EloquentCollection<int, Student> $allStudents
- * @property-read EloquentCollection<int, Student> $students
- * @property-read EloquentCollection<int, StudentEnrollment> $allEnrollments
- * @property-read EloquentCollection<int, StudentEnrollment> $enrollments
- * @property-read int|null $educational_stages_count
- * @property-read int|null $all_grade_levels_count
- * @property-read int|null $grade_levels_count
- * @property-read int|null $all_classrooms_count
- * @property-read int|null $classrooms_count
- * @property-read int|null $all_students_count
- * @property-read int|null $students_count
- * @property-read int|null $classrooms_count
- * @property-read int|null $all_enrollments_count
- * @property-read int|null $enrollments_count
+ * @property-read EloquentCollection<int, SchoolPeriod> $periods
+ * @property-read EloquentCollection<int, SchoolEducationalStage> $allEducationalStages
+ * @property-read EloquentCollection<int, SchoolEducationalStage> $educationalStages
  */
 #[Guarded(['id'])]
 class School extends Model
 {
     /** @use HasFactory<\Database\Factories\SchoolFactory> */
     use HasFactory, HasUuid, SoftDeletes;
+
+    private const PERIOD_DENORMALIZED_COLUMNS = [
+        'education_monitor_id',
+        'education_services_office_id',
+        'name',
+    ];
 
     protected function casts(): array
     {
@@ -78,21 +64,64 @@ class School extends Model
             'type' => SchoolType::class,
             'branch_type' => SchoolBranchType::class,
             'building_type' => SchoolBuildingType::class,
-            'academic_period' => SchoolAcademicPeriod::class,
-            'students_gender' => SchoolStudentsGender::class,
         ];
     }
 
-    protected static function booted()
+    protected static function booted(): void
     {
-        parent::booted();
-
-        static::creating(function (self $school) {
+        static::creating(function (self $school): void {
             $count = (string) (self::query()->withTrashed()->count() + 1);
             $serialNumber = Str::padLeft($count, 6, '0');
             $school->serial_number = $serialNumber;
         });
+
+        static::saved(function (self $school): void {
+            if (! $school->wasChanged(self::PERIOD_DENORMALIZED_COLUMNS)) {
+                return;
+            }
+
+            SchoolPeriod::query()
+                ->withTrashed()
+                ->where('school_id', '=', $school->id)
+                ->update($school->periodDenormalizedAttributes());
+        });
     }
+
+    /*
+     * Start: Accessors & Mutators
+     */
+
+    /**
+     * Human-readable academic period label for list and report views.
+     *
+     * Resolves from the eager-loaded `periods` relation when present.
+     */
+    public function academicPeriodLabel(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            if ($this->relationLoaded('periods')) {
+                return match ($this->periods->count()) {
+                    0 => null,
+                    1 => $this->periods->first()->academic_period->name(),
+                    default => SchoolAcademicPeriod::DUAL_PERIOD->name(),
+                };
+            }
+
+            if (array_key_exists('periods_count', $this->attributes)) {
+                return match ($this->periods_count) {
+                    0 => null,
+                    1 => 'فترة واحدة', // Can't know which period without loading it.
+                    default => SchoolAcademicPeriod::DUAL_PERIOD->name(),
+                };
+            }
+
+            return null;
+        });
+    }
+
+    /*
+     * End: Accessors & Mutators
+     */
 
     /*
      * Start: Scopes
@@ -168,11 +197,6 @@ class School extends Model
      * Start: Relations
      */
 
-    public function users(): MorphMany
-    {
-        return $this->morphMany(User::class, 'organization');
-    }
-
     public function monitor(): BelongsTo
     {
         return $this->belongsTo(EducationMonitor::class, 'education_monitor_id');
@@ -183,102 +207,40 @@ class School extends Model
         return $this->belongsTo(EducationServicesOffice::class, 'education_services_office_id');
     }
 
-    /**
-     * Get all educational stages associated with the school across all academic years.
-     */
-    public function allEducationalStages(): HasMany
+    public function periods(): HasMany
     {
-        return $this->hasMany(SchoolEducationalStage::class, 'school_id');
+        return $this->hasMany(SchoolPeriod::class);
     }
 
-    /**
-     * Get the educational stages associated with the school for the current academic year.
-     */
-    public function educationalStages(): HasMany
+    public function morningPeriod(): HasOne
     {
         return $this
-            ->hasMany(SchoolEducationalStage::class, 'school_id')
-            ->where('academic_year_id', '=', AcademicYear::currentId());
+            ->hasOne(SchoolPeriod::class)
+            ->where('academic_period', '=', SchoolAcademicPeriod::MORNING);
     }
 
-    /**
-     * Get all grade levels associated with the school across all academic years.
-     *
-     * @return BelongsToMany<GradeLevel, $this, GradeLevelSchool>
-     */
-    public function allGradeLevels(): BelongsToMany
-    {
-        return $this->belongsToMany(GradeLevel::class, 'grade_level_school')
-            ->using(GradeLevelSchool::class)
-            ->withPivot(['academic_year_id'])
-            ->withTimestamps();
-    }
-
-    /**
-     * Get the grade levels associated with the school for the current academic year.
-     *
-     * @return BelongsToMany<GradeLevel, $this, GradeLevelSchool>
-     */
-    public function gradeLevels(): BelongsToMany
-    {
-        return $this->belongsToMany(GradeLevel::class, 'grade_level_school')
-            ->using(GradeLevelSchool::class)
-            ->withPivot(['academic_year_id'])
-            ->wherePivot('academic_year_id', '=', AcademicYear::currentId())
-            ->withTimestamps();
-    }
-
-    /**
-     * Get all classrooms associated with this school across all academic years.
-     */
-    public function allClassrooms(): HasMany
-    {
-        return $this->hasMany(Classroom::class, 'school_id');
-    }
-
-    /**
-     * Get the classrooms associated with this school for the current academic year.
-     */
-    public function classrooms(): HasMany
+    public function eveningPeriod(): HasOne
     {
         return $this
-            ->hasMany(Classroom::class, 'school_id')
-            ->where('academic_year_id', '=', AcademicYear::currentId());
+            ->hasOne(SchoolPeriod::class)
+            ->where('academic_period', '=', SchoolAcademicPeriod::EVENING);
     }
 
-    public function students(): HasMany
-    {
-        return $this->hasMany(Student::class);
-    }
-
-    /**
-     * Get all enrollments associated with the school across all academic years.
-     */
-    public function allEnrollments(): HasManyThrough
+    public function allEducationalStages(): HasManyThrough
     {
         return $this->hasManyThrough(
-            StudentEnrollment::class,
-            Student::class,
+            SchoolEducationalStage::class,
+            SchoolPeriod::class,
             'school_id',
-            'student_id',
-            'id',
-            'id',
+            'school_period_id',
         );
     }
 
-    /**
-     * Get the enrollments associated with the school for the current academic year.
-     */
-    public function enrollments(): HasManyThrough
+    public function educationalStages(): HasManyThrough
     {
-        return $this->hasManyThrough(
-            StudentEnrollment::class,
-            Student::class,
-            'school_id',
-            'student_id',
-            'id',
-            'id',
-        )->where('academic_year_id', '=', AcademicYear::currentId());
+        return $this
+            ->allEducationalStages()
+            ->where('academic_year_id', '=', AcademicYear::currentId());
     }
 
     /*
@@ -297,7 +259,7 @@ class School extends Model
     public static function list(?callable $callback = null, array $additionalColumns = ['id', 'name']): Collection
     {
         $columns = array_unique(
-            array_merge(['id', 'name', 'academic_period'], $additionalColumns)
+            array_merge(['id', 'name'], $additionalColumns)
         );
 
         $query = self::query()->select($columns);
@@ -341,49 +303,9 @@ class School extends Model
         return $this->type->isPrivate();
     }
 
-    public function isMorningPeriod(): bool
-    {
-        return $this->academic_period->isMorning();
-    }
-
-    public function isEveningPeriod(): bool
-    {
-        return $this->academic_period->isEvening();
-    }
-
-    public function isDualPeriod(): bool
-    {
-        return $this->academic_period->isDualPeriod();
-    }
-
-    public function isSinglePeriod(): bool
-    {
-        return $this->academic_period->isSinglePeriod();
-    }
-
-    /**
-     * IDs of the records representing the same school, including this one.
-     *
-     * A dual-period school registered as a single school is stored as two records sharing
-     * the same `same_school_uuid`, and both records must be treated as one school.
-     *
-     * @return list<int>
-     */
-    public function sameSchoolIds(): array
-    {
-        if ($this->same_school_uuid === null) {
-            return [$this->id];
-        }
-
-        return self::query()
-            ->where('same_school_uuid', '=', $this->same_school_uuid)
-            ->pluck('id')
-            ->all();
-    }
-
     /**
      * Grade levels the school can still add for the current academic year, limited to its
-     * educational stages and excluding the ones already assigned to any of its period records.
+     * educational stages and excluding those assigned to any of its periods.
      *
      * @return Collection<int, array{id: int, name: string}>
      */
@@ -401,16 +323,44 @@ class School extends Model
             return collect([]);
         }
 
-        $assignedGradeLevelIds = GradeLevelSchool::query()
+        $assignedGradeLevelIds = GradeLevelSchoolPeriod::query()
             ->select(['grade_level_id'])
             ->where('academic_year_id', '=', $currentAcademicYearId)
-            ->whereIn('school_id', $this->sameSchoolIds());
+            ->whereIn('school_period_id', $this->periods()->select('id'));
 
         return GradeLevel::list(function (Builder $query) use ($stages, $assignedGradeLevelIds): void {
             $query
                 ->whereIn('grade_levels.educational_stage', $stages)
                 ->whereNotIn('grade_levels.id', $assignedGradeLevelIds);
         });
+    }
+
+    public function periodDenormalizedAttributes(): array
+    {
+        return [
+            'education_monitor_id' => $this->education_monitor_id,
+            'education_services_office_id' => $this->education_services_office_id,
+            'name' => $this->name,
+        ];
+    }
+
+    public function currentGradeLevelIds(): array
+    {
+        $currentAcademicYearId = AcademicYear::currentId();
+
+        if (is_null($currentAcademicYearId)) {
+            return [];
+        }
+
+        $periodIds = $this->periods()->pluck('school_periods.id')->all();
+
+        return GradeLevelSchoolPeriod::query()
+            ->select(['academic_year_id', 'school_period_id', 'grade_level_id'])
+            ->where('academic_year_id', '=', $currentAcademicYearId)
+            ->whereIn('school_period_id', $periodIds)
+            ->distinct()
+            ->pluck('grade_level_id')
+            ->all();
     }
 
     /*

@@ -22,7 +22,7 @@ use Illuminate\Support\Collection;
  * @property int $id
  * @property string $uuid
  * @property int $academic_year_id
- * @property int $school_id
+ * @property int $school_period_id
  * @property int $grade_level_id
  * @property string $name
  * @property int $capacity
@@ -31,7 +31,7 @@ use Illuminate\Support\Collection;
  * @property Carbon $deleted_at
  * @property-read AcademicYear $academicYear
  * @property-read GradeLevel $gradeLevel
- * @property-read School $school
+ * @property-read SchoolPeriod $schoolPeriod
  * @property-read EloquentCollection<ClassSchedule> $schedules
  * @property-read int|null $schedules_count
  * @property-read EloquentCollection<Student> $allStudents
@@ -48,7 +48,7 @@ class Classroom extends Model
     {
         return [
             'academic_year_id' => 'integer',
-            'school_id' => 'integer',
+            'school_period_id' => 'integer',
             'grade_level_id' => 'integer',
         ];
     }
@@ -74,7 +74,7 @@ class Classroom extends Model
 
         $table = $query->getModel()->getTable();
 
-        return $query->where("{$table}.school_id", '=', $id);
+        return $query->where("{$table}.school_period_id", '=', $id);
     }
 
     #[Scope]
@@ -90,7 +90,7 @@ class Classroom extends Model
 
         return $query
             ->where("{$table}.academic_year_id", '=', AcademicYear::currentConstraintId())
-            ->where("{$table}.school_id", '=', $id);
+            ->where("{$table}.school_period_id", '=', $id);
     }
 
     #[Scope]
@@ -158,9 +158,9 @@ class Classroom extends Model
         return $this->belongsTo(GradeLevel::class);
     }
 
-    public function school(): BelongsTo
+    public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class);
+        return $this->belongsTo(SchoolPeriod::class);
     }
 
     public function schedules(): HasMany

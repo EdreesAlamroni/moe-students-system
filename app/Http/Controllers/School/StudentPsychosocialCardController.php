@@ -134,7 +134,7 @@ class StudentPsychosocialCardController extends Controller
         return view('print.school.students.psychosocial-card', [
             'student' => $student,
             'psychosocialCard' => $student->psychosocialCard,
-            'school' => auth('school')->user()->organization,
+            'schoolPeriod' => auth('school')->user()->organization,
             'academicYearName' => AcademicYear::currentName(),
             'behavioralProblems' => $this->prepareBehavioralProblemsForPrint($student->psychosocialCard),
         ]);

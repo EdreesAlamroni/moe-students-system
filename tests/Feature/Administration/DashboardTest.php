@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Gender;
+use App\Enums\SchoolAcademicPeriod;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\EducationMonitor;
@@ -8,11 +9,19 @@ use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\Nationality;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
 use App\Models\Warehouse;
 use Inertia\Testing\AssertableInertia as Assert;
+
+function createAdministrationDashboardSchoolPeriod(array $attributes): SchoolPeriod
+{
+    $school = School::factory()->create($attributes);
+
+    return SchoolPeriod::factory()->for($school)->create();
+}
 
 beforeEach(function () {
     AcademicYear::clearCachedCurrent();
@@ -47,20 +56,25 @@ test('the dashboard renders without statistics in the initial payload', function
             ]));
 });
 
-test('the summary reports system-wide aggregate counts', function () {
+test('the summary reports system-wide aggregate and canonical school counts', function () {
     $user = User::factory()->create();
 
     $warehouse = Warehouse::factory()->create();
     $monitor = EducationMonitor::factory()->create(['warehouse_id' => $warehouse->id]);
     $office = EducationServicesOffice::factory()->create(['education_monitor_id' => $monitor->id]);
-    $school = School::factory()->create([
+    $schoolPeriod = createAdministrationDashboardSchoolPeriod([
         'education_monitor_id' => $monitor->id,
         'education_services_office_id' => $office->id,
+    ]);
+    SchoolPeriod::factory()->for($schoolPeriod->school)->create([
+        'academic_period' => $schoolPeriod->academic_period->isMorning()
+            ? SchoolAcademicPeriod::EVENING
+            : SchoolAcademicPeriod::MORNING,
     ]);
 
     $gradeLevel = GradeLevel::factory()->create();
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
@@ -68,14 +82,14 @@ test('the summary reports system-wide aggregate counts', function () {
 
     Student::factory()->count(2)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'gender' => Gender::MALE,
         'nationality_id' => $libyan->id,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'gender' => Gender::FEMALE,
         'nationality_id' => $foreign->id,
     ]);
@@ -103,25 +117,25 @@ test('the education monitor distribution reports student and school counts per m
     $largest = EducationMonitor::factory()->create();
     $smallest = EducationMonitor::factory()->create();
 
-    School::factory()->count(2)->create(['education_monitor_id' => $largest->id]);
-    $school = School::factory()->create(['education_monitor_id' => $smallest->id]);
+    School::factory()->count(2)->state(['education_monitor_id' => $largest->id])->has(SchoolPeriod::factory(), 'periods')->create();
+    $schoolPeriod = createAdministrationDashboardSchoolPeriod(['education_monitor_id' => $smallest->id]);
 
     Student::factory()->count(2)->create([
         'education_monitor_id' => $largest->id,
-        'school_id' => null,
+        'school_period_id' => null,
         'gender' => Gender::MALE,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $smallest->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'gender' => Gender::FEMALE,
     ]);
 
     // Students unassigned to a monitor must not be counted.
     Student::factory()->create([
         'education_monitor_id' => null,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -146,23 +160,23 @@ test('the school distribution reports student and classroom counts for the large
     $user = User::factory()->create();
 
     $monitor = EducationMonitor::factory()->create();
-    $largest = School::factory()->create(['education_monitor_id' => $monitor->id, 'name' => 'المدرسة الكبرى']);
-    $smallest = School::factory()->create(['education_monitor_id' => $monitor->id, 'name' => 'المدرسة الصغرى']);
+    $largest = createAdministrationDashboardSchoolPeriod(['education_monitor_id' => $monitor->id, 'name' => 'المدرسة الكبرى']);
+    $smallest = createAdministrationDashboardSchoolPeriod(['education_monitor_id' => $monitor->id, 'name' => 'المدرسة الصغرى']);
 
     $gradeLevel = GradeLevel::factory()->create();
     Classroom::factory()->count(2)->create([
-        'school_id' => $largest->id,
+        'school_period_id' => $largest->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     Student::factory()->count(2)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $largest->id,
+        'school_period_id' => $largest->id,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $smallest->id,
+        'school_period_id' => $smallest->id,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -185,7 +199,7 @@ test('the school distribution is limited to the ten largest schools', function (
     $user = User::factory()->create();
 
     $monitor = EducationMonitor::factory()->create();
-    School::factory()->count(11)->create(['education_monitor_id' => $monitor->id]);
+    School::factory()->count(11)->state(['education_monitor_id' => $monitor->id])->has(SchoolPeriod::factory(), 'periods')->create();
 
     $this->actingAs($user, 'administration')
         ->get(route('administration.dashboard'))
@@ -198,26 +212,26 @@ test('the school distribution is limited to the ten largest schools', function (
 test('the grade level distribution reports gender counts per grade level in order', function () {
     $user = User::factory()->create();
 
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
 
     $firstGrade = GradeLevel::factory()->create(['name' => 'الصف الأول', 'order' => 1]);
     $secondGrade = GradeLevel::factory()->create(['name' => 'الصف الثاني', 'order' => 2]);
 
     Student::factory()
         ->count(2)
-        ->create(['school_id' => $school->id, 'gender' => Gender::MALE])
-        ->each(function (Student $student) use ($school, $secondGrade) {
+        ->create(['school_period_id' => $schoolPeriod->id, 'gender' => Gender::MALE])
+        ->each(function (Student $student) use ($schoolPeriod, $secondGrade) {
             StudentEnrollment::factory()->create([
-                'school_id' => $school->id,
+                'school_period_id' => $schoolPeriod->id,
                 'grade_level_id' => $secondGrade->id,
                 'classroom_id' => null,
                 'student_id' => $student->id,
             ]);
         });
 
-    $student = Student::factory()->create(['school_id' => $school->id, 'gender' => Gender::FEMALE]);
+    $student = Student::factory()->create(['school_period_id' => $schoolPeriod->id, 'gender' => Gender::FEMALE]);
     StudentEnrollment::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $firstGrade->id,
         'classroom_id' => null,
         'student_id' => $student->id,
@@ -242,7 +256,7 @@ test('the grade level distribution reports gender counts per grade level in orde
 test('classroom counts exclude classrooms from previous academic years', function () {
     $user = User::factory()->create();
 
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::factory()->create();
 
     $previousYear = AcademicYear::factory()->create([
@@ -253,13 +267,13 @@ test('classroom counts exclude classrooms from previous academic years', functio
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'academic_year_id' => $previousYear->id,
     ]);
@@ -278,10 +292,10 @@ test('the grade level distribution is empty when no academic year exists', funct
     AcademicYear::clearCachedCurrent();
 
     $user = User::factory()->create();
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::factory()->create();
     $student = Student::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'gender' => Gender::MALE,
     ]);
 
@@ -294,7 +308,7 @@ test('the grade level distribution is empty when no academic year exists', funct
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => $inactiveYear->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
         'student_id' => $student->id,
@@ -324,7 +338,7 @@ test('the nationality distribution merges the tail into a single segment', funct
         ->each(function (Nationality $nationality, int $index) {
             Student::factory()->count(6 - $index)->create([
                 'education_monitor_id' => null,
-                'school_id' => null,
+                'school_period_id' => null,
                 'nationality_id' => $nationality->id,
             ]);
         });

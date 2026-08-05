@@ -31,9 +31,9 @@ use Illuminate\Support\Collection;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read string|null $current_academic_year_name
- * @property-read EloquentCollection<int, School> $allSchools
- * @property-read EloquentCollection<int, School> $schools
- * @property-read School|null $currentSchool
+ * @property-read EloquentCollection<int, SchoolPeriod> $allSchoolPeriods
+ * @property-read EloquentCollection<int, SchoolPeriod> $schoolPeriods
+ * @property-read SchoolPeriod|null $schoolPeriod
  * @property-read EloquentCollection<int, Classroom> $allClassrooms
  * @property-read EloquentCollection<int, Classroom> $classrooms
  * @property-read EloquentCollection<int, Student> $allStudents
@@ -62,14 +62,14 @@ class GradeLevel extends Model
     /**
      * Get the current academic year name from preloaded data without querying the database.
      *
-     * Resolves from the eager-loaded `schools` relation when present, otherwise from an
+     * Resolves from the eager-loaded `schoolPeriods` relation when present, otherwise from an
      * `academic_year_name` attribute selected on the query.
      */
     public function currentAcademicYearName(): Attribute
     {
         return Attribute::get(function (): ?string {
-            if ($this->relationLoaded('schools')) {
-                return $this->schools->value('academic_year_name');
+            if ($this->relationLoaded('schoolPeriods')) {
+                return $this->schoolPeriods->value('academic_year_name');
             }
 
             return $this->hasAttribute('academic_year_name')
@@ -95,10 +95,10 @@ class GradeLevel extends Model
             return $query;
         }
 
-        return $query->join('grade_level_school', function (JoinClause $join) use ($id) {
-            $join->on('grade_levels.id', '=', 'grade_level_school.grade_level_id')
-                ->where('grade_level_school.academic_year_id', '=', AcademicYear::currentId())
-                ->where('grade_level_school.school_id', '=', $id);
+        return $query->join('grade_level_school_period', function (JoinClause $join) use ($id) {
+            $join->on('grade_levels.id', '=', 'grade_level_school_period.grade_level_id')
+                ->where('grade_level_school_period.academic_year_id', '=', AcademicYear::currentId())
+                ->where('grade_level_school_period.school_period_id', '=', $id);
         });
     }
 
@@ -113,11 +113,12 @@ class GradeLevel extends Model
 
         return $query->whereExists(function ($subquery) use ($id) {
             $subquery->selectRaw('1')
-                ->from('grade_level_school')
-                ->join('schools', 'schools.id', '=', 'grade_level_school.school_id')
-                ->whereColumn('grade_level_school.grade_level_id', 'grade_levels.id')
-                ->where('grade_level_school.academic_year_id', '=', AcademicYear::currentId())
-                ->where('schools.education_monitor_id', '=', $id);
+                ->from('grade_level_school_period')
+                ->join('school_periods', 'school_periods.id', '=', 'grade_level_school_period.school_period_id')
+                ->whereColumn('grade_level_school_period.grade_level_id', 'grade_levels.id')
+                ->where('grade_level_school_period.academic_year_id', '=', AcademicYear::currentId())
+                ->where('school_periods.education_monitor_id', '=', $id)
+                ->whereNull('school_periods.deleted_at');
         });
     }
 
@@ -132,11 +133,12 @@ class GradeLevel extends Model
 
         return $query->whereExists(function ($subquery) use ($id) {
             $subquery->selectRaw('1')
-                ->from('grade_level_school')
-                ->join('schools', 'schools.id', '=', 'grade_level_school.school_id')
-                ->whereColumn('grade_level_school.grade_level_id', 'grade_levels.id')
-                ->where('grade_level_school.academic_year_id', '=', AcademicYear::currentId())
-                ->where('schools.education_services_office_id', '=', $id);
+                ->from('grade_level_school_period')
+                ->join('school_periods', 'school_periods.id', '=', 'grade_level_school_period.school_period_id')
+                ->whereColumn('grade_level_school_period.grade_level_id', 'grade_levels.id')
+                ->where('grade_level_school_period.academic_year_id', '=', AcademicYear::currentId())
+                ->where('school_periods.education_services_office_id', '=', $id)
+                ->whereNull('school_periods.deleted_at');
         });
     }
 
@@ -168,27 +170,27 @@ class GradeLevel extends Model
      */
 
     /**
-     * Get all schools associated with the grade level across all academic years.
+     * Get all school periods associated with the grade level across all academic years.
      *
-     * @return BelongsToMany<School, $this, GradeLevelSchool>
+     * @return BelongsToMany<SchoolPeriod, $this, GradeLevelSchoolPeriod>
      */
-    public function allSchools(): BelongsToMany
+    public function allSchoolPeriods(): BelongsToMany
     {
-        return $this->belongsToMany(School::class, 'grade_level_school')
-            ->using(GradeLevelSchool::class)
+        return $this->belongsToMany(SchoolPeriod::class, 'grade_level_school_period')
+            ->using(GradeLevelSchoolPeriod::class)
             ->withPivot(['academic_year_id'])
             ->withTimestamps();
     }
 
     /**
-     * Get the schools associated with the grade level for the current academic year.
+     * Get the school periods associated with the grade level for the current academic year.
      *
-     * @return BelongsToMany<School, $this, GradeLevelSchool>
+     * @return BelongsToMany<SchoolPeriod, $this, GradeLevelSchoolPeriod>
      */
-    public function schools(): BelongsToMany
+    public function schoolPeriods(): BelongsToMany
     {
-        return $this->belongsToMany(School::class, 'grade_level_school')
-            ->using(GradeLevelSchool::class)
+        return $this->belongsToMany(SchoolPeriod::class, 'grade_level_school_period')
+            ->using(GradeLevelSchoolPeriod::class)
             ->withPivot(['academic_year_id'])
             ->wherePivot('academic_year_id', '=', AcademicYear::currentId())
             ->withTimestamps();
@@ -197,21 +199,21 @@ class GradeLevel extends Model
     /**
      * Get the current school of the authenticated user associated with their grade level for the current academic year.
      */
-    public function currentSchool(): HasOneThrough
+    public function schoolPeriod(): HasOneThrough
     {
-        $schoolId = auth('school')->user()->organization_id;
+        $schoolPeriodId = auth('school')->user()->organization_id;
 
         return $this
             ->hasOneThrough(
-                School::class,
-                GradeLevelSchool::class,
+                SchoolPeriod::class,
+                GradeLevelSchoolPeriod::class,
                 'grade_level_id',
                 'id',
                 'id',
-                'school_id'
+                'school_period_id'
             )
-            ->where('grade_level_school.academic_year_id', AcademicYear::currentId())
-            ->where('grade_level_school.school_id', $schoolId);
+            ->where('grade_level_school_period.academic_year_id', AcademicYear::currentId())
+            ->where('grade_level_school_period.school_period_id', $schoolPeriodId);
     }
 
     /**
@@ -302,9 +304,9 @@ class GradeLevel extends Model
         return self::list(function ($query) {
             $query->forCurrentSchoolAndAcademicYear();
         }, [
-            'grade_level_school.grade_level_id',
-            'grade_level_school.school_id',
-            'grade_level_school.academic_year_id',
+            'grade_level_school_period.grade_level_id',
+            'grade_level_school_period.school_period_id',
+            'grade_level_school_period.academic_year_id',
         ]);
     }
 

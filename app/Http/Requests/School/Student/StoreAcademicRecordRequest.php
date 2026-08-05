@@ -62,6 +62,7 @@ class StoreAcademicRecordRequest extends FormRequest
 
                 /** @var Student $student */
                 $student = $this->route('student');
+
                 $gradeLevel = GradeLevel::query()->find($this->integer('grade_level_id'));
 
                 if (! $gradeLevel instanceof GradeLevel) {
@@ -97,14 +98,14 @@ class StoreAcademicRecordRequest extends FormRequest
 
         /** @var Student $student */
         $student = $this->route('student');
-        $gradeLevel = GradeLevel::query()->findOrFail(intval($validated['grade_level_id']));
+        $gradeLevel = GradeLevel::query()->findOrFail((int) $validated['grade_level_id']);
 
         $service = app(AcademicRecordService::class);
         $status = $service->resolveAttemptStatus($student, $gradeLevel, $submittedStatus);
 
         return [
-            'grade_level_id' => intval($validated['grade_level_id']),
-            'academic_year_id' => intval($validated['academic_year_id']),
+            'academic_year_id' => (int) $validated['academic_year_id'],
+            'grade_level_id' => (int) $validated['grade_level_id'],
             'status' => $status,
             'rating' => $status->isPassing() && isset($validated['rating'])
                 ? AcademicRecordRating::from($validated['rating'])

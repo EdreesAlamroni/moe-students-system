@@ -11,12 +11,14 @@ class CreateSchoolRecords
     public function handle(Request $request, \Closure $next): mixed
     {
         /** @var StoreSchoolRequest $request */
-        $attributes = $request->getAttributes('schools');
+        $attributes = $request->getAttributes('school_aggregates');
 
-        $schools = app(CreateSchools::class)->execute($attributes);
+        $schoolPeriods = app(CreateSchools::class)->execute($attributes);
 
         $request->merge([
-            'moe.schools' => $schools,
+            'moe' => [
+                'school_periods' => $schoolPeriods,
+            ],
         ]);
 
         return $next($request);

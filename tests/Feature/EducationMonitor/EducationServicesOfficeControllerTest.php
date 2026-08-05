@@ -26,9 +26,6 @@ function bindEducationMonitorEducationServicesOfficeBinding(EducationServicesOff
     return $mock;
 }
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationMonitorOfficeManager(EducationMonitor $monitor, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -53,10 +50,6 @@ function createEducationMonitorOfficeManager(EducationMonitor $monitor, array $a
     return $user;
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function educationMonitorOfficePayload(array $overrides = []): array
 {
     return array_merge([

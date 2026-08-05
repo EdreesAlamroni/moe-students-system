@@ -4,7 +4,7 @@ namespace App\Http\Resources\School;
 
 use App\Models\EducationMonitor;
 use App\Models\Nationality;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -45,8 +45,8 @@ class StudentResource extends JsonResource
             'monitor' => $this->whenLoaded('monitor', function (EducationMonitor $monitor): array {
                 return $monitor->only(['id', 'uuid', 'name']);
             }),
-            'school' => $this->whenLoaded('school', function (School $school): array {
-                return $school->only(['id', 'uuid', 'name']);
+            'school_period' => $this->whenLoaded('schoolPeriod', function (SchoolPeriod $schoolPeriod): array {
+                return $schoolPeriod->only(['id', 'uuid', 'name']);
             }),
         ];
     }

@@ -10,8 +10,8 @@ use App\Http\Resources\School\GradeLevelCollection;
 use App\Http\Resources\School\GradeLevelResource;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\GradeLevelSchool;
-use App\Models\School;
+use App\Models\GradeLevelSchoolPeriod;
+use App\Models\SchoolPeriod;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\RedirectResponse;
@@ -29,8 +29,8 @@ class GradeLevelController extends Controller
     {
         Gate::authorize('viewAny', GradeLevel::class);
 
-        /** @var School $school */
-        $school = auth('school')->user()->organization;
+        /** @var SchoolPeriod $schoolPeriod */
+        $schoolPeriod = auth('school')->user()->organization;
 
         $gradeLevels = QueryBuilder::for(GradeLevel::class)
             ->select([
@@ -42,7 +42,7 @@ class GradeLevelController extends Controller
                 'grade_levels.created_at',
                 'grade_levels.deleted_at',
             ])
-            ->with(['schools'])
+            ->with(['schoolPeriod'])
             ->withCount([
                 'students',
             ])
@@ -55,7 +55,7 @@ class GradeLevelController extends Controller
             ->get();
 
         $availableGradeLevels = Gate::allows('create', GradeLevel::class)
-                ? $school->availableGradeLevels()
+                ? $schoolPeriod->availableGradeLevels()
                 : collect([]);
 
         return Inertia::render('school/grade-levels/index', [
@@ -74,12 +74,12 @@ class GradeLevelController extends Controller
     {
         Gate::authorize('create', GradeLevel::class);
 
-        /** @var School $school */
-        $school = auth('school')->user()->organization;
+        /** @var SchoolPeriod $schoolPeriod */
+        $schoolPeriod = auth('school')->user()->organization;
 
         $gradeLevels = $request->gradeLevelsToAttach();
 
-        app(CreateGradeLevels::class)->execute($school, $gradeLevels);
+        app(CreateGradeLevels::class)->execute($schoolPeriod, $gradeLevels);
 
         flash_success('grade-levels-added', ['count' => count($gradeLevels)]);
 
@@ -107,9 +107,9 @@ class GradeLevelController extends Controller
     {
         Gate::authorize('delete', $gradeLevel);
 
-        GradeLevelSchool::query()
+        GradeLevelSchoolPeriod::query()
             ->where('grade_level_id', '=', $gradeLevel->id)
-            ->where('school_id', '=', auth('school')->user()->organization_id)
+            ->where('school_period_id', '=', auth('school')->user()->organization_id)
             ->where('academic_year_id', '=', AcademicYear::currentId())
             ->delete();
 

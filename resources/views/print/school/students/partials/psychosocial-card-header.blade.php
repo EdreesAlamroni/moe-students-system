@@ -1,6 +1,6 @@
 <x-print.report-header
     :title="$title"
-    :organization-lines="$school->printOrganizationLines()"
+    :organization-lines="$schoolPeriod->printOrganizationLines()"
 >
     <x-slot:right>
         <span>{{ __('السنة الدراسية') }}:</span>

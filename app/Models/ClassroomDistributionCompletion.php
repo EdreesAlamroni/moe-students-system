@@ -9,12 +9,12 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $school_id
  * @property int $academic_year_id
+ * @property int $school_period_id
  * @property Carbon $completed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read School $school
+ * @property-read SchoolPeriod $schoolPeriod
  * @property-read AcademicYear $academicYear
  */
 #[Guarded(['id'])]
@@ -23,8 +23,8 @@ class ClassroomDistributionCompletion extends Model
     protected function casts(): array
     {
         return [
-            'school_id' => 'integer',
             'academic_year_id' => 'integer',
+            'school_period_id' => 'integer',
             'completed_at' => 'datetime',
         ];
     }
@@ -33,14 +33,14 @@ class ClassroomDistributionCompletion extends Model
      * Start: Relations
      */
 
-    public function school(): BelongsTo
-    {
-        return $this->belongsTo(School::class);
-    }
-
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class);
+    }
+
+    public function schoolPeriod(): BelongsTo
+    {
+        return $this->belongsTo(SchoolPeriod::class);
     }
 
     /*
@@ -51,20 +51,20 @@ class ClassroomDistributionCompletion extends Model
      * Start: Custom Functions
      */
 
-    public static function isCompleteForSchoolAndYear(int $schoolId, int $academicYearId): bool
+    public static function isCompleteForSchoolPeriodAndYear(int $academicYearId, int $schoolPeriodId): bool
     {
         return self::query()
-            ->where('school_id', '=', $schoolId)
             ->where('academic_year_id', '=', $academicYearId)
+            ->where('school_period_id', '=', $schoolPeriodId)
             ->whereNotNull('completed_at')
             ->exists();
     }
 
     public static function isCompleteForCurrentSchoolAndYear(): bool
     {
-        $schoolId = auth('school')->user()->organization_id;
+        $schoolPeriodId = auth('school')->user()->organization_id;
 
-        if (is_null($schoolId)) {
+        if (is_null($schoolPeriodId)) {
             return false;
         }
 
@@ -74,7 +74,7 @@ class ClassroomDistributionCompletion extends Model
             return false;
         }
 
-        return self::isCompleteForSchoolAndYear($schoolId, $currentAcademicYearId);
+        return self::isCompleteForSchoolPeriodAndYear($currentAcademicYearId, $schoolPeriodId);
     }
 
     /*

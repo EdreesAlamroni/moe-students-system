@@ -8,6 +8,7 @@ use App\Models\Classroom;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\Warehouse;
 use Illuminate\Support\Collection;
@@ -110,20 +111,20 @@ class DashboardController extends Controller
          */
         $SCHOOL_SEGMENTS = 10;
 
-        return School::query()
+        return SchoolPeriod::query()
             ->select(['id', 'name', 'education_monitor_id'])
             ->with(['monitor:id,name'])
             ->withCount(['students', 'classrooms'])
             ->orderByDesc('students_count')
-            ->ordered()
+            ->orderBy('name')
             ->take($SCHOOL_SEGMENTS)
             ->get()
-            ->map(fn (School $school): array => [
-                'name' => $school->name,
-                'students' => (int) $school->students_count,
-                'classrooms' => (int) $school->classrooms_count,
+            ->map(fn (SchoolPeriod $schoolPeriod): array => [
+                'name' => $schoolPeriod->name,
+                'students' => (int) $schoolPeriod->students_count,
+                'classrooms' => (int) $schoolPeriod->classrooms_count,
                 'monitor' => [
-                    'name' => $school->monitor->name,
+                    'name' => $schoolPeriod->monitor->name,
                 ],
             ]);
     }

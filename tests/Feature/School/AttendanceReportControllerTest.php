@@ -6,24 +6,20 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  list<string>  $permissions
- * @param  array<string, mixed>  $attributes
- */
-function createSchoolAttendanceReportManager(School $school, array $permissions = ['report:attendance:view', 'report:attendance:print'], array $attributes = []): User
+function createSchoolAttendanceReportManager(SchoolPeriod $schoolPeriod, array $permissions = ['report:attendance:view', 'report:attendance:print'], array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ], $attributes));
 
     foreach ($permissions as $permission) {
@@ -35,7 +31,7 @@ function createSchoolAttendanceReportManager(School $school, array $permissions 
     return $user;
 }
 
-function createSchoolAttendanceReportGradeLevel(School $school, GradeLevelEnum $grade): GradeLevel
+function createSchoolAttendanceReportGradeLevel(SchoolPeriod $schoolPeriod, GradeLevelEnum $grade): GradeLevel
 {
     $gradeLevel = GradeLevel::query()->firstOrCreate(
         ['code' => $grade->value],
@@ -46,7 +42,7 @@ function createSchoolAttendanceReportGradeLevel(School $school, GradeLevelEnum $
         ],
     );
 
-    $school->allGradeLevels()->syncWithoutDetaching([
+    $schoolPeriod->allGradeLevels()->syncWithoutDetaching([
         $gradeLevel->id => ['academic_year_id' => AcademicYear::currentId()],
     ]);
 
@@ -67,12 +63,12 @@ beforeEach(function () {
 });
 
 test('attendance report index lists classrooms as grade level name slash classroom name', function () {
-    $school = School::factory()->create();
-    $user = createSchoolAttendanceReportManager($school);
-    $gradeLevel = createSchoolAttendanceReportGradeLevel($school, GradeLevelEnum::GRADE_1);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolAttendanceReportManager($schoolPeriod);
+    $gradeLevel = createSchoolAttendanceReportGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => 'أ',
     ]);
@@ -89,20 +85,20 @@ test('attendance report index lists classrooms as grade level name slash classro
 });
 
 test('attendance report index only lists classrooms for the current school', function () {
-    $school = School::factory()->create();
-    $otherSchool = School::factory()->create();
-    $user = createSchoolAttendanceReportManager($school);
-    $gradeLevel = createSchoolAttendanceReportGradeLevel($school, GradeLevelEnum::GRADE_1);
-    $otherGradeLevel = createSchoolAttendanceReportGradeLevel($otherSchool, GradeLevelEnum::GRADE_2);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolAttendanceReportManager($schoolPeriod);
+    $gradeLevel = createSchoolAttendanceReportGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
+    $otherGradeLevel = createSchoolAttendanceReportGradeLevel($otherSchoolPeriod, GradeLevelEnum::GRADE_2);
 
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => 'أ',
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
         'grade_level_id' => $otherGradeLevel->id,
         'name' => 'ب',
     ]);

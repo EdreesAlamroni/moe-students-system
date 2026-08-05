@@ -5,6 +5,7 @@ use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\Nationality;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
@@ -59,16 +60,16 @@ test('users without permission cannot access unassigned to school students page'
 test('unassigned to school students index renders organization selection without querying students', function () {
     $user = createUnassignedToSchoolStudentAdminUser();
     $monitor = EducationMonitor::factory()->create();
-    $school = School::factory()->create(['education_monitor_id' => $monitor->id]);
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->state(['education_monitor_id' => $monitor->id]), 'school')->create();
 
     Student::factory()->count(3)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -89,26 +90,26 @@ test('unassigned to school students index lists only students assigned to select
     $user = createUnassignedToSchoolStudentAdminUser();
     $monitor = EducationMonitor::factory()->create();
     $otherMonitor = EducationMonitor::factory()->create();
-    $school = School::factory()->create(['education_monitor_id' => $monitor->id]);
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->state(['education_monitor_id' => $monitor->id]), 'school')->create();
 
     $unassignedStudents = Student::factory()->count(2)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     Student::factory()->count(3)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     Student::factory()->count(2)->create([
         'education_monitor_id' => null,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $otherMonitor->id,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -137,14 +138,14 @@ test('unassigned to school students index filters by registration status and nat
 
     $matchingStudent = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => null,
+        'school_period_id' => null,
         'nationality_id' => $nationality->id,
         'registration_status' => 'new',
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => null,
+        'school_period_id' => null,
         'registration_status' => 'repeater',
     ]);
 
@@ -169,7 +170,7 @@ test('unassigned to school students index ignores invalid education monitor id',
 
     Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -191,7 +192,7 @@ test('unassigned to school students show page reuses administration student show
 
     $student = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -202,6 +203,6 @@ test('unassigned to school students show page reuses administration student show
             ->where('student.uuid', $student->uuid)
             ->where('student.first_name', $student->first_name)
             ->where('student.monitor.uuid', $monitor->uuid)
-            ->where('student.school', null)
+            ->where('student.school_period', null)
         );
 });

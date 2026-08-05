@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('classroom_distribution_completions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('school_id')->constrained('schools')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('school_period_id')->constrained('school_periods')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamp('completed_at');
             $table->timestamps();
 
-            $table->unique(['school_id', 'academic_year_id'], 'classroom_dist_comp_school_ay_uq');
+            $table->unique(['school_period_id', 'academic_year_id'], 'classroom_dist_comp_school_period_ay_uq');
         });
     }
 

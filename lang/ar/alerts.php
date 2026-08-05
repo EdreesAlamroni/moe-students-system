@@ -12,7 +12,6 @@ return [
         'education-services-office' => 'مكتب الخدمات التعليمية',
         'school' => 'المدرسة',
         'student' => 'الطالب',
-        'subject_classification' => 'تصنيف المقررات الدراسية',
         'subject' => 'المقرر الدراسي',
         'classroom' => 'الفصل الدراسي',
         'class-period' => 'الحصة الدراسية',

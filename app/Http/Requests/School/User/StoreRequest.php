@@ -4,7 +4,7 @@ namespace App\Http\Requests\School\User;
 
 use App\Enums\UserRole;
 use App\Enums\UserScope;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
 use Illuminate\Foundation\Http\FormRequest;
@@ -85,7 +85,7 @@ class StoreRequest extends FormRequest
         return Arr::merge($attributes, [
             'scope' => UserScope::SCHOOL->value,
             'organization_id' => $user->organization_id,
-            'organization_type' => School::class,
+            'organization_type' => SchoolPeriod::class,
             'role' => UserRole::EMPLOYEE->value,
             'request_state' => Pending::class,
         ]);

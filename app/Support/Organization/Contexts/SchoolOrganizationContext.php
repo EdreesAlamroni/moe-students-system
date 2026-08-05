@@ -4,8 +4,9 @@ namespace App\Support\Organization\Contexts;
 
 use App\Enums\SchoolStudentsGender;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Support\Organization\OrganizationContext;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
@@ -14,21 +15,36 @@ final class SchoolOrganizationContext extends OrganizationContext
 {
     protected function organizationType(): string
     {
-        return School::class;
+        return SchoolPeriod::class;
     }
 
     protected function columns(): array
     {
-        return ['id', 'name', 'same_school_uuid', 'students_gender'];
+        return [
+            'id',
+            'school_id',
+            'name',
+            'academic_period',
+            'students_gender',
+        ];
+    }
+
+    protected function query(): Builder
+    {
+        return SchoolPeriod::query()->whereHas('school', function (Builder $query): void {
+            $query->whereNull('schools.deleted_at');
+        });
     }
 
     protected function build(Model $organization): array
     {
-        /** @var School $organization */
+        /** @var SchoolPeriod $organization */
         $context = [
             'type' => 'school',
             'id' => $organization->id,
+            'school_id' => $organization->school_id,
             'name' => $organization->name,
+            'academic_period' => $organization->academic_period->toArray(),
             'students_gender' => $organization->students_gender?->toArray(),
         ];
 
@@ -47,16 +63,16 @@ final class SchoolOrganizationContext extends OrganizationContext
      *
      * @return Collection<int, array{id: int, name: string}>
      */
-    private function gradeLevelsToConfigure(School $school): Collection
+    private function gradeLevelsToConfigure(SchoolPeriod $schoolPeriod): Collection
     {
-        if ($school->gradeLevels()->exists()) {
+        if ($schoolPeriod->gradeLevels()->exists()) {
             return collect([]);
         }
 
-        if (! Gate::allows('create', GradeLevel::class)) {
+        if (Gate::denies('create', GradeLevel::class)) {
             return collect([]);
         }
 
-        return $school->availableGradeLevels();
+        return $schoolPeriod->availableGradeLevels();
     }
 }

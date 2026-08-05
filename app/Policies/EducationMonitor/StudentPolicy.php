@@ -39,7 +39,7 @@ class StudentPolicy
             return false;
         }
 
-        if (! is_null($student->school_id)) {
+        if (! is_null($student->school_period_id)) {
             return false;
         }
 
@@ -78,7 +78,6 @@ class StudentPolicy
 
     private function belongsToCurrentMonitor(User $user, Student $student): bool
     {
-        return $user->organization_type === EducationMonitor::class
-            && $user->organization_id === $student->education_monitor_id;
+        return $user->organization_type === EducationMonitor::class && $user->organization_id === $student->education_monitor_id;
     }
 }

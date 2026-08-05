@@ -17,18 +17,19 @@ class StoreRequest extends FormRequest
 
     public function rules(): array
     {
-        $schoolId = auth('school')->user()->organization_id;
         $currentAcademicYearId = AcademicYear::currentId();
+
+        $schoolPeriodId = auth('school')->user()->organization_id;
 
         return [
             'grade_level_id' => [
                 'required',
                 'integer',
-                Rule::exists('grade_level_school', 'grade_level_id')
-                    ->where('school_id', $schoolId)
+                Rule::exists('grade_level_school_period', 'grade_level_id')
+                    ->where('school_period_id', $schoolPeriodId)
                     ->where('academic_year_id', $currentAcademicYearId),
                 Rule::exists(BookDistribution::class, 'grade_level_id')
-                    ->where('school_id', $schoolId)
+                    ->where('school_period_id', $schoolPeriodId)
                     ->where('academic_year_id', $currentAcademicYearId),
             ],
             'classroom_id' => [
@@ -36,7 +37,7 @@ class StoreRequest extends FormRequest
                 'nullable',
                 'integer',
                 Rule::exists(Classroom::class, 'id')
-                    ->where('school_id', $schoolId)
+                    ->where('school_period_id', $schoolPeriodId)
                     ->where('academic_year_id', $currentAcademicYearId)
                     ->where('grade_level_id', $this->integer('grade_level_id')),
             ],
@@ -49,7 +50,7 @@ class StoreRequest extends FormRequest
                 'required',
                 'integer',
                 'distinct',
-                Rule::exists('students', 'id')->where('school_id', $schoolId),
+                Rule::exists('students', 'id')->where('school_period_id', $schoolPeriodId),
             ],
         ];
     }

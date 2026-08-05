@@ -4,7 +4,7 @@ namespace App\Policies\School;
 
 use App\Models\AcademicYear;
 use App\Models\Classroom;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 
 class ClassSchedulePolicy
@@ -42,6 +42,6 @@ class ClassSchedulePolicy
 
     private function belongsToCurrentSchool(User $user, Classroom $classroom): bool
     {
-        return $user->organization_type === School::class && $user->organization_id === $classroom->school_id;
+        return $user->organization_type === SchoolPeriod::class && $user->organization_id === $classroom->school_period_id;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\School\Student;
 
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -53,23 +53,23 @@ class StoreTransferRequest extends FormRequest
                 return;
             }
 
-            /** @var School $school */
-            $school = auth('school')->user()->organization;
+            /** @var SchoolPeriod $schoolPeriod */
+            $schoolPeriod = auth('school')->user()->organization;
 
             /** @var list<int> $studentIds */
             $studentIds = $this->input('student_ids', []);
 
-            $this->validateStudentTransferEligibility($validator, $school, $studentIds);
+            $this->validateStudentTransferEligibility($validator, $schoolPeriod, $studentIds);
         });
     }
 
     /**
      * @param  list<int>  $studentIds
      */
-    private function validateStudentTransferEligibility(Validator $validator, School $school, array $studentIds): void
+    private function validateStudentTransferEligibility(Validator $validator, SchoolPeriod $schoolPeriod, array $studentIds): void
     {
         /** @var Collection<int, int> $schoolGradeLevelIds */
-        $schoolGradeLevelIds = $school->gradeLevels()->pluck('grade_levels.id');
+        $schoolGradeLevelIds = $schoolPeriod->gradeLevels()->pluck('grade_levels.id');
 
         /** @var Collection<int, Student> $students */
         $students = Student::query()
@@ -88,7 +88,7 @@ class StoreTransferRequest extends FormRequest
                 continue;
             }
 
-            if ($message = $this->resolveTransferEligibilityError($student, $school, $schoolGradeLevelIds)) {
+            if ($message = $this->resolveTransferEligibilityError($student, $schoolPeriod, $schoolGradeLevelIds)) {
                 $validator->errors()->add($attribute, $message);
             }
         }
@@ -97,15 +97,15 @@ class StoreTransferRequest extends FormRequest
     /**
      * @param  Collection<int, int>  $schoolGradeLevelIds
      */
-    private function resolveTransferEligibilityError(Student $student, School $school, Collection $schoolGradeLevelIds): ?string
+    private function resolveTransferEligibilityError(Student $student, SchoolPeriod $schoolPeriod, Collection $schoolGradeLevelIds): ?string
     {
-        if (! is_null($student->school_id)) {
+        if (! is_null($student->school_period_id)) {
             return __('validation.custom.student_transfer.already_in_school', [
                 'name' => $student->full_name,
             ]);
         }
 
-        if (! is_null($student->education_monitor_id) && $student->education_monitor_id !== $school->education_monitor_id) {
+        if (! is_null($student->education_monitor_id) && $student->education_monitor_id !== $schoolPeriod->education_monitor_id) {
             return __('validation.custom.student_transfer.wrong_education_monitor', [
                 'name' => $student->full_name,
             ]);

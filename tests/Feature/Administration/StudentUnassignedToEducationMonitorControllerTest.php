@@ -5,6 +5,7 @@ use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\Nationality;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
@@ -59,16 +60,16 @@ test('users without permission cannot access unassigned students page', function
 test('unassigned students index lists only students without education monitor', function () {
     $user = createUnassignedStudentAdminUser();
     $monitor = EducationMonitor::factory()->create();
-    $school = School::factory()->create(['education_monitor_id' => $monitor->id]);
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->state(['education_monitor_id' => $monitor->id]), 'school')->create();
 
     $unassignedStudents = Student::factory()->count(2)->create([
         'education_monitor_id' => null,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     Student::factory()->count(3)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -93,14 +94,14 @@ test('unassigned students index filters by registration status and nationality',
 
     $matchingStudent = Student::factory()->create([
         'education_monitor_id' => null,
-        'school_id' => null,
+        'school_period_id' => null,
         'nationality_id' => $nationality->id,
         'registration_status' => 'new',
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => null,
-        'school_id' => null,
+        'school_period_id' => null,
         'registration_status' => 'repeater',
     ]);
 
@@ -123,7 +124,7 @@ test('unassigned students show page reuses administration student show page', fu
 
     $student = Student::factory()->create([
         'education_monitor_id' => null,
-        'school_id' => null,
+        'school_period_id' => null,
     ]);
 
     $this->actingAs($user, 'administration')
@@ -134,6 +135,6 @@ test('unassigned students show page reuses administration student show page', fu
             ->where('student.uuid', $student->uuid)
             ->where('student.first_name', $student->first_name)
             ->where('student.monitor', null)
-            ->where('student.school', null)
+            ->where('student.school_period', null)
         );
 });

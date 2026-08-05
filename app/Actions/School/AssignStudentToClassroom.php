@@ -12,7 +12,7 @@ class AssignStudentToClassroom
     {
         $student->enrollment()->updateOrCreate([
             'academic_year_id' => AcademicYear::currentId(),
-            'school_id' => auth('school')->user()->organization_id,
+            'school_period_id' => auth('school')->user()->organization_id,
             'grade_level_id' => $classroom->grade_level_id,
         ], [
             'classroom_id' => $classroom->id,

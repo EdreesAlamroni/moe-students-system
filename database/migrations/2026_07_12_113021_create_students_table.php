@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid()->unique();
             $table->foreignId('education_monitor_id')->nullable()->constrained('education_monitors')->cascadeOnUpdate()->nullOnDelete();
-            $table->foreignId('school_id')->nullable()->constrained('schools')->cascadeOnUpdate()->nullOnDelete();
+            $table->foreignId('school_period_id')->nullable()->constrained('school_periods')->cascadeOnUpdate()->nullOnDelete();
             $table->foreignId('nationality_id')->constrained('nationalities')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('number')->unique()->nullable();
             $table->string('registration_status')->index();

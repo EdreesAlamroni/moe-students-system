@@ -6,8 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\BookDistribution;
 use App\Models\EducationMonitor;
 use App\Models\GradeLevel;
-use App\Models\School;
-use App\Models\Warehouse;
+use App\Models\SchoolPeriod;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,10 +23,14 @@ class BookDistributionFactory extends Factory
     {
         return [
             'academic_year_id' => AcademicYear::currentId() ?? AcademicYear::factory(),
-            'education_monitor_id' => EducationMonitor::factory(),
-            'school_id' => School::factory(),
+            'school_period_id' => SchoolPeriod::factory(),
+            'education_monitor_id' => fn (array $attributes) => SchoolPeriod::query()
+                ->whereKey($attributes['school_period_id'])
+                ->value('education_monitor_id'),
             'grade_level_id' => GradeLevel::factory(),
-            'warehouse_id' => Warehouse::factory(),
+            'warehouse_id' => fn (array $attributes) => EducationMonitor::query()
+                ->whereKey($attributes['education_monitor_id'])
+                ->value('warehouse_id'),
             'distributed_at' => now(),
         ];
     }

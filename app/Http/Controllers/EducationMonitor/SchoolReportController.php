@@ -69,13 +69,18 @@ class SchoolReportController extends Controller
                 'schools.name',
                 'schools.serial_number',
                 'schools.type',
-                'schools.academic_period',
                 'schools.created_at',
                 'schools.deleted_at',
             ])
             ->forCurrentEducationMonitor()
-            ->with(['office:id,uuid,name'])
-            ->withCount(['students'])
+            ->with([
+                'office:id,uuid,name',
+                'periods' => function ($query): void {
+                    $query
+                        ->select(['id', 'uuid', 'school_id', 'name', 'academic_period'])
+                        ->withCount(['students']);
+                },
+            ])
             ->allowedFilters(
                 AllowedFilter::exact('type'),
                 AllowedFilter::partial('name', 'schools.name'),

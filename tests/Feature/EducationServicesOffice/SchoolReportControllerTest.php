@@ -7,15 +7,13 @@ use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationServicesOfficeSchoolReportUser(EducationServicesOffice $office, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -73,12 +71,12 @@ test('authenticated users can visit the school report page', function () {
     $monitor = EducationMonitor::factory()->create();
     $office = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
     $user = createEducationServicesOfficeSchoolReportUser($office);
-    $school = School::factory()->for($monitor, 'monitor')->for($office, 'office')->create([
+    $school = School::factory()->for($monitor, 'monitor')->for($office, 'office')->has(SchoolPeriod::factory(), 'periods')->create([
         'name' => 'مدرسة الأمل',
         'type' => SchoolType::PUBLIC,
     ]);
     $otherOffice = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    School::factory()->for($monitor, 'monitor')->for($otherOffice, 'office')->create();
+    School::factory()->for($monitor, 'monitor')->for($otherOffice, 'office')->has(SchoolPeriod::factory(), 'periods')->create();
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.reports.schools.index'))
@@ -123,7 +121,7 @@ test('authenticated users can print the school report', function () {
     $monitor = EducationMonitor::factory()->create();
     $office = EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
     $user = createEducationServicesOfficeSchoolReportUser($office);
-    School::factory()->for($monitor, 'monitor')->for($office, 'office')->create([
+    School::factory()->for($monitor, 'monitor')->for($office, 'office')->has(SchoolPeriod::factory(), 'periods')->create([
         'name' => 'مدرسة الأمل',
     ]);
 

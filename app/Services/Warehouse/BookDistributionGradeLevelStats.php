@@ -7,6 +7,7 @@ use App\Models\BookDistribution;
 use App\Models\BookDistributionItem;
 use App\Models\GradeLevel;
 use App\Models\StudentEnrollment;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -15,39 +16,21 @@ class BookDistributionGradeLevelStats
 {
     /**
      * Grade-level checklist for warehouse book distribution (no per-student item aggregates).
-     *
-     * @return Collection<int, array{
-     *     id: int,
-     *     name: string,
-     *     educational_stage: array{name: string, value: string|null, label: string|null}|null,
-     *     students_count: int,
-     *     already_distributed: bool,
-     * }>
      */
-    public function forDistribution(int $schoolId): Collection
+    public function forDistribution(int $schoolPeriodId): Collection
     {
-        return $this->build($schoolId, false);
+        return $this->build($schoolPeriodId, false);
     }
 
     /**
      * Full grade-level statistics including per-student distribution counts.
-     *
-     * @return Collection<int, array{
-     *     id: int,
-     *     name: string,
-     *     educational_stage: array{name: string, value: string|null, label: string|null}|null,
-     *     students_count: int,
-     *     distributed_count: int,
-     *     pending_count: int,
-     *     already_distributed: bool,
-     * }>
      */
-    public function forSchool(int $schoolId): Collection
+    public function forSchoolPeriod(int $schoolPeriodId): Collection
     {
-        return $this->build($schoolId, true);
+        return $this->build($schoolPeriodId, true);
     }
 
-    private function build(int $schoolId, bool $withStudentDistributionCounts): Collection
+    private function build(int $schoolPeriodId, bool $withStudentDistributionCounts): Collection
     {
         $currentAcademicYearId = AcademicYear::currentId();
 
@@ -55,6 +38,7 @@ class BookDistributionGradeLevelStats
             return collect([]);
         }
 
+        /** @var EloquentCollection<int, GradeLevel> $gradeLevels */
         $gradeLevels = GradeLevel::query()
             ->select([
                 'grade_levels.id',
@@ -62,37 +46,37 @@ class BookDistributionGradeLevelStats
                 'grade_levels.educational_stage',
                 'grade_levels.order',
             ])
-            ->join('grade_level_school', function (JoinClause $join) use ($schoolId, $currentAcademicYearId): void {
-                $join->on('grade_levels.id', '=', 'grade_level_school.grade_level_id')
-                    ->where('grade_level_school.school_id', '=', $schoolId)
-                    ->where('grade_level_school.academic_year_id', '=', $currentAcademicYearId);
+            ->join('grade_level_school_period', function (JoinClause $join) use ($schoolPeriodId, $currentAcademicYearId): void {
+                $join->on('grade_levels.id', '=', 'grade_level_school_period.grade_level_id')
+                    ->where('grade_level_school_period.school_period_id', '=', $schoolPeriodId)
+                    ->where('grade_level_school_period.academic_year_id', '=', $currentAcademicYearId);
             })
             ->orderBy('grade_levels.order')
             ->get();
 
         if ($gradeLevels->isEmpty()) {
-            return collect();
+            return collect([]);
         }
 
-        $gradeLevelIds = $gradeLevels->modelKeys();
+        $gradeLevelIds = $gradeLevels->pluck('id')->toArray();
 
         $studentCounts = StudentEnrollment::query()
             ->select('grade_level_id', DB::raw('COUNT(*) as count'))
             ->where('academic_year_id', '=', $currentAcademicYearId)
-            ->where('school_id', '=', $schoolId)
+            ->where('school_period_id', '=', $schoolPeriodId)
             ->whereIn('grade_level_id', $gradeLevelIds)
             ->groupBy('grade_level_id')
             ->pluck('count', 'grade_level_id');
 
         $confirmedGradeLevelIds = BookDistribution::query()
             ->where('academic_year_id', '=', $currentAcademicYearId)
-            ->where('school_id', '=', $schoolId)
+            ->where('school_period_id', '=', $schoolPeriodId)
             ->whereIn('grade_level_id', $gradeLevelIds)
             ->pluck('grade_level_id')
             ->flip();
 
         $distributedStudentCounts = $withStudentDistributionCounts
-            ? $this->distributedStudentCounts($schoolId, $gradeLevelIds)
+            ? $this->distributedStudentCounts($schoolPeriodId, $gradeLevelIds)
             : null;
 
         if ($withStudentDistributionCounts) {
@@ -123,18 +107,6 @@ class BookDistributionGradeLevelStats
         })->values();
     }
 
-    /**
-     * @param  iterable<int, array{
-     *     id: int,
-     *     name: string,
-     *     educational_stage: array{name: string, value: string|null, label: string|null}|null,
-     *     students_count: int,
-     *     distributed_count: int,
-     *     pending_count: int,
-     *     already_distributed: bool,
-     * }>  $statistics
-     * @return array{students_count: int, distributed_count: int, pending_count: int}
-     */
     public function totals(iterable $statistics): array
     {
         $statistics = collect($statistics);
@@ -150,16 +122,16 @@ class BookDistributionGradeLevelStats
         ];
     }
 
-    private function distributedStudentCounts(int $schoolId, array $gradeLevelIds): Collection
+    private function distributedStudentCounts(int $schoolPeriodId, array $gradeLevelIds): Collection
     {
         $currentAcademicYearId = AcademicYear::currentId();
 
         return BookDistributionItem::query()
             ->select('student_enrollments.grade_level_id', DB::raw('COUNT(DISTINCT book_distribution_items.student_id) as count'))
-            ->join('student_enrollments', function (JoinClause $join) use ($currentAcademicYearId, $schoolId): void {
+            ->join('student_enrollments', function (JoinClause $join) use ($currentAcademicYearId, $schoolPeriodId): void {
                 $join->on('student_enrollments.student_id', '=', 'book_distribution_items.student_id')
                     ->where('student_enrollments.academic_year_id', '=', $currentAcademicYearId)
-                    ->where('student_enrollments.school_id', '=', $schoolId);
+                    ->where('student_enrollments.school_period_id', '=', $schoolPeriodId);
             })
             ->where('book_distribution_items.academic_year_id', '=', $currentAcademicYearId)
             ->whereIn('student_enrollments.grade_level_id', $gradeLevelIds)

@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string $uuid
  * @property int $academic_year_id
  * @property int $education_monitor_id
- * @property int $school_id
+ * @property int $school_period_id
  * @property int $grade_level_id
  * @property int $warehouse_id
  * @property Carbon $distributed_at
@@ -26,7 +26,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $updated_at
  * @property-read AcademicYear $academicYear
  * @property-read EducationMonitor $monitor
- * @property-read School $school
+ * @property-read SchoolPeriod $schoolPeriod
  * @property-read GradeLevel $gradeLevel
  * @property-read Warehouse $warehouse
  * @property-read Collection<int, BookDistributionItem> $items
@@ -43,7 +43,7 @@ class BookDistribution extends Model
         return [
             'academic_year_id' => 'integer',
             'education_monitor_id' => 'integer',
-            'school_id' => 'integer',
+            'school_period_id' => 'integer',
             'grade_level_id' => 'integer',
             'warehouse_id' => 'integer',
             'distributed_at' => 'datetime',
@@ -75,13 +75,13 @@ class BookDistribution extends Model
     #[Scope]
     protected function forCurrentSchool(Builder $query): Builder
     {
-        $schoolId = auth('school')->user()?->organization_id;
+        $id = auth('school')->user()?->organization_id;
 
-        if (is_null($schoolId)) {
+        if (is_null($id)) {
             return $query;
         }
 
-        return $query->where('school_id', '=', $schoolId);
+        return $query->where('school_period_id', '=', $id);
     }
 
     #[Scope]
@@ -89,10 +89,10 @@ class BookDistribution extends Model
     {
         $query->where('academic_year_id', '=', AcademicYear::currentConstraintId());
 
-        $schoolId = auth('school')->user()?->organization_id;
+        $id = auth('school')->user()?->organization_id;
 
-        if (! is_null($schoolId)) {
-            $query->where('school_id', '=', $schoolId);
+        if (! is_null($id)) {
+            $query->where('school_period_id', '=', $id);
         }
 
         return $query->where('grade_level_id', '=', $gradeLevelId);
@@ -116,9 +116,9 @@ class BookDistribution extends Model
         return $this->belongsTo(EducationMonitor::class, 'education_monitor_id');
     }
 
-    public function school(): BelongsTo
+    public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(School::class)->withTrashed();
+        return $this->belongsTo(SchoolPeriod::class)->withTrashed();
     }
 
     public function gradeLevel(): BelongsTo

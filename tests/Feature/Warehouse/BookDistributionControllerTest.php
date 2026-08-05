@@ -8,6 +8,7 @@ use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Support\PolicyRegistrar;
@@ -15,9 +16,6 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createWarehouseBookDistributionUser(Warehouse $warehouse, array $attributes = [], array $permissions = ['book-distribution:view', 'book-distribution:distribute']): User
 {
     $user = User::factory()->create(array_merge([
@@ -86,7 +84,7 @@ test('authenticated warehouse users can visit the book distributions index', fun
             ->has('schools', 0)
             ->has('gradeLevels', 0)
             ->where('selected.education_monitor_id', null)
-            ->where('selected.school_id', null)
+            ->where('selected.school_period_id', null)
             ->where('can.distribute', true)
         );
 });
@@ -99,8 +97,8 @@ test('selecting a monitor loads its warehouse schools', function () {
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
     EducationServicesOffice::factory()->for($otherMonitor, 'monitor')->create();
 
-    $school = School::factory()->for($monitor, 'monitor')->create(['name' => 'مدرسة الأمل']);
-    School::factory()->for($otherMonitor, 'monitor')->create(['name' => 'مدرسة أخرى']);
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor')->state(['name' => 'مدرسة الأمل']), 'school')->create();
+    SchoolPeriod::factory()->for(School::factory()->for($otherMonitor, 'monitor')->state(['name' => 'مدرسة أخرى']), 'school')->create();
 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.book-distributions.index', [
@@ -110,12 +108,12 @@ test('selecting a monitor loads its warehouse schools', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('warehouse/book-distributions/index')
             ->has('schools', 1)
-            ->where('schools.0.id', $school->id)
-            ->where('schools.0.name', $school->name)
+            ->where('schools.0.id', $schoolPeriod->id)
+            ->where('schools.0.name', sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->isMorning() ? 'فترة صباحية' : 'فترة مسائية'))
             ->missing('schools.0.serial_number')
             ->has('gradeLevels', 0)
             ->where('selected.education_monitor_id', $monitor->id)
-            ->where('selected.school_id', null)
+            ->where('selected.school_period_id', null)
         );
 });
 
@@ -124,18 +122,18 @@ test('selecting a school loads grade level distribution checklist', function () 
     $user = createWarehouseBookDistributionUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
     $gradeLevel = GradeLevel::factory()->create();
     $academicYearId = AcademicYear::currentId();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => $academicYearId,
     ]);
 
     BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'warehouse_id' => $warehouse->id,
     ]);
@@ -143,7 +141,7 @@ test('selecting a school loads grade level distribution checklist', function () 
     $this->actingAs($user, 'warehouse')
         ->get(route('warehouse.book-distributions.index', [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -156,7 +154,7 @@ test('selecting a school loads grade level distribution checklist', function () 
             ->missing('gradeLevels.0.distributed_count')
             ->missing('gradeLevels.0.pending_count')
             ->where('selected.education_monitor_id', $monitor->id)
-            ->where('selected.school_id', $school->id)
+            ->where('selected.school_period_id', $schoolPeriod->id)
         );
 });
 
@@ -165,17 +163,17 @@ test('users without distribute permission cannot store book distributions', func
     $user = createWarehouseBookDistributionUser($warehouse, permissions: ['book-distribution:view']);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
     $gradeLevel = GradeLevel::factory()->create();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $this->actingAs($user, 'warehouse')
         ->post(route('warehouse.book-distributions.store'), [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
             'grade_level_ids' => [$gradeLevel->id],
         ])
         ->assertForbidden();
@@ -186,29 +184,29 @@ test('warehouse users can confirm book distribution for eligible grade levels', 
     $user = createWarehouseBookDistributionUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
     $gradeLevel = GradeLevel::factory()->create();
     $academicYearId = AcademicYear::currentId();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => $academicYearId,
     ]);
 
     $this->actingAs($user, 'warehouse')
         ->post(route('warehouse.book-distributions.store'), [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
             'grade_level_ids' => [$gradeLevel->id],
         ])
         ->assertRedirect(route('warehouse.book-distributions.index', [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]));
 
     $this->assertDatabaseHas('book_distributions', [
         'academic_year_id' => $academicYearId,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'warehouse_id' => $warehouse->id,
     ]);
@@ -219,18 +217,18 @@ test('confirming already distributed grade levels does not create duplicates', f
     $user = createWarehouseBookDistributionUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     EducationServicesOffice::factory()->for($monitor, 'monitor')->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
     $gradeLevel = GradeLevel::factory()->create();
     $academicYearId = AcademicYear::currentId();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => $academicYearId,
     ]);
 
     BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'warehouse_id' => $warehouse->id,
     ]);
@@ -238,16 +236,16 @@ test('confirming already distributed grade levels does not create duplicates', f
     $this->actingAs($user, 'warehouse')
         ->post(route('warehouse.book-distributions.store'), [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
             'grade_level_ids' => [$gradeLevel->id],
         ])
         ->assertRedirect(route('warehouse.book-distributions.index', [
             'education_monitor_id' => $monitor->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]));
 
     expect(BookDistribution::query()
-        ->where('school_id', $school->id)
+        ->where('school_period_id', $schoolPeriod->id)
         ->where('grade_level_id', $gradeLevel->id)
         ->count())->toBe(1);
 });

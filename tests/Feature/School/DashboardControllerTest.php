@@ -11,6 +11,7 @@ use App\Models\GradeLevel;
 use App\Models\Nationality;
 use App\Models\School;
 use App\Models\SchoolEducationalStage;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -20,19 +21,19 @@ use Illuminate\Support\Collection;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-function createSchoolDashboardUser(School $school): User
+function createSchoolDashboardUser(SchoolPeriod $schoolPeriod): User
 {
     return User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 }
 
-function createSchoolDashboardGradeLevelCreator(School $school): User
+function createSchoolDashboardGradeLevelCreator(SchoolPeriod $schoolPeriod): User
 {
-    $user = createSchoolDashboardUser($school);
+    $user = createSchoolDashboardUser($schoolPeriod);
 
     Permission::findOrCreate('grade-level:create', UserScope::SCHOOL->value);
 
@@ -41,22 +42,19 @@ function createSchoolDashboardGradeLevelCreator(School $school): User
     return $user;
 }
 
-function createSchoolWithKindergartenStage(): School
+function createSchoolWithKindergartenStage(): SchoolPeriod
 {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
 
     SchoolEducationalStage::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => AcademicYear::currentId(),
         'stage' => SchoolEducationalStageEnum::KINDERGARTEN,
     ]);
 
-    return $school;
+    return $schoolPeriod;
 }
 
-/**
- * @return Collection<int, GradeLevel>
- */
 function createKindergartenGradeLevels(): Collection
 {
     return GradeLevelEnum::filteredByStage(SchoolEducationalStageEnum::KINDERGARTEN)
@@ -87,8 +85,8 @@ test('guests cannot access the school dashboard', function () {
 });
 
 test('the dashboard renders without statistics in the initial payload', function () {
-    $school = School::factory()->create();
-    $user = createSchoolDashboardUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolDashboardUser($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->get(route('school.dashboard'))
@@ -104,8 +102,8 @@ test('the dashboard renders without statistics in the initial payload', function
 });
 
 test('every available grade level is shared while the school has none configured', function () {
-    $school = createSchoolWithKindergartenStage();
-    $user = createSchoolDashboardGradeLevelCreator($school);
+    $schoolPeriod = createSchoolWithKindergartenStage();
+    $user = createSchoolDashboardGradeLevelCreator($schoolPeriod);
     $gradeLevels = createKindergartenGradeLevels();
 
     $this->actingAs($user, 'school')
@@ -118,11 +116,11 @@ test('every available grade level is shared while the school has none configured
 });
 
 test('no available grade levels are shared once the school has any grade level configured', function () {
-    $school = createSchoolWithKindergartenStage();
-    $user = createSchoolDashboardGradeLevelCreator($school);
+    $schoolPeriod = createSchoolWithKindergartenStage();
+    $user = createSchoolDashboardGradeLevelCreator($schoolPeriod);
     $gradeLevels = createKindergartenGradeLevels();
 
-    $school->allGradeLevels()->attach($gradeLevels->first()->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevels->first()->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
@@ -132,12 +130,12 @@ test('no available grade levels are shared once the school has any grade level c
         ->assertInertia(fn (Assert $page) => $page
             ->has('organization.available_grade_levels', 0));
 
-    expect($school->availableGradeLevels()->pluck('id')->all())->toBe([$gradeLevels->last()->id]);
+    expect($schoolPeriod->availableGradeLevels()->pluck('id')->all())->toBe([$gradeLevels->last()->id]);
 });
 
 test('no available grade levels are shared for users who cannot add them', function () {
-    $school = createSchoolWithKindergartenStage();
-    $user = createSchoolDashboardUser($school);
+    $schoolPeriod = createSchoolWithKindergartenStage();
+    $user = createSchoolDashboardUser($schoolPeriod);
     createKindergartenGradeLevels();
 
     $this->actingAs($user, 'school')
@@ -148,29 +146,29 @@ test('no available grade levels are shared for users who cannot add them', funct
 });
 
 test('the summary reports aggregate counts scoped to the current school', function () {
-    $school = School::factory()->create();
-    $user = createSchoolDashboardUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolDashboardUser($schoolPeriod);
 
     $gradeLevel = GradeLevel::factory()->create();
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     [$libyan, $foreign] = Nationality::factory()->count(2)->create();
 
     Student::factory()->count(2)->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'gender' => Gender::MALE,
         'nationality_id' => $libyan->id,
     ]);
 
     Student::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'gender' => Gender::FEMALE,
         'nationality_id' => $foreign->id,
     ]);
@@ -192,27 +190,27 @@ test('the summary reports aggregate counts scoped to the current school', functi
 });
 
 test('the grade level distribution reports gender counts per grade level in order', function () {
-    $school = School::factory()->create();
-    $user = createSchoolDashboardUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolDashboardUser($schoolPeriod);
 
     $firstGrade = GradeLevel::factory()->create(['name' => 'الصف الأول', 'order' => 1]);
     $secondGrade = GradeLevel::factory()->create(['name' => 'الصف الثاني', 'order' => 2]);
 
     Student::factory()
         ->count(2)
-        ->create(['school_id' => $school->id, 'gender' => Gender::MALE])
-        ->each(function (Student $student) use ($school, $secondGrade) {
+        ->create(['school_period_id' => $schoolPeriod->id, 'gender' => Gender::MALE])
+        ->each(function (Student $student) use ($schoolPeriod, $secondGrade) {
             StudentEnrollment::factory()->create([
-                'school_id' => $school->id,
+                'school_period_id' => $schoolPeriod->id,
                 'grade_level_id' => $secondGrade->id,
                 'classroom_id' => null,
                 'student_id' => $student->id,
             ]);
         });
 
-    $student = Student::factory()->create(['school_id' => $school->id, 'gender' => Gender::FEMALE]);
+    $student = Student::factory()->create(['school_period_id' => $schoolPeriod->id, 'gender' => Gender::FEMALE]);
     StudentEnrollment::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $firstGrade->id,
         'classroom_id' => null,
         'student_id' => $student->id,
@@ -235,13 +233,13 @@ test('the grade level distribution reports gender counts per grade level in orde
 });
 
 test('the classroom occupancy reports student counts and capacity per classroom', function () {
-    $school = School::factory()->create();
-    $user = createSchoolDashboardUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolDashboardUser($schoolPeriod);
 
     $gradeLevel = GradeLevel::factory()->create(['name' => 'الصف الأول']);
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
         'capacity' => 30,
@@ -249,10 +247,10 @@ test('the classroom occupancy reports student counts and capacity per classroom'
 
     Student::factory()
         ->count(2)
-        ->create(['school_id' => $school->id])
-        ->each(function (Student $student) use ($school, $gradeLevel, $classroom) {
+        ->create(['school_period_id' => $schoolPeriod->id])
+        ->each(function (Student $student) use ($schoolPeriod, $gradeLevel, $classroom) {
             StudentEnrollment::factory()->create([
-                'school_id' => $school->id,
+                'school_period_id' => $schoolPeriod->id,
                 'grade_level_id' => $gradeLevel->id,
                 'classroom_id' => $classroom->id,
                 'student_id' => $student->id,
@@ -275,15 +273,15 @@ test('the classroom occupancy reports student counts and capacity per classroom'
 });
 
 test('the nationality distribution merges the tail into a single segment', function () {
-    $school = School::factory()->create();
-    $user = createSchoolDashboardUser($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolDashboardUser($schoolPeriod);
 
     Nationality::factory()
         ->count(6)
         ->create()
-        ->each(function (Nationality $nationality, int $index) use ($school) {
+        ->each(function (Nationality $nationality, int $index) use ($schoolPeriod) {
             Student::factory()->count(6 - $index)->create([
-                'school_id' => $school->id,
+                'school_period_id' => $schoolPeriod->id,
                 'nationality_id' => $nationality->id,
             ]);
         });

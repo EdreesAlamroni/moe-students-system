@@ -33,7 +33,7 @@ type PageProps = {
     };
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 export default function Index({ schools, types, filter, canAny, can }: PageProps) {
     const { data, links, ...meta } = schools;
@@ -90,7 +90,9 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                                         defaultValue={filter.type || undefined}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="اختر نوع المدرسة" />
+                                            <SelectValue
+                                                placeholder="اختر نوع المدرسة"
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
@@ -171,7 +173,9 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                                                         {`مدرسة ${school.type.name}`}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{school.academic_period.name}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={school.academic_period_label} />
+                                                </TableCell>
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue className="font-mono" value={school.students_count} fallback={0} />
                                                 </TableCell>
@@ -197,7 +201,7 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                 </section>
             </MainContainer>
         </>
-    )
+    );
 }
 
 Index.layout = () => ({

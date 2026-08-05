@@ -54,11 +54,11 @@ class StudentPolicy
             return false;
         }
 
-        if ($student->relationLoaded('school')) {
-            return $user->organization_id === $student->school?->education_services_office_id;
+        if ($student->relationLoaded('schoolPeriod')) {
+            return $user->organization_id === $student->schoolPeriod?->education_services_office_id;
         }
 
-        return $student->school()
+        return $student->schoolPeriod()
             ->where('education_services_office_id', '=', $user->organization_id)
             ->exists();
     }

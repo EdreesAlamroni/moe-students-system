@@ -6,6 +6,7 @@ use App\Enums\DayOfWeek;
 use App\Models\AcademicYear;
 use App\Models\ClassPeriod;
 use App\Models\Classroom;
+use App\Models\SchoolPeriod;
 use App\Models\Subject;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -20,6 +21,9 @@ class BulkUpdateRequest extends FormRequest
 
     public function rules(): array
     {
+        /** @var SchoolPeriod $schoolPeriod */
+        $schoolPeriod = auth('school')->user()->organization;
+
         return [
             'items' => [
                 'required',
@@ -28,7 +32,8 @@ class BulkUpdateRequest extends FormRequest
             'items.*.class_period_id' => [
                 'required',
                 Rule::exists(ClassPeriod::class, 'id')
-                    ->where('academic_year_id', AcademicYear::currentId()),
+                    ->where('academic_year_id', AcademicYear::currentId())
+                    ->where('academic_period', $schoolPeriod->academic_period->value),
             ],
             'items.*.day_of_week' => [
                 'required',

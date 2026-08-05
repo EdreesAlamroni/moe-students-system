@@ -21,7 +21,7 @@ class StudentPsychosocialCardController extends Controller
 
         $student->load([
             'nationality',
-            'school:id,education_services_office_id',
+            'schoolPeriod',
             'psychosocialCard' => function (HasOne $relation) {
                 $relation->with(['guardianNationality', 'motherNationality']);
             },

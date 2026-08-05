@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Form, Head, Link, router } from '@inertiajs/react';
 
-import type { EducationMonitor, Enum, GradeLevel, Nationality, Paginated, School, Student } from '@/types';
+import type { EducationMonitor, Enum, GradeLevel, Nationality, Paginated, SchoolPeriod, Student } from '@/types';
 
 import { cn } from '@/lib/utils';
 
@@ -31,8 +31,6 @@ import { Building2Icon, CheckCircle2Icon, LoaderIcon, RefreshCcwIcon, SearchIcon
 
 import { index, students } from '@/routes/warehouse/book-distributions';
 
-type OrganizationOption = Pick<EducationMonitor | School, 'id' | 'name'>;
-
 type StudentListFilter = {
     name?: string;
     registration_status?: string;
@@ -43,15 +41,15 @@ type StudentListFilter = {
 };
 
 type StudentStatusPageProps = {
-    monitors: OrganizationOption[];
-    schools: OrganizationOption[];
+    monitors: EducationMonitor[];
+    schools: SchoolPeriod[];
     gradeLevels: Pick<GradeLevel, 'id' | 'name'>[];
     students?: Paginated<Student>;
     registrationStatuses?: Enum[];
     nationalities?: Pick<Nationality, 'id' | 'name'>[];
     selected: {
         education_monitor_id: number | null;
-        school_id: number | null;
+        school_period_id: number | null;
         grade_level_id: number | null;
     };
     filter: StudentListFilter;
@@ -136,7 +134,7 @@ export default function StudentStatusPage({
     }, []);
 
     const monitorId = selected.education_monitor_id?.toString() ?? '';
-    const schoolId = selected.school_id?.toString() ?? '';
+    const schoolId = selected.school_period_id?.toString() ?? '';
     const gradeLevelId = selected.grade_level_id?.toString() ?? '';
     const monitorPending = pendingMonitorId !== undefined && pendingMonitorId !== monitorId;
     const schoolPending = pendingSchoolId !== undefined && pendingSchoolId !== schoolId;
@@ -169,7 +167,7 @@ export default function StudentStatusPage({
 
         router.get(students.url(), {
             education_monitor_id: activeMonitorId,
-            school_id: value,
+            school_period_id: value,
         }, visitOptions);
     }
 
@@ -178,7 +176,7 @@ export default function StudentStatusPage({
 
         router.get(students.url(), {
             education_monitor_id: activeMonitorId,
-            school_id: activeSchoolId,
+            school_period_id: activeSchoolId,
             grade_level_id: value,
         }, visitOptions);
     }
@@ -204,13 +202,16 @@ export default function StudentStatusPage({
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <Building2Icon />
-                                <span>اختيار الجهة التعليمية</span>
+                                <span>اختيار المؤسسة التعليمية</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                                 <Field>
-                                    <Label htmlFor="education_monitor_id" required>
+                                    <Label
+                                        htmlFor="education_monitor_id"
+                                        required
+                                    >
                                         المُراقبة
                                     </Label>
 
@@ -220,13 +221,20 @@ export default function StudentStatusPage({
                                             disabled={isLoadingSchools || isLoadingGradeLevels}
                                             onValueChange={selectMonitor}
                                         >
-                                            <SelectTrigger id="education_monitor_id">
-                                                <SelectValue placeholder="اختر المُراقبة" />
+                                            <SelectTrigger
+                                                id="education_monitor_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المُراقبة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     {monitors.map((monitor) => (
-                                                        <SelectItem key={monitor.id} value={String(monitor.id)}>
+                                                        <SelectItem
+                                                            key={monitor.id}
+                                                            value={String(monitor.id)}
+                                                        >
                                                             {monitor.name}
                                                         </SelectItem>
                                                     ))}
@@ -242,15 +250,27 @@ export default function StudentStatusPage({
                                 </Field>
 
                                 <Field>
-                                    <Label htmlFor="school_id" required>
+                                    <Label
+                                        htmlFor="school_period_id"
+                                        required
+                                    >
                                         المدرسة
                                     </Label>
 
                                     {!activeMonitorId ? (
-                                        <EmptyOptionsInput id="school_id" placeholder="اختر المُراقبة أولاً" />
+                                        <EmptyOptionsInput
+                                            id="school_period_id"
+                                            placeholder="اختر المُراقبة أولاً"
+                                        />
                                     ) : isLoadingSchools ? (
-                                        <Select disabled open={false}>
-                                            <SelectTrigger id="school_id" aria-busy="true">
+                                        <Select
+                                            open={false}
+                                            disabled
+                                        >
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                                aria-busy="true"
+                                            >
                                                 <span className="flex items-center gap-2 text-muted-foreground">
                                                     <LoaderIcon className="size-3.5 shrink-0 animate-spin" />
                                                     <span>جارٍ تحميل المدارس…</span>
@@ -263,13 +283,20 @@ export default function StudentStatusPage({
                                             disabled={isLoadingSchools || isLoadingGradeLevels}
                                             onValueChange={selectSchool}
                                         >
-                                            <SelectTrigger id="school_id">
-                                                <SelectValue placeholder="اختر المدرسة" />
+                                            <SelectTrigger
+                                                id="school_period_id"
+                                            >
+                                                <SelectValue
+                                                    placeholder="اختر المدرسة"
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     {schools.map((school) => (
-                                                        <SelectItem key={school.id} value={String(school.id)}>
+                                                        <SelectItem
+                                                            key={school.id}
+                                                            value={String(school.id)}
+                                                        >
                                                             {school.name}
                                                         </SelectItem>
                                                     ))}
@@ -278,22 +305,34 @@ export default function StudentStatusPage({
                                         </Select>
                                     ) : (
                                         <EmptyOptionsInput
-                                            id="school_id"
+                                            id="school_period_id"
                                             placeholder="لا توجد مدارس متاحة لهذه المُراقبة"
                                         />
                                     )}
                                 </Field>
 
                                 <Field>
-                                    <Label htmlFor="grade_level_id" required>
+                                    <Label
+                                        htmlFor="grade_level_id"
+                                        required
+                                    >
                                         الصف الدراسي
                                     </Label>
 
                                     {!activeSchoolId ? (
-                                        <EmptyOptionsInput id="grade_level_id" placeholder="اختر المدرسة أولاً" />
+                                        <EmptyOptionsInput
+                                            id="grade_level_id"
+                                            placeholder="اختر المدرسة أولاً"
+                                        />
                                     ) : isLoadingGradeLevels ? (
-                                        <Select disabled open={false}>
-                                            <SelectTrigger id="grade_level_id" aria-busy="true">
+                                        <Select
+                                            open={false}
+                                            disabled
+                                        >
+                                            <SelectTrigger
+                                                id="grade_level_id"
+                                                aria-busy="true"
+                                            >
                                                 <span className="flex items-center gap-2 text-muted-foreground">
                                                     <LoaderIcon className="size-3.5 shrink-0 animate-spin" />
                                                     <span>جارٍ تحميل الصفوف الدراسية…</span>
@@ -312,7 +351,10 @@ export default function StudentStatusPage({
                                             <SelectContent>
                                                 <SelectGroup>
                                                     {gradeLevels.map((gradeLevel) => (
-                                                        <SelectItem key={gradeLevel.id} value={String(gradeLevel.id)}>
+                                                        <SelectItem
+                                                            key={gradeLevel.id}
+                                                            value={String(gradeLevel.id)}
+                                                        >
                                                             {gradeLevel.name}
                                                         </SelectItem>
                                                     ))}
@@ -342,7 +384,7 @@ export default function StudentStatusPage({
                                             ? 'اختر الصف الدراسي للمتابعة'
                                             : activeMonitorId
                                                 ? 'اختر المدرسة للمتابعة'
-                                                : 'ابدأ باختيار الجهة التعليمية'
+                                                : 'ابدأ باختيار المؤسسة التعليمية'
                                     }
                                     description={
                                         activeSchoolId
@@ -370,7 +412,7 @@ export default function StudentStatusPage({
                         <section>
                             <Form {...students.form()}>
                                 <input type="hidden" name="education_monitor_id" value={activeMonitorId} />
-                                <input type="hidden" name="school_id" value={activeSchoolId} />
+                                <input type="hidden" name="school_period_id" value={activeSchoolId} />
                                 <input type="hidden" name="grade_level_id" value={activeGradeLevelId} />
 
                                 <Card>
@@ -405,7 +447,10 @@ export default function StudentStatusPage({
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         {(registrationStatuses ?? []).map((status) => (
-                                                            <SelectItem key={status.id} value={status.id}>
+                                                            <SelectItem
+                                                                key={status.id}
+                                                                value={status.id}
+                                                            >
                                                                 {status.name}
                                                             </SelectItem>
                                                         ))}
@@ -461,16 +506,23 @@ export default function StudentStatusPage({
                                     </CardContent>
                                     <CardFooter className="border-t">
                                         <div className="flex items-center gap-x-3">
-                                            <Button type="submit" variant="default">
+                                            <Button
+                                                type="submit"
+                                                variant="default"
+                                            >
                                                 <SearchIcon />
                                                 <span>بحث</span>
                                             </Button>
-                                            <Button type="reset" variant="outline" asChild>
+                                            <Button
+                                                type="reset"
+                                                variant="outline"
+                                                asChild
+                                            >
                                                 <Link
                                                     href={students.url({
                                                         query: {
                                                             education_monitor_id: activeMonitorId,
-                                                            school_id: activeSchoolId,
+                                                            school_period_id: activeSchoolId,
                                                             grade_level_id: activeGradeLevelId,
                                                         },
                                                     })}
@@ -543,7 +595,10 @@ export default function StudentStatusPage({
 
                                         {hasPagination && (
                                             <CardFooter className="border-t">
-                                                <Paginator links={paginatedStudents!.links} meta={paginatedStudents!} />
+                                                <Paginator
+                                                    links={paginatedStudents!.links}
+                                                    meta={paginatedStudents!}
+                                                />
                                             </CardFooter>
                                         )}
                                     </>

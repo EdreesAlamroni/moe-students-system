@@ -64,7 +64,7 @@ class SchoolPolicy
             return false;
         }
 
-        if ($school->education_monitor_id !== $user->organization_id) {
+        if (! $this->belongsToCurrentMonitor($user, $school)) {
             return false;
         }
 
@@ -77,7 +77,6 @@ class SchoolPolicy
 
     private function belongsToCurrentMonitor(User $user, School $school): bool
     {
-        return $user->organization_type === EducationMonitor::class
-            && $user->organization_id === $school->education_monitor_id;
+        return $user->organization_type === EducationMonitor::class && $user->organization_id === $school->education_monitor_id;
     }
 }

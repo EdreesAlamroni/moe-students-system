@@ -9,7 +9,7 @@ use App\Models\ClassPeriod;
 use App\Models\Classroom;
 use App\Models\ClassSchedule;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Subject;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
@@ -17,16 +17,13 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
-function createSchoolClassScheduleViewer(School $school, array $attributes = []): User
+function createSchoolClassScheduleViewer(SchoolPeriod $schoolPeriod, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ], $attributes));
 
     foreach ([
@@ -60,13 +57,13 @@ beforeEach(function () {
 });
 
 test('authenticated school users can view a class schedule with empty grid cells', function () {
-    $school = School::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
-    $user = createSchoolClassScheduleViewer($school);
+    $schoolPeriod = SchoolPeriod::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
+    $user = createSchoolClassScheduleViewer($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create();
     $academicYearId = AcademicYear::currentId();
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevel->id,
     ]);
@@ -87,7 +84,7 @@ test('authenticated school users can view a class schedule with empty grid cells
     $subject = Subject::factory()->create(['grade_level_id' => $gradeLevel->id]);
 
     ClassSchedule::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'classroom_id' => $classroom->id,
         'class_period_id' => $period->id,
@@ -108,13 +105,13 @@ test('authenticated school users can view a class schedule with empty grid cells
 });
 
 test('authenticated school users can edit a class schedule with deferred subjects', function () {
-    $school = School::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
-    $user = createSchoolClassScheduleViewer($school);
+    $schoolPeriod = SchoolPeriod::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
+    $user = createSchoolClassScheduleViewer($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create();
     $academicYearId = AcademicYear::currentId();
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevel->id,
     ]);
@@ -132,7 +129,7 @@ test('authenticated school users can edit a class schedule with deferred subject
     ]);
 
     ClassSchedule::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'classroom_id' => $classroom->id,
         'class_period_id' => $period->id,
@@ -156,13 +153,13 @@ test('authenticated school users can edit a class schedule with deferred subject
 });
 
 test('authenticated school users can update a class schedule', function () {
-    $school = School::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
-    $user = createSchoolClassScheduleViewer($school);
+    $schoolPeriod = SchoolPeriod::factory()->create(['academic_period' => SchoolAcademicPeriod::EVENING]);
+    $user = createSchoolClassScheduleViewer($schoolPeriod);
     $gradeLevel = GradeLevel::factory()->create();
     $academicYearId = AcademicYear::currentId();
 
     $classroom = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'grade_level_id' => $gradeLevel->id,
     ]);
@@ -189,7 +186,7 @@ test('authenticated school users can update a class schedule', function () {
         ->assertRedirect(route('school.classrooms.class-schedules.show', $classroom));
 
     $this->assertDatabaseHas('class_schedules', [
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => $academicYearId,
         'classroom_id' => $classroom->id,
         'class_period_id' => $period->id,

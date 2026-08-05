@@ -6,7 +6,7 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -15,17 +15,13 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  list<string>  $permissions
- * @param  array<string, mixed>  $attributes
- */
-function createSchoolStudentByClassroomReportManager(School $school, array $permissions = ['report:student-by-classroom:view', 'student:view'], array $attributes = []): User
+function createSchoolStudentByClassroomReportManager(SchoolPeriod $schoolPeriod, array $permissions = ['report:student-by-classroom:view', 'student:view'], array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ], $attributes));
 
     foreach ($permissions as $permission) {
@@ -37,7 +33,7 @@ function createSchoolStudentByClassroomReportManager(School $school, array $perm
     return $user;
 }
 
-function createSchoolStudentByClassroomReportGradeLevel(School $school, GradeLevelEnum $grade): GradeLevel
+function createSchoolStudentByClassroomReportGradeLevel(SchoolPeriod $schoolPeriod, GradeLevelEnum $grade): GradeLevel
 {
     $gradeLevel = GradeLevel::query()->firstOrCreate(
         ['code' => $grade->value],
@@ -48,7 +44,7 @@ function createSchoolStudentByClassroomReportGradeLevel(School $school, GradeLev
         ],
     );
 
-    $school->allGradeLevels()->syncWithoutDetaching([
+    $schoolPeriod->allGradeLevels()->syncWithoutDetaching([
         $gradeLevel->id => ['academic_year_id' => AcademicYear::currentId()],
     ]);
 
@@ -69,35 +65,35 @@ beforeEach(function () {
 });
 
 test('student by classroom report filters by grade level id', function () {
-    $school = School::factory()->create();
-    $user = createSchoolStudentByClassroomReportManager($school);
-    $gradeOne = createSchoolStudentByClassroomReportGradeLevel($school, GradeLevelEnum::GRADE_1);
-    $gradeTwo = createSchoolStudentByClassroomReportGradeLevel($school, GradeLevelEnum::GRADE_2);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolStudentByClassroomReportManager($schoolPeriod);
+    $gradeOne = createSchoolStudentByClassroomReportGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
+    $gradeTwo = createSchoolStudentByClassroomReportGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_2);
 
     $classroomOne = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeOne->id,
         'name' => '1',
     ]);
 
     $classroomTwo = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeTwo->id,
         'name' => '1',
     ]);
 
-    $matchingStudent = Student::factory()->for($school)->create();
+    $matchingStudent = Student::factory()->for($schoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'student_id' => $matchingStudent->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeOne->id,
         'classroom_id' => $classroomOne->id,
     ]);
 
-    $otherStudent = Student::factory()->for($school)->create();
+    $otherStudent = Student::factory()->for($schoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'student_id' => $otherStudent->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeTwo->id,
         'classroom_id' => $classroomTwo->id,
     ]);
@@ -118,34 +114,34 @@ test('student by classroom report filters by grade level id', function () {
 });
 
 test('student by classroom report filters by classroom name', function () {
-    $school = School::factory()->create();
-    $user = createSchoolStudentByClassroomReportManager($school);
-    $gradeLevel = createSchoolStudentByClassroomReportGradeLevel($school, GradeLevelEnum::GRADE_1);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolStudentByClassroomReportManager($schoolPeriod);
+    $gradeLevel = createSchoolStudentByClassroomReportGradeLevel($schoolPeriod, GradeLevelEnum::GRADE_1);
 
     $classroomOne = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '1',
     ]);
 
     $classroomTwo = Classroom::factory()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'name' => '2',
     ]);
 
-    $matchingStudent = Student::factory()->for($school)->create();
+    $matchingStudent = Student::factory()->for($schoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'student_id' => $matchingStudent->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroomOne->id,
     ]);
 
-    $otherStudent = Student::factory()->for($school)->create();
+    $otherStudent = Student::factory()->for($schoolPeriod)->create();
     StudentEnrollment::factory()->create([
         'student_id' => $otherStudent->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroomTwo->id,
     ]);

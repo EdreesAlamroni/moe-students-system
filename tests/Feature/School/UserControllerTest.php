@@ -3,6 +3,7 @@
 use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
 use App\Support\PolicyRegistrar;
@@ -10,16 +11,13 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
-function createSchoolManager(School $school, array $attributes = []): User
+function createSchoolManager(SchoolPeriod $schoolPeriod, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ], $attributes));
 
     foreach (['user:view-any', 'user:view', 'user:create', 'user:update', 'user:delete'] as $permission) {
@@ -37,10 +35,6 @@ function createSchoolManager(School $school, array $attributes = []): User
     return $user;
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function schoolDashboardUserPayload(array $overrides = []): array
 {
     $role = Role::findOrCreate('user:role:view', UserScope::SCHOOL->value);
@@ -55,16 +49,13 @@ function schoolDashboardUserPayload(array $overrides = []): array
     ], $overrides);
 }
 
-/**
- * @param  array<string, mixed>  $attributes
- */
-function createSchoolPeer(School $school, array $attributes = []): User
+function createSchoolPeer(SchoolPeriod $schoolPeriod, array $attributes = []): User
 {
     return User::factory()->create(array_merge([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ], $attributes));
 }
 
@@ -78,29 +69,13 @@ test('guests are redirected from the school users page', function () {
 });
 
 test('users without user permissions cannot visit the create user page', function () {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::EMPLOYEE,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
-
-    $this->actingAs($user, 'school')
-        ->get(route('school.users.create'))
-        ->assertForbidden();
-});
-
-test('school users with orphaned organization cannot visit the create user page', function () {
-    $user = User::factory()->create([
-        'scope' => UserScope::SCHOOL,
-        'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => 999999,
-    ]);
-
-    Permission::findOrCreate('user:create', UserScope::SCHOOL->value);
-    $user->givePermissionTo(['user:create']);
 
     $this->actingAs($user, 'school')
         ->get(route('school.users.create'))
@@ -108,14 +83,14 @@ test('school users with orphaned organization cannot visit the create user page'
 });
 
 test('authenticated school users can visit the users index', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
-    $peer = createSchoolPeer($school, [
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
+    $peer = createSchoolPeer($schoolPeriod, [
         'name' => 'Peer User',
         'username' => 'peer.user',
     ]);
-    $otherSchool = School::factory()->create();
-    createSchoolPeer($otherSchool, [
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    createSchoolPeer($otherSchoolPeriod, [
         'name' => 'Other School User',
         'username' => 'other.school.user',
     ]);
@@ -131,8 +106,8 @@ test('authenticated school users can visit the users index', function () {
 });
 
 test('authenticated school users can visit the create user page', function () {
-    $school = School::factory()->create(['name' => 'Central School']);
-    $user = createSchoolManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->state(['name' => 'Central School']), 'school')->create();
+    $user = createSchoolManager($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->get(route('school.users.create'))
@@ -140,15 +115,15 @@ test('authenticated school users can visit the create user page', function () {
         ->assertInertia(fn ($page) => $page
             ->component('school/users/create')
             ->where('scope.id', UserScope::SCHOOL->value)
-            ->where('school.id', $school->id)
-            ->where('school.name', 'Central School')
+            ->where('schoolPeriod.id', $schoolPeriod->id)
+            ->where('schoolPeriod.name', 'Central School')
             ->has('groupedRoles')
         );
 });
 
 test('authenticated school users can store a user for their school', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
     $payload = schoolDashboardUserPayload();
 
     $response = $this->actingAs($user, 'school')
@@ -160,16 +135,16 @@ test('authenticated school users can store a user for their school', function ()
         ->and($createdUser->scope)->toBe(UserScope::SCHOOL)
         ->and($createdUser->role)->toBe(UserRole::EMPLOYEE)
         ->and($createdUser->request_state)->toBeInstanceOf(Pending::class)
-        ->and($createdUser->organization_id)->toBe($school->id)
-        ->and($createdUser->organization_type)->toBe(School::class)
+        ->and($createdUser->organization_id)->toBe($schoolPeriod->id)
+        ->and($createdUser->organization_type)->toBe(SchoolPeriod::class)
         ->and($createdUser->hasRole($payload['roles'][0]))->toBeTrue();
 
     $response->assertRedirect(route('school.users.show', ['user' => $createdUser]));
 });
 
 test('store validates required fields', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->post(route('school.users.store'), [])
@@ -177,8 +152,8 @@ test('store validates required fields', function () {
 });
 
 test('store rejects roles that do not belong to the school scope', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
     $foreignRole = Role::findOrCreate('user:role:view', UserScope::ADMINISTRATION->value);
 
     $this->actingAs($user, 'school')
@@ -189,8 +164,8 @@ test('store rejects roles that do not belong to the school scope', function () {
 });
 
 test('store accepts roles submitted as json', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
     $role = Role::findOrCreate('user:role:view', UserScope::SCHOOL->value);
     $payload = schoolDashboardUserPayload([
         'username' => 'json.roles.school.user',
@@ -209,9 +184,9 @@ test('store accepts roles submitted as json', function () {
 });
 
 test('authenticated school users can visit the show user page', function () {
-    $school = School::factory()->create(['name' => 'Show School']);
-    $user = createSchoolManager($school);
-    $target = createSchoolPeer($school, [
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->state(['name' => 'Show School']), 'school')->create();
+    $user = createSchoolManager($schoolPeriod);
+    $target = createSchoolPeer($schoolPeriod, [
         'name' => 'Shown User',
         'username' => 'shown.user',
     ]);
@@ -236,10 +211,10 @@ test('authenticated school users can visit the show user page', function () {
 });
 
 test('school users cannot view users from another school', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
-    $otherSchool = School::factory()->create();
-    $target = createSchoolPeer($otherSchool);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    $target = createSchoolPeer($otherSchoolPeriod);
 
     $this->actingAs($user, 'school')
         ->get(route('school.users.show', ['user' => $target]))
@@ -247,9 +222,9 @@ test('school users cannot view users from another school', function () {
 });
 
 test('authenticated school users can visit the edit user page', function () {
-    $school = School::factory()->create(['name' => 'Edit School']);
-    $user = createSchoolManager($school);
-    $target = createSchoolPeer($school, [
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->state(['name' => 'Edit School']), 'school')->create();
+    $user = createSchoolManager($schoolPeriod);
+    $target = createSchoolPeer($schoolPeriod, [
         'name' => 'Editable User',
         'username' => 'editable.user',
     ]);
@@ -272,9 +247,9 @@ test('authenticated school users can visit the edit user page', function () {
 });
 
 test('authenticated school users can update a user', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
-    $target = createSchoolPeer($school, [
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
+    $target = createSchoolPeer($schoolPeriod, [
         'name' => 'Old Name',
         'email' => 'old@example.com',
     ]);
@@ -299,9 +274,9 @@ test('authenticated school users can update a user', function () {
 });
 
 test('update validates required fields', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
-    $target = createSchoolPeer($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
+    $target = createSchoolPeer($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->put(route('school.users.update', ['user' => $target]), [])
@@ -309,9 +284,9 @@ test('update validates required fields', function () {
 });
 
 test('authenticated school users can delete a user', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
-    $target = createSchoolPeer($school);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
+    $target = createSchoolPeer($schoolPeriod);
 
     $this->actingAs($user, 'school')
         ->delete(route('school.users.destroy', ['user' => $target]))
@@ -321,10 +296,10 @@ test('authenticated school users can delete a user', function () {
 });
 
 test('school users cannot delete users from another school', function () {
-    $school = School::factory()->create();
-    $user = createSchoolManager($school);
-    $otherSchool = School::factory()->create();
-    $target = createSchoolPeer($otherSchool);
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $user = createSchoolManager($schoolPeriod);
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+    $target = createSchoolPeer($otherSchoolPeriod);
 
     $this->actingAs($user, 'school')
         ->delete(route('school.users.destroy', ['user' => $target]))

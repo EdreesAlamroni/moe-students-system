@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\Nationality;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
@@ -13,9 +14,6 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationMonitorStudentManager(EducationMonitor $monitor, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -84,11 +82,11 @@ test('users without permission cannot access education monitor student pages', f
 test('student index renders school selection without querying students', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
 
     Student::factory()->count(3)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')
@@ -97,8 +95,8 @@ test('student index renders school selection without querying students', functio
         ->assertInertia(fn (Assert $page) => $page
             ->component('education-monitor/students/index')
             ->has('schools', 1)
-            ->where('schools.0.id', $school->id)
-            ->where('school_id', null)
+            ->where('schools.0.id', $schoolPeriod->id)
+            ->where('school_period_id', null)
             ->missing('students')
             ->missing('nationalities')
             ->missing('registrationStatuses')
@@ -109,11 +107,12 @@ test('student index renders school selection without querying students', functio
 test('student index only lists schools for the current education monitor', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create([
-        'name' => 'مدرسة النور',
-    ]);
+    $schoolPeriod = SchoolPeriod::factory()->for(
+        School::factory()->for($monitor, 'monitor')->state(['name' => 'مدرسة النور']),
+        'school',
+    )->create();
 
-    School::factory()->create();
+    SchoolPeriod::factory()->create();
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.students.index'))
@@ -121,8 +120,8 @@ test('student index only lists schools for the current education monitor', funct
         ->assertInertia(fn (Assert $page) => $page
             ->component('education-monitor/students/index')
             ->has('schools', 1)
-            ->where('schools.0.id', $school->id)
-            ->where('schools.0.name', 'مدرسة النور')
+            ->where('schools.0.id', $schoolPeriod->id)
+            ->where('schools.0.name', sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->isMorning() ? 'فترة صباحية' : 'فترة مسائية'))
             ->missing('students')
         );
 });
@@ -130,27 +129,27 @@ test('student index only lists schools for the current education monitor', funct
 test('student index loads students only when school is selected', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create();
-    $otherSchool = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
 
     $students = Student::factory()->count(2)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.students.index', [
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('education-monitor/students/index')
-            ->where('school_id', $school->id)
+            ->where('school_period_id', $schoolPeriod->id)
             ->has('students.data', 2)
             ->where('students.total', 2)
             ->where('students.data', fn ($data) => collect($data)->pluck('uuid')->sort()->values()->all()
@@ -162,25 +161,25 @@ test('student index loads students only when school is selected', function () {
 test('student index filters students by registration status and nationality', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
     $nationality = Nationality::factory()->create();
 
     $matchingStudent = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'nationality_id' => $nationality->id,
         'registration_status' => 'new',
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'registration_status' => 'repeater',
     ]);
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.students.index', [
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
             'filter' => [
                 'registration_status' => 'new',
                 'nationality_id' => $nationality->id,
@@ -197,20 +196,20 @@ test('student index ignores school that does not belong to the current education
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentManager($monitor);
     $otherMonitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($otherMonitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($otherMonitor, 'monitor'), 'school')->create();
 
     Student::factory()->create([
         'education_monitor_id' => $otherMonitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.students.index', [
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->where('school_id', null)
+            ->where('school_period_id', null)
             ->missing('students')
             ->missing('nationalities')
             ->missing('registrationStatuses')
@@ -221,21 +220,21 @@ test('student index does not include students from other education monitors', fu
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentManager($monitor);
     $otherMonitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
 
     $ownStudent = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $otherMonitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')
         ->get(route('education-monitor.students.index', [
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -247,11 +246,11 @@ test('student index does not include students from other education monitors', fu
 test('student show displays student details', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorStudentManager($monitor);
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
 
     $student = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')
@@ -265,7 +264,7 @@ test('student show displays student details', function () {
             ->where('student.grandfather_name', $student->grandfather_name)
             ->where('student.surname', $student->surname)
             ->where('student.monitor.name', $monitor->name)
-            ->where('student.school.name', $school->name)
+            ->where('student.school_period.name', $schoolPeriod->name)
             ->where('student.nationality.name', $student->nationality->name)
             ->has('transfers')
         );

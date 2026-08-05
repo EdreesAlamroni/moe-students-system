@@ -4,7 +4,7 @@ namespace App\Actions\Warehouse;
 
 use App\Models\AcademicYear;
 use App\Models\BookDistribution;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +20,7 @@ class DistributeBooksToGradeLevels
      * @param  array<int, int>  $gradeLevelIds
      * @return int Number of grade levels confirmed as having received books.
      */
-    public function execute(int $monitorId, int $schoolId, int $warehouseId, array $gradeLevelIds): int
+    public function execute(int $monitorId, int $schoolPeriodId, int $warehouseId, array $gradeLevelIds): int
     {
         $currentAcademicYearId = AcademicYear::currentId();
 
@@ -30,16 +30,16 @@ class DistributeBooksToGradeLevels
             ]);
         }
 
-        return DB::transaction(function () use ($monitorId, $schoolId, $warehouseId, $gradeLevelIds, $currentAcademicYearId): int {
-            $school = School::query()
+        return DB::transaction(function () use ($monitorId, $schoolPeriodId, $warehouseId, $gradeLevelIds, $currentAcademicYearId): int {
+            $schoolPeriod = SchoolPeriod::query()
                 ->where('education_monitor_id', '=', $monitorId)
-                ->find($schoolId);
+                ->find($schoolPeriodId);
 
-            if (is_null($school)) {
+            if (is_null($schoolPeriod)) {
                 return 0;
             }
 
-            $eligibleGradeLevelIds = $school->gradeLevels()
+            $eligibleGradeLevelIds = $schoolPeriod->gradeLevels()
                 ->whereIn('grade_levels.id', $gradeLevelIds)
                 ->pluck('grade_levels.id');
 
@@ -49,7 +49,7 @@ class DistributeBooksToGradeLevels
 
             $alreadyDistributedIds = BookDistribution::query()
                 ->where('academic_year_id', '=', $currentAcademicYearId)
-                ->where('school_id', '=', $schoolId)
+                ->where('school_period_id', '=', $schoolPeriodId)
                 ->whereIn('grade_level_id', $eligibleGradeLevelIds)
                 ->pluck('grade_level_id');
 
@@ -61,12 +61,12 @@ class DistributeBooksToGradeLevels
 
             $now = now();
 
-            $rows = $pendingGradeLevelIds->map(function (int $gradeLevelId) use ($currentAcademicYearId, $monitorId, $schoolId, $warehouseId, $now): array {
+            $rows = $pendingGradeLevelIds->map(function (int $gradeLevelId) use ($currentAcademicYearId, $monitorId, $schoolPeriodId, $warehouseId, $now): array {
                 return [
                     'uuid' => Str::uuid()->toString(),
                     'academic_year_id' => $currentAcademicYearId,
                     'education_monitor_id' => $monitorId,
-                    'school_id' => $schoolId,
+                    'school_period_id' => $schoolPeriodId,
                     'grade_level_id' => $gradeLevelId,
                     'warehouse_id' => $warehouseId,
                     'distributed_at' => $now,

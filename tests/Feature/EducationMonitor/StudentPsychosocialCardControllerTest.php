@@ -5,6 +5,7 @@ use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentPsychosocialCard;
 use App\Models\User;
@@ -13,13 +14,10 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @return array{monitor: EducationMonitor, school: School, user: User}
- */
 function createEducationMonitorPsychosocialCardContext(): array
 {
     $monitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
 
     $user = User::factory()->create([
         'scope' => UserScope::EDUCATION_MONITOR,
@@ -37,7 +35,7 @@ function createEducationMonitorPsychosocialCardContext(): array
         'student:view-psychosocial-card',
     ]);
 
-    return compact('monitor', 'school', 'user');
+    return compact('monitor', 'schoolPeriod', 'user');
 }
 
 beforeEach(function () {
@@ -61,7 +59,7 @@ test('guests cannot view education monitor psychosocial cards', function () {
 });
 
 test('users without permission cannot view education monitor psychosocial cards', function () {
-    ['monitor' => $monitor, 'school' => $school] = createEducationMonitorPsychosocialCardContext();
+    ['monitor' => $monitor, 'schoolPeriod' => $schoolPeriod] = createEducationMonitorPsychosocialCardContext();
 
     $user = User::factory()->create([
         'scope' => UserScope::EDUCATION_MONITOR,
@@ -72,7 +70,7 @@ test('users without permission cannot view education monitor psychosocial cards'
 
     $student = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')
@@ -81,11 +79,11 @@ test('users without permission cannot view education monitor psychosocial cards'
 });
 
 test('authorized users can view education monitor psychosocial cards', function () {
-    ['monitor' => $monitor, 'school' => $school, 'user' => $user] = createEducationMonitorPsychosocialCardContext();
+    ['monitor' => $monitor, 'schoolPeriod' => $schoolPeriod, 'user' => $user] = createEducationMonitorPsychosocialCardContext();
 
     $student = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     StudentPsychosocialCard::factory()->create([
@@ -106,11 +104,11 @@ test('authorized users can view education monitor psychosocial cards', function 
 test('users cannot view psychosocial cards for students outside their education monitor', function () {
     ['user' => $user] = createEducationMonitorPsychosocialCardContext();
     $otherMonitor = EducationMonitor::factory()->create();
-    $otherSchool = School::factory()->for($otherMonitor, 'monitor')->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($otherMonitor, 'monitor'), 'school')->create();
 
     $student = Student::factory()->create([
         'education_monitor_id' => $otherMonitor->id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')

@@ -3,7 +3,7 @@
 namespace App\Policies\School;
 
 use App\Models\AcademicYear;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\User;
 use App\Services\AcademicRecordService;
@@ -242,6 +242,6 @@ class StudentPolicy
 
     private function belongsToCurrentSchool(User $user, Student $student): bool
     {
-        return $user->organization_type === School::class && $user->organization_id === $student->school_id;
+        return $user->organization_type === SchoolPeriod::class && $user->organization_id === $student->school_period_id;
     }
 }

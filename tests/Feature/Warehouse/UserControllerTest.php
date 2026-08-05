@@ -10,9 +10,6 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createWarehouseManager(Warehouse $warehouse, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -37,10 +34,6 @@ function createWarehouseManager(Warehouse $warehouse, array $attributes = []): U
     return $user;
 }
 
-/**
- * @param  array<string, mixed>  $overrides
- * @return array<string, mixed>
- */
 function warehouseDashboardUserPayload(array $overrides = []): array
 {
     $role = Role::findOrCreate('user:role:view', UserScope::WAREHOUSE->value);
@@ -55,9 +48,6 @@ function warehouseDashboardUserPayload(array $overrides = []): array
     ], $overrides);
 }
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createWarehousePeer(Warehouse $warehouse, array $attributes = []): User
 {
     return User::factory()->create(array_merge([

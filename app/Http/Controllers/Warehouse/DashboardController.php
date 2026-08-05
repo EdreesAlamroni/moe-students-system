@@ -8,6 +8,7 @@ use App\Models\BookDistribution;
 use App\Models\BookDistributionItem;
 use App\Models\EducationMonitor;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,9 +32,6 @@ class DashboardController extends Controller
             'schoolDistribution' => Inertia::defer(function (): Collection {
                 return $this->schoolDistribution();
             }, 'schools'),
-            // 'academicYearTrends' => Inertia::defer(function (): Collection {
-            //     return $this->academicYearTrends();
-            // }, 'trends'),
             'recentActivities' => Inertia::defer(function () {
                 return $this->recentActivities();
             }, 'recent'),
@@ -118,11 +116,11 @@ class DashboardController extends Controller
          */
         $SCHOOL_SEGMENTS = 10;
 
-        $distributions = $this->bookDistributionsBySchool();
-        $received = $this->studentsReceivedBySchool();
-        $pending = $this->studentsPendingBySchool();
+        $distributions = $this->bookDistributionsBySchoolPeriod();
+        $received = $this->studentsReceivedBySchoolPeriod();
+        $pending = $this->studentsPendingBySchoolPeriod();
 
-        return School::query()
+        return SchoolPeriod::query()
             ->select(['id', 'name', 'education_monitor_id'])
             ->forCurrentWarehouse()
             ->with(['monitor:id,name'])
@@ -131,70 +129,26 @@ class DashboardController extends Controller
             ->ordered()
             ->take($SCHOOL_SEGMENTS)
             ->get()
-            ->map(function (School $school) use ($distributions, $received, $pending): array {
-                $studentsReceived = (int) ($received[$school->id] ?? 0);
-                $studentsPending = (int) ($pending[$school->id] ?? 0);
+            ->map(function (SchoolPeriod $schoolPeriod) use ($distributions, $received, $pending): array {
+                $studentsReceived = (int) ($received[$schoolPeriod->id] ?? 0);
+                $studentsPending = (int) ($pending[$schoolPeriod->id] ?? 0);
                 $eligible = $studentsReceived + $studentsPending;
 
                 return [
-                    'name' => $school->name,
-                    'students' => (int) $school->students_count,
-                    'book_distributions' => (int) ($distributions[$school->id] ?? 0),
+                    'name' => $schoolPeriod->name,
+                    'students' => (int) $schoolPeriod->students_count,
+                    'book_distributions' => (int) ($distributions[$schoolPeriod->id] ?? 0),
                     'students_received' => $studentsReceived,
                     'students_pending' => $studentsPending,
                     'completion_rate' => $eligible > 0
                         ? round(($studentsReceived / $eligible) * 100, 1)
                         : 0.0,
                     'monitor' => [
-                        'name' => $school->monitor->name,
+                        'name' => $schoolPeriod->monitor->name,
                     ],
                 ];
             });
     }
-
-    /**
-     * Warehouse book-distribution activity across academic years.
-     */
-    // private function academicYearTrends(): Collection
-    // {
-    //     $warehouseId = $this->warehouseId();
-
-    //     if (is_null($warehouseId)) {
-    //         return collect();
-    //     }
-
-    //     $distributions = BookDistribution::query()
-    //         ->toBase()
-    //         ->select('academic_year_id')
-    //         ->selectRaw('COUNT(*) AS book_distributions')
-    //         ->where('warehouse_id', '=', $warehouseId)
-    //         ->groupBy('academic_year_id')
-    //         ->pluck('book_distributions', 'academic_year_id');
-
-    //     $received = BookDistributionItem::query()
-    //         ->toBase()
-    //         ->join('book_distributions', 'book_distributions.id', '=', 'book_distribution_items.book_distribution_id')
-    //         ->select('book_distribution_items.academic_year_id')
-    //         ->selectRaw('COUNT(DISTINCT book_distribution_items.student_id) AS students_received')
-    //         ->where('book_distributions.warehouse_id', '=', $warehouseId)
-    //         ->groupBy('book_distribution_items.academic_year_id')
-    //         ->pluck('students_received', 'academic_year_id');
-
-    //     $currentId = AcademicYear::currentId();
-
-    //     return AcademicYear::query()
-    //         ->select(['id', 'name', 'is_active', 'start_date'])
-    //         ->orderedByActiveFirst()
-    //         ->get()
-    //         ->map(fn (AcademicYear $year): array => [
-    //             'name' => $year->name,
-    //             'book_distributions' => (int) ($distributions[$year->id] ?? 0),
-    //             'students_received' => (int) ($received[$year->id] ?? 0),
-    //             'is_current' => $year->id === $currentId,
-    //         ])
-    //         ->filter(fn (array $row): bool => $row['book_distributions'] > 0 || $row['students_received'] > 0 || $row['is_current'])
-    //         ->values();
-    // }
 
     /**
      * Latest warehouse book-distribution confirmations.
@@ -210,14 +164,14 @@ class DashboardController extends Controller
             ->select([
                 'id',
                 'distributed_at',
-                'school_id',
+                'school_period_id',
                 'grade_level_id',
                 'education_monitor_id',
             ])
             ->forCurrentWarehouse()
             ->forCurrentAcademicYear()
             ->with([
-                'school:id,name',
+                'schoolPeriod:id,name',
                 'gradeLevel:id,name',
                 'monitor:id,name',
             ])
@@ -228,7 +182,7 @@ class DashboardController extends Controller
             ->map(fn (BookDistribution $distribution): array => [
                 'id' => $distribution->id,
                 'distributed_at' => $distribution->distributed_at->toDateTimeString(),
-                'school' => $distribution->school->name,
+                'school' => $distribution->schoolPeriod->name,
                 'grade_level' => $distribution->gradeLevel->name,
                 'monitor' => $distribution->monitor->name,
             ])
@@ -296,16 +250,16 @@ class DashboardController extends Controller
             ->pluck('aggregate', 'education_monitor_id');
     }
 
-    private function bookDistributionsBySchool(): Collection
+    private function bookDistributionsBySchoolPeriod(): Collection
     {
         return BookDistribution::query()
             ->forCurrentWarehouse()
             ->forCurrentAcademicYear()
             ->toBase()
-            ->select('school_id')
+            ->select('school_period_id')
             ->selectRaw('COUNT(*) AS aggregate')
-            ->groupBy('school_id')
-            ->pluck('aggregate', 'school_id');
+            ->groupBy('school_period_id')
+            ->pluck('aggregate', 'school_period_id');
     }
 
     private function studentsReceivedByMonitor(): Collection
@@ -328,7 +282,7 @@ class DashboardController extends Controller
             ->pluck('aggregate', 'education_monitor_id');
     }
 
-    private function studentsReceivedBySchool(): Collection
+    private function studentsReceivedBySchoolPeriod(): Collection
     {
         $warehouseId = $this->warehouseId();
         $currentAcademicYearId = AcademicYear::currentId();
@@ -340,12 +294,12 @@ class DashboardController extends Controller
         return BookDistributionItem::query()
             ->toBase()
             ->join('book_distributions', 'book_distributions.id', '=', 'book_distribution_items.book_distribution_id')
-            ->select('book_distribution_items.school_id')
+            ->select('book_distribution_items.school_period_id')
             ->selectRaw('COUNT(DISTINCT book_distribution_items.student_id) AS aggregate')
             ->where('book_distributions.warehouse_id', '=', $warehouseId)
             ->where('book_distribution_items.academic_year_id', '=', $currentAcademicYearId)
-            ->groupBy('book_distribution_items.school_id')
-            ->pluck('aggregate', 'school_id');
+            ->groupBy('book_distribution_items.school_period_id')
+            ->pluck('aggregate', 'school_period_id');
     }
 
     private function studentsPendingByMonitor(): Collection
@@ -364,7 +318,7 @@ class DashboardController extends Controller
             ->pluck('aggregate', 'education_monitor_id');
     }
 
-    private function studentsPendingBySchool(): Collection
+    private function studentsPendingBySchoolPeriod(): Collection
     {
         $warehouseId = $this->warehouseId();
         $currentAcademicYearId = AcademicYear::currentId();
@@ -374,10 +328,10 @@ class DashboardController extends Controller
         }
 
         return $this->pendingEnrollmentsQuery($warehouseId, $currentAcademicYearId)
-            ->select('student_enrollments.school_id')
+            ->select('student_enrollments.school_period_id')
             ->selectRaw('COUNT(DISTINCT student_enrollments.student_id) AS aggregate')
-            ->groupBy('student_enrollments.school_id')
-            ->pluck('aggregate', 'school_id');
+            ->groupBy('student_enrollments.school_period_id')
+            ->pluck('aggregate', 'school_period_id');
     }
 
     /**
@@ -388,7 +342,7 @@ class DashboardController extends Controller
         return StudentEnrollment::query()
             ->toBase()
             ->join('book_distributions', function (JoinClause $join) use ($warehouseId, $currentAcademicYearId): void {
-                $join->on('book_distributions.school_id', '=', 'student_enrollments.school_id')
+                $join->on('book_distributions.school_period_id', '=', 'student_enrollments.school_period_id')
                     ->on('book_distributions.grade_level_id', '=', 'student_enrollments.grade_level_id')
                     ->where('book_distributions.academic_year_id', '=', $currentAcademicYearId)
                     ->where('book_distributions.warehouse_id', '=', $warehouseId);

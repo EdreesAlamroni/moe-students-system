@@ -18,6 +18,7 @@ use App\Http\Resources\EducationServicesOffice\GradeLevelCollection;
 use App\Http\Resources\EducationServicesOffice\SchoolCollection;
 use App\Http\Resources\EducationServicesOffice\SchoolFormResource;
 use App\Http\Resources\EducationServicesOffice\SchoolResource;
+use App\Models\AcademicYear;
 use App\Models\GradeLevel;
 use App\Models\School;
 use App\Support\ModelAbilityMap;
@@ -48,12 +49,17 @@ class SchoolController extends Controller
                 'schools.name',
                 'schools.serial_number',
                 'schools.type',
-                'schools.academic_period',
                 'schools.created_at',
                 'schools.deleted_at',
             ])
             ->forCurrentEducationServicesOffice()
-            ->withCount(['students'])
+            ->with([
+                'periods' => function ($query): void {
+                    $query
+                        ->select(['id', 'uuid', 'school_id', 'name', 'academic_period'])
+                        ->withCount(['students']);
+                },
+            ])
             ->allowedFilters(
                 AllowedFilter::exact('type'),
                 AllowedFilter::partial('name', 'schools.name'),
@@ -128,16 +134,30 @@ class SchoolController extends Controller
         $school->load([
             'monitor:id,uuid,name',
             'office:id,uuid,name',
-            'educationalStages',
-        ])->loadCount([
-            'gradeLevels',
-            'classrooms',
-            'students',
+            'periods' => function ($query): void {
+                $query
+                    ->with(['educationalStages'])
+                    ->withCount(['gradeLevels', 'classrooms', 'students'])
+                    ->orderedByAcademicPeriod();
+            },
         ]);
 
-        $gradeLevels = $school->gradeLevels()
+        $schoolPeriodIds = $school->periods->pluck('id');
+
+        $gradeLevels = GradeLevel::query()
             ->select(['grade_levels.id', 'grade_levels.name', 'grade_levels.educational_stage'])
-            ->withCount(['students'])
+            ->whereIn('grade_levels.id', function ($query) use ($schoolPeriodIds): void {
+                $query
+                    ->select('grade_level_id')
+                    ->from('grade_level_school_period')
+                    ->where('academic_year_id', '=', AcademicYear::currentId())
+                    ->whereIn('school_period_id', $schoolPeriodIds);
+            })
+            ->withCount([
+                'students' => function ($query) use ($schoolPeriodIds): void {
+                    $query->whereIn('students.school_period_id', $schoolPeriodIds);
+                },
+            ])
             ->ordered()
             ->get();
 
@@ -171,7 +191,9 @@ class SchoolController extends Controller
     {
         Gate::authorize('update', $school);
 
-        $school->update($request->getAttributes());
+        DB::transaction(function () use ($request, $school): void {
+            $school->update($request->getAttributes());
+        });
 
         flash_success('update');
 

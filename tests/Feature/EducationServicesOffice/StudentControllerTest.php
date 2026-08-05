@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\EducationServicesOffice;
 use App\Models\Nationality;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
@@ -13,9 +14,6 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, mixed>  $attributes
- */
 function createEducationServicesOfficeStudentManager(EducationServicesOffice $office, array $attributes = []): User
 {
     $user = User::factory()->create(array_merge([
@@ -68,10 +66,10 @@ test('users without permission cannot access education services office student p
         'organization_type' => EducationServicesOffice::class,
         'organization_id' => $office->id,
     ]);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($office->monitor, 'monitor')->for($office, 'office'), 'school')->create();
     $student = Student::factory()->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')
@@ -86,11 +84,11 @@ test('users without permission cannot access education services office student p
 test('student index renders school selection without querying students', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeStudentManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($office->monitor, 'monitor')->for($office, 'office'), 'school')->create();
 
     Student::factory()->count(3)->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')
@@ -98,9 +96,9 @@ test('student index renders school selection without querying students', functio
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('education-services-office/students/index')
-            ->has('schools', 1)
-            ->where('schools.0.id', $school->id)
-            ->where('school_id', null)
+            ->has('schoolPeriods', 1)
+            ->where('schoolPeriods.0.id', $schoolPeriod->id)
+            ->where('school_period_id', null)
             ->missing('students')
             ->missing('nationalities')
             ->missing('registrationStatuses')
@@ -111,21 +109,25 @@ test('student index renders school selection without querying students', functio
 test('student index only lists schools for the current education services office', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeStudentManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create([
-        'name' => 'مدرسة النور',
-    ]);
+    $schoolPeriod = SchoolPeriod::factory()->for(
+        School::factory()
+            ->for($office->monitor, 'monitor')
+            ->for($office, 'office')
+            ->state(['name' => 'مدرسة النور']),
+        'school',
+    )->create();
 
     $otherOffice = EducationServicesOffice::factory()->create();
-    School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
+    SchoolPeriod::factory()->for(School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office'), 'school')->create();
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.students.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('education-services-office/students/index')
-            ->has('schools', 1)
-            ->where('schools.0.id', $school->id)
-            ->where('schools.0.name', 'مدرسة النور')
+            ->has('schoolPeriods', 1)
+            ->where('schoolPeriods.0.id', $schoolPeriod->id)
+            ->where('schoolPeriods.0.name', sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->isMorning() ? 'فترة صباحية' : 'فترة مسائية'))
             ->missing('students')
         );
 });
@@ -133,27 +135,27 @@ test('student index only lists schools for the current education services office
 test('student index loads students only when school is selected', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeStudentManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
-    $otherSchool = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($office->monitor, 'monitor')->for($office, 'office'), 'school')->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($office->monitor, 'monitor')->for($office, 'office'), 'school')->create();
 
     $students = Student::factory()->count(2)->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.students.index', [
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('education-services-office/students/index')
-            ->where('school_id', $school->id)
+            ->where('school_period_id', $schoolPeriod->id)
             ->has('students.data', 2)
             ->where('students.total', 2)
             ->where('students.data', fn ($data) => collect($data)->pluck('uuid')->sort()->values()->all()
@@ -165,25 +167,25 @@ test('student index loads students only when school is selected', function () {
 test('student index filters students by registration status and nationality', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeStudentManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($office->monitor, 'monitor')->for($office, 'office'), 'school')->create();
     $nationality = Nationality::factory()->create();
 
     $matchingStudent = Student::factory()->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'nationality_id' => $nationality->id,
         'registration_status' => 'new',
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'registration_status' => 'repeater',
     ]);
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.students.index', [
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
             'filter' => [
                 'registration_status' => 'new',
                 'nationality_id' => $nationality->id,
@@ -200,20 +202,20 @@ test('student index ignores school that does not belong to the current education
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeStudentManager($office);
     $otherOffice = EducationServicesOffice::factory()->create();
-    $school = School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office'), 'school')->create();
 
     Student::factory()->create([
         'education_monitor_id' => $otherOffice->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.students.index', [
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->where('school_id', null)
+            ->where('school_period_id', null)
             ->missing('students')
             ->missing('nationalities')
             ->missing('registrationStatuses')
@@ -224,22 +226,22 @@ test('student index does not include students from other education services offi
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeStudentManager($office);
     $otherOffice = EducationServicesOffice::factory()->create();
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
-    $otherSchool = School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($office->monitor, 'monitor')->for($office, 'office'), 'school')->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office'), 'school')->create();
 
     $ownStudent = Student::factory()->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $otherOffice->education_monitor_id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.students.index', [
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -251,11 +253,11 @@ test('student index does not include students from other education services offi
 test('student show displays student details', function () {
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeStudentManager($office);
-    $school = School::factory()->for($office->monitor, 'monitor')->for($office, 'office')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($office->monitor, 'monitor')->for($office, 'office'), 'school')->create();
 
     $student = Student::factory()->create([
         'education_monitor_id' => $office->education_monitor_id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')
@@ -269,7 +271,7 @@ test('student show displays student details', function () {
             ->where('student.grandfather_name', $student->grandfather_name)
             ->where('student.surname', $student->surname)
             ->where('student.monitor.name', $office->monitor->name)
-            ->where('student.school.name', $school->name)
+            ->where('student.school_period.name', $schoolPeriod->name)
             ->where('student.nationality.name', $student->nationality->name)
             ->has('transfers')
         );
@@ -279,10 +281,10 @@ test('users cannot view students belonging to another education services office'
     $office = EducationServicesOffice::factory()->create();
     $user = createEducationServicesOfficeStudentManager($office);
     $otherOffice = EducationServicesOffice::factory()->create();
-    $otherSchool = School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office')->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($otherOffice->monitor, 'monitor')->for($otherOffice, 'office'), 'school')->create();
     $student = Student::factory()->create([
         'education_monitor_id' => $otherOffice->education_monitor_id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_services_office')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Warehouse\BookDistribution;
 
+use App\Models\SchoolPeriod;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,28 +23,29 @@ class IndexRequest extends FormRequest
                 'integer',
                 Rule::exists('education_monitors', 'id')->where('warehouse_id', $warehouseId),
             ],
-            'school_id' => [
+            'school_period_id' => [
                 'nullable',
                 'integer',
                 Rule::prohibitedIf(function (): bool {
                     return ! $this->filled('education_monitor_id');
                 }),
-                Rule::exists('schools', 'id')->where('education_monitor_id', $this->integer('education_monitor_id')),
+                Rule::exists(SchoolPeriod::class, 'id')
+                    ->where('education_monitor_id', $this->integer('education_monitor_id')),
             ],
         ];
     }
 
     /**
-     * @return array{education_monitor_id: int|null, school_id: int|null}
+     * @return array{education_monitor_id: int|null, school_period_id: int|null}
      */
     public function getAttributes(): array
     {
         $monitorId = $this->integer('education_monitor_id') ?: null;
-        $schoolId = $this->integer('school_id') ?: null;
+        $schoolPeriodId = $this->integer('school_period_id') ?: null;
 
         return [
             'education_monitor_id' => $monitorId,
-            'school_id' => $schoolId,
+            'school_period_id' => $schoolPeriodId,
         ];
     }
 }

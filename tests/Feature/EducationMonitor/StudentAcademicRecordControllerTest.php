@@ -7,6 +7,7 @@ use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -15,13 +16,10 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @return array{monitor: EducationMonitor, school: School, user: User}
- */
 function createEducationMonitorAcademicRecordContext(): array
 {
     $monitor = EducationMonitor::factory()->create();
-    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
 
     $user = User::factory()->create([
         'scope' => UserScope::EDUCATION_MONITOR,
@@ -39,7 +37,7 @@ function createEducationMonitorAcademicRecordContext(): array
         'student:view-academic-record',
     ]);
 
-    return compact('monitor', 'school', 'user');
+    return compact('monitor', 'schoolPeriod', 'user');
 }
 
 beforeEach(function () {
@@ -63,7 +61,7 @@ test('guests cannot view education monitor academic records', function () {
 });
 
 test('users without permission cannot view education monitor academic records', function () {
-    ['monitor' => $monitor, 'school' => $school] = createEducationMonitorAcademicRecordContext();
+    ['monitor' => $monitor, 'schoolPeriod' => $schoolPeriod] = createEducationMonitorAcademicRecordContext();
 
     $user = User::factory()->create([
         'scope' => UserScope::EDUCATION_MONITOR,
@@ -74,7 +72,7 @@ test('users without permission cannot view education monitor academic records', 
 
     $student = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')
@@ -83,7 +81,7 @@ test('users without permission cannot view education monitor academic records', 
 });
 
 test('authorized users can view education monitor academic records', function () {
-    ['monitor' => $monitor, 'school' => $school, 'user' => $user] = createEducationMonitorAcademicRecordContext();
+    ['monitor' => $monitor, 'schoolPeriod' => $schoolPeriod, 'user' => $user] = createEducationMonitorAcademicRecordContext();
 
     foreach ([GradeLevelEnum::GRADE_1, GradeLevelEnum::GRADE_2, GradeLevelEnum::GRADE_3] as $gradeLevelEnum) {
         GradeLevel::query()->firstOrCreate(
@@ -100,12 +98,12 @@ test('authorized users can view education monitor academic records', function ()
 
     $student = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
         'academic_year_id' => AcademicYear::currentId(),
@@ -125,11 +123,11 @@ test('authorized users can view education monitor academic records', function ()
 test('users cannot view academic records for students outside their education monitor', function () {
     ['user' => $user] = createEducationMonitorAcademicRecordContext();
     $otherMonitor = EducationMonitor::factory()->create();
-    $otherSchool = School::factory()->for($otherMonitor, 'monitor')->create();
+    $otherSchoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($otherMonitor, 'monitor'), 'school')->create();
 
     $student = Student::factory()->create([
         'education_monitor_id' => $otherMonitor->id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
     ]);
 
     $this->actingAs($user, 'education_monitor')

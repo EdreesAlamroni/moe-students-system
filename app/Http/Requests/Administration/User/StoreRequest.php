@@ -6,7 +6,7 @@ use App\Enums\UserRole;
 use App\Enums\UserScope;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\ModelStates\User\RequestState\Approved;
@@ -44,9 +44,9 @@ class StoreRequest extends FormRequest
                 Rule::exists(EducationServicesOffice::class, 'id')
                     ->where('education_monitor_id', $this->input('education_monitor_id')),
             ]),
-            'school_id' => Rule::when($scopeIsSchool, [
+            'school_period_id' => Rule::when($scopeIsSchool, [
                 'required',
-                Rule::exists(School::class, 'id')
+                Rule::exists(SchoolPeriod::class, 'id')
                     ->where('education_monitor_id', $this->input('education_monitor_id')),
             ]),
             'name' => [
@@ -111,7 +111,7 @@ class StoreRequest extends FormRequest
             'warehouse_id',
             'education_monitor_id',
             'education_services_office_id',
-            'school_id',
+            'school_period_id',
             'roles',
             'password_confirmation',
         ]);
@@ -134,8 +134,8 @@ class StoreRequest extends FormRequest
                 EducationServicesOffice::class,
             ],
             UserScope::SCHOOL => [
-                $validated['school_id'] ?? null,
-                School::class,
+                $validated['school_period_id'] ?? null,
+                SchoolPeriod::class,
             ],
         };
 

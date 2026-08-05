@@ -28,7 +28,7 @@ import { create, index, show } from "@/routes/education-services-office/schools"
 type SchoolProps = School & {
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 type PageProps = {
     schools: Paginated<SchoolProps>;
@@ -39,7 +39,7 @@ type PageProps = {
     };
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 export default function Index({ schools, types, filter, canAny, can }: PageProps) {
     const { data, links, ...meta } = schools;
@@ -72,6 +72,7 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                 <section>
                     <Form
                         {...index.form()}
+                        disableWhileProcessing
                     >
                         <Card>
                             <CardHeader className="border-b">
@@ -172,7 +173,9 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                                                         {`مدرسة ${school.type.name}`}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{school.academic_period.name}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={school.academic_period_label} />
+                                                </TableCell>
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue className="font-mono" value={school.students_count} fallback={0} />
                                                 </TableCell>
@@ -211,7 +214,7 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                 </section>
             </MainContainer>
         </>
-    )
+    );
 }
 
 Index.layout = () => ({

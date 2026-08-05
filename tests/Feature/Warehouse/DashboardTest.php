@@ -8,6 +8,7 @@ use App\Models\BookDistributionItem;
 use App\Models\EducationMonitor;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -24,6 +25,13 @@ function createWarehouseDashboardUser(Warehouse $warehouse): User
         'organization_type' => Warehouse::class,
         'organization_id' => $warehouse->id,
     ]);
+}
+
+function createWarehouseDashboardSchoolPeriod(array $attributes): SchoolPeriod
+{
+    $school = School::factory()->create($attributes);
+
+    return SchoolPeriod::factory()->for($school)->create();
 }
 
 beforeEach(function () {
@@ -70,26 +78,26 @@ test('the summary reports warehouse-scoped aggregate counts for the current acad
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
     $otherMonitor = EducationMonitor::factory()->for($otherWarehouse, 'warehouse')->create();
 
-    $school = School::factory()->create(['education_monitor_id' => $monitor->id]);
-    $otherSchool = School::factory()->create(['education_monitor_id' => $otherMonitor->id]);
+    $schoolPeriod = createWarehouseDashboardSchoolPeriod(['education_monitor_id' => $monitor->id]);
+    $otherSchoolPeriod = createWarehouseDashboardSchoolPeriod(['education_monitor_id' => $otherMonitor->id]);
 
     $gradeLevel = GradeLevel::factory()->create();
     $otherGradeLevel = GradeLevel::factory()->create();
 
     $students = Student::factory()->count(3)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
     ]);
 
     Student::factory()->create([
         'education_monitor_id' => $otherMonitor->id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
     ]);
 
     foreach ($students as $student) {
         StudentEnrollment::factory()->create([
             'student_id' => $student->id,
-            'school_id' => $school->id,
+            'school_period_id' => $schoolPeriod->id,
             'grade_level_id' => $gradeLevel->id,
         ]);
     }
@@ -97,26 +105,26 @@ test('the summary reports warehouse-scoped aggregate counts for the current acad
     $distribution = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     BookDistribution::factory()->create([
         'warehouse_id' => $otherWarehouse->id,
         'education_monitor_id' => $otherMonitor->id,
-        'school_id' => $otherSchool->id,
+        'school_period_id' => $otherSchoolPeriod->id,
         'grade_level_id' => $otherGradeLevel->id,
     ]);
 
     BookDistributionItem::factory()->create([
         'book_distribution_id' => $distribution->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'student_id' => $students[0]->id,
     ]);
 
     BookDistributionItem::factory()->create([
         'book_distribution_id' => $distribution->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'student_id' => $students[1]->id,
     ]);
 
@@ -141,53 +149,53 @@ test('the education monitor distribution reports student and progress counts per
     $largest = EducationMonitor::factory()->for($warehouse, 'warehouse')->create(['name' => 'مراقبة كبرى']);
     $smallest = EducationMonitor::factory()->for($warehouse, 'warehouse')->create(['name' => 'مراقبة صغرى']);
 
-    $largeSchool = School::factory()->create(['education_monitor_id' => $largest->id]);
-    School::factory()->create(['education_monitor_id' => $largest->id]);
-    $smallSchool = School::factory()->create(['education_monitor_id' => $smallest->id]);
+    $largeSchoolPeriod = createWarehouseDashboardSchoolPeriod(['education_monitor_id' => $largest->id]);
+    createWarehouseDashboardSchoolPeriod(['education_monitor_id' => $largest->id]);
+    $smallSchoolPeriod = createWarehouseDashboardSchoolPeriod(['education_monitor_id' => $smallest->id]);
 
     $gradeLevel = GradeLevel::factory()->create();
 
     $largeStudents = Student::factory()->count(2)->create([
         'education_monitor_id' => $largest->id,
-        'school_id' => $largeSchool->id,
+        'school_period_id' => $largeSchoolPeriod->id,
     ]);
 
     $smallStudent = Student::factory()->create([
         'education_monitor_id' => $smallest->id,
-        'school_id' => $smallSchool->id,
+        'school_period_id' => $smallSchoolPeriod->id,
     ]);
 
     foreach ($largeStudents as $student) {
         StudentEnrollment::factory()->create([
             'student_id' => $student->id,
-            'school_id' => $largeSchool->id,
+            'school_period_id' => $largeSchoolPeriod->id,
             'grade_level_id' => $gradeLevel->id,
         ]);
     }
 
     StudentEnrollment::factory()->create([
         'student_id' => $smallStudent->id,
-        'school_id' => $smallSchool->id,
+        'school_period_id' => $smallSchoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     $largeDistribution = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
         'education_monitor_id' => $largest->id,
-        'school_id' => $largeSchool->id,
+        'school_period_id' => $largeSchoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
         'education_monitor_id' => $smallest->id,
-        'school_id' => $smallSchool->id,
+        'school_period_id' => $smallSchoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     BookDistributionItem::factory()->create([
         'book_distribution_id' => $largeDistribution->id,
-        'school_id' => $largeSchool->id,
+        'school_period_id' => $largeSchoolPeriod->id,
         'student_id' => $largeStudents[0]->id,
     ]);
 
@@ -218,11 +226,11 @@ test('the school distribution reports student and progress counts for the larges
     $user = createWarehouseDashboardUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
 
-    $largest = School::factory()->create([
+    $largest = createWarehouseDashboardSchoolPeriod([
         'education_monitor_id' => $monitor->id,
         'name' => 'المدرسة الكبرى',
     ]);
-    $smallest = School::factory()->create([
+    $smallest = createWarehouseDashboardSchoolPeriod([
         'education_monitor_id' => $monitor->id,
         'name' => 'المدرسة الصغرى',
     ]);
@@ -231,38 +239,38 @@ test('the school distribution reports student and progress counts for the larges
 
     $largeStudents = Student::factory()->count(2)->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $largest->id,
+        'school_period_id' => $largest->id,
     ]);
 
     $smallStudent = Student::factory()->create([
         'education_monitor_id' => $monitor->id,
-        'school_id' => $smallest->id,
+        'school_period_id' => $smallest->id,
     ]);
 
     foreach ($largeStudents as $student) {
         StudentEnrollment::factory()->create([
             'student_id' => $student->id,
-            'school_id' => $largest->id,
+            'school_period_id' => $largest->id,
             'grade_level_id' => $gradeLevel->id,
         ]);
     }
 
     StudentEnrollment::factory()->create([
         'student_id' => $smallStudent->id,
-        'school_id' => $smallest->id,
+        'school_period_id' => $smallest->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     $distribution = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $largest->id,
+        'school_period_id' => $largest->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     BookDistributionItem::factory()->create([
         'book_distribution_id' => $distribution->id,
-        'school_id' => $largest->id,
+        'school_period_id' => $largest->id,
         'student_id' => $largeStudents[0]->id,
     ]);
 
@@ -284,69 +292,11 @@ test('the school distribution reports student and progress counts for the larges
                 ->where('schoolDistribution.1.students_pending', 0)));
 });
 
-test('the academic year trends report warehouse distribution activity per year', function () {
-    $warehouse = Warehouse::factory()->create();
-    $user = createWarehouseDashboardUser($warehouse);
-    $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
-    $school = School::factory()->create(['education_monitor_id' => $monitor->id]);
-    $gradeLevel = GradeLevel::factory()->create();
-
-    $previousYear = AcademicYear::query()->create([
-        'name' => '2023-2024',
-        'start_date' => now()->subYear()->startOfYear(),
-        'end_date' => now()->subYear()->endOfYear(),
-        'is_active' => false,
-    ]);
-
-    $student = Student::factory()->create([
-        'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
-    ]);
-
-    $currentDistribution = BookDistribution::factory()->create([
-        'warehouse_id' => $warehouse->id,
-        'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
-        'grade_level_id' => $gradeLevel->id,
-        'academic_year_id' => AcademicYear::currentId(),
-    ]);
-
-    BookDistributionItem::factory()->create([
-        'book_distribution_id' => $currentDistribution->id,
-        'school_id' => $school->id,
-        'student_id' => $student->id,
-        'academic_year_id' => AcademicYear::currentId(),
-    ]);
-
-    BookDistribution::factory()->create([
-        'warehouse_id' => $warehouse->id,
-        'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
-        'grade_level_id' => $gradeLevel->id,
-        'academic_year_id' => $previousYear->id,
-    ]);
-
-    $this->actingAs($user, 'warehouse')
-        ->get(route('warehouse.dashboard'))
-        ->assertInertia(fn (Assert $page) => $page
-            ->component('warehouse/dashboard')
-            ->loadDeferredProps('trends', fn (Assert $page) => $page
-                ->count('academicYearTrends', 2)
-                ->where('academicYearTrends.0.name', '2024-2025')
-                ->where('academicYearTrends.0.book_distributions', 1)
-                ->where('academicYearTrends.0.students_received', 1)
-                ->where('academicYearTrends.0.is_current', true)
-                ->where('academicYearTrends.1.name', '2023-2024')
-                ->where('academicYearTrends.1.book_distributions', 1)
-                ->where('academicYearTrends.1.students_received', 0)
-                ->where('academicYearTrends.1.is_current', false)));
-})->skip();
-
 test('the recent activities list the latest warehouse book distributions', function () {
     $warehouse = Warehouse::factory()->create();
     $user = createWarehouseDashboardUser($warehouse);
     $monitor = EducationMonitor::factory()->for($warehouse, 'warehouse')->create();
-    $school = School::factory()->create([
+    $schoolPeriod = createWarehouseDashboardSchoolPeriod([
         'education_monitor_id' => $monitor->id,
         'name' => 'مدرسة النشاط',
     ]);
@@ -356,7 +306,7 @@ test('the recent activities list the latest warehouse book distributions', funct
     $older = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $firstGrade->id,
         'distributed_at' => now()->subDay(),
     ]);
@@ -364,7 +314,7 @@ test('the recent activities list the latest warehouse book distributions', funct
     $newer = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
         'education_monitor_id' => $monitor->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $secondGrade->id,
         'distributed_at' => now(),
     ]);
@@ -376,7 +326,7 @@ test('the recent activities list the latest warehouse book distributions', funct
             ->loadDeferredProps('recent', fn (Assert $page) => $page
                 ->count('recentActivities', 2)
                 ->where('recentActivities.0.id', $newer->id)
-                ->where('recentActivities.0.school', $school->name)
+                ->where('recentActivities.0.school', $schoolPeriod->name)
                 ->where('recentActivities.0.grade_level', $secondGrade->name)
                 ->where('recentActivities.0.monitor', $monitor->name)
                 ->where('recentActivities.1.id', $older->id)));

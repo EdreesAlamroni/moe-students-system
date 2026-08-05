@@ -9,7 +9,9 @@ use App\Models\Classroom;
 use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -52,7 +54,7 @@ class DashboardController extends Controller
             ->selectRaw('SUM(CASE WHEN gender = ? THEN 1 ELSE 0 END) AS males', [Gender::MALE->value])
             ->selectRaw('SUM(CASE WHEN gender = ? THEN 1 ELSE 0 END) AS females', [Gender::FEMALE->value])
             ->selectRaw('COUNT(DISTINCT nationality_id) AS nationalities')
-            ->selectRaw('SUM(CASE WHEN school_id IS NULL THEN 1 ELSE 0 END) AS unassigned_to_school')
+            ->selectRaw('SUM(CASE WHEN school_period_id IS NULL THEN 1 ELSE 0 END) AS unassigned_to_school')
             ->first();
 
         return [
@@ -65,7 +67,9 @@ class DashboardController extends Controller
             'grade_levels' => GradeLevel::query()->forCurrentEducationMonitor()->count(),
             'classrooms' => Classroom::query()
                 ->forCurrentAcademicYear()
-                ->whereIn('school_id', School::query()->forCurrentEducationMonitor()->select('id'))
+                ->whereIn('school_period_id', SchoolPeriod::query()
+                    ->where('education_monitor_id', '=', auth('education_monitor')->user()?->organization_id)
+                    ->select('id'))
                 ->count(),
             'students_unassigned_to_school' => (int) $students->unassigned_to_school,
         ];
@@ -81,17 +85,17 @@ class DashboardController extends Controller
 
         $students = Student::query()
             ->toBase()
-            ->join('schools', 'schools.id', '=', 'students.school_id')
+            ->join('school_periods', 'school_periods.id', '=', 'students.school_period_id')
             ->where('students.education_monitor_id', '=', $monitorId)
-            ->whereNotNull('students.school_id')
-            ->whereNotNull('schools.education_services_office_id')
+            ->whereNotNull('students.school_period_id')
+            ->whereNotNull('school_periods.education_services_office_id')
             ->whereNull('students.deleted_at')
-            ->whereNull('schools.deleted_at')
-            ->select('schools.education_services_office_id')
+            ->whereNull('school_periods.deleted_at')
+            ->select('school_periods.education_services_office_id')
             ->selectRaw('SUM(CASE WHEN students.gender = ? THEN 1 ELSE 0 END) AS males', [Gender::MALE->value])
             ->selectRaw('SUM(CASE WHEN students.gender = ? THEN 1 ELSE 0 END) AS females', [Gender::FEMALE->value])
             ->selectRaw('COUNT(*) AS students')
-            ->groupBy('schools.education_services_office_id')
+            ->groupBy('school_periods.education_services_office_id')
             ->get()
             ->keyBy('education_services_office_id');
 
@@ -126,21 +130,21 @@ class DashboardController extends Controller
          */
         $SCHOOL_SEGMENTS = 10;
 
-        return School::query()
+        return SchoolPeriod::query()
             ->select(['id', 'name', 'education_services_office_id'])
-            ->forCurrentEducationMonitor()
+            ->where('education_monitor_id', '=', auth('education_monitor')->user()?->organization_id)
             ->with(['office:id,name'])
             ->withCount(['students', 'classrooms'])
             ->orderByDesc('students_count')
-            ->ordered()
+            ->orderBy('name')
             ->take($SCHOOL_SEGMENTS)
             ->get()
-            ->map(fn (School $school): array => [
-                'name' => $school->name,
-                'students' => (int) $school->students_count,
-                'classrooms' => (int) $school->classrooms_count,
-                'office' => $school->office
-                    ? ['name' => $school->office->name]
+            ->map(fn (SchoolPeriod $schoolPeriod): array => [
+                'name' => $schoolPeriod->name,
+                'students' => (int) $schoolPeriod->students_count,
+                'classrooms' => (int) $schoolPeriod->classrooms_count,
+                'office' => $schoolPeriod->office
+                    ? ['name' => $schoolPeriod->office->name]
                     : null,
             ]);
     }
@@ -186,10 +190,12 @@ class DashboardController extends Controller
 
         $students = Student::query()
             ->toBase()
-            ->join('schools', 'schools.id', '=', 'students.school_id')
+            ->join('school_periods', 'school_periods.id', '=', 'students.school_period_id')
+            ->join('schools', 'schools.id', '=', 'school_periods.school_id')
             ->where('students.education_monitor_id', '=', $monitorId)
-            ->whereNotNull('students.school_id')
+            ->whereNotNull('students.school_period_id')
             ->whereNull('students.deleted_at')
+            ->whereNull('school_periods.deleted_at')
             ->whereNull('schools.deleted_at')
             ->selectRaw('SUM(CASE WHEN schools.type = ? THEN 1 ELSE 0 END) AS public_students', [SchoolType::PUBLIC->value])
             ->selectRaw('SUM(CASE WHEN schools.type = ? THEN 1 ELSE 0 END) AS private_students', [SchoolType::PRIVATE->value])
@@ -213,21 +219,23 @@ class DashboardController extends Controller
      */
     private function largestSchoolOfType(SchoolType $type): ?array
     {
-        $school = School::query()
+        $schoolPeriod = SchoolPeriod::query()
             ->select(['id', 'name'])
-            ->forCurrentEducationMonitor()
-            ->where('type', '=', $type)
+            ->where('education_monitor_id', '=', auth('education_monitor')->user()?->organization_id)
+            ->whereHas('school', function (Builder $query) use ($type): void {
+                $query->where('type', '=', $type);
+            })
             ->withCount('students')
             ->orderByDesc('students_count')
             ->first();
 
-        if (is_null($school) || (int) $school->students_count === 0) {
+        if (is_null($schoolPeriod) || (int) $schoolPeriod->students_count === 0) {
             return null;
         }
 
         return [
-            'name' => $school->name,
-            'students' => (int) $school->students_count,
+            'name' => $schoolPeriod->name,
+            'students' => (int) $schoolPeriod->students_count,
         ];
     }
 

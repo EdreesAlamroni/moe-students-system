@@ -27,7 +27,7 @@ class ClassScheduleController extends Controller
     {
         Gate::authorize('view', [ClassSchedule::class, $classroom]);
 
-        $classroom->load(['school', 'gradeLevel']);
+        $classroom->load(['schoolPeriod', 'gradeLevel']);
 
         $classroomName = sprintf(
             '%s / %s',
@@ -79,7 +79,7 @@ class ClassScheduleController extends Controller
     {
         Gate::authorize('print', [ClassSchedule::class, $classroom]);
 
-        $classroom->load(['gradeLevel', 'school']);
+        $classroom->load(['gradeLevel', 'schoolPeriod']);
 
         $scheduleGrid = $this->getScheduleGrid($request, $classroom);
 
@@ -107,7 +107,7 @@ class ClassScheduleController extends Controller
                 'is_break',
             ])
             ->forCurrentAcademicYear()
-            ->forAcademicPeriod($classroom->school->academic_period)
+            ->forAcademicPeriod($classroom->schoolPeriod->academic_period)
             ->ordered()
             ->get();
 

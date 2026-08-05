@@ -7,7 +7,7 @@ use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\ClassroomDistributionCompletion;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -16,28 +16,24 @@ use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<int, string>  $permissions
- * @return array{school: School, gradeLevel: GradeLevel, user: User}
- */
 function createClassroomDistributionMethodContext(array $permissions = [
     'classroom-distribution:view',
     'classroom-distribution:distribute',
     'classroom-distribution:finalize',
 ]): array
 {
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
     $gradeLevel = GradeLevel::factory()->create();
 
-    $school->allGradeLevels()->attach($gradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($gradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
     $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'role' => UserRole::MANAGER,
-        'organization_type' => School::class,
-        'organization_id' => $school->id,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
     ]);
 
     foreach ($permissions as $permission) {
@@ -46,19 +42,19 @@ function createClassroomDistributionMethodContext(array $permissions = [
 
     $user->givePermissionTo($permissions);
 
-    return compact('school', 'gradeLevel', 'user');
+    return compact('schoolPeriod', 'gradeLevel', 'user');
 }
 
 function enrollStudentWithoutClassroomForMethodTest(
-    School $school,
+    SchoolPeriod $schoolPeriod,
     GradeLevel $gradeLevel,
     ?Student $student = null,
 ): Student {
-    $student ??= Student::factory()->for($school)->create();
+    $student ??= Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => AcademicYear::currentId(),
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
         'student_id' => $student->id,
@@ -67,10 +63,10 @@ function enrollStudentWithoutClassroomForMethodTest(
     return $student;
 }
 
-function createMethodTestClassroom(School $school, GradeLevel $gradeLevel, array $attributes = []): Classroom
+function createMethodTestClassroom(SchoolPeriod $schoolPeriod, GradeLevel $gradeLevel, array $attributes = []): Classroom
 {
     return Classroom::factory()->create(array_merge([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'academic_year_id' => AcademicYear::currentId(),
     ], $attributes));
@@ -95,12 +91,12 @@ test('guests are redirected from the manual distribution page', function () {
 });
 
 test('users without distribute permission cannot access distribution methods', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext([
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext([
         'classroom-distribution:view',
     ]);
 
-    $student = enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    $classroom = createMethodTestClassroom($school, $gradeLevel);
+    $student = enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    $classroom = createMethodTestClassroom($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.create', ['method' => 'manual']))
@@ -116,10 +112,10 @@ test('users without distribute permission cannot access distribution methods', f
 });
 
 test('authorized users can visit the manual distribution page', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    createMethodTestClassroom($school, $gradeLevel);
+    enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    createMethodTestClassroom($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.create', ['method' => 'manual']))
@@ -134,10 +130,10 @@ test('authorized users can visit the manual distribution page', function () {
 });
 
 test('authorized users can visit the random distribution page', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    createMethodTestClassroom($school, $gradeLevel);
+    enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    createMethodTestClassroom($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.create', ['method' => 'random']))
@@ -151,10 +147,10 @@ test('authorized users can visit the random distribution page', function () {
 });
 
 test('selecting a grade level loads classrooms and unassigned students on the manual page', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    $student = enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    $classroom = createMethodTestClassroom($school, $gradeLevel, ['name' => '1-A']);
+    $student = enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    $classroom = createMethodTestClassroom($schoolPeriod, $gradeLevel, ['name' => '1-A']);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.create', [
@@ -172,11 +168,11 @@ test('selecting a grade level loads classrooms and unassigned students on the ma
 });
 
 test('selecting a grade level loads classrooms and pending count on the random page', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    createMethodTestClassroom($school, $gradeLevel);
+    enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    createMethodTestClassroom($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->get(route('school.classroom-distribution.create', [
@@ -192,12 +188,12 @@ test('selecting a grade level loads classrooms and pending count on the random p
 });
 
 test('distribution method pages redirect when distribution is already finalized', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
+    enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
 
     ClassroomDistributionCompletion::query()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => AcademicYear::currentId(),
         'completed_at' => now(),
     ]);
@@ -218,10 +214,10 @@ test('distribution method pages redirect when there are no enrollments', functio
 });
 
 test('school users can manually assign students to a classroom', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    $student = enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    $classroom = createMethodTestClassroom($school, $gradeLevel);
+    $student = enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    $classroom = createMethodTestClassroom($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->post(route('school.classroom-distribution.store', ['method' => 'manual']), [
@@ -247,15 +243,15 @@ test('manual distribution validates required fields', function () {
 });
 
 test('manual distribution rejects students who already have a classroom', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    $classroom = createMethodTestClassroom($school, $gradeLevel);
-    $otherClassroom = createMethodTestClassroom($school, $gradeLevel, ['name' => 'B']);
-    $student = Student::factory()->for($school)->create();
+    $classroom = createMethodTestClassroom($schoolPeriod, $gradeLevel);
+    $otherClassroom = createMethodTestClassroom($schoolPeriod, $gradeLevel, ['name' => 'B']);
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => AcademicYear::currentId(),
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroom->id,
         'student_id' => $student->id,
@@ -271,15 +267,15 @@ test('manual distribution rejects students who already have a classroom', functi
 });
 
 test('manual distribution rejects classrooms from another grade level', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
     $otherGradeLevel = GradeLevel::factory()->create();
-    $school->allGradeLevels()->attach($otherGradeLevel->id, [
+    $schoolPeriod->allGradeLevels()->attach($otherGradeLevel->id, [
         'academic_year_id' => AcademicYear::currentId(),
     ]);
 
-    $student = enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    $foreignClassroom = createMethodTestClassroom($school, $otherGradeLevel);
+    $student = enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    $foreignClassroom = createMethodTestClassroom($schoolPeriod, $otherGradeLevel);
 
     $this->actingAs($user, 'school')
         ->post(route('school.classroom-distribution.store', ['method' => 'manual']), [
@@ -291,13 +287,13 @@ test('manual distribution rejects classrooms from another grade level', function
 });
 
 test('school users can randomly assign unassigned students to selected classrooms', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    $firstStudent = enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    $secondStudent = enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
+    $firstStudent = enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    $secondStudent = enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
 
-    $classroomA = createMethodTestClassroom($school, $gradeLevel, ['name' => 'A', 'capacity' => 30]);
-    $classroomB = createMethodTestClassroom($school, $gradeLevel, ['name' => 'B', 'capacity' => 30]);
+    $classroomA = createMethodTestClassroom($schoolPeriod, $gradeLevel, ['name' => 'A', 'capacity' => 30]);
+    $classroomB = createMethodTestClassroom($schoolPeriod, $gradeLevel, ['name' => 'B', 'capacity' => 30]);
 
     $this->actingAs($user, 'school')
         ->post(route('school.classroom-distribution.store', ['method' => 'random']), [
@@ -325,14 +321,14 @@ test('random distribution validates required fields', function () {
 });
 
 test('random distribution fails when no students are waiting for assignment', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    $classroom = createMethodTestClassroom($school, $gradeLevel);
-    $student = Student::factory()->for($school)->create();
+    $classroom = createMethodTestClassroom($schoolPeriod, $gradeLevel);
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'academic_year_id' => AcademicYear::currentId(),
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => $classroom->id,
         'student_id' => $student->id,
@@ -347,13 +343,13 @@ test('random distribution fails when no students are waiting for assignment', fu
 });
 
 test('distribution store redirects when distribution is already finalized', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    $student = enrollStudentWithoutClassroomForMethodTest($school, $gradeLevel);
-    $classroom = createMethodTestClassroom($school, $gradeLevel);
+    $student = enrollStudentWithoutClassroomForMethodTest($schoolPeriod, $gradeLevel);
+    $classroom = createMethodTestClassroom($schoolPeriod, $gradeLevel);
 
     ClassroomDistributionCompletion::query()->create([
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'academic_year_id' => AcademicYear::currentId(),
         'completed_at' => now(),
     ]);
@@ -373,9 +369,9 @@ test('distribution store redirects when distribution is already finalized', func
 });
 
 test('distribution store redirects when enrollment guards fail', function () {
-    ['school' => $school, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createClassroomDistributionMethodContext();
 
-    $classroom = createMethodTestClassroom($school, $gradeLevel);
+    $classroom = createMethodTestClassroom($schoolPeriod, $gradeLevel);
 
     $this->actingAs($user, 'school')
         ->post(route('school.classroom-distribution.store', ['method' => 'random']), [

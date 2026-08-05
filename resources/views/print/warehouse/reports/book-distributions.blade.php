@@ -3,7 +3,7 @@
         <x-print.report-table
             :title="__('تقرير إحصائيات توزيع الكُتب المدرسية')"
             :colspan="5"
-            :organization-lines="array_filter([$school->monitor?->name, $school->name])"
+            :organization-lines="array_filter([$schoolPeriod->monitor?->name, $schoolPeriod->name])"
         >
             <x-slot:headerRight>
                 <span>{{ __('عدد الصفوف الدراسية') }}:</span>

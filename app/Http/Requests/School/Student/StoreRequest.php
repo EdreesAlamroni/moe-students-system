@@ -5,9 +5,9 @@ namespace App\Http\Requests\School\Student;
 use App\Enums\StudentRegistrationStatus;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\GradeLevelSchool;
+use App\Models\GradeLevelSchoolPeriod;
 use App\Models\Nationality;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Rules\NationalIdRule;
 use Carbon\Carbon;
@@ -30,9 +30,9 @@ class StoreRequest extends FormRequest
             'grade_level_id' => [
                 'required',
                 Rule::exists(GradeLevel::class, 'id'),
-                Rule::exists(GradeLevelSchool::class, 'grade_level_id')
+                Rule::exists(GradeLevelSchoolPeriod::class, 'grade_level_id')
                     ->where('academic_year_id', AcademicYear::currentId())
-                    ->where('school_id', auth('school')->user()->organization_id),
+                    ->where('school_period_id', auth('school')->user()->organization_id),
             ],
             'nationality_id' => [
                 'required',
@@ -128,14 +128,14 @@ class StoreRequest extends FormRequest
 
     public function getAttributes(): array
     {
-        /** @var School $school */
-        $school = auth('school')->user()->organization;
+        /** @var SchoolPeriod $schoolPeriod */
+        $schoolPeriod = auth('school')->user()->organization;
 
         $data = collect($this->validated());
 
         $filteredData = $data->merge([
-            'education_monitor_id' => $school->education_monitor_id,
-            'school_id' => $school->id,
+            'education_monitor_id' => $schoolPeriod->education_monitor_id,
+            'school_period_id' => $schoolPeriod->id,
             'first_name' => $data->get('student_first_name'),
             'father_name' => $data->get('student_father_name'),
             'grandfather_name' => $data->get('student_grandfather_name'),

@@ -33,7 +33,7 @@ type PageProps = {
     };
     canAny: boolean;
     can: CanPermissions;
-}
+};
 
 export default function Index({ schools, types, filter, canAny, can }: PageProps) {
     const { data, links, ...meta } = schools;
@@ -72,6 +72,7 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                 <section>
                     <Form
                         {...index.form()}
+                        disableWhileProcessing
                     >
                         <Card>
                             <CardHeader className="border-b">
@@ -172,7 +173,9 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                                                         {`مدرسة ${school.type.name}`}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{school.academic_period.name}</TableCell>
+                                                <TableCell>
+                                                    <TableCellNullableValue value={school.academic_period_label} />
+                                                </TableCell>
                                                 <TableCell>
                                                     <TableCellNullableValue value={school.office?.name} />
                                                 </TableCell>
@@ -201,7 +204,7 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                 </section>
             </MainContainer>
         </>
-    )
+    );
 }
 
 Index.layout = () => ({

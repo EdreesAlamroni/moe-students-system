@@ -2,12 +2,12 @@
 
 namespace App\Actions\School;
 
-use App\Models\School;
+use App\Models\SchoolPeriod;
 
 class CreateEducationalStages
 {
-    public function execute(School $school, array $stages): void
+    public function execute(SchoolPeriod $schoolPeriod, array $stages): void
     {
-        $school->educationalStages()->createMany($stages);
+        $schoolPeriod->educationalStages()->createMany($stages);
     }
 }

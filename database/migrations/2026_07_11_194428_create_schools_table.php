@@ -22,8 +22,6 @@ return new class extends Migration
             $table->string('branch_type')->nullable();
             $table->string('building_type')->nullable();
             $table->string('name')->index();
-            $table->string('academic_period')->index();
-            $table->string('students_gender')->index();
             $table->timestamps();
             $table->softDeletes();
         });

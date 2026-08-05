@@ -4,7 +4,7 @@ use App\Enums\GradeLevelEnum;
 use App\Enums\UserScope;
 use App\Models\AcademicYear;
 use App\Models\GradeLevel;
-use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\User;
@@ -60,7 +60,7 @@ test('users without permission cannot view administration academic records', fun
 
 test('authorized users can view administration academic records', function () {
     $user = createAdministrationAcademicRecordUser();
-    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->create();
 
     foreach ([GradeLevelEnum::GRADE_1, GradeLevelEnum::GRADE_2, GradeLevelEnum::GRADE_3] as $gradeLevelEnum) {
         GradeLevel::query()->firstOrCreate(
@@ -74,11 +74,11 @@ test('authorized users can view administration academic records', function () {
     }
 
     $gradeLevel = GradeLevel::query()->where('code', GradeLevelEnum::GRADE_3->value)->firstOrFail();
-    $student = Student::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
 
     StudentEnrollment::factory()->create([
         'student_id' => $student->id,
-        'school_id' => $school->id,
+        'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'classroom_id' => null,
         'academic_year_id' => AcademicYear::currentId(),
