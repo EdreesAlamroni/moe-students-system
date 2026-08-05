@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
@@ -6,7 +6,7 @@ import { usernameInputConstraints } from "@/lib/input-constraints";
 
 import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
 
-import type { EducationMonitor, EducationServicesOffice, Enum, SchoolPeriod, Warehouse } from "@/types";
+import type { EducationMonitor, Enum, Warehouse } from "@/types";
 import type { RoleGroup } from "@/types/auth";
 
 import MainContainer from "@/components/ui/structure/main-container";
@@ -35,21 +35,11 @@ import { ReplyIcon } from "lucide-react";
 
 import { index, create, store } from "@/routes/administration/users";
 
-type OrganizationOption = Pick<Warehouse | EducationMonitor | EducationServicesOffice | SchoolPeriod, "id" | "name">;
-
-type MonitorWithOffices = Pick<EducationMonitor, "id" | "name"> & {
-    offices: OrganizationOption[];
-};
-
-type MonitorWithSchools = Pick<EducationMonitor, "id" | "name"> & {
-    schools: OrganizationOption[];
-};
-
 type PageProps = {
     scope: Enum;
     creationLabel: string;
-    warehouses: OrganizationOption[];
-    monitors: OrganizationOption[] | MonitorWithOffices[] | MonitorWithSchools[];
+    warehouses: Warehouse[];
+    monitors: EducationMonitor[];
     groupedRoles: RoleGroup[];
 };
 
@@ -66,10 +56,10 @@ export default function Create({
     const isSchool = scope.id === "school";
     const needsMonitor = isEducationMonitor || isEducationServicesOffice || isSchool;
 
-    const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>();
-    const [selectedMonitorId, setSelectedMonitorId] = useState<string>();
-    const [selectedOfficeId, setSelectedOfficeId] = useState<string>();
-    const [selectedSchoolPeriodId, setSelectedSchoolPeriodId] = useState<string>();
+    const [selectedWarehouseId, setSelectedWarehouseId] = React.useState("");
+    const [selectedMonitorId, setSelectedMonitorId] = React.useState("");
+    const [selectedOfficeId, setSelectedOfficeId] = React.useState("");
+    const [selectedSchoolPeriodId, setSelectedSchoolPeriodId] = React.useState("");
 
     const {
         selectedRoles,
@@ -82,34 +72,34 @@ export default function Create({
         toggleGroupRoles,
     } = useGroupedRolesSelection(groupedRoles);
 
-    const availableOffices = useMemo(() => {
+    const availableOffices = React.useMemo(() => {
         if (!isEducationServicesOffice || !selectedMonitorId) {
             return [];
         }
 
-        const monitor = (monitors as MonitorWithOffices[]).find(
+        const monitor = (monitors as EducationMonitor[]).find(
             (item) => item.id.toString() === selectedMonitorId,
         );
 
         return monitor?.offices ?? [];
     }, [isEducationServicesOffice, monitors, selectedMonitorId]);
 
-    const availableSchools = useMemo(() => {
+    const availableSchools = React.useMemo(() => {
         if (!isSchool || !selectedMonitorId) {
             return [];
         }
 
-        const monitor = (monitors as MonitorWithSchools[]).find(
+        const monitor = (monitors as EducationMonitor[]).find(
             (item) => item.id.toString() === selectedMonitorId,
         );
 
-        return monitor?.schools ?? [];
+        return monitor?.school_periods ?? [];
     }, [isSchool, monitors, selectedMonitorId]);
 
     const handleMonitorChange = (value: string) => {
         setSelectedMonitorId(value);
-        setSelectedOfficeId(undefined);
-        setSelectedSchoolPeriodId(undefined);
+        setSelectedOfficeId("");
+        setSelectedSchoolPeriodId("");
     };
 
     const pageTitle = `إضافة ${creationLabel}`;
@@ -160,7 +150,7 @@ export default function Create({
                                             </Field>
 
                                             {isWarehouse && (
-                                                <Field>
+                                                <Field className="col-span-full">
                                                     <Label
                                                         htmlFor="warehouse_id"
                                                         hasError={!!errors.warehouse_id}
@@ -207,7 +197,7 @@ export default function Create({
                                             )}
 
                                             {needsMonitor && (
-                                                <Field>
+                                                <Field className={isEducationServicesOffice || isSchool ? "" : "col-span-full"}>
                                                     <Label
                                                         htmlFor="education_monitor_id"
                                                         hasError={!!errors.education_monitor_id}
@@ -254,7 +244,7 @@ export default function Create({
                                             )}
 
                                             {isEducationServicesOffice && (
-                                                <Field>
+                                                <Field className={!needsMonitor ? "col-span-full" : ""}>
                                                     <Label
                                                         htmlFor="education_services_office_id"
                                                         hasError={!!errors.education_services_office_id}

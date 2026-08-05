@@ -62,7 +62,7 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
                 {canAny && (
                     <ActionsSection>
                         {can.create && (
-                            <DropdownMenu>
+                            <DropdownMenu open={true}>
                                 <DropdownMenuTrigger asChild>
                                     <Button>
                                         <PlusIcon />
@@ -71,15 +71,15 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="min-w-52">
                                     {scopes.map((item, index) => (
-                                        <>
-                                            <DropdownMenuItem key={index} asChild>
+                                        <React.Fragment key={item.id}>
+                                            <DropdownMenuItem asChild>
                                                 <Link href={create.url({ scope: item.id })}>
                                                     <Icon iconNode={item.icon} className="text-foreground" />
                                                     <span>{item.name}</span>
                                                 </Link>
                                             </DropdownMenuItem>
                                             {(index !== (scopes.length - 1)) && <DropdownMenuSeparator />}
-                                        </>
+                                        </React.Fragment>
                                     ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>

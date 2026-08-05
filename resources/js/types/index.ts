@@ -222,8 +222,10 @@ export type EducationMonitor = {
     offices?: EducationServicesOffice[];
     education_services_offices?: EducationServicesOffice[];
     schools?: School[];
+    school_periods?: SchoolPeriod[];
     offices_count?: number;
     schools_count?: number;
+    school_periods_count?: number;
     students_count?: number;
     created_at: string;
     updated_at: string;

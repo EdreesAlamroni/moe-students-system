@@ -44,10 +44,10 @@ export default function ConfigureStudentsGenderNotice() {
     const [isConfigured, setIsConfigured] = React.useState(false);
     const [selectedGender, setSelectedGender] = React.useState("");
 
-    const school = organization?.type === "school" ? organization : null;
+    const schoolPeriod = organization?.type === "school" ? organization : null;
     const isSchoolDashboard = dashboard?.key === "school";
-    const needsConfiguration = school !== null && school.students_gender === null;
-    const genderOptions = school?.students_gender_options ?? [];
+    const needsConfiguration = schoolPeriod !== null && schoolPeriod.students_gender === null;
+    const genderOptions = schoolPeriod?.students_gender_options ?? [];
 
     if (!isSchoolDashboard || !needsConfiguration || isConfigured) {
         return null;

@@ -35,13 +35,13 @@ class StudentController extends Controller
             ? $request->integer('school_period_id')
             : null;
 
-        $schools = $monitorId !== null
+        $schoolPeriods = $monitorId !== null
             ? SchoolPeriod::list(function ($query) use ($monitorId): void {
                 $query->where('education_monitor_id', '=', $monitorId);
             }, ['education_monitor_id'])
             : collect([]);
 
-        if ($schoolPeriodId !== null && ! $schools->contains('id', '=', $schoolPeriodId)) {
+        if ($schoolPeriodId !== null && ! $schoolPeriods->contains('id', '=', $schoolPeriodId)) {
             $schoolPeriodId = null;
         }
 
@@ -49,7 +49,7 @@ class StudentController extends Controller
 
         return Inertia::render('administration/students/index', [
             'monitors' => EducationMonitor::list(),
-            'schools' => $schools,
+            'schoolPeriods' => $schoolPeriods,
             'education_monitor_id' => $monitorId,
             'school_period_id' => $schoolPeriodId,
             'filter' => $request->input('filter', []),

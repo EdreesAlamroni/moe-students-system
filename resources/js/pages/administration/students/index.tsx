@@ -39,7 +39,7 @@ type StudentProps = Student & {
 type PageProps = {
     students?: Paginated<StudentProps>;
     monitors: EducationMonitor[];
-    schools: SchoolPeriod[];
+    schoolPeriods: SchoolPeriod[];
     nationalities?: Nationality[];
     registrationStatuses?: Enum[];
     education_monitor_id?: number | null;
@@ -56,7 +56,7 @@ type PageProps = {
 
 type PendingOrg = {
     monitorId?: string;
-    schoolId?: string;
+    schoolPeriodId?: string;
 };
 
 const visitOptions = {
@@ -109,7 +109,7 @@ function StudentsSectionSkeleton() {
 export default function Index({
     students,
     monitors,
-    schools,
+    schoolPeriods,
     nationalities,
     registrationStatuses,
     education_monitor_id,
@@ -133,14 +133,14 @@ export default function Index({
     }, []);
 
     const monitorId = education_monitor_id?.toString();
-    const schoolId = school_period_id?.toString();
+    const schoolPeriodId = school_period_id?.toString();
     const monitorPending = pendingOrganization.monitorId !== undefined && pendingOrganization.monitorId !== monitorId;
-    const schoolPending = pendingOrganization.schoolId !== undefined && pendingOrganization.schoolId !== schoolId;
+    const schoolPeriodPending = pendingOrganization.schoolPeriodId !== undefined && pendingOrganization.schoolPeriodId !== schoolPeriodId;
     const activeMonitorId = pendingOrganization.monitorId ?? monitorId;
-    const candidateSchoolId = monitorPending ? undefined : (pendingOrganization.schoolId ?? schoolId);
-    const activeSchoolId = candidateSchoolId && schools.some((school) => school.id.toString() === candidateSchoolId) ? candidateSchoolId : undefined;
+    const candidateSchoolId = monitorPending ? undefined : (pendingOrganization.schoolPeriodId ?? schoolPeriodId);
+    const activeSchoolId = candidateSchoolId && schoolPeriods.some((school) => school.id.toString() === candidateSchoolId) ? candidateSchoolId : undefined;
     const isLoadingSchools = Boolean(activeMonitorId && monitorPending);
-    const studentsStale = isNavigating && (schoolPending || monitorPending);
+    const studentsStale = isNavigating && (schoolPeriodPending || monitorPending);
     const studentsLoading = Boolean(activeSchoolId && (!students || studentsStale));
     const studentsReloading = Boolean(activeSchoolId && students && isNavigating && !studentsStale);
     const hasStudentFilter = Object.values(filter).some(Boolean);
@@ -156,7 +156,7 @@ export default function Index({
     };
 
     const handleSchoolChange = (value: string) => {
-        setPendingOrganization({ monitorId: activeMonitorId, schoolId: value });
+        setPendingOrganization({ monitorId: activeMonitorId, schoolPeriodId: value });
 
         router.get(index.url(), {
             education_monitor_id: activeMonitorId,
@@ -189,7 +189,7 @@ export default function Index({
 
                                     {monitors.length > 0 ? (
                                         <Select
-                                            value={activeMonitorId}
+                                            value={activeMonitorId || undefined}
                                             disabled={isNavigating}
                                             onValueChange={handleMonitorChange}
                                         >
@@ -249,10 +249,10 @@ export default function Index({
                                                 </span>
                                             </SelectTrigger>
                                         </Select>
-                                    ) : schools.length > 0 ? (
+                                    ) : schoolPeriods.length > 0 ? (
                                         <Select
                                             key={activeMonitorId}
-                                            value={activeSchoolId}
+                                            value={activeSchoolId || undefined}
                                             disabled={isNavigating}
                                             onValueChange={handleSchoolChange}
                                         >
@@ -265,7 +265,7 @@ export default function Index({
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {schools.map((school) => (
+                                                    {schoolPeriods.map((school) => (
                                                         <SelectItem
                                                             key={school.id}
                                                             value={school.id.toString()}

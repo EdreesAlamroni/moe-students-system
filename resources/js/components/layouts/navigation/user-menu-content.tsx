@@ -59,12 +59,12 @@ export function UserMenuContent({ user }: Props) {
                     <UserInfo user={user} showEmail={false} />
                 </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="my-1" />
+            <DropdownMenuSeparator />
             {menuItems.length > 0 && (
                 <DropdownMenuGroup dir={direction}>
                     {menuItems.map((item, index) => (
                         <Fragment key={item.key ?? item.title}>
-                            {index > 0 && <DropdownMenuSeparator className="my-1" />}
+                            {index > 0 && <DropdownMenuSeparator />}
                             <MenuLinkItem item={item} onClick={cleanup} />
                         </Fragment>
                     ))}
@@ -72,7 +72,7 @@ export function UserMenuContent({ user }: Props) {
             )}
             {logoutItem && (
                 <>
-                    <DropdownMenuSeparator className="my-1" />
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem asChild dir={direction}>
                         <Link
                             className="block w-full cursor-pointer"

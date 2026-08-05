@@ -30,8 +30,6 @@ import { Building2Icon, ListIcon, RefreshCcwIcon, SearchIcon } from "lucide-reac
 import { show } from "@/routes/administration/students";
 import { index } from "@/routes/administration/students/unassigned-to-school";
 
-type OrganizationOption = Pick<EducationMonitor, "id" | "name">;
-
 type StudentProps = Student & {
     canAny: boolean;
     can: CanPermissions;
@@ -39,7 +37,7 @@ type StudentProps = Student & {
 
 type PageProps = {
     students?: Paginated<StudentProps>;
-    monitors: OrganizationOption[];
+    monitors: EducationMonitor[];
     nationalities?: Pick<Nationality, "id" | "name">[];
     registrationStatuses?: Enum[];
     education_monitor_id?: number | null;
@@ -158,13 +156,16 @@ export default function Index({
                         <CardContent>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Field>
-                                    <Label htmlFor="education_monitor_id" required>
+                                    <Label
+                                        htmlFor="education_monitor_id"
+                                        required
+                                    >
                                         المُراقبة
                                     </Label>
 
                                     {monitors.length > 0 ? (
                                         <Select
-                                            value={activeMonitorId}
+                                            value={activeMonitorId || undefined}
                                             disabled={isNavigating}
                                             onValueChange={handleMonitorChange}
                                         >
