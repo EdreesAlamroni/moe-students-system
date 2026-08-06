@@ -61,11 +61,10 @@ class DistributeBooksToGradeLevels
 
             $now = now();
 
-            $rows = $pendingGradeLevelIds->map(function (int $gradeLevelId) use ($currentAcademicYearId, $monitorId, $schoolPeriodId, $warehouseId, $now): array {
+            $rows = $pendingGradeLevelIds->map(function (int $gradeLevelId) use ($currentAcademicYearId, $schoolPeriodId, $warehouseId, $now): array {
                 return [
                     'uuid' => Str::uuid()->toString(),
                     'academic_year_id' => $currentAcademicYearId,
-                    'education_monitor_id' => $monitorId,
                     'school_period_id' => $schoolPeriodId,
                     'grade_level_id' => $gradeLevelId,
                     'warehouse_id' => $warehouseId,

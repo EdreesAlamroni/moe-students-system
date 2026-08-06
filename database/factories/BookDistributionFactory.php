@@ -24,13 +24,16 @@ class BookDistributionFactory extends Factory
         return [
             'academic_year_id' => AcademicYear::currentId() ?? AcademicYear::factory(),
             'school_period_id' => SchoolPeriod::factory(),
-            'education_monitor_id' => fn (array $attributes) => SchoolPeriod::query()
-                ->whereKey($attributes['school_period_id'])
-                ->value('education_monitor_id'),
             'grade_level_id' => GradeLevel::factory(),
-            'warehouse_id' => fn (array $attributes) => EducationMonitor::query()
-                ->whereKey($attributes['education_monitor_id'])
-                ->value('warehouse_id'),
+            'warehouse_id' => function (array $attributes) {
+                $educationMonitorId = SchoolPeriod::query()
+                    ->where('id', '=', $attributes['school_period_id'])
+                    ->value('education_monitor_id');
+
+                return EducationMonitor::query()
+                    ->where('id', '=', $educationMonitorId)
+                    ->value('warehouse_id');
+            },
             'distributed_at' => now(),
         ];
     }

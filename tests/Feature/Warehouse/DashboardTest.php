@@ -104,14 +104,12 @@ test('the summary reports warehouse-scoped aggregate counts for the current acad
 
     $distribution = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     BookDistribution::factory()->create([
         'warehouse_id' => $otherWarehouse->id,
-        'education_monitor_id' => $otherMonitor->id,
         'school_period_id' => $otherSchoolPeriod->id,
         'grade_level_id' => $otherGradeLevel->id,
     ]);
@@ -181,14 +179,12 @@ test('the education monitor distribution reports student and progress counts per
 
     $largeDistribution = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
-        'education_monitor_id' => $largest->id,
         'school_period_id' => $largeSchoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
 
     BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
-        'education_monitor_id' => $smallest->id,
         'school_period_id' => $smallSchoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
@@ -263,7 +259,6 @@ test('the school distribution reports student and progress counts for the larges
 
     $distribution = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $largest->id,
         'grade_level_id' => $gradeLevel->id,
     ]);
@@ -305,7 +300,6 @@ test('the recent activities list the latest warehouse book distributions', funct
 
     $older = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $firstGrade->id,
         'distributed_at' => now()->subDay(),
@@ -313,7 +307,6 @@ test('the recent activities list the latest warehouse book distributions', funct
 
     $newer = BookDistribution::factory()->create([
         'warehouse_id' => $warehouse->id,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $secondGrade->id,
         'distributed_at' => now(),

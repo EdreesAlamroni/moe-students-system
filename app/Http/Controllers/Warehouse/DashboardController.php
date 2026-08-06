@@ -163,17 +163,16 @@ class DashboardController extends Controller
         return BookDistribution::query()
             ->select([
                 'id',
-                'distributed_at',
                 'school_period_id',
                 'grade_level_id',
-                'education_monitor_id',
+                'distributed_at',
             ])
             ->forCurrentWarehouse()
             ->forCurrentAcademicYear()
             ->with([
-                'schoolPeriod:id,name',
+                'schoolPeriod:id,name,education_monitor_id',
+                'schoolPeriod.monitor:id,name',
                 'gradeLevel:id,name',
-                'monitor:id,name',
             ])
             ->latest('distributed_at')
             ->latest('id')
@@ -184,7 +183,7 @@ class DashboardController extends Controller
                 'distributed_at' => $distribution->distributed_at->toDateTimeString(),
                 'school' => $distribution->schoolPeriod->name,
                 'grade_level' => $distribution->gradeLevel->name,
-                'monitor' => $distribution->monitor->name,
+                'monitor' => $distribution->schoolPeriod->monitor->name,
             ])
             ->values();
     }
@@ -243,10 +242,11 @@ class DashboardController extends Controller
         return BookDistribution::query()
             ->forCurrentWarehouse()
             ->forCurrentAcademicYear()
+            ->join('school_periods', 'school_periods.id', '=', 'book_distributions.school_period_id')
             ->toBase()
-            ->select('education_monitor_id')
+            ->select('school_periods.education_monitor_id')
             ->selectRaw('COUNT(*) AS aggregate')
-            ->groupBy('education_monitor_id')
+            ->groupBy('school_periods.education_monitor_id')
             ->pluck('aggregate', 'education_monitor_id');
     }
 
@@ -274,11 +274,12 @@ class DashboardController extends Controller
         return BookDistributionItem::query()
             ->toBase()
             ->join('book_distributions', 'book_distributions.id', '=', 'book_distribution_items.book_distribution_id')
-            ->select('book_distributions.education_monitor_id')
+            ->join('school_periods', 'school_periods.id', '=', 'book_distributions.school_period_id')
+            ->select('school_periods.education_monitor_id')
             ->selectRaw('COUNT(DISTINCT book_distribution_items.student_id) AS aggregate')
             ->where('book_distributions.warehouse_id', '=', $warehouseId)
             ->where('book_distribution_items.academic_year_id', '=', $currentAcademicYearId)
-            ->groupBy('book_distributions.education_monitor_id')
+            ->groupBy('school_periods.education_monitor_id')
             ->pluck('aggregate', 'education_monitor_id');
     }
 
@@ -312,9 +313,10 @@ class DashboardController extends Controller
         }
 
         return $this->pendingEnrollmentsQuery($warehouseId, $currentAcademicYearId)
-            ->select('book_distributions.education_monitor_id')
+            ->join('school_periods', 'school_periods.id', '=', 'book_distributions.school_period_id')
+            ->select('school_periods.education_monitor_id')
             ->selectRaw('COUNT(DISTINCT student_enrollments.student_id) AS aggregate')
-            ->groupBy('book_distributions.education_monitor_id')
+            ->groupBy('school_periods.education_monitor_id')
             ->pluck('aggregate', 'education_monitor_id');
     }
 

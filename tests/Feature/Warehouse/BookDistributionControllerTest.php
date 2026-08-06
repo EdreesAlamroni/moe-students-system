@@ -132,7 +132,6 @@ test('selecting a school loads grade level distribution checklist', function () 
 
     BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'warehouse_id' => $warehouse->id,
@@ -205,7 +204,6 @@ test('warehouse users can confirm book distribution for eligible grade levels', 
 
     $this->assertDatabaseHas('book_distributions', [
         'academic_year_id' => $academicYearId,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'warehouse_id' => $warehouse->id,
@@ -227,7 +225,6 @@ test('confirming already distributed grade levels does not create duplicates', f
 
     BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'warehouse_id' => $warehouse->id,

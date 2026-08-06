@@ -17,7 +17,6 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $uuid
  * @property int $academic_year_id
- * @property int $education_monitor_id
  * @property int $school_period_id
  * @property int $grade_level_id
  * @property int $warehouse_id
@@ -25,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read AcademicYear $academicYear
- * @property-read EducationMonitor $monitor
  * @property-read SchoolPeriod $schoolPeriod
  * @property-read GradeLevel $gradeLevel
  * @property-read Warehouse $warehouse
@@ -42,7 +40,6 @@ class BookDistribution extends Model
     {
         return [
             'academic_year_id' => 'integer',
-            'education_monitor_id' => 'integer',
             'school_period_id' => 'integer',
             'grade_level_id' => 'integer',
             'warehouse_id' => 'integer',
@@ -109,11 +106,6 @@ class BookDistribution extends Model
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class);
-    }
-
-    public function monitor(): BelongsTo
-    {
-        return $this->belongsTo(EducationMonitor::class, 'education_monitor_id');
     }
 
     public function schoolPeriod(): BelongsTo

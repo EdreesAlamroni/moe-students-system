@@ -162,7 +162,6 @@ test('selecting a school loads grade level statistics on the report page', funct
 
     $bookDistribution = BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'warehouse_id' => $warehouse->id,
@@ -270,7 +269,6 @@ test('authenticated warehouse users can print the book distribution report for a
 
     BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $gradeLevel->id,
         'warehouse_id' => $warehouse->id,

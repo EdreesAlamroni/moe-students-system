@@ -160,7 +160,6 @@ test('selecting a school loads grade level statistics', function () {
 
     $bookDistribution = BookDistribution::factory()->create([
         'academic_year_id' => $academicYearId,
-        'education_monitor_id' => $monitor->id,
         'school_period_id' => $schoolPeriod->id,
         'grade_level_id' => $confirmedGradeLevel->id,
         'warehouse_id' => $warehouse->id,
