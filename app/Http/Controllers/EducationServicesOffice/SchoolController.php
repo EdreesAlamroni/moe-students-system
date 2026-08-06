@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\EducationServicesOffice;
 
+use App\Actions\School\DeleteSchool;
 use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolBranchType;
 use App\Enums\SchoolBuildingType;
@@ -210,7 +211,7 @@ class SchoolController extends Controller
     {
         Gate::authorize('delete', $school);
 
-        $school->delete();
+        app(DeleteSchool::class)->execute($school);
 
         flash_success('delete');
 

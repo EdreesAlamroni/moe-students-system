@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\EducationMonitor;
 
 use App\Actions\EducationMonitor\ResetClassroomDistribution;
+use App\Actions\School\DeleteSchool;
 use App\Enums\ClassroomDistributionResetScope;
 use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolBranchType;
@@ -228,7 +229,7 @@ class SchoolController extends Controller
     {
         Gate::authorize('delete', $school);
 
-        $school->delete();
+        app(DeleteSchool::class)->execute($school);
 
         flash_success('delete');
 

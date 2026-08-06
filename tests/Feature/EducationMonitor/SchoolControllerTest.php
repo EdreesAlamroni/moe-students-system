@@ -21,24 +21,7 @@ use App\Models\Student;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
-use Mockery\MockInterface;
 use Spatie\Permission\Models\Permission;
-
-/**
- * Wrap a persisted school in a partial mock so route-model binding resolves it,
- * allowing the instance-level hasAnyRelations() check to be controlled in tests.
- */
-function bindEducationMonitorSchoolBinding(School $school, bool $hasAnyRelations): School
-{
-    /** @var School&MockInterface $mock */
-    $mock = Mockery::mock($school)->makePartial();
-    $mock->shouldReceive('hasAnyRelations')->andReturn($hasAnyRelations);
-    $mock->shouldReceive('resolveRouteBinding')->andReturn($mock);
-
-    app()->instance(School::class, $mock);
-
-    return $mock;
-}
 
 function createEducationMonitorSchoolManager(EducationMonitor $monitor, array $attributes = []): User
 {
@@ -613,44 +596,48 @@ test('update does not allow moving a school to another education monitor', funct
         ->and($school->education_monitor_id)->toBe($monitor->id);
 });
 
-test('authenticated users can delete a school without relations', function () {
+test('authenticated users can delete a school without assigned students', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
-    $school = bindEducationMonitorSchoolBinding(
-        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create(),
-        hasAnyRelations: false,
-    );
+    $school = School::factory()->for($monitor, 'monitor')->create();
+    $morningPeriod = SchoolPeriod::factory()->for($school)->create([
+        'academic_period' => SchoolAcademicPeriod::MORNING,
+    ]);
+    $eveningPeriod = SchoolPeriod::factory()->for($school)->create([
+        'academic_period' => SchoolAcademicPeriod::EVENING,
+    ]);
 
     $this->actingAs($user, 'education_monitor')
         ->delete(route('education-monitor.schools.destroy', ['school' => $school]))
         ->assertRedirect(route('education-monitor.schools.index'));
 
     $this->assertSoftDeleted('schools', ['id' => $school->id]);
+    $this->assertSoftDeleted('school_periods', ['id' => $morningPeriod->id]);
+    $this->assertSoftDeleted('school_periods', ['id' => $eveningPeriod->id]);
 });
 
-test('schools with relations cannot be deleted', function () {
+test('schools with assigned students cannot be deleted', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
-    $school = bindEducationMonitorSchoolBinding(
-        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create(),
-        hasAnyRelations: true,
-    );
+    $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->for($monitor, 'monitor')->create();
+    Student::factory()->for($school->periods->first())->create();
 
     $this->actingAs($user, 'education_monitor')
         ->delete(route('education-monitor.schools.destroy', ['school' => $school]))
         ->assertForbidden();
 
     $this->assertNotSoftDeleted('schools', ['id' => $school->id]);
+    $this->assertNotSoftDeleted('school_periods', ['id' => $school->periods->first()->id]);
 });
 
 test('users cannot delete schools from another monitor', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorSchoolManager($monitor);
     $otherMonitor = EducationMonitor::factory()->create();
-    $school = bindEducationMonitorSchoolBinding(
-        School::factory()->has(SchoolPeriod::factory(), 'periods')->for($otherMonitor, 'monitor')->create(),
-        hasAnyRelations: false,
-    );
+    $school = School::factory()
+        ->has(SchoolPeriod::factory(), 'periods')
+        ->for($otherMonitor, 'monitor')
+        ->create();
 
     $this->actingAs($user, 'education_monitor')
         ->delete(route('education-monitor.schools.destroy', ['school' => $school]))

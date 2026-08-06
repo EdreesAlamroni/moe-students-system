@@ -55,7 +55,7 @@ class StudentEnrollment extends Model
 
     public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(SchoolPeriod::class);
+        return $this->belongsTo(SchoolPeriod::class)->withTrashed();
     }
 
     public function gradeLevel(): BelongsTo

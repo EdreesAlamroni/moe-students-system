@@ -285,7 +285,7 @@ class School extends Model
 
     public function hasAnyRelations(): bool
     {
-        return true;
+        return $this->students()->exists();
     }
 
     public static function list(?callable $callback = null, array $additionalColumns = ['id', 'name']): Collection

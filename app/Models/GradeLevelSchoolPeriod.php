@@ -47,7 +47,7 @@ class GradeLevelSchoolPeriod extends Pivot
 
     public function schoolPeriod(): BelongsTo
     {
-        return $this->belongsTo(SchoolPeriod::class, 'school_period_id');
+        return $this->belongsTo(SchoolPeriod::class, 'school_period_id')->withTrashed();
     }
 
     public function academicYear(): BelongsTo

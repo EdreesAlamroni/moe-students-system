@@ -20,7 +20,6 @@ use App\Models\Student;
 use App\Models\User;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
-use Mockery\MockInterface;
 use Spatie\Permission\Models\Permission;
 
 function createSchoolAdminUser(): User
@@ -42,22 +41,6 @@ function createSchoolAdminUser(): User
     $user->givePermissionTo($permissions);
 
     return $user;
-}
-
-/**
- * Wrap a persisted school in a partial mock so route-model binding resolves it,
- * allowing the instance-level hasAnyRelations() check to be controlled in tests.
- */
-function bindSchoolBinding(School $school, bool $hasAnyRelations): School
-{
-    /** @var School&MockInterface $mock */
-    $mock = Mockery::mock($school)->makePartial();
-    $mock->shouldReceive('hasAnyRelations')->andReturn($hasAnyRelations);
-    $mock->shouldReceive('resolveRouteBinding')->andReturn($mock);
-
-    app()->instance(School::class, $mock);
-
-    return $mock;
 }
 
 function createGradeLevelForStage(SchoolEducationalStageEnum $stage): GradeLevel
@@ -710,24 +693,35 @@ test('updating to a monitor without offices clears education services office on 
         ->and($schoolPeriod->education_services_office_id)->toBeNull();
 });
 
-test('authenticated users can delete a school without relations', function () {
+test('authenticated users can delete a school without assigned students', function () {
     $user = createSchoolAdminUser();
-    $school = bindSchoolBinding(School::factory()->create(), hasAnyRelations: false);
+    $school = School::factory()->create();
+    $morningPeriod = SchoolPeriod::factory()->for($school)->create([
+        'academic_period' => SchoolAcademicPeriod::MORNING,
+    ]);
+    $eveningPeriod = SchoolPeriod::factory()->for($school)->create([
+        'academic_period' => SchoolAcademicPeriod::EVENING,
+    ]);
 
     $this->actingAs($user, 'administration')
         ->delete(route('administration.schools.destroy', ['school' => $school]))
         ->assertRedirect(route('administration.schools.index'));
 
     $this->assertSoftDeleted('schools', ['id' => $school->id]);
+    $this->assertSoftDeleted('school_periods', ['id' => $morningPeriod->id]);
+    $this->assertSoftDeleted('school_periods', ['id' => $eveningPeriod->id]);
 });
 
-test('schools with relations cannot be deleted', function () {
+test('schools with assigned students cannot be deleted', function () {
     $user = createSchoolAdminUser();
-    $school = bindSchoolBinding(School::factory()->create(), hasAnyRelations: true);
+    $school = School::factory()->create();
+    $schoolPeriod = SchoolPeriod::factory()->for($school)->create();
+    Student::factory()->for($schoolPeriod)->create();
 
     $this->actingAs($user, 'administration')
         ->delete(route('administration.schools.destroy', ['school' => $school]))
         ->assertForbidden();
 
     $this->assertNotSoftDeleted('schools', ['id' => $school->id]);
+    $this->assertNotSoftDeleted('school_periods', ['id' => $schoolPeriod->id]);
 });
