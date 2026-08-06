@@ -8,6 +8,7 @@ use App\Enums\SchoolStudentsGender;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +32,7 @@ use Illuminate\Support\Collection;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read string $display_name
  * @property-read EloquentCollection<int, User> $users
  * @property-read EducationMonitor $monitor
  * @property-read EducationServicesOffice|null $office
@@ -92,6 +94,25 @@ class SchoolPeriod extends Model
             $schoolPeriod->forceFill($school->periodDenormalizedAttributes());
         });
     }
+
+    /*
+     * Start: Accessors & Mutators
+     */
+
+    public function displayName(): Attribute
+    {
+        return Attribute::get(get: function (): string {
+            return sprintf(
+                '%s (%s)',
+                $this->name,
+                $this->academic_period->displayName(),
+            );
+        });
+    }
+
+    /*
+     * End: Accessors & Mutators
+     */
 
     /*
      * Start: Scopes
@@ -326,7 +347,7 @@ class SchoolPeriod extends Model
             ->map(function (self $schoolPeriod): array {
                 return [
                     'id' => $schoolPeriod->id,
-                    'name' => sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->displayName()),
+                    'name' => $schoolPeriod->display_name,
                 ];
             })->values();
     }
@@ -351,9 +372,6 @@ class SchoolPeriod extends Model
         return $this->school->isPrivate();
     }
 
-    /**
-     * @return Collection<int, array{id: int, name: string}>
-     */
     public function availableGradeLevels(): Collection
     {
         $currentAcademicYearId = AcademicYear::currentId();
@@ -390,6 +408,17 @@ class SchoolPeriod extends Model
         $this->loadMissing(['monitor:id,name']);
 
         return [$this->monitor->name, $this->name];
+    }
+
+    /**
+     * The other academic period that shares this period's canonical school, if any.
+     */
+    public function siblingPeriod(): ?self
+    {
+        return self::query()
+            ->where('id', '!=', $this->id)
+            ->where('school_id', '=', $this->school_id)
+            ->first();
     }
 
     /*

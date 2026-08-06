@@ -4,7 +4,7 @@ import { Form, Head, Link } from "@inertiajs/react";
 
 import MainContainer from "@/components/ui/structure/main-container";
 
-import type { CanPermissions, Enum, GradeLevel } from "@/types";
+import type { CanPermissions, Enum, GradeLevel, SchoolPeriod } from "@/types";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTableContent, CardTitle } from "@/components/ui/structure/card";
 import ActionsSection from "@/components/ui/structure/actions-section";
@@ -19,9 +19,10 @@ import { Button } from "@/components/ui/actions/button";
 import ViewDetailsLink from "@/components/ui/actions/view-details-link";
 
 import FunnelIcon from "@/components/ui/icons/funnel-icon";
-import { ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
+import { ArrowRightLeftIcon, ListIcon, PlusIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
 
 import AddGradeLevelsDialog from "@/components/features/school/add-grade-levels-dialog";
+import TransferGradeLevelsDialog from "@/components/features/school/transfer-grade-levels-dialog";
 
 import { index, show } from "@/routes/school/grade-levels";
 
@@ -34,6 +35,8 @@ type PageProps = {
     gradeLevels: GradeLevelProps[];
     educationalStages: Enum[];
     availableGradeLevels: GradeLevel[];
+    transferableGradeLevels: GradeLevel[];
+    siblingPeriod?: SchoolPeriod;
     filter: {
         name?: string;
         educational_stage?: string;
@@ -42,7 +45,16 @@ type PageProps = {
     can: CanPermissions;
 }
 
-export default function Index({ gradeLevels, educationalStages, availableGradeLevels, filter, canAny, can }: PageProps) {
+export default function Index({
+    gradeLevels,
+    educationalStages,
+    availableGradeLevels,
+    transferableGradeLevels,
+    siblingPeriod,
+    filter,
+    canAny,
+    can,
+}: PageProps) {
     return (
         <>
             <Head title="الصفوف الدراسية" />
@@ -50,6 +62,18 @@ export default function Index({ gradeLevels, educationalStages, availableGradeLe
             <MainContainer showAcademicYearNotice>
                 {canAny && (
                     <ActionsSection>
+                        {(can.transfer && siblingPeriod) && (
+                            <TransferGradeLevelsDialog
+                                gradeLevels={transferableGradeLevels}
+                                siblingPeriod={siblingPeriod}
+                            >
+                                <Button variant="outline">
+                                    <ArrowRightLeftIcon />
+                                    <span>نقل الصفوف الدراسية</span>
+                                </Button>
+                            </TransferGradeLevelsDialog>
+                        )}
+
                         {can.create && (
                             <AddGradeLevelsDialog gradeLevels={availableGradeLevels}>
                                 <Button

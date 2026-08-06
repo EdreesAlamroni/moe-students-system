@@ -214,7 +214,7 @@ class EducationServicesOffice extends Model
                     'schools' => $office->schoolPeriods->map(function (SchoolPeriod $schoolPeriod): array {
                         return [
                             'id' => $schoolPeriod->id,
-                            'name' => sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->displayName()),
+                            'name' => $schoolPeriod->display_name,
                         ];
                     })->all(),
                 ];

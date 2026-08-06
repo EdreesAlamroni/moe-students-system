@@ -59,13 +59,11 @@ class GradeLevelPolicy
         return $user->can('grade-level:delete');
     }
 
-    public function transfer(User $user, GradeLevel $gradeLevel): bool
+    public function transfer(User $user): bool
     {
-        if (! $this->belongsToCurrentSchool($user, $gradeLevel)) {
-            return false;
-        }
+        $schoolPeriod = $user->organization?->siblingPeriod();
 
-        if ($gradeLevel->trashed()) {
+        if (is_null($schoolPeriod)) {
             return false;
         }
 

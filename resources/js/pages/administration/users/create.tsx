@@ -93,7 +93,7 @@ export default function Create({
             (item) => item.id.toString() === selectedMonitorId,
         );
 
-        return monitor?.school_periods ?? [];
+        return monitor?.schools ?? [];
     }, [isSchool, monitors, selectedMonitorId]);
 
     const handleMonitorChange = (value: string) => {

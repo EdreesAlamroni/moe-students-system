@@ -62,7 +62,7 @@ export default function Index({ users, filter, scopes, canAny, can }: PageProps)
                 {canAny && (
                     <ActionsSection>
                         {can.create && (
-                            <DropdownMenu open={true}>
+                            <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button>
                                         <PlusIcon />

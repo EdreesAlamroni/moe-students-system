@@ -12,6 +12,7 @@ export const PERMISSION_ACTIONS = [
     'enrollInGradeLevel', 'enrollInClassroom', 'transferClassroom',
     'viewPsychosocialCard', 'updatePsychosocialCard', 'printPsychosocialCard',
     'viewAcademicRecord', 'createAcademicRecord',
+    'transfer',
     'print', 'export',
     'close',
 ] as const;

@@ -10,6 +10,7 @@ use App\Http\Controllers\School\ClassroomDistributionMethodController;
 use App\Http\Controllers\School\ClassScheduleController;
 use App\Http\Controllers\School\DashboardController;
 use App\Http\Controllers\School\GradeLevelController;
+use App\Http\Controllers\School\GradeLevelTransferController;
 use App\Http\Controllers\School\SchoolStudentsGenderController;
 use App\Http\Controllers\School\StudentAcademicRecordController;
 use App\Http\Controllers\School\StudentByClassroomReportController;
@@ -40,6 +41,9 @@ Route::middleware(['auth:school', 'ensure.password.changed'])->group(function ()
         Route::post('/', [GradeLevelController::class, 'store'])->name('grade-levels.store');
         Route::get('/{gradeLevel}', [GradeLevelController::class, 'show'])->name('grade-levels.show');
         Route::delete('/{gradeLevel}', [GradeLevelController::class, 'destroy'])->name('grade-levels.destroy');
+
+        // Transfer Grade Levels
+        Route::post('/transfers', [GradeLevelTransferController::class, 'store'])->name('grade-levels.transfers.store');
     });
 
     // Classrooms

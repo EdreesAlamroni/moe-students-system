@@ -32,6 +32,8 @@ class GradeLevelController extends Controller
         /** @var SchoolPeriod $schoolPeriod */
         $schoolPeriod = auth('school')->user()->organization;
 
+        $siblingPeriod = $schoolPeriod->siblingPeriod();
+
         $gradeLevels = QueryBuilder::for(GradeLevel::class)
             ->select([
                 'grade_levels.id',
@@ -58,6 +60,10 @@ class GradeLevelController extends Controller
                 ? $schoolPeriod->availableGradeLevels()
                 : collect([]);
 
+        $transferableGradeLevels = Gate::allows('transfer', GradeLevel::class)
+            ? GradeLevel::listForCurrentSchool()
+            : collect([]);
+
         return Inertia::render('school/grade-levels/index', [
             'gradeLevels' => ResourcePayloadBuilder::collectionWithAbilities(
                 GradeLevelCollection::make($gradeLevels),
@@ -65,8 +71,13 @@ class GradeLevelController extends Controller
             ),
             'educationalStages' => SchoolEducationalStageEnum::optionsArray(),
             'availableGradeLevels' => $availableGradeLevels,
+            'transferableGradeLevels' => $transferableGradeLevels,
+            'siblingPeriod' => $siblingPeriod ? [
+                'id' => $siblingPeriod->id,
+                'name' => $siblingPeriod->display_name,
+            ] : null,
             'filter' => $request->input('filter', []),
-            ...ModelAbilityMap::make(GradeLevel::class, ['create']),
+            ...ModelAbilityMap::make(GradeLevel::class, ['create', 'transfer']),
         ]);
     }
 
