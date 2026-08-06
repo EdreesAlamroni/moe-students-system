@@ -171,6 +171,25 @@ test('school creation supports the four accepted period scenarios', function (
     ],
 ]);
 
+test('school students relation aggregates students across all periods', function () {
+    $school = School::factory()->create();
+    $morning = SchoolPeriod::factory()->for($school)->create([
+        'academic_period' => SchoolAcademicPeriod::MORNING,
+    ]);
+    $evening = SchoolPeriod::factory()->for($school)->create([
+        'academic_period' => SchoolAcademicPeriod::EVENING,
+    ]);
+    $otherSchoolPeriod = SchoolPeriod::factory()->create();
+
+    $morningStudent = Student::factory()->for($morning)->create();
+    $eveningStudent = Student::factory()->for($evening)->create();
+    Student::factory()->for($otherSchoolPeriod)->create();
+
+    expect($school->students()->pluck('students.id')->sort()->values()->all())
+        ->toBe([$morningStudent->id, $eveningStudent->id])
+        ->and($school->students()->count())->toBe(2);
+});
+
 test('sibling periods remain isolated operational tenants', function () {
     $school = School::factory()->create();
     $morning = SchoolPeriod::factory()->for($school)->create([

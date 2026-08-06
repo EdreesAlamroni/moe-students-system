@@ -43,6 +43,8 @@ use Illuminate\Support\Str;
  * @property-read EloquentCollection<int, SchoolPeriod> $periods
  * @property-read EloquentCollection<int, SchoolEducationalStage> $allEducationalStages
  * @property-read EloquentCollection<int, SchoolEducationalStage> $educationalStages
+ * @property-read EloquentCollection<int, Student> $students
+ * @property-read int|null $students_count
  */
 #[Guarded(['id'])]
 class School extends Model
@@ -261,6 +263,16 @@ class School extends Model
         return $this
             ->allEducationalStages()
             ->where('academic_year_id', '=', AcademicYear::currentId());
+    }
+
+    public function students(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Student::class,
+            SchoolPeriod::class,
+            'school_id',
+            'school_period_id',
+        );
     }
 
     /*
