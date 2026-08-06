@@ -76,15 +76,35 @@ class School extends Model
         });
 
         static::saved(function (self $school): void {
-            if (! $school->wasChanged(self::PERIOD_DENORMALIZED_COLUMNS)) {
-                return;
+            if ($school->wasChanged(self::PERIOD_DENORMALIZED_COLUMNS)) {
+                SchoolPeriod::query()
+                    ->withTrashed()
+                    ->where('school_id', '=', $school->id)
+                    ->update($school->periodDenormalizedAttributes());
             }
 
-            SchoolPeriod::query()
-                ->withTrashed()
-                ->where('school_id', '=', $school->id)
-                ->update($school->periodDenormalizedAttributes());
+            if ($school->wasChanged('education_monitor_id')) {
+                $schoolPeriodIds = SchoolPeriod::query()
+                    ->withTrashed()
+                    ->where('school_id', '=', $school->id)
+                    ->select('id');
+
+                Student::query()
+                    ->whereIn('school_period_id', $schoolPeriodIds)
+                    ->update([
+                        'education_monitor_id' => $school->education_monitor_id,
+                    ]);
+            }
         });
+    }
+
+    public function periodDenormalizedAttributes(): array
+    {
+        return [
+            'education_monitor_id' => $this->education_monitor_id,
+            'education_services_office_id' => $this->education_services_office_id,
+            'name' => $this->name,
+        ];
     }
 
     /*
@@ -333,15 +353,6 @@ class School extends Model
                 ->whereIn('grade_levels.educational_stage', $stages)
                 ->whereNotIn('grade_levels.id', $assignedGradeLevelIds);
         });
-    }
-
-    public function periodDenormalizedAttributes(): array
-    {
-        return [
-            'education_monitor_id' => $this->education_monitor_id,
-            'education_services_office_id' => $this->education_services_office_id,
-            'name' => $this->name,
-        ];
     }
 
     public function currentGradeLevelIds(): array

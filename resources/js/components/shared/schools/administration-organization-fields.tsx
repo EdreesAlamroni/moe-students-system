@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { FormDataErrors } from '@inertiajs/core';
 
-import type { EducationMonitor, EducationServicesOffice, CreateSchoolFormData } from '@/types';
+import type { EducationMonitor, CreateSchoolFormData } from '@/types';
 
 import Field from '@/components/ui/controls/field';
 import { EmptyOptionsInput } from '@/components/ui/controls/empty-options-input';
@@ -10,21 +10,25 @@ import InputError from '@/components/ui/controls/input-error';
 import { Label } from '@/components/ui/controls/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/controls/select';
 
-type MonitorWithOffices = Pick<EducationMonitor, 'id' | 'name'> & {
-    offices: Pick<EducationServicesOffice, 'id' | 'name'>[];
-};
 
 type AdministrationOrganizationFieldsProps = {
-    monitors: MonitorWithOffices[];
+    monitors: EducationMonitor[];
     errors: FormDataErrors<CreateSchoolFormData>;
+    defaultMonitorId?: number | string;
+    defaultOfficeId?: number | string | null;
 };
 
 export function AdministrationOrganizationFields({
     monitors,
     errors,
+    defaultMonitorId,
+    defaultOfficeId,
 }: AdministrationOrganizationFieldsProps) {
-    const [selectedMonitorId, setSelectedMonitorId] = React.useState<string>('');
-    const [selectedOfficeId, setSelectedOfficeId] = React.useState<string>('');
+    const defaultMonitorIdValue = defaultMonitorId?.toString() ?? '';
+    const defaultOfficeIdValue = defaultOfficeId?.toString() ?? '';
+
+    const [selectedMonitorId, setSelectedMonitorId] = React.useState<string>(defaultMonitorIdValue);
+    const [selectedOfficeId, setSelectedOfficeId] = React.useState<string>(defaultOfficeIdValue);
 
     const availableOffices = React.useMemo(() => {
         if (!selectedMonitorId) {
@@ -36,7 +40,7 @@ export function AdministrationOrganizationFields({
 
     const handleMonitorChange = (value: string) => {
         setSelectedMonitorId(value);
-        setSelectedOfficeId('');
+        setSelectedOfficeId(value === defaultMonitorIdValue.toString() ? defaultOfficeIdValue.toString() : '');
     };
 
     return (
@@ -122,18 +126,24 @@ export function AdministrationOrganizationFields({
                             </SelectContent>
                         </Select>
                     ) : (
-                        <EmptyOptionsInput
-                            id="education_services_office_id"
-                            placeholder="لا توجد مكاتب خدمات تعليمية متاحة للاختيار"
-                            aria-invalid={!!errors.education_services_office_id}
-                        />
+                        <>
+                            <input type="hidden" name="education_services_office_id" value="" />
+                            <EmptyOptionsInput
+                                id="education_services_office_id"
+                                placeholder="لا توجد مكاتب خدمات تعليمية متاحة للاختيار"
+                                aria-invalid={!!errors.education_services_office_id}
+                            />
+                        </>
                     )
                 ) : (
-                    <EmptyOptionsInput
-                        id="education_services_office_id"
-                        placeholder="يرجى اختيار المُراقبة أولاً"
-                        aria-invalid={!!errors.education_services_office_id}
-                    />
+                    <>
+                        <input type="hidden" name="education_services_office_id" value="" />
+                        <EmptyOptionsInput
+                            id="education_services_office_id"
+                            placeholder="يرجى اختيار المُراقبة أولاً"
+                            aria-invalid={!!errors.education_services_office_id}
+                        />
+                    </>
                 )}
 
                 <InputError message={errors.education_services_office_id} />

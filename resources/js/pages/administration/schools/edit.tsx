@@ -2,7 +2,9 @@ import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
-import type { Enum, School } from "@/types";
+import type { EducationMonitor, Enum, School } from "@/types";
+
+import { AdministrationOrganizationFields } from "@/components/shared/schools/administration-organization-fields";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
@@ -28,11 +30,12 @@ import { edit, index, show, update } from "@/routes/administration/schools";
 
 type PageProps = {
     school: School;
+    monitors: EducationMonitor[];
     branchTypes: Enum[];
     buildingTypes: Enum[];
 }
 
-export default function Edit({ school, branchTypes, buildingTypes }: PageProps) {
+export default function Edit({ school, monitors, branchTypes, buildingTypes }: PageProps) {
     const isPrivate = school.is_private === true;
 
     return (
@@ -60,17 +63,6 @@ export default function Edit({ school, branchTypes, buildingTypes }: PageProps) 
                                     <CardFormContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <Field>
-                                                <Label htmlFor="monitor_name">المُراقبة</Label>
-                                                <Input
-                                                    id="monitor_name"
-                                                    type="text"
-                                                    value={school.monitor?.name ?? ""}
-                                                    disabled
-                                                    readOnly
-                                                />
-                                            </Field>
-
-                                            <Field>
                                                 <Label htmlFor="serial_number">الرقم التسلسلي</Label>
                                                 <Input
                                                     id="serial_number"
@@ -82,7 +74,7 @@ export default function Edit({ school, branchTypes, buildingTypes }: PageProps) 
                                                 />
                                             </Field>
 
-                                            <Field className="col-span-full">
+                                            <Field>
                                                 <Label htmlFor="type_name">نوع المدرسة</Label>
                                                 <Input
                                                     id="type_name"
@@ -94,6 +86,13 @@ export default function Edit({ school, branchTypes, buildingTypes }: PageProps) 
                                             </Field>
 
                                             <Separator className="col-span-full" />
+
+                                            <AdministrationOrganizationFields
+                                                monitors={monitors}
+                                                errors={errors}
+                                                defaultMonitorId={school.education_monitor_id}
+                                                defaultOfficeId={school.education_services_office_id}
+                                            />
 
                                             <Field className="col-span-full">
                                                 <Label htmlFor="name" hasError={!!errors.name} required>

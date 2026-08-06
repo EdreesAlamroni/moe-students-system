@@ -107,6 +107,10 @@ beforeEach(function () {
     ]);
 });
 
+afterEach(function () {
+    app()->forgetInstance(School::class);
+});
+
 test('guests are redirected from the schools page', function () {
     $this->get(route('administration.schools.index'))
         ->assertRedirect(route('administration.login'));
@@ -531,6 +535,15 @@ test('show school page includes periods with aggregate counts', function () {
         );
 });
 
+function schoolUpdatePayload(School $school, array $overrides = []): array
+{
+    return array_merge([
+        'education_monitor_id' => $school->education_monitor_id,
+        'education_services_office_id' => $school->education_services_office_id,
+        'name' => $school->name,
+    ], $overrides);
+}
+
 test('authenticated users can visit the edit school page', function () {
     $user = createSchoolAdminUser();
     $school = School::factory()->has(SchoolPeriod::factory(), 'periods')->create();
@@ -541,6 +554,7 @@ test('authenticated users can visit the edit school page', function () {
         ->assertInertia(fn ($page) => $page
             ->component('administration/schools/edit')
             ->where('school.uuid', $school->uuid)
+            ->has('monitors')
             ->has('branchTypes')
             ->has('buildingTypes')
         );
@@ -554,9 +568,9 @@ test('authenticated users can update the school name for a public school', funct
     ]);
 
     $this->actingAs($user, 'administration')
-        ->put(route('administration.schools.update', ['school' => $school]), [
+        ->put(route('administration.schools.update', ['school' => $school]), schoolUpdatePayload($school, [
             'name' => 'الاسم الجديد',
-        ])
+        ]))
         ->assertRedirect(route('administration.schools.show', ['school' => $school]));
 
     expect($school->refresh()->name)->toBe('الاسم الجديد');
@@ -572,12 +586,11 @@ test('authenticated users can update private school specific fields', function (
     ]);
 
     $this->actingAs($user, 'administration')
-        ->put(route('administration.schools.update', ['school' => $school]), [
-            'name' => $school->name,
+        ->put(route('administration.schools.update', ['school' => $school]), schoolUpdatePayload($school, [
             'educational_company_name' => 'الشركة الجديدة',
             'branch_type' => SchoolBranchType::SUB->value,
             'building_type' => SchoolBuildingType::VILLA->value,
-        ])
+        ]))
         ->assertRedirect(route('administration.schools.show', ['school' => $school]));
 
     $school->refresh();
@@ -585,6 +598,116 @@ test('authenticated users can update private school specific fields', function (
     expect($school->educational_company_name)->toBe('الشركة الجديدة')
         ->and($school->branch_type)->toBe(SchoolBranchType::SUB)
         ->and($school->building_type)->toBe(SchoolBuildingType::VILLA);
+});
+
+test('authenticated users can update school organization and sync related records', function () {
+    $user = createSchoolAdminUser();
+    $originalMonitor = EducationMonitor::factory()->create();
+    $newMonitor = EducationMonitor::factory()->create();
+    $office = EducationServicesOffice::factory()->for($newMonitor, 'monitor')->create();
+
+    $school = School::factory()
+        ->for($originalMonitor, 'monitor')
+        ->has(SchoolPeriod::factory(), 'periods')
+        ->create([
+            'type' => SchoolType::PUBLIC->value,
+            'name' => 'الاسم القديم',
+        ]);
+
+    $schoolPeriod = $school->periods()->firstOrFail();
+    $student = Student::factory()->for($schoolPeriod)->create([
+        'education_monitor_id' => $originalMonitor->id,
+    ]);
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.schools.update', ['school' => $school]), schoolUpdatePayload($school, [
+            'education_monitor_id' => $newMonitor->id,
+            'education_services_office_id' => $office->id,
+            'name' => 'الاسم الجديد',
+        ]))
+        ->assertRedirect(route('administration.schools.show', ['school' => $school]));
+
+    $school->refresh();
+    $schoolPeriod->refresh();
+    $student->refresh();
+
+    expect($school->education_monitor_id)->toBe($newMonitor->id)
+        ->and($school->education_services_office_id)->toBe($office->id)
+        ->and($school->name)->toBe('الاسم الجديد')
+        ->and($schoolPeriod->education_monitor_id)->toBe($newMonitor->id)
+        ->and($schoolPeriod->education_services_office_id)->toBe($office->id)
+        ->and($schoolPeriod->name)->toBe('الاسم الجديد')
+        ->and($student->education_monitor_id)->toBe($newMonitor->id);
+});
+
+test('education services office is required when updating to a monitor with offices', function () {
+    $user = createSchoolAdminUser();
+    $originalMonitor = EducationMonitor::factory()->create();
+    $newMonitor = EducationMonitor::factory()->create();
+    EducationServicesOffice::factory()->for($newMonitor, 'monitor')->create();
+
+    $school = School::factory()
+        ->for($originalMonitor, 'monitor')
+        ->has(SchoolPeriod::factory(), 'periods')
+        ->create(['type' => SchoolType::PUBLIC->value]);
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.schools.update', ['school' => $school]), schoolUpdatePayload($school, [
+            'education_monitor_id' => $newMonitor->id,
+            'education_services_office_id' => null,
+        ]))
+        ->assertSessionHasErrors('education_services_office_id');
+});
+
+test('education services office must belong to the selected monitor when updating', function () {
+    $user = createSchoolAdminUser();
+    $originalMonitor = EducationMonitor::factory()->create();
+    $newMonitor = EducationMonitor::factory()->create();
+    $otherMonitor = EducationMonitor::factory()->create();
+    $foreignOffice = EducationServicesOffice::factory()->for($otherMonitor, 'monitor')->create();
+
+    $school = School::factory()
+        ->for($originalMonitor, 'monitor')
+        ->has(SchoolPeriod::factory(), 'periods')
+        ->create(['type' => SchoolType::PUBLIC->value]);
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.schools.update', ['school' => $school]), schoolUpdatePayload($school, [
+            'education_monitor_id' => $newMonitor->id,
+            'education_services_office_id' => $foreignOffice->id,
+        ]))
+        ->assertSessionHasErrors('education_services_office_id');
+});
+
+test('updating to a monitor without offices clears education services office on related records', function () {
+    $user = createSchoolAdminUser();
+    $monitorWithOffice = EducationMonitor::factory()->create();
+    $office = EducationServicesOffice::factory()->for($monitorWithOffice, 'monitor')->create();
+    $monitorWithoutOffice = EducationMonitor::factory()->create();
+
+    $school = School::factory()
+        ->for($monitorWithOffice, 'monitor')
+        ->has(SchoolPeriod::factory(), 'periods')
+        ->create([
+            'type' => SchoolType::PUBLIC->value,
+            'education_services_office_id' => $office->id,
+        ]);
+
+    $schoolPeriod = $school->periods()->firstOrFail();
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.schools.update', ['school' => $school]), [
+            'education_monitor_id' => $monitorWithoutOffice->id,
+            'name' => $school->name,
+        ])
+        ->assertRedirect(route('administration.schools.show', ['school' => $school]));
+
+    $school->refresh();
+    $schoolPeriod->refresh();
+
+    expect($school->education_monitor_id)->toBe($monitorWithoutOffice->id)
+        ->and($school->education_services_office_id)->toBeNull()
+        ->and($schoolPeriod->education_services_office_id)->toBeNull();
 });
 
 test('authenticated users can delete a school without relations', function () {

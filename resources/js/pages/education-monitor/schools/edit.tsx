@@ -71,6 +71,18 @@ export default function Edit({ school, branchTypes, buildingTypes }: PageProps) 
                                             </Field>
 
                                             <Field>
+                                                <Label htmlFor="office_name">مكتب الخدمات التعليمية</Label>
+                                                <Input
+                                                    id="office_name"
+                                                    type="text"
+                                                    value={school.office?.name ?? "-"}
+                                                    className={school.office?.name ? "" : "font-mono"}
+                                                    disabled
+                                                    readOnly
+                                                />
+                                            </Field>
+
+                                            <Field>
                                                 <Label htmlFor="serial_number">الرقم التسلسلي</Label>
                                                 <Input
                                                     id="serial_number"
@@ -82,7 +94,7 @@ export default function Edit({ school, branchTypes, buildingTypes }: PageProps) 
                                                 />
                                             </Field>
 
-                                            <Field className="col-span-full">
+                                            <Field>
                                                 <Label htmlFor="type_name">نوع المدرسة</Label>
                                                 <Input
                                                     id="type_name"

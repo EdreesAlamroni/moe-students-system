@@ -185,12 +185,16 @@ class SchoolController extends Controller
     {
         Gate::authorize('update', $school);
 
-        $school->load(['monitor:id,uuid,name']);
+        $school->load([
+            'monitor:id,uuid,name',
+            'office:id,uuid,name',
+        ]);
 
         return Inertia::render('administration/schools/edit', [
             'school' => ResourcePayloadBuilder::make(
                 SchoolFormResource::make($school),
             ),
+            'monitors' => EducationMonitor::listWithOffices(),
             'branchTypes' => SchoolBranchType::optionsArray(),
             'buildingTypes' => SchoolBuildingType::optionsArray(),
         ]);

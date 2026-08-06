@@ -52,6 +52,23 @@ test('school periods synchronize denormalized fields from their canonical school
         ->name->toBe('الاسم المحدث');
 });
 
+test('students synchronize denormalized education monitor from their canonical school', function () {
+    $school = School::factory()->create(['name' => 'الاسم الأصلي']);
+    $schoolPeriod = SchoolPeriod::factory()->for($school)->create();
+    $student = Student::factory()->for($schoolPeriod)->create();
+
+    expect($student->education_monitor_id)->toBe($school->education_monitor_id);
+
+    $newMonitor = EducationMonitor::factory()->create();
+    $school->update([
+        'education_monitor_id' => $newMonitor->id,
+        'education_services_office_id' => null,
+        'name' => 'الاسم المحدث',
+    ]);
+
+    expect($student->refresh()->education_monitor_id)->toBe($newMonitor->id);
+});
+
 test('school creation supports the four accepted period scenarios', function (
     array $schoolAggregates,
     int $expectedSchools,

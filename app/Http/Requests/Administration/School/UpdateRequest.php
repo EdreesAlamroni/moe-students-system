@@ -4,12 +4,15 @@ namespace App\Http\Requests\Administration\School;
 
 use App\Enums\SchoolBranchType;
 use App\Enums\SchoolBuildingType;
+use App\Http\Requests\Shared\School\ValidatesSchoolOrganization;
 use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
+    use ValidatesSchoolOrganization;
+
     public function authorize(): bool
     {
         return auth('administration')->check();
@@ -17,34 +20,40 @@ class UpdateRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
+        return array_merge(
+            $this->educationMonitorRules(),
+            $this->educationServicesOfficeRules(),
+            [
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                ],
+                'educational_company_name' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                    ...($this->school()->isPrivate() ? ['required'] : []),
+                ],
+                'branch_type' => [
+                    'nullable',
+                    ...($this->school()->isPrivate() ? ['required'] : []),
+                    Rule::enum(SchoolBranchType::class),
+                ],
+                'building_type' => [
+                    'nullable',
+                    ...($this->school()->isPrivate() ? ['required'] : []),
+                    Rule::enum(SchoolBuildingType::class),
+                ],
             ],
-            'educational_company_name' => [
-                'nullable',
-                'string',
-                'max:255',
-                ...($this->school()->isPrivate() ? ['required'] : []),
-            ],
-            'branch_type' => [
-                'nullable',
-                ...($this->school()->isPrivate() ? ['required'] : []),
-                Rule::enum(SchoolBranchType::class),
-            ],
-            'building_type' => [
-                'nullable',
-                ...($this->school()->isPrivate() ? ['required'] : []),
-                Rule::enum(SchoolBuildingType::class),
-            ],
-        ];
+        );
     }
 
     public function getAttributes(): array
     {
         $validated = $this->validated();
+
+        $validated['education_services_office_id'] = $this->resolvedEducationServicesOfficeId();
 
         if (! $this->school()->isPrivate()) {
             unset($validated['educational_company_name'], $validated['branch_type'], $validated['building_type']);

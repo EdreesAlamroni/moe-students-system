@@ -9,8 +9,6 @@ use App\Enums\SchoolEducationalStageEnum;
 use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use App\Models\AcademicYear;
-use App\Models\EducationMonitor;
-use App\Models\EducationServicesOffice;
 use App\Models\GradeLevel;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
@@ -19,6 +17,8 @@ use Illuminate\Validation\Validator;
 
 abstract class StoreSchoolRequest extends FormRequest
 {
+    use ValidatesSchoolOrganization;
+
     /**
      * @return array<string, array<int, mixed>>
      */
@@ -394,64 +394,9 @@ abstract class StoreSchoolRequest extends FormRequest
             ]),
             [
                 'education_monitor_id' => $this->educationMonitorId(),
-                'education_services_office_id' => $this->educationServicesOfficeId(),
+                'education_services_office_id' => $this->resolvedEducationServicesOfficeId(),
             ],
         );
-    }
-
-    /**
-     * @return array<string, array<int, mixed>>
-     */
-    protected function educationMonitorRules(): array
-    {
-        return [
-            'education_monitor_id' => [
-                'required',
-                'integer',
-                Rule::exists(EducationMonitor::class, 'id'),
-            ],
-        ];
-    }
-
-    /**
-     * @return array<string, array<int, mixed>>
-     */
-    protected function educationServicesOfficeRules(): array
-    {
-        return [
-            'education_services_office_id' => [
-                'sometimes',
-                'nullable',
-                'integer',
-                Rule::requiredIf(function () {
-                    return $this->monitorHasOffices();
-                }),
-                Rule::exists(EducationServicesOffice::class, 'id')
-                    ->where('education_monitor_id', $this->educationMonitorId()),
-            ],
-        ];
-    }
-
-    protected function educationMonitorId(): ?int
-    {
-        $monitorId = $this->input('education_monitor_id');
-
-        if (blank($monitorId)) {
-            return null;
-        }
-
-        return (int) $monitorId;
-    }
-
-    protected function educationServicesOfficeId(): ?int
-    {
-        $officeId = $this->input('education_services_office_id');
-
-        if (blank($officeId)) {
-            return null;
-        }
-
-        return (int) $officeId;
     }
 
     protected function isPrivateType(): bool
@@ -472,19 +417,6 @@ abstract class StoreSchoolRequest extends FormRequest
     protected function isSeparateSchool(): bool
     {
         return $this->isDualPeriod() && ! $this->isSameSchool();
-    }
-
-    protected function monitorHasOffices(): bool
-    {
-        $monitorId = $this->educationMonitorId();
-
-        if (blank($monitorId)) {
-            return false;
-        }
-
-        return EducationServicesOffice::query()
-            ->where('education_monitor_id', '=', $monitorId)
-            ->exists();
     }
 
     protected function decodeArrayInput(string $key): ?array
