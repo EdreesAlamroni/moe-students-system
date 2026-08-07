@@ -572,6 +572,7 @@ test('authenticated users can update a user', function () {
     $target = User::factory()->create([
         'role' => UserRole::EMPLOYEE,
         'name' => 'Old Name',
+        'username' => 'old.username',
         'email' => 'old@example.com',
     ]);
     $existingRole = Role::findOrCreate('user:role:view', UserScope::ADMINISTRATION->value);
@@ -589,6 +590,7 @@ test('authenticated users can update a user', function () {
     $target->refresh();
 
     expect($target->name)->toBe('Updated Name')
+        ->and($target->username)->toBe('old.username')
         ->and($target->email)->toBe('updated@example.com')
         ->and($target->hasRole($newRole))->toBeTrue()
         ->and($target->hasRole($existingRole))->toBeFalse();
@@ -601,6 +603,18 @@ test('update validates required fields', function () {
     $this->actingAs($user, 'administration')
         ->put(route('administration.users.update', ['user' => $target]), [])
         ->assertSessionHasErrors(['name', 'roles']);
+});
+
+test('store rejects a duplicate username', function () {
+    $user = createUserAdminUser();
+    User::factory()->create(['username' => 'taken.username']);
+    $payload = administrationUserPayload([
+        'username' => 'taken.username',
+    ]);
+
+    $this->actingAs($user, 'administration')
+        ->post(route('administration.users.store'), $payload)
+        ->assertSessionHasErrors('username');
 });
 
 test('authenticated users can delete a user', function () {

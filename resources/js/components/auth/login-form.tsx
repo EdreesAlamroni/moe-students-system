@@ -37,6 +37,7 @@ export function LoginForm({ routes }: Props) {
                             id="username"
                             type="text"
                             name="username"
+                            className="not-placeholder-shown:font-mono"
                             autoComplete="username"
                             placeholder="اسم المُستخدم"
                             hasError={!!errors.username}

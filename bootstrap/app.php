@@ -6,11 +6,14 @@ use App\Http\Middleware\EnforceAcademicYearReadOnly;
 use App\Http\Middleware\EnsurePasswordIsChanged;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Support\UniqueUsernameConstraint;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\EncryptHistoryMiddleware;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -40,6 +43,16 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (UniqueConstraintViolationException $exception, Request $request) {
+            if (! UniqueUsernameConstraint::isViolation($exception)) {
+                return null;
+            }
+
+            throw ValidationException::withMessages([
+                'username' => [UniqueUsernameConstraint::validationMessage()],
+            ]);
+        });
+
         $exceptions->respond(function (Response $response) {
             if ($response->getStatusCode() === 419) {
                 flash()->warning(__('انتهت صلاحية الصفحة، يرجى المحاولة مرة أخرى.'));

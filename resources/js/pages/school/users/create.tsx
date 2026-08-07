@@ -2,10 +2,7 @@ import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
-import { usernameInputConstraints } from "@/lib/input-constraints";
-
 import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
-
 import type { Enum, SchoolPeriod } from "@/types";
 import type { RoleGroup } from "@/types/auth";
 
@@ -28,6 +25,7 @@ import InputError from "@/components/ui/controls/input-error";
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
 import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
+import UsernameField from "@/components/shared/users/username-field";
 
 import { Button } from "@/components/ui/actions/button";
 import { CreateButton } from "@/components/ui/actions/submit-button";
@@ -53,6 +51,7 @@ export default function Create({ scope, schoolPeriod, groupedRoles }: PageProps)
         isGroupSomeChecked,
         toggleGroupRoles,
     } = useGroupedRolesSelection(groupedRoles);
+
 
     return (
         <>
@@ -114,28 +113,9 @@ export default function Create({ scope, schoolPeriod, groupedRoles }: PageProps)
                                                 <InputError message={errors.name} />
                                             </Field>
 
-                                            <Field>
-                                                <Label
-                                                    htmlFor="username"
-                                                    hasError={!!errors.username}
-                                                    required
-                                                >
-                                                    اسم المُستخدم
-                                                </Label>
-
-                                                <Input
-                                                    id="username"
-                                                    type="text"
-                                                    name="username"
-                                                    className="not-placeholder-shown:font-mono"
-                                                    hasError={!!errors.username}
-                                                    autoComplete="username"
-                                                    required
-                                                    {...usernameInputConstraints()}
-                                                />
-
-                                                <InputError message={errors.username} />
-                                            </Field>
+                                            <UsernameField
+                                                error={errors.username}
+                                            />
 
                                             <Field className="col-span-full">
                                                 <Label
