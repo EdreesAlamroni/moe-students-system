@@ -185,7 +185,7 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead scope="col" className="w-24 font-mono">#</TableHead>
-                                            <TableHead scope="col">الرقم التسلسلي</TableHead>
+                                            <TableHead scope="col">رقم المدرسة</TableHead>
                                             <TableHead scope="col">اسم المدرسة</TableHead>
                                             <TableHead scope="col">الفترة الدراسية</TableHead>
                                             <TableHead scope="col">المُراقبة</TableHead>
@@ -196,7 +196,7 @@ export default function Index({ schools, monitors, types, filter, canAny, can }:
                                         {data.map((school: School, index: number) => (
                                             <TableRow key={school.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
-                                                <TableCell className="font-mono">{school.serial_number}</TableCell>
+                                                <TableCell className="font-mono">{school.number}</TableCell>
                                                 <TableCell>
                                                     <div>{school.name}</div>
                                                     <div className="mt-2 text-xs text-muted-foreground">

@@ -71,11 +71,11 @@ export default function Edit({ school, branchTypes, buildingTypes }: PageProps) 
                                             </Field>
 
                                             <Field>
-                                                <Label htmlFor="serial_number">الرقم التسلسلي</Label>
+                                                <Label htmlFor="number">رقم المدرسة</Label>
                                                 <Input
-                                                    id="serial_number"
+                                                    id="number"
                                                     type="text"
-                                                    value={school.serial_number}
+                                                    value={school.number}
                                                     className="font-mono"
                                                     disabled
                                                     readOnly

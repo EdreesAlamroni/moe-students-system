@@ -13,7 +13,7 @@ class SchoolCollection extends DirectModelCollection
         return $this->collection->map(fn (School $school): array => [
             'id' => $school->id,
             'uuid' => $school->uuid,
-            'serial_number' => $school->serial_number,
+            'number' => $school->number,
             'name' => $school->name,
             'type' => $school->type->toArray(),
             'monitor' => $school->relationLoaded('monitor')

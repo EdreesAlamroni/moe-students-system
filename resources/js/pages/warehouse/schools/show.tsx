@@ -70,8 +70,8 @@ export default function Show({ school, gradeLevels }: PageProps) {
                                 </DetailField>
 
                                 <DetailField>
-                                    <DetailLabel>الرقم التسلسلي</DetailLabel>
-                                    <DetailValue value={school.serial_number} className="font-mono" />
+                                    <DetailLabel>رقم المدرسة</DetailLabel>
+                                    <DetailValue value={school.number} className="font-mono" />
                                 </DetailField>
 
                                 <DetailField>

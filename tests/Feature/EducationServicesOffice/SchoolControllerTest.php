@@ -380,7 +380,7 @@ test('authenticated users can visit the show school page', function () {
         ->assertInertia(fn ($page) => $page
             ->component('education-services-office/schools/show')
             ->where('school.uuid', $school->uuid)
-            ->where('school.serial_number', $school->serial_number)
+            ->where('school.number', $school->number)
             ->where('school.office.name', $office->name)
         );
 });

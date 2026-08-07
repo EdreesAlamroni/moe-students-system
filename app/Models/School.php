@@ -28,7 +28,7 @@ use Illuminate\Support\Str;
  * @property string $uuid
  * @property int $education_monitor_id
  * @property int|null $education_services_office_id
- * @property string $serial_number
+ * @property string $number
  * @property SchoolType $type
  * @property string|null $educational_company_name
  * @property SchoolBranchType|null $branch_type
@@ -73,8 +73,8 @@ class School extends Model
     {
         static::creating(function (self $school): void {
             $count = (string) (self::query()->withTrashed()->count() + 1);
-            $serialNumber = Str::padLeft($count, 6, '0');
-            $school->serial_number = $serialNumber;
+            $number = Str::padLeft($count, 6, '0');
+            $school->number = $number;
         });
 
         static::saved(function (self $school): void {

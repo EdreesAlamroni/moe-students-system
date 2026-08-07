@@ -69,7 +69,7 @@ class SchoolReportController extends Controller
                 'schools.uuid',
                 'schools.education_monitor_id',
                 'schools.name',
-                'schools.serial_number',
+                'schools.number',
                 'schools.type',
                 'schools.created_at',
                 'schools.deleted_at',

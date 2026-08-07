@@ -17,7 +17,7 @@ class SchoolFormResource extends JsonResource
         return [
             'id' => $school->id,
             'uuid' => $school->uuid,
-            'serial_number' => $school->serial_number,
+            'number' => $school->number,
             'education_monitor_id' => $school->education_monitor_id,
             'monitor' => $this->whenLoaded('monitor', function (EducationMonitor $monitor) {
                 return $monitor->only(['id', 'uuid', 'name']);

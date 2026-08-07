@@ -270,7 +270,7 @@ export type School = {
     education_services_office_id?: number;
     office?: EducationServicesOffice;
     education_services_office?: EducationServicesOffice;
-    serial_number: string;
+    number: string;
     type: Enum;
     educational_company_name?: string;
     branch_type?: Enum;

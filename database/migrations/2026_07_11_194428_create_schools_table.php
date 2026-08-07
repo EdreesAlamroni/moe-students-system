@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid()->unique();
             $table->foreignId('education_monitor_id')->constrained('education_monitors')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('education_services_office_id')->nullable()->constrained('education_services_offices')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->string('serial_number')->unique();
+            $table->string('number')->unique();
             $table->string('type')->index();
             $table->string('educational_company_name')->nullable();
             $table->string('branch_type')->nullable();

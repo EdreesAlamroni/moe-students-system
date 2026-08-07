@@ -48,7 +48,7 @@ class SchoolController extends Controller
                 'schools.education_monitor_id',
                 'schools.education_services_office_id',
                 'schools.name',
-                'schools.serial_number',
+                'schools.number',
                 'schools.type',
                 'schools.created_at',
                 'schools.deleted_at',

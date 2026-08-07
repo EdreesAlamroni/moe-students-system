@@ -18,7 +18,7 @@ class SchoolResource extends JsonResource
         return [
             'id' => $school->id,
             'uuid' => $school->uuid,
-            'serial_number' => $school->serial_number,
+            'number' => $school->number,
             'name' => $school->name,
             'type' => $school->type->toArray(),
             'educational_company_name' => $school->educational_company_name,

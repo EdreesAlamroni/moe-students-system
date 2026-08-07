@@ -88,7 +88,7 @@ test('authenticated users can visit the school report page', function () {
             ->has('schools.data', 1)
             ->where('schools.data.0.uuid', $school->uuid)
             ->where('schools.data.0.name', $school->name)
-            ->where('schools.data.0.serial_number', $school->serial_number)
+            ->where('schools.data.0.number', $school->number)
             ->where('schools.data.0.office.name', $office->name)
             ->where('schools.data.0.students_count', 0)
             ->has('types')

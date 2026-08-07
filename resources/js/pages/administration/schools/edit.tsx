@@ -63,11 +63,11 @@ export default function Edit({ school, monitors, branchTypes, buildingTypes }: P
                                     <CardFormContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <Field>
-                                                <Label htmlFor="serial_number">الرقم التسلسلي</Label>
+                                                <Label htmlFor="number">رقم المدرسة</Label>
                                                 <Input
-                                                    id="serial_number"
+                                                    id="number"
                                                     type="text"
-                                                    value={school.serial_number}
+                                                    value={school.number}
                                                     className="font-mono"
                                                     disabled
                                                     readOnly
