@@ -19,13 +19,13 @@ import { DetailValue } from "@/components/ui/display/detail-value";
 import Field from "@/components/ui/controls/field";
 import { Label } from "@/components/ui/controls/label";
 import { Input } from "@/components/ui/controls/input";
-import PasswordInput from "@/components/ui/controls/password-input";
 import InputError from "@/components/ui/controls/input-error";
 
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
 import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
 import UsernameField from "@/components/shared/users/username-field";
+import PasswordField from "@/components/shared/users/password-field";
 
 import { Button } from "@/components/ui/actions/button";
 import { CreateButton } from "@/components/ui/actions/submit-button";
@@ -143,45 +143,10 @@ export default function Create({
                                                 <InputError message={errors.email} />
                                             </Field>
 
-                                            <Field>
-                                                <Label
-                                                    htmlFor="password"
-                                                    hasError={!!errors.password}
-                                                    required
-                                                >
-                                                    كلمة المرور
-                                                </Label>
-
-                                                <PasswordInput
-                                                    id="password"
-                                                    name="password"
-                                                    autoComplete="new-password"
-                                                    hasError={!!errors.password}
-                                                    required
-                                                />
-
-                                                <InputError message={errors.password} />
-                                            </Field>
-
-                                            <Field>
-                                                <Label
-                                                    htmlFor="password_confirmation"
-                                                    hasError={!!errors.password_confirmation}
-                                                    required
-                                                >
-                                                    تأكيد كلمة المرور
-                                                </Label>
-
-                                                <PasswordInput
-                                                    id="password_confirmation"
-                                                    name="password_confirmation"
-                                                    autoComplete="new-password"
-                                                    hasError={!!errors.password_confirmation}
-                                                    required
-                                                />
-
-                                                <InputError message={errors.password_confirmation} />
-                                            </Field>
+                                            <PasswordField
+                                                passwordError={errors.password}
+                                                passwordConfirmationError={errors.password_confirmation}
+                                            />
 
                                             <Separator className="col-span-full" />
 

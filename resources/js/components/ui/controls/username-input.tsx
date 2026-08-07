@@ -54,7 +54,6 @@ export function GenerateUsernameButton({
                 'text-muted-foreground transition-all duration-200',
                 'hover:border-primary/15 hover:bg-primary/5 hover:text-primary',
                 'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:outline-none',
-                'cursor-pointer',
                 'disabled:pointer-events-none disabled:opacity-50',
                 className,
             )}

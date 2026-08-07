@@ -66,6 +66,7 @@ export function LoginForm({ routes }: Props) {
                         <PasswordInput
                             id="password"
                             name="password"
+                            className="not-placeholder-shown:font-mono"
                             autoComplete="current-password"
                             placeholder="كلمة المرور"
                             tabIndex={2}
