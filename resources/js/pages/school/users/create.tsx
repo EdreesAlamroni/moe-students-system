@@ -25,6 +25,7 @@ import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
 import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
 import UsernameField from "@/components/shared/users/username-field";
+import EmailField from "@/components/shared/users/email-field";
 import PasswordField from "@/components/shared/users/password-field";
 
 import { Button } from "@/components/ui/actions/button";
@@ -117,24 +118,10 @@ export default function Create({ scope, schoolPeriod, groupedRoles }: PageProps)
                                                 error={errors.username}
                                             />
 
-                                            <Field className="col-span-full">
-                                                <Label
-                                                    htmlFor="email"
-                                                    hasError={!!errors.email}
-                                                >
-                                                    البريد الإلكتروني
-                                                </Label>
-
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    name="email"
-                                                    hasError={!!errors.email}
-                                                    autoComplete="email"
-                                                />
-
-                                                <InputError message={errors.email} />
-                                            </Field>
+                                            <EmailField
+                                                error={errors.email}
+                                                className="col-span-full"
+                                            />
 
                                             <PasswordField
                                                 passwordError={errors.password}

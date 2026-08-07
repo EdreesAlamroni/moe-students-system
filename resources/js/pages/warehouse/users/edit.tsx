@@ -26,6 +26,7 @@ import InputError from "@/components/ui/controls/input-error";
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
 import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
+import EmailField from "@/components/shared/users/email-field";
 
 import { Button } from "@/components/ui/actions/button";
 import { UpdateButton } from "@/components/ui/actions/submit-button";
@@ -120,25 +121,10 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                                 <InputError message={errors.name} />
                                             </Field>
 
-                                            <Field>
-                                                <Label
-                                                    htmlFor="email"
-                                                    hasError={!!errors.email}
-                                                >
-                                                    البريد الإلكتروني
-                                                </Label>
-
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    name="email"
-                                                    defaultValue={user.email ?? ""}
-                                                    hasError={!!errors.email}
-                                                    autoComplete="email"
-                                                />
-
-                                                <InputError message={errors.email} />
-                                            </Field>
+                                            <EmailField
+                                                error={errors.email}
+                                                defaultValue={user.email ?? ""}
+                                            />
 
                                             <Separator className="col-span-full" />
 
