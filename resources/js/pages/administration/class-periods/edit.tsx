@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
@@ -32,7 +32,7 @@ type PageProps = {
 }
 
 export default function Edit({ classPeriod, academicPeriods }: PageProps) {
-    const [isBreak, setIsBreak] = useState(classPeriod.is_break);
+    const [isBreak, setIsBreak] = React.useState(classPeriod.is_break);
 
     return (
         <>

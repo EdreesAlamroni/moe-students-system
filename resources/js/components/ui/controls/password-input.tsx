@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 
 import type { ComponentProps, Ref } from 'react';
 
@@ -26,7 +26,7 @@ export function GeneratePasswordButton({
     className,
     disabled = false,
 }: GeneratePasswordButtonProps) {
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [isAnimating, setIsAnimating] = React.useState(false);
 
     function handleClick(): void {
         if (disabled || isAnimating) {
@@ -85,7 +85,7 @@ export default function PasswordInput({
     onVisibleChange,
     ...props
 }: PasswordInputProps) {
-    const [internalVisible, setInternalVisible] = useState(false);
+    const [internalVisible, setInternalVisible] = React.useState(false);
     const isControlled = visible !== undefined;
     const showPassword = isControlled ? visible : internalVisible;
 

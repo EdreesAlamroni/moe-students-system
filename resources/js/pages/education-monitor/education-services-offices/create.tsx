@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
@@ -28,7 +28,7 @@ import { ReplyIcon } from "lucide-react";
 import { create, index, store } from "@/routes/education-monitor/education-services-offices";
 
 export default function Create() {
-    const [addLocationToMap, setAddLocationToMap] = useState<boolean>(false);
+    const [addLocationToMap, setAddLocationToMap] = React.useState<boolean>(false);
 
     return (
         <>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 
 import type { ComponentProps, Ref } from 'react';
 
@@ -26,7 +26,7 @@ export function GenerateUsernameButton({
     className,
     disabled = false,
 }: GenerateUsernameButtonProps) {
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [isAnimating, setIsAnimating] = React.useState(false);
 
     function handleClick(): void {
         if (disabled || isAnimating) {

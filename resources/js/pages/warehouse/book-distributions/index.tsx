@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Head, router, useForm } from '@inertiajs/react';
 
@@ -51,10 +51,10 @@ const visitOptions = {
 } as const;
 
 export default function Index({ monitors, schools, gradeLevels, selected, can }: IndexPageProps) {
-    const [loading, setLoading] = useState<LoadingTarget | null>(null);
-    const [pendingMonitorId, setPendingMonitorId] = useState<string>();
-    const [pendingSchoolId, setPendingSchoolId] = useState<string>();
-    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [loading, setLoading] = React.useState<LoadingTarget | null>(null);
+    const [pendingMonitorId, setPendingMonitorId] = React.useState<string>();
+    const [pendingSchoolId, setPendingSchoolId] = React.useState<string>();
+    const [confirmOpen, setConfirmOpen] = React.useState<boolean>(false);
 
     const form = useForm<{ grade_level_ids: number[] }>({ grade_level_ids: [] });
 

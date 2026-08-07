@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
@@ -56,8 +56,8 @@ export default function Create({
     const isEducationServicesOffice = scope.id === "education_services_office";
     const isSchool = scope.id === "school";
 
-    const [selectedOfficeId, setSelectedOfficeId] = useState<string>();
-    const [selectedSchoolPeriodId, setSelectedSchoolPeriodId] = useState<string>();
+    const [selectedOfficeId, setSelectedOfficeId] = React.useState<string>();
+    const [selectedSchoolPeriodId, setSelectedSchoolPeriodId] = React.useState<string>();
 
     const {
         selectedRoles,

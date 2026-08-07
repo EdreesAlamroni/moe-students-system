@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
@@ -37,10 +37,10 @@ type PageProps = {
 }
 
 export default function Edit({ warehouse, monitors }: PageProps) {
-    const [selectedMonitorIds, setSelectedMonitorIds] = useState<string[]>(
+    const [selectedMonitorIds, setSelectedMonitorIds] = React.useState<string[]>(
         warehouse.education_monitor_ids.map(String),
     );
-    const [addLocationToMap, setAddLocationToMap] = useState(warehouse.add_location_to_map);
+    const [addLocationToMap, setAddLocationToMap] = React.useState(warehouse.add_location_to_map);
 
     return (
         <>

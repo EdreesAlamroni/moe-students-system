@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
@@ -34,8 +34,8 @@ type PageProps = {
 };
 
 export default function Create({ educationalStages, gradeLevels, classroomNames }: PageProps) {
-    const [selectedStage, setSelectedStage] = useState<string>("");
-    const [selectedGradeLevelId, setSelectedGradeLevelId] = useState<string>("");
+    const [selectedStage, setSelectedStage] = React.useState<string>("");
+    const [selectedGradeLevelId, setSelectedGradeLevelId] = React.useState<string>("");
 
     const availableGradeLevels = selectedStage
         ? gradeLevels.filter((gradeLevel) => gradeLevel.educational_stage.id === selectedStage)

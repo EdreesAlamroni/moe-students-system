@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
@@ -39,10 +39,10 @@ type PageProps = {
 }
 
 export default function Edit({ office, monitors }: PageProps) {
-    const [selectedMonitorId, setSelectedMonitorId] = useState<string | undefined>(
+    const [selectedMonitorId, setSelectedMonitorId] = React.useState<string | undefined>(
         office.education_monitor_id?.toString(),
     );
-    const [addLocationToMap, setAddLocationToMap] = useState<boolean>(office.add_location_to_map === true);
+    const [addLocationToMap, setAddLocationToMap] = React.useState<boolean>(office.add_location_to_map === true);
 
     return (
         <>

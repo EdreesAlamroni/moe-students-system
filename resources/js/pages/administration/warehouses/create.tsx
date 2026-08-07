@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Form, Head, Link } from "@inertiajs/react";
 
@@ -37,8 +37,8 @@ type PageProps = {
 }
 
 export default function Create({ monitors }: PageProps) {
-    const [selectedMonitorIds, setSelectedMonitorIds] = useState<string[]>([]);
-    const [addLocationToMap, setAddLocationToMap] = useState<boolean>(false);
+    const [selectedMonitorIds, setSelectedMonitorIds] = React.useState<string[]>([]);
+    const [addLocationToMap, setAddLocationToMap] = React.useState<boolean>(false);
 
     return (
         <>
