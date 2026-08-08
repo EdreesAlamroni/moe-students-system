@@ -81,8 +81,8 @@ test('authenticated users can select an academic year', function () {
 
 test('selecting an academic year clears the cached current academic year', function () {
     $user = User::factory()->create();
-    $activeYear = AcademicYear::factory()->active()->create();
-    $inactiveYear = AcademicYear::factory()->create(['is_active' => false]);
+    $activeYear = AcademicYear::factory()->forStartYear(2026)->active()->create();
+    $inactiveYear = AcademicYear::factory()->forStartYear(2025)->create(['is_active' => false]);
 
     $this->actingAs($user, 'administration');
     app()->instance(DashboardAuth::class, DashboardAuth::administration());

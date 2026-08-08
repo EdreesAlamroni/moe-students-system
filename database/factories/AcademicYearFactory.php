@@ -13,6 +13,8 @@ class AcademicYearFactory extends Factory
 {
     private const DEFAULT_START_YEAR = 2026;
 
+    private static int $sequence = 0;
+
     /**
      * Define the model's default state.
      *
@@ -20,7 +22,9 @@ class AcademicYearFactory extends Factory
      */
     public function definition(): array
     {
-        return AcademicYearCalendar::attributesForStartYear(self::DEFAULT_START_YEAR);
+        return AcademicYearCalendar::attributesForStartYear(
+            self::DEFAULT_START_YEAR + self::$sequence++,
+        );
     }
 
     public function forStartYear(int $startYear): static
