@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid()->unique();
             $table->string('name')->index();
-            $table->date('start_date');
+            $table->date('start_date')->unique();
             $table->date('end_date');
             $table->boolean('is_active');
             $table->timestamps();

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 test('first install command creates administrator users from interactive input', function () {
     $this->artisan('setup:install')
+        ->expectsQuestion('Start year for the active academic year (e.g. 2026 creates 2027/2026)', '2025')
         ->expectsQuestion('How many administrator users do you want to create?', '2')
         ->expectsQuestion('Name', 'Primary Admin')
         ->expectsQuestion('Username', 'primary-admin')

@@ -3,14 +3,16 @@
 namespace Database\Factories;
 
 use App\Models\AcademicYear;
+use App\Support\AcademicYearCalendar;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<AcademicYear>
  */
 class AcademicYearFactory extends Factory
 {
+    private const DEFAULT_START_YEAR = 2026;
+
     /**
      * Define the model's default state.
      *
@@ -18,21 +20,12 @@ class AcademicYearFactory extends Factory
      */
     public function definition(): array
     {
-        $today = now();
+        return AcademicYearCalendar::attributesForStartYear(self::DEFAULT_START_YEAR);
+    }
 
-        $startYear = $today->month >= 9
-            ? $today->year
-            : $today->year - 1;
-
-        $start = Carbon::create($startYear, 9, 1);
-        $end = Carbon::create($startYear + 1, 6, 30);
-
-        return [
-            'name' => sprintf('%d/%d', $startYear + 1, $startYear),
-            'start_date' => $start->toDateString(),
-            'end_date' => $end->toDateString(),
-            'is_active' => $today->betweenIncluded($start, $end),
-        ];
+    public function forStartYear(int $startYear): static
+    {
+        return $this->state(AcademicYearCalendar::attributesForStartYear($startYear));
     }
 
     public function active(): static

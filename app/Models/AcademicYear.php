@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasUuid;
+use App\Support\AcademicYearCalendar;
 use App\Support\Auth\DashboardAuth;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -176,45 +177,62 @@ class AcademicYear extends Model
      * Start: Custom methods
      */
 
-    public static function currentStartYear(?Carbon $date = null): int
+    public static function activate(self $year): self
     {
-        $date ??= now();
+        self::query()
+            ->where('is_active', '=', true)
+            ->update(['is_active' => false]);
 
-        return $date->month >= 9
-            ? $date->year
-            : $date->year - 1;
+        self::query()
+            ->where('id', '=', $year->id)
+            ->update(['is_active' => true]);
+
+        self::clearCachedCurrent();
+
+        return $year->fresh();
     }
 
     public static function nextStartYear(): int
     {
-        $latestStartDate = self::query()
-            ->orderByDesc('start_date')
-            ->value('start_date');
+        /** @var self|null $activeYear */
+        $activeYear = self::query()->active()->first();
 
-        if ($latestStartDate) {
-            return Carbon::parse($latestStartDate)->year + 1;
+        if ($activeYear) {
+            $nextStartYear = $activeYear->startYear() + 1;
+
+            $exists = self::query()
+                ->where('name', '=', AcademicYearCalendar::nameForStartYear($nextStartYear))
+                ->exists();
+
+            if (! $exists) {
+                return $nextStartYear;
+            }
         }
 
-        return self::currentStartYear() + 1;
+        /** @var self|null $latestYear */
+        $latestYear = self::query()->orderByDesc('start_date')->first();
+
+        if ($latestYear) {
+            return $latestYear->startYear() + 1;
+        }
+
+        return AcademicYearCalendar::startYearFromDate(now());
     }
 
-    /**
-     * @return array{name: string, min_start_date: string, max_end_date: string}
-     */
     public static function defaultsForCreateForm(): array
     {
-        // TODO: Improve the default name for the next academic year.
-
-        $startYear = self::nextStartYear();
-
-        $startDate = Carbon::create($startYear, 9, 1);
-        $endDate = Carbon::create($startYear + 1, 6, 30);
+        $attributes = AcademicYearCalendar::attributesForStartYear(self::nextStartYear());
 
         return [
-            'name' => sprintf('%d/%d', $startYear + 1, $startYear),
-            'min_start_date' => $startDate->toDateString(),
-            'max_end_date' => $endDate->toDateString(),
+            'name' => $attributes['name'],
+            'min_start_date' => $attributes['start_date'],
+            'max_end_date' => $attributes['end_date'],
         ];
+    }
+
+    public function startYear(): int
+    {
+        return (int) explode('/', $this->name)[1];
     }
 
     public function hasAnyRelations(): bool

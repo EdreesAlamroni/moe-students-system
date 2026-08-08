@@ -19,7 +19,7 @@ class AcademicYearPolicy
 
     public function create(User $user): bool
     {
-        if (! is_null(AcademicYear::current())) {
+        if (AcademicYear::query()->active()->exists()) {
             return false;
         }
 

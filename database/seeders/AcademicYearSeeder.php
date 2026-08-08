@@ -3,42 +3,31 @@
 namespace Database\Seeders;
 
 use App\Models\AcademicYear;
+use App\Support\AcademicYearCalendar;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class AcademicYearSeeder extends Seeder
 {
+    private const REFERENCE_ACTIVE_START_YEAR = 2026;
+
+    private const HISTORY_YEARS = 30;
+
     public function run(): void
     {
-        foreach ($this->academicYears() as $attributes) {
-            AcademicYear::create($attributes);
-        }
-    }
+        $historyYears = AcademicYearCalendar::historicalDefinitions(self::HISTORY_YEARS, self::REFERENCE_ACTIVE_START_YEAR);
 
-    protected function academicYears(): array
-    {
-        $today = now();
-
-        $currentStartYear = $today->month >= 9
-            ? $today->year
-            : $today->year - 1;
-
-        $years = [];
-
-        for ($offset = 20; $offset >= 0; $offset--) {
-            $startYear = $currentStartYear - $offset;
-
-            $start = Carbon::create($startYear, 9, 1);
-            $end = Carbon::create($startYear + 1, 6, 30);
-
-            $years[] = [
-                'name' => sprintf('%d/%d', $startYear + 1, $startYear),
-                'start_date' => $start->toDateString(),
-                'end_date' => $end->toDateString(),
-                'is_active' => $offset === 0,
-            ];
+        foreach ($historyYears as $attributes) {
+            AcademicYear::query()->firstOrCreate(['name' => $attributes['name']], $attributes);
         }
 
-        return $years;
+        $existsActiveYear = AcademicYear::query()->active()->exists();
+
+        if (! $existsActiveYear) {
+            $activeYear = AcademicYear::query()
+                ->where('name', '=', AcademicYearCalendar::nameForStartYear(self::REFERENCE_ACTIVE_START_YEAR))
+                ->firstOrFail();
+
+            AcademicYear::activate($activeYear);
+        }
     }
 }
