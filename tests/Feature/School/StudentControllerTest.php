@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\GradeLevelEnum;
+use App\Enums\StudentExamEnrollmentStatus;
 use App\Enums\StudentRegistrationStatus;
 use App\Enums\UserRole;
 use App\Enums\UserScope;
@@ -246,6 +247,8 @@ test('authenticated school users can store a student with grade level enrollment
     $student = Student::query()->where('first_name', 'Khaled')->first();
 
     expect($student)->not->toBeNull()
+        ->and($student->number)->toMatch('/^STU-\d{8}$/')
+        ->and($student->exam_enrollment_status)->toBe(StudentExamEnrollmentStatus::REGISTERED)
         ->and($student->school_period_id)->toBe($schoolPeriod->id)
         ->and($student->education_monitor_id)->toBe($schoolPeriod->education_monitor_id)
         ->and($student->enrollment)->not->toBeNull()

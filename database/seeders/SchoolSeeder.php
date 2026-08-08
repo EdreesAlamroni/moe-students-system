@@ -61,7 +61,7 @@ class SchoolSeeder extends Seeder
         $schoolPeriod = SchoolPeriod::query()->firstOrCreate(
             [
                 'school_id' => $school->id,
-                'academic_period' => collect(SchoolAcademicPeriod::values())->random(),
+                'academic_period' => collect(SchoolAcademicPeriod::getPrimaryValues())->random(),
             ],
             [
                 'students_gender' => collect(SchoolStudentsGender::values())->random(),

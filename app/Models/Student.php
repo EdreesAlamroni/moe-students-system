@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Concerns\HasEntityNumber;
 use App\Concerns\HasUuid;
+use App\Enums\EntityNumberType;
 use App\Enums\Gender;
 use App\Enums\SchoolEducationalStageEnum;
 use App\Enums\StudentExamEnrollmentStatus;
@@ -23,7 +25,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -61,11 +62,11 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, StudentPsychosocialCard> $psychosocialCards
  * @property-read StudentPsychosocialCard|null $psychosocialCard
  */
-#[Guarded(['id'])]
+#[Guarded(['id', 'number'])]
 class Student extends Model
 {
     /** @use HasFactory<\Database\Factories\StudentFactory> */
-    use HasFactory, HasUuid, SoftDeletes;
+    use HasEntityNumber, HasFactory, HasUuid, SoftDeletes;
 
     protected function casts(): array
     {
@@ -82,13 +83,8 @@ class Student extends Model
 
     protected static function booted(): void
     {
-        static::created(function (self $student) {
-            $id = (string) $student->id;
-            $number = Str::padLeft($id, 7, '0');
-            $student->updateQuietly([
-                'number' => $number,
-                'exam_enrollment_status' => StudentExamEnrollmentStatus::REGISTERED,
-            ]);
+        static::creating(function (self $student): void {
+            $student->exam_enrollment_status = StudentExamEnrollmentStatus::REGISTERED;
         });
     }
 
@@ -518,6 +514,11 @@ class Student extends Model
     /*
      * Start: Custom Functions
      */
+
+    public function entityNumberType(): EntityNumberType
+    {
+        return EntityNumberType::Student;
+    }
 
     public function hasAnyRelations(): bool
     {

@@ -115,6 +115,11 @@ export default function Show({ student, transfers, canAny, can }: PageProps) {
                                     <DetailValue value={student.exam_enrollment_status?.name} />
                                 </DetailField>
 
+                                <DetailField className="col-span-full">
+                                    <DetailLabel>رقم الطالب</DetailLabel>
+                                    <DetailValue value={student.number} className="font-mono" />
+                                </DetailField>
+
                                 <DetailField>
                                     <DetailLabel>الاسم الأول للطالب</DetailLabel>
                                     <DetailValue value={student.first_name} />

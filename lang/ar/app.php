@@ -45,6 +45,7 @@ return [
             'display_names' => [
                 'morning' => 'فترة صباحية',
                 'evening' => 'فترة مسائية',
+                'dual_period' => 'صباحية و مسائية',
             ],
         ],
 

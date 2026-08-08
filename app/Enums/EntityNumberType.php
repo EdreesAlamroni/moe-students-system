@@ -8,6 +8,7 @@ enum EntityNumberType: string
     case EducationMonitor = 'education_monitor';
     case EducationServicesOffice = 'education_services_office';
     case School = 'school';
+    case Student = 'student';
 
     public function prefix(): string
     {
@@ -16,6 +17,7 @@ enum EntityNumberType: string
             self::EducationMonitor => 'EM',
             self::EducationServicesOffice => 'ESO',
             self::School => 'SCH',
+            self::Student => 'STU',
         };
     }
 
@@ -26,6 +28,7 @@ enum EntityNumberType: string
             self::EducationMonitor => 'entity_number_em',
             self::EducationServicesOffice => 'entity_number_eso',
             self::School => 'entity_number_sch',
+            self::Student => 'entity_number_stu',
         };
     }
 
@@ -36,6 +39,7 @@ enum EntityNumberType: string
             self::EducationMonitor => 4,
             self::EducationServicesOffice => 4,
             self::School => 5,
+            self::Student => 8,
         };
     }
 
@@ -55,6 +59,7 @@ enum EntityNumberType: string
             self::EducationMonitor => '/^EM-\d{4}$/',
             self::EducationServicesOffice => '/^ESO-\d{4}$/',
             self::School => '/^SCH-\d{5}$/',
+            self::Student => '/^STU-\d{8}$/',
         };
     }
 }

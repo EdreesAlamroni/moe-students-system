@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,7 +18,7 @@ return new class extends Migration
             $table->foreignId('education_monitor_id')->nullable()->constrained('education_monitors')->cascadeOnUpdate()->nullOnDelete();
             $table->foreignId('school_period_id')->nullable()->constrained('school_periods')->cascadeOnUpdate()->nullOnDelete();
             $table->foreignId('nationality_id')->constrained('nationalities')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->string('number')->unique()->nullable();
+            $table->string('number')->unique();
             $table->string('registration_status')->index();
             $table->string('exam_enrollment_status')->index()->nullable();
             $table->string('first_name');
@@ -37,6 +38,9 @@ return new class extends Migration
                 $table->fullText(['first_name', 'father_name', 'grandfather_name', 'surname'], 'student_full_name_fulltext');
             }
         });
+
+        DB::statement('DROP SEQUENCE IF EXISTS entity_number_stu');
+        DB::statement('CREATE SEQUENCE entity_number_stu START WITH 1 INCREMENT BY 1');
     }
 
     /**
@@ -45,5 +49,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('students');
+
+        DB::statement('DROP SEQUENCE IF EXISTS entity_number_stu');
     }
 };
