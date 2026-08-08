@@ -63,7 +63,7 @@ function ShowAcademicYearNotice() {
         >
             <InfoIcon />
             <AlertTitle className="flex flex-wrap items-center gap-2">
-                <span>يتم حالياً عرض بيانات السنة الدراسية</span>
+                <span>تعرض حالياً بيانات السنة الدراسية</span>
                 {hasCurrentAcademicYear ? (
                     <span className="font-mono">{currentAcademicYear?.name}</span>
                 ) : (
@@ -112,7 +112,7 @@ function ChangeAcademicYearNotice() {
             >
                 <InfoIcon />
                 <AlertTitle className="flex flex-wrap items-center gap-2">
-                    <span>يتم حالياً عرض بيانات السنة الدراسية</span>
+                    <span>تعرض حالياً بيانات السنة الدراسية</span>
                     {hasCurrentAcademicYear ? (
                         <span className="font-mono">{currentAcademicYear?.name}</span>
                     ) : (
