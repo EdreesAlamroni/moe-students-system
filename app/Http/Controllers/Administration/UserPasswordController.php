@@ -17,6 +17,7 @@ class UserPasswordController extends Controller
 
         $user->update([
             'password' => $request->validated('password'),
+            'must_change_password' => true,
         ]);
 
         flash_success('update-password');

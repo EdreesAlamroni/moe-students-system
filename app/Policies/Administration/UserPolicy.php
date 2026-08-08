@@ -13,10 +13,6 @@ class UserPolicy
 
     public function view(User $user, User $target): bool
     {
-        if ($target->isAdministrator()) {
-            return false;
-        }
-
         return $user->can('user:view');
     }
 
