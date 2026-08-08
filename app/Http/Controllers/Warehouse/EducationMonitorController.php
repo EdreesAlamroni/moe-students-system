@@ -23,6 +23,7 @@ class EducationMonitorController extends Controller
             ->select([
                 'id',
                 'uuid',
+                'number',
                 'name',
                 'municipal_id',
                 'warehouse_id',

@@ -13,6 +13,7 @@ class EducationMonitorCollection extends DirectModelCollection
         return $this->collection->map(fn (EducationMonitor $monitor): array => [
             'id' => $monitor->id,
             'uuid' => $monitor->uuid,
+            'number' => $monitor->number,
             'name' => $monitor->name,
             'offices_count' => (int) ($monitor->offices_count ?? 0),
             'schools_count' => (int) ($monitor->schools_count ?? 0),

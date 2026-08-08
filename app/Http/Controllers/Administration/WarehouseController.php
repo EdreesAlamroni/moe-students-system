@@ -30,7 +30,7 @@ class WarehouseController extends Controller
         Gate::authorize('viewAny', Warehouse::class);
 
         $warehouses = QueryBuilder::for(Warehouse::class)
-            ->select(['id', 'uuid', 'name', 'created_at', 'deleted_at'])
+            ->select(['id', 'uuid', 'number', 'name', 'created_at', 'deleted_at'])
             ->withCount([
                 'monitors',
                 'schools',
@@ -99,7 +99,7 @@ class WarehouseController extends Controller
         ]);
 
         $monitors = $warehouse->monitors()
-            ->select(['id', 'uuid', 'name', 'municipal_id', 'created_at', 'deleted_at'])
+            ->select(['id', 'uuid', 'number', 'name', 'municipal_id', 'created_at', 'deleted_at'])
             ->withCount([
                 'offices',
                 'schools',

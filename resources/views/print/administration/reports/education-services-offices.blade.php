@@ -1,6 +1,6 @@
 <x-print-layout :title="__('تقرير مكاتب الخدمات التعليمية')" :printed-by="auth('administration')->user()->name">
     <x-slot:content>
-        <x-print.report-table :title="__('تقرير مكاتب الخدمات التعليمية')" :colspan="5">
+        <x-print.report-table :title="__('تقرير مكاتب الخدمات التعليمية')" :colspan="6">
             <x-slot:headerRight>
                 <span>{{ __('إجمالي مكاتب الخدمات') }}:</span>
                 <span class="font-mono">{{ $offices->count() }}</span>
@@ -8,6 +8,7 @@
 
             <x-slot:columns>
                 <th scope="col">{{ __('ر.م') }}</th>
+                <th scope="col">{{ __('رقم المكتب') }}</th>
                 <th scope="col">{{ __('مكتب الخدمات التعليمية') }}</th>
                 <th scope="col">{{ __('المُراقبة') }}</th>
                 <th scope="col" class="text-center">{{ __('عدد المدارس') }}</th>
@@ -17,6 +18,7 @@
             @forelse ($offices as $office)
                 <tr>
                     <td class="font-mono">{{ $loop->iteration }}</td>
+                    <td class="font-mono">{{ $office->number }}</td>
                     <td>{{ $office->name }}</td>
                     <td>{{ $office->monitor?->name }}</td>
                     <td class="text-center font-mono">{{ $office->schools_count ?? 0 }}</td>
@@ -24,7 +26,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="print-empty-cell">
+                    <td colspan="6" class="print-empty-cell">
                         <x-empty-state class="justify-center" />
                     </td>
                 </tr>

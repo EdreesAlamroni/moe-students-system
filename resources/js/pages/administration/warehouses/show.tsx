@@ -93,32 +93,20 @@ export default function Show({ warehouse, monitors, canAny, can }: PageProps) {
                         <CardContent className="flex flex-col gap-6">
                             <DetailFields columns={2}>
                                 <DetailField>
+                                    <DetailLabel>رقم المخزن</DetailLabel>
+                                    <DetailValue value={warehouse.number} className="font-mono" />
+                                </DetailField>
+
+                                <DetailField>
                                     <DetailLabel>اسم المخزن</DetailLabel>
                                     <DetailValue value={warehouse.name} />
                                 </DetailField>
 
-                                <DetailField>
+                                <DetailField className="col-span-full">
                                     <DetailLabel>العنوان</DetailLabel>
                                     <DetailValue value={warehouse.address} />
                                 </DetailField>
                             </DetailFields>
-
-                            {/* <DetailFields columns={1}>
-                                <DetailField className="col-span-full">
-                                    <DetailLabel>المُراقبات</DetailLabel>
-                                    <DetailValue variant="default">
-                                        {warehouse.monitors && warehouse.monitors.length > 0 ? (
-                                            <ul className="flex flex-col gap-3 list-disc list-inside">
-                                                {warehouse.monitors.map((monitor) => (
-                                                    <li key={monitor.uuid}>{monitor.name}</li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            "-"
-                                        )}
-                                    </DetailValue>
-                                </DetailField>
-                            </DetailFields> */}
 
                             {warehouse.has_coordinates && (
                                 <>
@@ -163,6 +151,7 @@ export default function Show({ warehouse, monitors, canAny, can }: PageProps) {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">رقم المُراقبة</TableHead>
                                             <TableHead scope="col">اسم المُراقبة</TableHead>
                                             <TableHead scope="col" className="text-center">عدد مكاتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
@@ -174,6 +163,7 @@ export default function Show({ warehouse, monitors, canAny, can }: PageProps) {
                                         {monitorsData.map((monitor: MonitorProps, index: number) => (
                                             <TableRow key={monitor.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell className="font-mono">{monitor.number}</TableCell>
                                                 <TableCell>{monitor.name}</TableCell>
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue className="font-mono" value={monitor.offices_count} fallback={0} />

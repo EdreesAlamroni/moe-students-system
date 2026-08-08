@@ -94,6 +94,11 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                         <CardContent className="flex flex-col gap-6">
                             <DetailFields columns={2}>
                                 <DetailField>
+                                    <DetailLabel>رقم المُراقبة</DetailLabel>
+                                    <DetailValue value={monitor.number} className="font-mono" />
+                                </DetailField>
+
+                                <DetailField>
                                     <DetailLabel>اسم المُراقبة</DetailLabel>
                                     <DetailValue value={monitor.name} />
                                 </DetailField>
@@ -117,7 +122,7 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                                     </DetailValue>
                                 </DetailField>
 
-                                <DetailField className="col-span-full">
+                                <DetailField>
                                     <DetailLabel>العنوان</DetailLabel>
                                     <DetailValue value={monitor.address} />
                                 </DetailField>
@@ -169,6 +174,7 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">رقم المكتب</TableHead>
                                             <TableHead scope="col">اسم مكتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
                                             <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
@@ -179,6 +185,7 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                                         {officesData.map((office: OfficeProps, index: number) => (
                                             <TableRow key={office.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell className="font-mono">{office.number}</TableCell>
                                                 <TableCell>{office.name}</TableCell>
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue className="font-mono" value={office.schools_count} fallback={0} />

@@ -2,7 +2,7 @@
     <x-slot:content>
         <x-print.report-table
             :title="__('تقرير المدارس')"
-            :colspan="6"
+            :colspan="7"
         >
             <x-slot:headerRight>
                 <span>{{ __('إجمالي المدارس') }}:</span>
@@ -11,6 +11,7 @@
 
             <x-slot:columns>
                 <th scope="col">{{ __('ر.م') }}</th>
+                <th scope="col">{{ __('رقم المدرسة') }}</th>
                 <th scope="col">{{ __('المدرسة') }}</th>
                 <th scope="col">{{ __('نوع المدرسة') }}</th>
                 <th scope="col">{{ __('الفترة الدراسية') }}</th>
@@ -21,6 +22,7 @@
             @forelse ($schools as $school)
                 <tr>
                     <td class="font-mono">{{ $loop->iteration }}</td>
+                    <td class="font-mono">{{ $school->number }}</td>
                     <td>{{ $school->name }}</td>
                     <td>{{ $school->type->label() }}</td>
                     <td>{{ $school->academic_period_label }}</td>
@@ -29,7 +31,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="print-empty-cell">
+                    <td colspan="7" class="print-empty-cell">
                         <x-empty-state class="justify-center" />
                     </td>
                 </tr>

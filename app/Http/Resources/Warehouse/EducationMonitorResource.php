@@ -17,6 +17,7 @@ class EducationMonitorResource extends JsonResource
         return [
             'id' => $monitor->id,
             'uuid' => $monitor->uuid,
+            'number' => $monitor->number,
             'name' => $monitor->name,
             'municipal' => $this->whenLoaded('municipal', function (Municipal $municipal): array {
                 return $municipal->only(['id', 'uuid', 'name']);

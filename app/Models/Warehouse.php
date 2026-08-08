@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Concerns\HasEntityNumber;
 use App\Concerns\HasUuid;
+use App\Enums\EntityNumberType;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,6 +20,7 @@ use Illuminate\Support\Collection;
 /**
  * @property int $id
  * @property string $uuid
+ * @property string $number
  * @property string $name
  * @property string|null $address
  * @property float|null $latitude
@@ -28,11 +31,11 @@ use Illuminate\Support\Collection;
  * @property-read int|null $monitors_count
  * @property-read int|null $schools_count
  */
-#[Guarded(['id'])]
+#[Guarded(['id', 'number'])]
 class Warehouse extends Model
 {
     /** @use HasFactory<\Database\Factories\WarehouseFactory> */
-    use HasFactory, HasUuid, SoftDeletes;
+    use HasEntityNumber, HasFactory, HasUuid, SoftDeletes;
 
     protected function casts(): array
     {
@@ -89,6 +92,11 @@ class Warehouse extends Model
     /*
      * Start: Custom Functions
      */
+
+    public function entityNumberType(): EntityNumberType
+    {
+        return EntityNumberType::Warehouse;
+    }
 
     public function hasAnyRelations(): bool
     {

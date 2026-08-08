@@ -100,6 +100,7 @@ test('authenticated users can visit the education services offices page', functi
             ->component('education-monitor/education-services-offices/index')
             ->has('offices.data', 1)
             ->where('offices.data.0.uuid', $office->uuid)
+            ->where('offices.data.0.number', $office->number)
             ->where('offices.data.0.students_count', 0)
             ->where('filter', [])
         );
@@ -161,6 +162,7 @@ test('authenticated users can visit the show education services office page', fu
         ->assertInertia(fn ($page) => $page
             ->component('education-monitor/education-services-offices/show')
             ->where('office.name', $office->name)
+            ->where('office.number', $office->number)
             ->where('office.monitor.name', $monitor->name)
             ->where('office.students_count', 0)
         );

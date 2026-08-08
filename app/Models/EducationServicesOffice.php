@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Concerns\HasEntityNumber;
 use App\Concerns\HasUuid;
+use App\Enums\EntityNumberType;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,6 +25,7 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property string $uuid
  * @property int $education_monitor_id
+ * @property string $number
  * @property string $name
  * @property string|null $phone_number
  * @property string|null $whatsapp_phone_number
@@ -39,11 +42,11 @@ use Illuminate\Support\Str;
  * @property-read int|null $schools_count
  * @property-read int|null $students_count
  */
-#[Guarded(['id'])]
+#[Guarded(['id', 'number'])]
 class EducationServicesOffice extends Model
 {
     /** @use HasFactory<\Database\Factories\EducationServicesOfficeFactory> */
-    use HasFactory, HasUuid, SoftDeletes;
+    use HasEntityNumber, HasFactory, HasUuid, SoftDeletes;
 
     protected function casts(): array
     {
@@ -153,6 +156,11 @@ class EducationServicesOffice extends Model
     /*
      * Start: Custom Functions
      */
+
+    public function entityNumberType(): EntityNumberType
+    {
+        return EntityNumberType::EducationServicesOffice;
+    }
 
     public function hasAnyRelations(): bool
     {

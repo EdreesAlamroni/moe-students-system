@@ -161,6 +161,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">رقم المكتب</TableHead>
                                             <TableHead scope="col">مكتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col">المُراقبة</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
@@ -171,6 +172,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                                         {data.map((office: EducationServicesOffice, index: number) => (
                                             <TableRow key={office.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell className="font-mono">{office.number}</TableCell>
                                                 <TableCell>{office.name}</TableCell>
                                                 <TableCell>{office.monitor?.name}</TableCell>
                                                 <TableCell className="text-center">

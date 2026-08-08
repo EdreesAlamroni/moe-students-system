@@ -61,6 +61,7 @@ class EducationServicesOfficeReportController extends Controller
             ->select([
                 'id',
                 'uuid',
+                'number',
                 'education_monitor_id',
                 'name',
                 'created_at',

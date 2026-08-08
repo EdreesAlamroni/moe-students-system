@@ -68,6 +68,7 @@ test('authenticated warehouse users can visit the education monitors index', fun
             ->component('warehouse/education-monitors/index')
             ->has('monitors.data', 1)
             ->where('monitors.data.0.name', $monitor->name)
+            ->where('monitors.data.0.number', $monitor->number)
             ->where('monitors.data.0.students_count', 0)
             ->where('filter', [])
             ->missing('can.create')
@@ -104,6 +105,7 @@ test('authenticated warehouse users can visit the show education monitor page', 
         ->assertInertia(fn ($page) => $page
             ->component('warehouse/education-monitors/show')
             ->where('monitor.name', $monitor->name)
+            ->where('monitor.number', $monitor->number)
             ->where('monitor.students_count', 0)
             ->missing('can.update')
             ->missing('can.delete')

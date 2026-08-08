@@ -2,7 +2,7 @@
     <x-slot:content>
         <x-print.report-table
             :title="__('تقرير مكاتب الخدمات التعليمية')"
-            :colspan="4"
+            :colspan="5"
             :organization-lines="auth('education_monitor')->user()->organization->printOrganizationLines()"
         >
             <x-slot:headerRight>
@@ -12,6 +12,7 @@
 
             <x-slot:columns>
                 <th scope="col">{{ __('ر.م') }}</th>
+                <th scope="col">{{ __('رقم المكتب') }}</th>
                 <th scope="col">{{ __('اسم مكتب الخدمات التعليمية') }}</th>
                 <th scope="col" class="text-center">{{ __('عدد المدارس') }}</th>
                 <th scope="col" class="text-center">{{ __('عدد الطلاب') }}</th>
@@ -20,13 +21,14 @@
             @forelse ($offices as $office)
                 <tr>
                     <td class="font-mono">{{ $loop->iteration }}</td>
+                    <td class="font-mono">{{ $office->number }}</td>
                     <td>{{ $office->name }}</td>
                     <td class="text-center font-mono">{{ $office->schools_count ?? 0 }}</td>
                     <td class="text-center font-mono">{{ $office->students_count ?? 0 }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="print-empty-cell">
+                    <td colspan="5" class="print-empty-cell">
                         <x-empty-state class="justify-center" />
                     </td>
                 </tr>

@@ -191,6 +191,7 @@ export type ClassScheduleGrid = {
 export type Warehouse = {
     id: number;
     uuid: string;
+    number: string;
     name: string;
     address?: string;
     add_location_to_map?: boolean;
@@ -210,6 +211,7 @@ export type Warehouse = {
 export type EducationMonitor = {
     id: number;
     uuid: string;
+    number: string;
     municipal_id?: number;
     municipal?: Municipal;
     name: string;
@@ -237,6 +239,7 @@ export type EducationMonitor = {
 export type EducationServicesOffice = {
     id: number;
     uuid: string;
+    number: string;
     education_monitor_id: number;
     monitor?: EducationMonitor;
     education_monitor?: EducationMonitor;

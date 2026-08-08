@@ -64,6 +64,7 @@ class EducationServicesOfficeReportController extends Controller
             ->select([
                 'education_services_offices.id',
                 'education_services_offices.uuid',
+                'education_services_offices.number',
                 'education_services_offices.education_monitor_id',
                 'education_services_offices.name',
                 'education_services_offices.created_at',

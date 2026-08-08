@@ -77,6 +77,11 @@ export default function Show({ office, canAny, can }: PageProps) {
                         <CardContent className="flex flex-col gap-6">
                             <DetailFields columns={2}>
                                 <DetailField>
+                                    <DetailLabel>رقم المكتب</DetailLabel>
+                                    <DetailValue value={office.number} className="font-mono" />
+                                </DetailField>
+
+                                <DetailField>
                                     <DetailLabel>اسم مكتب الخدمات التعليمية</DetailLabel>
                                     <DetailValue value={office.name} />
                                 </DetailField>
@@ -100,7 +105,7 @@ export default function Show({ office, canAny, can }: PageProps) {
                                     </DetailValue>
                                 </DetailField>
 
-                                <DetailField className="col-span-full">
+                                <DetailField>
                                     <DetailLabel>العنوان</DetailLabel>
                                     <DetailValue value={office.address} />
                                 </DetailField>

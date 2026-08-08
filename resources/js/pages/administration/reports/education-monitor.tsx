@@ -74,6 +74,7 @@ export default function Index({ monitors, canAny, can }: PageProps) {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">رقم المُراقبة</TableHead>
                                             <TableHead scope="col">المُراقبة</TableHead>
                                             <TableHead scope="col" className="text-center">عدد مكاتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
@@ -84,6 +85,7 @@ export default function Index({ monitors, canAny, can }: PageProps) {
                                         {data.map((monitor: EducationMonitor, index: number) => (
                                             <TableRow key={monitor.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell className="font-mono">{monitor.number}</TableCell>
                                                 <TableCell>{monitor.name}</TableCell>
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue className="font-mono" value={monitor.offices_count} fallback={0} />

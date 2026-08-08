@@ -57,6 +57,7 @@ class EducationMonitorReportController extends Controller
             ->select([
                 'id',
                 'uuid',
+                'number',
                 'municipal_id',
                 'name',
                 'created_at',

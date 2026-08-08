@@ -74,6 +74,18 @@ export default function Edit({ office, monitors }: PageProps) {
 
                                     <CardFormContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <Field className="col-span-full">
+                                                <Label htmlFor="number">رقم المكتب</Label>
+                                                <Input
+                                                    id="number"
+                                                    type="text"
+                                                    value={office.number}
+                                                    className="font-mono"
+                                                    disabled
+                                                    readOnly
+                                                />
+                                            </Field>
+
                                             <Field>
                                                 <Label
                                                     htmlFor="education_monitor_id"

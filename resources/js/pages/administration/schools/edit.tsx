@@ -9,7 +9,6 @@ import { AdministrationOrganizationFields } from "@/components/shared/schools/ad
 import MainContainer from "@/components/ui/structure/main-container";
 import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
 import { FormLayout } from "@/components/ui/structure/form-layout";
-import { Separator } from "@/components/ui/structure/separator";
 
 import RequiredFieldsNote from "@/components/ui/display/required-fields-note";
 
@@ -84,8 +83,6 @@ export default function Edit({ school, monitors, branchTypes, buildingTypes }: P
                                                     readOnly
                                                 />
                                             </Field>
-
-                                            <Separator className="col-span-full" />
 
                                             <AdministrationOrganizationFields
                                                 monitors={monitors}

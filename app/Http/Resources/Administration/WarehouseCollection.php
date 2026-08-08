@@ -13,6 +13,7 @@ class WarehouseCollection extends DirectModelCollection
         return $this->collection->map(fn (Warehouse $warehouse): array => [
             'id' => $warehouse->id,
             'uuid' => $warehouse->uuid,
+            'number' => $warehouse->number,
             'name' => $warehouse->name,
             'monitors_count' => $warehouse->monitors_count,
             'schools_count' => $warehouse->schools_count,

@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Concerns\HasEntityNumber;
 use App\Concerns\HasUuid;
+use App\Enums\EntityNumberType;
 use App\Enums\SchoolAcademicPeriod;
 use App\Enums\SchoolBranchType;
 use App\Enums\SchoolBuildingType;
@@ -21,7 +23,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -46,11 +47,11 @@ use Illuminate\Support\Str;
  * @property-read EloquentCollection<int, Student> $students
  * @property-read int|null $students_count
  */
-#[Guarded(['id'])]
+#[Guarded(['id', 'number'])]
 class School extends Model
 {
     /** @use HasFactory<\Database\Factories\SchoolFactory> */
-    use HasFactory, HasUuid, SoftDeletes;
+    use HasEntityNumber, HasFactory, HasUuid, SoftDeletes;
 
     private const PERIOD_DENORMALIZED_COLUMNS = [
         'education_monitor_id',
@@ -71,12 +72,6 @@ class School extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (self $school): void {
-            $count = (string) (self::query()->withTrashed()->count() + 1);
-            $number = Str::padLeft($count, 6, '0');
-            $school->number = $number;
-        });
-
         static::saved(function (self $school): void {
             if ($school->wasChanged(self::PERIOD_DENORMALIZED_COLUMNS)) {
                 SchoolPeriod::query()
@@ -107,6 +102,11 @@ class School extends Model
             'education_services_office_id' => $this->education_services_office_id,
             'name' => $this->name,
         ];
+    }
+
+    public function entityNumberType(): EntityNumberType
+    {
+        return EntityNumberType::School;
     }
 
     /*

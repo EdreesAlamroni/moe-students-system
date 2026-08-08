@@ -130,6 +130,7 @@ export default function Index({ warehouses, filter, canAny, can }: PageProps) {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
+                                            <TableHead scope="col">رقم المخزن</TableHead>
                                             <TableHead scope="col">اسم المخزن</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المُراقبات</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
@@ -140,6 +141,7 @@ export default function Index({ warehouses, filter, canAny, can }: PageProps) {
                                         {data.map((warehouse: WarehouseProps, index: number) => (
                                             <TableRow key={warehouse.uuid}>
                                                 <TableCell className="font-mono">{index + 1}</TableCell>
+                                                <TableCell className="font-mono">{warehouse.number}</TableCell>
                                                 <TableCell>{warehouse.name}</TableCell>
                                                 <TableCell className="text-center">
                                                     <TableCellNullableValue className="font-mono" value={warehouse.monitors_count} fallback={0} />

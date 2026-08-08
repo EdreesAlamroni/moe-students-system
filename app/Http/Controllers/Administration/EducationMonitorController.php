@@ -29,7 +29,15 @@ class EducationMonitorController extends Controller
         Gate::authorize('viewAny', EducationMonitor::class);
 
         $monitors = QueryBuilder::for(EducationMonitor::class)
-            ->select(['id', 'uuid', 'name', 'municipal_id', 'created_at', 'deleted_at'])
+            ->select([
+                'id',
+                'uuid',
+                'number',
+                'name',
+                'municipal_id',
+                'created_at',
+                'deleted_at',
+            ])
             ->withCount([
                 'offices',
                 'schools',
@@ -90,7 +98,7 @@ class EducationMonitorController extends Controller
 
         $offices = EducationServicesOffice::query()
             ->whereBelongsTo($monitor, 'monitor')
-            ->select(['id', 'uuid', 'education_monitor_id', 'name', 'created_at', 'deleted_at'])
+            ->select(['id', 'uuid', 'number', 'education_monitor_id', 'name', 'created_at', 'deleted_at'])
             ->ordered()
             ->paginate(pageName: 'offices')
             ->withQueryString()

@@ -49,6 +49,11 @@ export default function Show({ monitor }: PageProps) {
                         <CardContent className="flex flex-col gap-6">
                             <DetailFields columns={2}>
                                 <DetailField>
+                                    <DetailLabel>رقم المُراقبة</DetailLabel>
+                                    <DetailValue value={monitor.number} className="font-mono" />
+                                </DetailField>
+
+                                <DetailField>
                                     <DetailLabel>اسم المُراقبة</DetailLabel>
                                     <DetailValue value={monitor.name} />
                                 </DetailField>
@@ -72,7 +77,7 @@ export default function Show({ monitor }: PageProps) {
                                     </DetailValue>
                                 </DetailField>
 
-                                <DetailField className="col-span-full">
+                                <DetailField>
                                     <DetailLabel>العنوان</DetailLabel>
                                     <DetailValue value={monitor.address} />
                                 </DetailField>

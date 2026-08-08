@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Concerns\HasEntityNumber;
 use App\Concerns\HasUuid;
+use App\Enums\EntityNumberType;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,6 +26,7 @@ use Illuminate\Support\Str;
  * @property string $uuid
  * @property int $municipal_id
  * @property int|null $warehouse_id
+ * @property string $number
  * @property string $name
  * @property string|null $phone_number
  * @property string|null $whatsapp_phone_number
@@ -41,11 +44,11 @@ use Illuminate\Support\Str;
  * @property-read int|null $schools_count
  * @property-read int|null $students_count
  */
-#[Guarded(['id'])]
+#[Guarded(['id', 'number'])]
 class EducationMonitor extends Model
 {
     /** @use HasFactory<\Database\Factories\EducationMonitorFactory> */
-    use HasFactory, HasUuid, SoftDeletes;
+    use HasEntityNumber, HasFactory, HasUuid, SoftDeletes;
 
     private const GENERATED_NAME_PREFIX = 'مُراقبة التّربية والتّعليم';
 
@@ -164,6 +167,11 @@ class EducationMonitor extends Model
     /*
      * Start: Custom Functions
      */
+
+    public function entityNumberType(): EntityNumberType
+    {
+        return EntityNumberType::EducationMonitor;
+    }
 
     public function hasAnyRelations(): bool
     {

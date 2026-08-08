@@ -16,6 +16,7 @@ class EducationServicesOfficeFormResource extends JsonResource
         return [
             'id' => $office->id,
             'uuid' => $office->uuid,
+            'number' => $office->number,
             'name' => $office->name,
             'phone_number' => $office->phone_number,
             'whatsapp_phone_number' => $office->whatsapp_phone_number,

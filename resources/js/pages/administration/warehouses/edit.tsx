@@ -77,6 +77,18 @@ export default function Edit({ warehouse, monitors }: PageProps) {
 
                                     <CardFormContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <Field className="col-span-full">
+                                                <Label htmlFor="number">رقم المخزن</Label>
+                                                <Input
+                                                    id="number"
+                                                    type="text"
+                                                    value={warehouse.number}
+                                                    className="font-mono"
+                                                    disabled
+                                                    readOnly
+                                                />
+                                            </Field>
+
                                             <Field>
                                                 <Label
                                                     htmlFor="name"

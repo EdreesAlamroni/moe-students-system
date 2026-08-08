@@ -66,6 +66,18 @@ export default function Edit({ office }: PageProps) {
 
                                     <CardFormContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <Field>
+                                                <Label htmlFor="number">رقم المكتب</Label>
+                                                <Input
+                                                    id="number"
+                                                    type="text"
+                                                    value={office.number}
+                                                    className="font-mono"
+                                                    disabled
+                                                    readOnly
+                                                />
+                                            </Field>
+
                                             <Field className="col-span-full">
                                                 <Label
                                                     htmlFor="name"

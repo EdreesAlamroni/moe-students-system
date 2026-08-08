@@ -86,6 +86,7 @@ test('authenticated users can visit the education monitors page', function () {
             ->component('administration/education-monitors/index')
             ->has('monitors.data', 1)
             ->where('monitors.data.0.name', $monitor->name)
+            ->where('monitors.data.0.number', $monitor->number)
             ->where('monitors.data.0.students_count', 0)
             ->where('filter', [])
         );
@@ -116,6 +117,8 @@ test('authenticated users can store an education monitor and name is generated f
 
     $monitor = EducationMonitor::query()->firstOrFail();
 
+    expect($monitor->number)->toMatch('/^EM-\d{4}$/');
+
     expect($monitor->name)->toBe('مُراقبة التّربية والتّعليم بنغازي');
 
     $this->assertDatabaseHas('education_monitors', [
@@ -145,9 +148,11 @@ test('authenticated users can visit the show education monitor page', function (
         ->assertInertia(fn ($page) => $page
             ->component('administration/education-monitors/show')
             ->where('monitor.name', $monitor->name)
+            ->where('monitor.number', $monitor->number)
             ->where('monitor.students_count', 0)
             ->has('offices.data', 1)
             ->where('offices.data.0.uuid', $office->uuid)
+            ->where('offices.data.0.number', $office->number)
         );
 });
 

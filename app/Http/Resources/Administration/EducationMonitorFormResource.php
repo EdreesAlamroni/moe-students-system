@@ -16,6 +16,7 @@ class EducationMonitorFormResource extends JsonResource
         return [
             'id' => $monitor->id,
             'uuid' => $monitor->uuid,
+            'number' => $monitor->number,
             'name' => $monitor->name,
             'municipal_id' => $monitor->municipal_id,
             'phone_number' => $monitor->phone_number,

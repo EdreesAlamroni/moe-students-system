@@ -87,6 +87,32 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                     <CardFormContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <Field>
+                                                <Label htmlFor="number">رقم المُراقبة</Label>
+                                                <Input
+                                                    id="number"
+                                                    type="text"
+                                                    value={monitor.number}
+                                                    className="font-mono"
+                                                    disabled
+                                                    readOnly
+                                                />
+                                            </Field>
+
+                                            <Field>
+                                                <Label htmlFor="name">
+                                                    اسم المُراقبة
+                                                </Label>
+
+                                                <Input
+                                                    id="name"
+                                                    type="text"
+                                                    value={generatedName}
+                                                    placeholder={selectedMunicipalId ? "اسم المُراقبة" : "يرجى اختيار البلدية أولاً"}
+                                                    disabled
+                                                />
+                                            </Field>
+
+                                            <Field className="col-span-full">
                                                 <Label
                                                     htmlFor="municipal_id"
                                                     hasError={!!errors.municipal_id}
@@ -129,20 +155,6 @@ export default function Edit({ monitor, municipals }: PageProps) {
                                                 )}
 
                                                 <InputError message={errors.municipal_id} />
-                                            </Field>
-
-                                            <Field>
-                                                <Label htmlFor="name">
-                                                    اسم المُراقبة
-                                                </Label>
-
-                                                <Input
-                                                    id="name"
-                                                    type="text"
-                                                    value={generatedName}
-                                                    placeholder={selectedMunicipalId ? "اسم المُراقبة" : "يرجى اختيار البلدية أولاً"}
-                                                    disabled
-                                                />
                                             </Field>
 
                                             <Field>

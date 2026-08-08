@@ -87,6 +87,7 @@ test('authenticated users can visit the education services offices page', functi
             ->component('administration/education-services-offices/index')
             ->has('offices.data', 1)
             ->where('offices.data.0.uuid', $office->uuid)
+            ->where('offices.data.0.number', $office->number)
             ->where('offices.data.0.monitor.name', $monitor->name)
             ->where('offices.data.0.students_count', 0)
             ->has('monitors')
@@ -117,6 +118,8 @@ test('authenticated users can store an education services office', function () {
 
     $office = EducationServicesOffice::query()->firstOrFail();
 
+    expect($office->number)->toMatch('/^ESO-\d{4}$/');
+
     $this->assertDatabaseHas('education_services_offices', [
         'id' => $office->id,
         'education_monitor_id' => $monitor->id,
@@ -145,6 +148,7 @@ test('authenticated users can visit the show education services office page', fu
         ->assertInertia(fn ($page) => $page
             ->component('administration/education-services-offices/show')
             ->where('office.name', $office->name)
+            ->where('office.number', $office->number)
             ->where('office.students_count', 0)
         );
 });

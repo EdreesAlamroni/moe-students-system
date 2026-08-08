@@ -13,6 +13,7 @@ class EducationServicesOfficeCollection extends DirectModelCollection
         return $this->collection->map(fn (EducationServicesOffice $office): array => [
             'id' => $office->id,
             'uuid' => $office->uuid,
+            'number' => $office->number,
             'name' => $office->name,
             'monitor' => $office->relationLoaded('monitor')
                 ? $office->monitor->only(['id', 'uuid', 'name'])
