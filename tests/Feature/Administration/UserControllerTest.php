@@ -727,12 +727,26 @@ test('password update requires confirmation to match', function () {
         ->assertSessionHasErrors('password');
 });
 
-test('non-administrators cannot update a user password', function () {
+test('non-administrators can update a non-administrator password', function () {
     $user = User::factory()->create(['role' => UserRole::EMPLOYEE]);
     Permission::findOrCreate('user:update', UserScope::ADMINISTRATION->value);
     $user->givePermissionTo('user:update');
 
     $target = User::factory()->create(['role' => UserRole::EMPLOYEE]);
+
+    $this->actingAs($user, 'administration')
+        ->put(route('administration.users.password.update', ['user' => $target]), [
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
+        ])
+        ->assertRedirect(route('administration.users.show', ['user' => $target]));
+
+    expect(Hash::check('new-password-123', $target->fresh()->password))->toBeTrue();
+});
+
+test('cannot update an administrator password', function () {
+    $user = createUserAdminUser();
+    $target = User::factory()->create(['role' => UserRole::MANAGER]);
     $originalPassword = $target->password;
 
     $this->actingAs($user, 'administration')

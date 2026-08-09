@@ -66,7 +66,7 @@ class UserPolicy
 
     public function updatePassword(User $user, User $target): bool
     {
-        if (! $user->isAdministrator()) {
+        if ($target->isAdministrator()) {
             return false;
         }
 
