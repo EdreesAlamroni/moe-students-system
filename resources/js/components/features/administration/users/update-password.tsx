@@ -4,11 +4,6 @@ import { Form } from '@inertiajs/react';
 
 import type { User } from '@/types';
 
-import Field from '@/components/ui/controls/field';
-import { Label } from '@/components/ui/controls/label';
-import PasswordInput from '@/components/ui/controls/password-input';
-import InputError from '@/components/ui/controls/input-error';
-
 import { Button } from '@/components/ui/actions/button';
 import { UpdateButton } from '@/components/ui/actions/submit-button';
 
@@ -24,6 +19,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/overlay/dialog';
+
+import PasswordField from "@/components/shared/users/password-field";
 
 import { KeyRoundIcon } from 'lucide-react';
 
@@ -83,46 +80,10 @@ export function UpdatePassword({ user }: UpdatePasswordProps) {
                             </DialogHeader>
 
                             <DialogBody>
-                                <Field>
-                                    <Label
-                                        htmlFor="password"
-                                        hasError={!!errors.password}
-                                        required
-                                    >
-                                        كلمة المرور
-                                    </Label>
-
-                                    <PasswordInput
-                                        id="password"
-                                        name="password"
-                                        autoComplete="new-password"
-                                        hasError={!!errors.password}
-                                        required
-                                        autoFocus
-                                    />
-
-                                    <InputError message={errors.password} />
-                                </Field>
-
-                                <Field>
-                                    <Label
-                                        htmlFor="password_confirmation"
-                                        hasError={!!errors.password_confirmation}
-                                        required
-                                    >
-                                        تأكيد كلمة المرور
-                                    </Label>
-
-                                    <PasswordInput
-                                        id="password_confirmation"
-                                        name="password_confirmation"
-                                        autoComplete="new-password"
-                                        hasError={!!errors.password_confirmation}
-                                        required
-                                    />
-
-                                    <InputError message={errors.password_confirmation} />
-                                </Field>
+                                <PasswordField
+                                    passwordError={errors.password}
+                                    passwordConfirmationError={errors.password_confirmation}
+                                />
                             </DialogBody>
 
                             <DialogFooter>
