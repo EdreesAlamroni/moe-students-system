@@ -272,7 +272,7 @@ return [
         'passport_number' => 'رقم جواز السفر',
         'date_of_birth' => 'تاريخ الميلاد',
         'national_id' => 'الرقم الوطني',
-        'family_registration_number' => 'رقم القيد',
+        'family_registration_number' => 'رقم قيد العائلة',
         'classroom_id' => 'الفصل الدراسي',
         'classroom_ids' => 'الفصول الدراسية',
         'classroom_ids.*' => 'الفصل الدراسي',

@@ -171,7 +171,7 @@ export default function Show({ student, transfers, canAny, can }: PageProps) {
                                 </DetailField>
 
                                 <DetailField>
-                                    <DetailLabel>رقم القيد</DetailLabel>
+                                    <DetailLabel>رقم قيد العائلة</DetailLabel>
                                     <DetailValue value={student.family_registration_number} className="font-mono" />
                                 </DetailField>
                             </DetailFields>

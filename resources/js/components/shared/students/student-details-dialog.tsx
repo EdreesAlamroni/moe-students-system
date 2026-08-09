@@ -146,7 +146,7 @@ export default function StudentDetailsDialog({ student, context }: StudentDetail
 
                                 <DetailField>
                                     <DetailLabel>
-                                        رقم القيد
+                                        رقم قيد العائلة
                                     </DetailLabel>
                                     <DetailValue value={student.family_registration_number} className="font-mono" />
                                 </DetailField>

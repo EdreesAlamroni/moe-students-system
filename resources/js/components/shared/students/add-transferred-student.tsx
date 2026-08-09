@@ -208,7 +208,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                                         type="text"
                                         name="filter[family_registration_number]"
                                         defaultValue={filter.family_registration_number}
-                                        placeholder="رقم القيد"
+                                        placeholder="رقم قيد العائلة"
                                         className="not-placeholder-shown:font-mono"
                                         autoComplete="off"
                                         {...decimalInputConstraints({
@@ -330,7 +330,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
 
                                                         {student.is_libyan ? (
                                                             <div className="mt-2 text-xs text-muted-foreground">
-                                                                <span>رقم القيد:</span>
+                                                                <span>رقم قيد العائلة:</span>
                                                                 <span className="ms-1 font-mono">
                                                                     {student.family_registration_number}
                                                                 </span>

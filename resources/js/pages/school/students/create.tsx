@@ -410,7 +410,7 @@ export default function Create({ gradeLevels, registrationStatuses, nationalitie
                                                             hasError={!!errors.passport_number}
                                                             required={isLibyanNationalitySelected}
                                                         >
-                                                            رقم القيد
+                                                            رقم قيد العائلة
                                                         </Label>
 
                                                         <Input

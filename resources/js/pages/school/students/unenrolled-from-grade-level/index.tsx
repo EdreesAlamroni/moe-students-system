@@ -143,7 +143,7 @@ export default function Index({ students, nationalities, registrationStatuses, f
                                         name="filter[family_registration_number]"
                                         defaultValue={filter.family_registration_number}
                                         className="not-placeholder-shown:font-mono"
-                                        placeholder="رقم القيد"
+                                        placeholder="رقم قيد العائلة"
                                         autoComplete="off"
                                         {...decimalInputConstraints({
                                             allowDecimal: false,
@@ -227,7 +227,7 @@ export default function Index({ students, nationalities, registrationStatuses, f
 
                                                     {student.is_libyan ? (
                                                         <div className="mt-2 text-xs text-muted-foreground">
-                                                            <span>رقم القيد:</span>
+                                                            <span>رقم قيد العائلة:</span>
                                                             <span className="font-mono ms-1">{student.family_registration_number}</span>
                                                         </div>
                                                     ) : (

@@ -491,7 +491,7 @@ export default function StudentStatusPage({
                                                 type="text"
                                                 name="filter[family_registration_number]"
                                                 defaultValue={filter.family_registration_number}
-                                                placeholder="رقم القيد"
+                                                placeholder="رقم قيد العائلة"
                                                 autoComplete="off"
                                             />
 

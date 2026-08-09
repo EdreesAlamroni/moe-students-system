@@ -216,7 +216,7 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
                                         </DetailField>
 
                                         <DetailField>
-                                            <DetailLabel>رقم القيد</DetailLabel>
+                                            <DetailLabel>رقم قيد العائلة</DetailLabel>
                                             <DetailValue value={student.family_registration_number} className="font-mono" />
                                         </DetailField>
                                     </>
