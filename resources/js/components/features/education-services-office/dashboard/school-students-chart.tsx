@@ -21,7 +21,7 @@ const MAX_TICK_LENGTH = 16;
 
 const chartConfig = {
     students: {
-        label: "الطلاب",
+        label: "الطلبة",
         color: "var(--chart-2)",
     },
 } satisfies ChartConfig;
@@ -34,8 +34,8 @@ type SchoolStudentsChartProps = {
 export default function SchoolStudentsChart({ items, className }: SchoolStudentsChartProps) {
     return (
         <DashboardSectionCard
-            title="توزيع الطلاب حسب المدارس"
-            description="أكبر المدارس في نطاق المكتب من حيث عدد الطلاب المسجلين"
+            title="توزيع الطلبة حسب المدارس"
+            description="أكبر المدارس في نطاق المكتب من حيث عدد الطلبة المسجلين"
             icon={UsersIcon}
             reloadProps={["schoolDistribution"]}
             isLoading={!items}

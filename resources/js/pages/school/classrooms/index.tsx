@@ -146,7 +146,7 @@ export default function Index({ classrooms, gradeLevels, classroomNames, filter,
                                 >
                                     <Link href={index.url()}>
                                         <RefreshCcwIcon />
-                                        <span>مسح حقول الفلتر</span>
+                                        <span>مسح حقول التصفية</span>
                                     </Link>
                                 </Button>
                             </div>
@@ -171,7 +171,7 @@ export default function Index({ classrooms, gradeLevels, classroomNames, filter,
                                         <TableHead scope="col" className="font-mono w-24">#</TableHead>
                                         <TableHead scope="col">الصف / الفصل الدراسي</TableHead>
                                         <TableHead scope="col">المرحلة الدراسية</TableHead>
-                                        <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                        <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                         <TableHead scope="col" />
                                     </TableRow>
                                 </TableHeader>

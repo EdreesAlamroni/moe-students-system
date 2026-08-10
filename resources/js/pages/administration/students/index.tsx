@@ -67,7 +67,7 @@ const visitOptions = {
 function StudentsSectionSkeleton() {
     return (
         <>
-            <section aria-busy="true" aria-label="جارٍ تحميل فلاتر البحث">
+            <section aria-busy="true" aria-label="جارٍ تحميل حقول البحث">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-40" />
@@ -88,7 +88,7 @@ function StudentsSectionSkeleton() {
                 </Card>
             </section>
 
-            <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلاب">
+            <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلبة">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-24" />
@@ -166,7 +166,7 @@ export default function Index({
 
     return (
         <>
-            <Head title="الطلاب" />
+            <Head title="الطلبة" />
 
             <MainContainer showAcademicYearNotice>
                 <section>
@@ -301,8 +301,8 @@ export default function Index({
                                     }
                                     description={
                                         activeMonitorId
-                                            ? "بعد اختيار المدرسة، ستظهر فلاتر البحث وقائمة الطلاب المسجّلين فيها."
-                                            : "اختر المُراقبة ثم المدرسة لعرض قائمة الطلاب وتطبيق فلاتر البحث."
+                                            ? "بعد اختيار المدرسة، ستظهر حقول البحث وقائمة الطلبة المسجلين فيها."
+                                            : "اختر المُراقبة ثم المدرسة لعرض قائمة الطلبة وحقول البحث."
                                     }
                                 />
                             </CardContent>
@@ -461,7 +461,7 @@ export default function Index({
                                                 })}
                                                 >
                                                     <RefreshCcwIcon />
-                                                    <span>مسح حقول الفلتر</span>
+                                                    <span>مسح حقول التصفية</span>
                                                 </Link>
                                             </Button>
                                         </div>
@@ -475,7 +475,7 @@ export default function Index({
                                 <CardHeader className="border-b">
                                     <CardTitle>
                                         <ListIcon />
-                                        <span>الطلاب</span>
+                                        <span>الطلبة</span>
                                     </CardTitle>
                                 </CardHeader>
                                 {studentData.length > 0 ? (
@@ -560,7 +560,7 @@ export default function Index({
 Index.layout = () => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: index.url(),
         },
     ],

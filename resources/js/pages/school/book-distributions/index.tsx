@@ -163,7 +163,7 @@ export default function Index({
                     <BookTextIcon />
                     <AlertTitle>توزيع الكُتب المدرسية</AlertTitle>
                     <AlertDescription className="flex flex-col gap-1">
-                        <span>اختر الصف الدراسي، ويمكنك اختيار الفصل الدراسي اختياريًا لعرض الطلاب.</span>
+                        <span>اختر الصف الدراسي، ويمكنك اختيار الفصل الدراسي اختياريًا لعرض الطلبة.</span>
                         <span>يسمح بتسليم الكُتب لكل طالب مرة واحدة فقط خلال السنة الدراسية الحالية.</span>
                     </AlertDescription>
                 </Alert>
@@ -278,7 +278,8 @@ export default function Index({
                             <CardContent>
                                 <EmptyState
                                     text="اختر الصف الدراسي للمتابعة"
-                                    description="بعد اختيار الصف الدراسي، ستظهر فلاتر الطلاب وقائمة الطلاب."
+                                    description="بعد اختيار الصف الدراسي، ستظهر حقول البحث عن الطلبة وقائمة الطلبة."
+
                                 />
                             </CardContent>
                         </Card>
@@ -320,7 +321,7 @@ export default function Index({
                                         <CardTitle>
                                             <FunnelIcon />
                                             <div className="flex items-center gap-x-1.5">
-                                                <span>فلترة الطلاب</span>
+                                                <span>فرز الطلبة</span>
                                                 <span className="font-mono">({students.length})</span>
                                             </div>
                                         </CardTitle>
@@ -368,7 +369,7 @@ export default function Index({
                                                     })}
                                                 >
                                                     <RefreshCcwIcon />
-                                                    <span>مسح حقول الفلتر</span>
+                                                    <span>مسح حقول التصفية</span>
                                                 </Link>
                                             </Button>
                                         </div>
@@ -386,7 +387,7 @@ export default function Index({
                                         <UsersIcon />
                                         <div className="flex min-w-0 flex-1 items-center justify-between gap-x-4">
                                             <div className="flex items-center gap-x-1.5">
-                                                <span>قائمة الطلاب</span>
+                                                <span>قائمة الطلبة</span>
                                                 {students.length > 0 && (
                                                     <span className="font-mono">({students.length})</span>
                                                 )}
@@ -412,7 +413,7 @@ export default function Index({
                                                     <TableHead scope="col" className="w-12 has-[[role=checkbox]]:pr-4!">
                                                         <Checkbox
                                                             role="checkbox"
-                                                            aria-label="تحديد جميع الطلاب المؤهلين"
+                                                            aria-label="تحديد جميع الطلبة المؤهلين"
                                                             disabled={eligibleStudents.length === 0 || form.processing}
                                                             checked={allEligibleSelected ? true : someEligibleSelected ? 'indeterminate' : false}
                                                             onCheckedChange={toggleAll}
@@ -494,7 +495,7 @@ export default function Index({
                                             onClick={() => setConfirmOpen(true)}
                                         >
                                             <BookCheckIcon />
-                                            <span>توزيع الكُتب للطلاب المحددين</span>
+                                            <span>توزيع الكُتب للطلبة المحددين</span>
                                         </Button>
 
                                         <ConfirmBookDistributionDialog
@@ -530,7 +531,7 @@ Index.layout = () => ({
 function StudentsSectionSkeleton() {
     return (
         <>
-            <section aria-busy="true" aria-label="جارٍ تحميل فلاتر البحث">
+            <section aria-busy="true" aria-label="جارٍ تحميل حقول البحث">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-40" />
@@ -548,7 +549,7 @@ function StudentsSectionSkeleton() {
                 </Card>
             </section>
 
-            <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلاب">
+            <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلبة">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-24" />

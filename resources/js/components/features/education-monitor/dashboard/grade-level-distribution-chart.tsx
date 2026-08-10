@@ -34,13 +34,13 @@ type GradeLevelDistributionChartProps = {
 export default function GradeLevelDistributionChart({ items, className }: GradeLevelDistributionChartProps) {
     return (
         <DashboardSectionCard
-            title="توزيع الطلاب حسب الصفوف الدراسية"
-            description="عدد الطلاب المقيدين في كل صف دراسي ضمن نطاق المُراقبة للسنة الدراسية الحالية"
+            title="توزيع الطلبة حسب الصفوف الدراسية"
+            description="عدد الطلبة المقيدين في كل صف دراسي ضمن نطاق المُراقبة للسنة الدراسية الحالية"
             icon={GraduationCapIcon}
             reloadProps={["gradeLevelDistribution"]}
             isLoading={!items}
             isEmpty={items?.length === 0}
-            emptyText="لا يوجد طلاب مقيدون بالصفوف الدراسية حالياً."
+            emptyText="لا يوجد طلبة مقيدون بالصفوف الدراسية حالياً."
             skeleton={<BarChartSkeleton />}
             className={className}
         >

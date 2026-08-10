@@ -155,7 +155,7 @@ export default function Show({ warehouse, monitors, canAny, can }: PageProps) {
                                             <TableHead scope="col">اسم المُراقبة</TableHead>
                                             <TableHead scope="col" className="text-center">عدد مكاتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                             <TableHead scope="col" />
                                         </TableRow>
                                     </TableHeader>

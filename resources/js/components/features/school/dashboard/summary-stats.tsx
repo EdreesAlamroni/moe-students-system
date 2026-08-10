@@ -37,12 +37,12 @@ export default function SummaryStats({ summary }: SummaryStatsProps) {
             columns={3}
             className="sm:grid-cols-2"
             items={[
-                { label: "إجمالي الطلاب", value: summary.students, icon: UsersIcon },
-                { label: "الطلاب الذكور", value: summary.males, icon: MarsIcon },
-                { label: "الطالبات الإناث", value: summary.females, icon: VenusIcon },
-                { label: "الصفوف الدراسية", value: summary.grade_levels, icon: GraduationCapIcon },
-                { label: "الفصول الدراسية", value: summary.classrooms, icon: PresentationIcon },
-                { label: "الجنسيات", value: summary.nationalities, icon: FlagIcon },
+                { label: "إجمالي الطلبة", value: summary.students, icon: UsersIcon },
+                { label: "عدد الذكور", value: summary.males, icon: MarsIcon },
+                { label: "عدد الإناث", value: summary.females, icon: VenusIcon },
+                { label: "عدد الصفوف الدراسية", value: summary.grade_levels, icon: GraduationCapIcon },
+                { label: "عدد الفصول الدراسية", value: summary.classrooms, icon: PresentationIcon },
+                { label: "عدد الجنسيات", value: summary.nationalities, icon: FlagIcon },
             ]}
         />
     );

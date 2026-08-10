@@ -56,13 +56,13 @@ function GenderRatioInsight({ summary }: { summary?: EducationServicesOfficeDash
                         ٪{malesPercentage} / ٪{100 - malesPercentage}
                     </span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
             detail={
                 summary && summary.students > 0
                     ? `${formatNumber(summary.males)} ذكور مقابل ${formatNumber(summary.females)} إناث`
-                    : "لا يوجد طلاب مسجلون حالياً"
+                    : "لا يوجد طلبة مسجلون حالياً"
             }
             extra={
                 summary && summary.students > 0 ? (
@@ -91,20 +91,20 @@ function GradeLevelEnrollmentInsight({ summary }: { summary?: EducationServicesO
 
     return (
         <InsightCard
-            label="نسبة القيد بالصفوف الدراسية"
+            label="نسبة القيد في الصفوف الدراسية"
             icon={UserRoundCheckIcon}
             isLoading={!summary}
             value={
                 summary && summary.students > 0 ? (
                     <span className="font-mono tabular-nums">٪{enrollmentRate}</span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
             detail={
                 summary && summary.students > 0
                     ? `${formatNumber(enrolled)} مقيدون و ${formatNumber(summary.students_unenrolled_in_grade_level)} غير مقيدين بالصفوف الدراسية`
-                    : "لا يوجد طلاب مسجلون حالياً"
+                    : "لا يوجد طلبة مسجلون حالياً"
             }
         />
     );
@@ -121,14 +121,14 @@ function LargestSchoolInsight({ schools }: { schools?: EducationServicesOfficeSc
 
     return (
         <InsightCard
-            label="أكبر مدرسة"
+            label="أعلى المدارس كثافة"
             icon={SchoolIcon}
             isLoading={!schools}
             value={largest && largest.students > 0 ? largest.name : "—"}
             detail={
                 largest && largest.students > 0
-                    ? `يدرس بها ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلاب مسجلون بالمدارس"
+                    ? `يدرس فيها ${formatNumber(largest.students)} طالباً وطالبة`
+                    : "لا يوجد طلبة مسجلون في المدارس"
             }
         />
     );
@@ -145,14 +145,14 @@ function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDis
 
     return (
         <InsightCard
-            label="أكبر صف دراسي"
+            label="أعلى صف دراسي كثافة"
             icon={CrownIcon}
             isLoading={!gradeLevels}
             value={largest?.name ?? "—"}
             detail={
                 largest
                     ? `يضم ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلاب مقيدون بالصفوف الدراسية"
+                    : "لا يوجد طلبة مقيدون في الصفوف الدراسية"
             }
         />
     );
@@ -165,14 +165,14 @@ function AverageSchoolSizeInsight({ summary }: { summary?: EducationServicesOffi
 
     return (
         <InsightCard
-            label="متوسط الطلاب لكل مدرسة"
+            label="متوسط عدد الطلبة لكل مدرسة"
             icon={UsersIcon}
             isLoading={!summary}
             value={
                 summary && summary.schools > 0 ? (
                     <span className="font-mono tabular-nums">{formatNumber(average)}</span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
             detail={
@@ -191,14 +191,14 @@ function AverageClassSizeInsight({ summary }: { summary?: EducationServicesOffic
 
     return (
         <InsightCard
-            label="متوسط الطلاب لكل فصل"
+            label="متوسط عدد الطلبة لكل فصل"
             icon={PresentationIcon}
             isLoading={!summary}
             value={
                 summary && summary.classrooms > 0 ? (
                     <span className="font-mono tabular-nums">{formatNumber(average)}</span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
             detail={

@@ -47,15 +47,15 @@ export default function SummaryStats({ summary }: SummaryStatsProps) {
             aria-label="إحصائيات مكتب الخدمات التعليمية"
             columns={4}
             items={[
-                { label: "إجمالي الطلاب", value: summary.students, icon: UsersIcon },
-                { label: "الطلاب الذكور", value: summary.males, icon: MarsIcon },
-                { label: "الطالبات الإناث", value: summary.females, icon: VenusIcon },
-                { label: "الجنسيات", value: summary.nationalities, icon: FlagIcon },
-                { label: "المدارس", value: summary.schools, icon: SchoolIcon },
-                { label: "الصفوف الدراسية", value: summary.grade_levels, icon: GraduationCapIcon },
-                { label: "الفصول الدراسية", value: summary.classrooms, icon: PresentationIcon },
+                { label: "إجمالي الطلبة", value: summary.students, icon: UsersIcon },
+                { label: "عدد الذكور", value: summary.males, icon: MarsIcon },
+                { label: "عدد الإناث", value: summary.females, icon: VenusIcon },
+                { label: "عدد الجنسيات", value: summary.nationalities, icon: FlagIcon },
+                { label: "عدد المدارس", value: summary.schools, icon: SchoolIcon },
+                { label: "عدد الصفوف الدراسية", value: summary.grade_levels, icon: GraduationCapIcon },
+                { label: "عدد الفصول الدراسية", value: summary.classrooms, icon: PresentationIcon },
                 {
-                    label: "الطلاب المقيدون بالصفوف",
+                    label: "عدد الطلبة المقيدين بالصفوف",
                     value: summary.students - summary.students_unenrolled_in_grade_level,
                     icon: UserRoundCheckIcon,
                 },

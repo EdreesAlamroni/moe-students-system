@@ -60,14 +60,14 @@ const portals: Portal[] = [
     {
         key: 'education-services-office',
         title: 'مكتب الخدمات التعليمية',
-        description: 'إدارة المدارس والطلاب والعمليات اليومية ضمن نطاق مكتب الخدمات التعليمية.',
+        description: 'إدارة المدارس والطلبة والعمليات اليومية ضمن نطاق مكتب الخدمات التعليمية.',
         href: educationServicesOfficeLogin.url(),
         icon: BuildingIcon,
     },
     {
         key: 'school',
         title: 'المدرسة',
-        description: 'إدارة شؤون المدرسة، الطلاب، الفصول الدراسية، والسجلات الأكاديمية.',
+        description: 'إدارة شؤون المدرسة، الطلبة، الفصول الدراسية، والسجلات الأكاديمية.',
         href: schoolLogin.url(),
         icon: SchoolIcon,
     },

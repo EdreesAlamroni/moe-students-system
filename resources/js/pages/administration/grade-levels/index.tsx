@@ -100,7 +100,7 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -125,7 +125,7 @@ export default function Index({ gradeLevels, educationalStages, filter }: PagePr
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
                                             <TableHead scope="col">الاسم</TableHead>
                                             <TableHead scope="col">المرحلة الدراسية</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>

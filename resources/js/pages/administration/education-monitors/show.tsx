@@ -78,7 +78,7 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                     items={[
                         { label: "مكاتب الخدمات التعليمية", value: monitor.offices_count || 0, icon: BuildingIcon },
                         { label: "المدارس", value: monitor.schools_count || 0, icon: SchoolIcon },
-                        { label: "الطلاب", value: monitor.students_count || 0, icon: UsersIcon },
+                        { label: "الطلبة", value: monitor.students_count || 0, icon: UsersIcon },
                     ]}
                     columns={3}
                 />
@@ -177,7 +177,7 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                                             <TableHead scope="col">رقم المكتب</TableHead>
                                             <TableHead scope="col">اسم مكتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                             <TableHead scope="col" />
                                         </TableRow>
                                     </TableHeader>

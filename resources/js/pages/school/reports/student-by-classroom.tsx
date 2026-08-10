@@ -69,7 +69,7 @@ export default function Index({
 
     return (
         <>
-            <Head title="تقرير الطلاب حسب الفصول الدراسية" />
+            <Head title="تقرير الطلبة حسب الفصول الدراسية" />
 
             <MainContainer showAcademicYearNotice>
                 {canAny && (
@@ -263,7 +263,7 @@ export default function Index({
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -277,7 +277,7 @@ export default function Index({
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <ListIcon />
-                                <span>الطلاب</span>
+                                <span>الطلبة</span>
                             </CardTitle>
                         </CardHeader>
                         {data.length > 0 ? (
@@ -372,7 +372,7 @@ export default function Index({
 Index.layout = () => ({
     breadcrumbs: [
         {
-            title: 'تقرير الطلاب حسب الفصول الدراسية',
+            title: 'تقرير الطلبة حسب الفصول الدراسية',
             href: index.url(),
         },
     ],

@@ -78,7 +78,7 @@ export default function Index({ monitors, canAny, can }: PageProps) {
                                             <TableHead scope="col">المُراقبة</TableHead>
                                             <TableHead scope="col" className="text-center">عدد مكاتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>

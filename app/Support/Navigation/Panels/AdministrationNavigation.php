@@ -86,7 +86,7 @@ class AdministrationNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['viewAny'], School::class),
             ],
             [
-                'title' => 'الطلاب',
+                'title' => 'الطلبة',
                 'href' => route('administration.students.index'),
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'administration.students.*',
@@ -94,14 +94,14 @@ class AdministrationNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
-                'title' => 'الطلاب غير المسجّلين في مُراقبات',
+                'title' => 'الطلبة غير المسجّلين في مُراقبات',
                 'href' => route('administration.students.unassigned-to-education-monitor.index'),
                 'icon' => 'UserXIcon',
                 'activeRoutes' => 'administration.students.unassigned-to-education-monitor.*',
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
-                'title' => 'الطلاب غير المسجّلين في مدارس',
+                'title' => 'الطلبة غير المسجّلين في مدارس',
                 'href' => route('administration.students.unassigned-to-school.index'),
                 'icon' => 'UserXIcon',
                 'activeRoutes' => 'administration.students.unassigned-to-school.*',

@@ -157,7 +157,7 @@ export default function RandomDistributionSection({
                         <span>توزيع عشوائي حسب السعة</span>
                     </CardTitle>
                     <CardDescription>
-                        يتم اختيار الطلاب غير المعيَّنين في فصل دراسي لهذا الصف
+                        يتم اختيار الطلبة غير المعيَّنين في فصل دراسي لهذا الصف
                         عشوائياً، مع ملء المقاعد المتاحة أولاً، ثم توزيع أي فائض
                         عشوائياً على الفصول الدراسية المحددة إذا تجاوز العدد
                         السعة الإجمالية.
@@ -174,7 +174,7 @@ export default function RandomDistributionSection({
                             </AlertTitle>
                             <AlertDescription className="mt-1 [&_p:not(:last-child)]:mb-1.5">
                                 <p>
-                                    عدد الطلاب في هذا الصف الدراسي غير
+                                    عدد الطلبة في هذا الصف الدراسي غير
                                     المعيَّنين في فصل دراسي هو{' '}
                                     <strong className="font-mono">
                                         {pendingInGradeCount}
@@ -187,7 +187,7 @@ export default function RandomDistributionSection({
                                     .
                                 </p>
                                 <p>
-                                    سيتم استيعاب الطلاب ضمن السعة قدر الإمكان،
+                                    سيتم استيعاب الطلبة ضمن السعة قدر الإمكان،
                                     ثم يُوزَّع الباقي (
                                     <strong className="font-mono">
                                         {overflowCount}
@@ -221,7 +221,7 @@ export default function RandomDistributionSection({
                                 </h3>
                                 {pendingInGradeCount > 0 && (
                                     <span className="text-xs text-muted-foreground">
-                                        طلاب بلا فصل دراسي في هذا الصف الدراسي:{' '}
+                                        طلبة بلا فصل دراسي في هذا الصف الدراسي:{' '}
                                         <span className="font-mono font-medium text-foreground tabular-nums">
                                             {pendingInGradeCount}
                                         </span>
@@ -229,7 +229,7 @@ export default function RandomDistributionSection({
                                 )}
                                 {noPendingStudents && (
                                     <span className="text-xs text-muted-foreground">
-                                        لا يوجد طلاب مسجّلون في هذا الصف الدراسي
+                                        لا يوجد طلبة مسجّلون في هذا الصف الدراسي
                                         بانتظار تعيين فصل دراسي حالياً؛ تم تعطيل
                                         الاختيار.
                                     </span>
@@ -311,7 +311,7 @@ export default function RandomDistributionSection({
                                             <ul className="space-y-2 text-xs text-muted-foreground">
                                                 <li className="flex flex-wrap justify-between gap-2">
                                                     <span>
-                                                        طلاب بلا فصل دراسي (هذا
+                                                        طلبة بلا فصل دراسي (هذا
                                                         الصف الدراسي)
                                                     </span>
                                                     <span className="font-mono text-foreground tabular-nums">
@@ -352,7 +352,7 @@ export default function RandomDistributionSection({
                                                 </AlertTitle>
                                                 <AlertDescription>
                                                     <div>
-                                                        عدد الطلاب يتجاوز
+                                                        عدد الطلبة يتجاوز
                                                         المقاعد المتاحة بمقدار{' '}
                                                         <strong className="font-mono tabular-nums">
                                                             {overflowCount}

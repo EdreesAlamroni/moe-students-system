@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Form,Head, Link } from "@inertiajs/react";
+import { Form, Head, Link } from "@inertiajs/react";
 
 import type { CanPermissions, EducationMonitor, EducationServicesOffice, Paginated } from "@/types";
 
@@ -138,7 +138,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -165,7 +165,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                                             <TableHead scope="col">مكتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col">المُراقبة</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>

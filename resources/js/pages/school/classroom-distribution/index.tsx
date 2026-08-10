@@ -56,14 +56,14 @@ export default function Index({
 
     return (
         <>
-            <Head title="توزيع الطلاب على الفصول الدراسية" />
+            <Head title="توزيع الطلبة على الفصول الدراسية" />
 
             <MainContainer showAcademicYearNotice>
                 <Alert>
                     <ListIcon />
-                    <AlertTitle>توزيع الطلاب على الفصول الدراسية</AlertTitle>
+                    <AlertTitle>توزيع الطلبة على الفصول الدراسية</AlertTitle>
                     <AlertDescription>
-                        اختر طريقة التوزيع المناسبة لتعيين الطلاب على
+                        اختر طريقة التوزيع المناسبة لتعيين الطلبة على
                         الفصول الدراسية، ثم أتمم العملية للسنة الدراسية
                         الحالية.
                     </AlertDescription>
@@ -171,7 +171,7 @@ function MethodCard({ method, interactive }: MethodCardProps) {
 Index.layout = () => ({
     breadcrumbs: [
         {
-            title: 'توزيع الطلاب على الفصول الدراسية',
+            title: 'توزيع الطلبة على الفصول الدراسية',
             href: index.url(),
         },
     ],

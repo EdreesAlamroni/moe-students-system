@@ -107,7 +107,7 @@ export default function Index({ offices, filter, canAny, can }: PageProps) {
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -133,7 +133,7 @@ export default function Index({ offices, filter, canAny, can }: PageProps) {
                                             <TableHead scope="col">رقم المكتب</TableHead>
                                             <TableHead scope="col">اسم مكتب الخدمات التعليمية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد المدارس</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                             <TableHead scope="col" />
                                         </TableRow>
                                     </TableHeader>

@@ -151,7 +151,7 @@ test('authenticated users can print the student count by grade level report', fu
         ->get(route('education-services-office.reports.student-count-by-grade-level.print'))
         ->assertOk()
         ->assertViewIs('print.education-services-office.reports.student-count-by-grade-level')
-        ->assertSee('إحصائية الطلاب حسب الصفوف الدراسية')
+        ->assertSee('إحصائية الطلبة حسب الصفوف الدراسية')
         ->assertSee('الصف الأول')
         ->assertSee('2024-2025')
         ->assertSee($user->name);

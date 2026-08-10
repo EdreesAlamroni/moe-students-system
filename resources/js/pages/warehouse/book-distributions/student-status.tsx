@@ -64,7 +64,7 @@ const visitOptions = {
 function StudentsSectionSkeleton() {
     return (
         <>
-            <section aria-busy="true" aria-label="جارٍ تحميل فلاتر البحث">
+            <section aria-busy="true" aria-label="جارٍ تحميل حقول البحث">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-40" />
@@ -85,7 +85,7 @@ function StudentsSectionSkeleton() {
                 </Card>
             </section>
 
-            <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلاب">
+            <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلبة">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-24" />
@@ -183,15 +183,15 @@ export default function StudentStatusPage({
 
     return (
         <>
-            <Head title="حالة توزيع الكُتب المدرسية للطلاب" />
+            <Head title="حالة توزيع الكُتب المدرسية للطلبة" />
 
             <MainContainer showAcademicYearNotice>
                 <Alert>
                     <SearchIcon />
-                    <AlertTitle>حالة توزيع الكُتب المدرسية للطلاب</AlertTitle>
+                    <AlertTitle>حالة توزيع الكُتب المدرسية للطلبة</AlertTitle>
                     <AlertDescription className="flex flex-col gap-1">
                         <span>
-                            اختر المُراقبة والمدرسة والصف الدراسي لعرض قائمة الطلاب وحالة استلام كل طالب للكُتب من المدرسة.
+                            اختر المُراقبة والمدرسة والصف الدراسي لعرض قائمة الطلبة وحالة استلام كل طالب للكُتب من المدرسة.
                         </span>
                         <span>تُعرض حالة الاستلام (تم الاستلام / لم يستلم) لكل طالب في الصف المحدد.</span>
                     </AlertDescription>
@@ -388,10 +388,10 @@ export default function StudentStatusPage({
                                     }
                                     description={
                                         activeSchoolId
-                                            ? 'بعد اختيار الصف الدراسي، ستظهر فلاتر البحث وقائمة الطلاب وحالة توزيع الكُتب.'
+                                            ? 'بعد اختيار الصف الدراسي، ستظهر حقول البحث، وقائمة الطلبة، وحالة توزيع الكُتب.'
                                             : activeMonitorId
                                                 ? 'بعد اختيار المدرسة، ستظهر الصفوف الدراسية المتاحة.'
-                                                : 'اختر المُراقبة ثم المدرسة والصف الدراسي لعرض حالة توزيع الكُتب للطلاب.'
+                                                : 'اختر المُراقبة ثم المدرسة والصف الدراسي لعرض حالة توزيع الكُتب للطلبة.'
                                     }
                                 />
                             </CardContent>
@@ -528,7 +528,7 @@ export default function StudentStatusPage({
                                                     })}
                                                 >
                                                     <RefreshCcwIcon />
-                                                    <span>مسح حقول الفلتر</span>
+                                                    <span>مسح حقول التصفية</span>
                                                 </Link>
                                             </Button>
                                         </div>
@@ -543,7 +543,7 @@ export default function StudentStatusPage({
                                     <CardTitle className="min-w-0 flex-1">
                                         <UsersIcon />
                                         <div className="flex min-w-0 flex-1 items-center gap-x-1.5">
-                                            <span>قائمة الطلاب</span>
+                                            <span>قائمة الطلبة</span>
                                             {rows.length > 0 && (
                                                 <span className="font-mono">({paginatedStudents!.total})</span>
                                             )}
@@ -625,7 +625,7 @@ StudentStatusPage.layout = () => ({
             href: index.url(),
         },
         {
-            title: 'حالة توزيع الكُتب للطلاب',
+            title: 'حالة توزيع الكُتب للطلبة',
             href: students.url(),
         },
     ],

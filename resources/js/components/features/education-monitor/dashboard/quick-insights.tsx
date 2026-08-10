@@ -64,7 +64,7 @@ function GenderRatioInsight({ summary }: { summary?: EducationMonitorDashboardSu
             detail={
                 summary && summary.students > 0
                     ? `${formatNumber(summary.males)} ذكور مقابل ${formatNumber(summary.females)} إناث`
-                    : "لا يوجد طلاب مسجلون حالياً"
+                    : "لا يوجد طلبة مسجلون حالياً"
             }
             extra={
                 summary && summary.students > 0 ? (
@@ -93,7 +93,7 @@ function SchoolAssignmentInsight({ summary }: { summary?: EducationMonitorDashbo
 
     return (
         <InsightCard
-            label="نسبة إسناد الطلاب للمدارس"
+            label="نسبة إسناد الطلبة للمدارس"
             icon={UserRoundXIcon}
             isLoading={!summary}
             value={
@@ -106,7 +106,7 @@ function SchoolAssignmentInsight({ summary }: { summary?: EducationMonitorDashbo
             detail={
                 summary && summary.students > 0
                     ? `${formatNumber(assigned)} مسندون و ${formatNumber(summary.students_unassigned_to_school)} غير مسندين لمدرسة`
-                    : "لا يوجد طلاب مسجلون حالياً"
+                    : "لا يوجد طلبة مسجلون حالياً"
             }
         />
     );
@@ -130,7 +130,7 @@ function LargestOfficeInsight({ offices }: { offices?: EducationServicesOfficeDi
             detail={
                 largest && largest.students > 0
                     ? `يضم ${formatNumber(largest.students)} طالباً موزعين على ${formatNumber(largest.schools)} مدرسة`
-                    : "لا يوجد طلاب مسندون إلى مكاتب الخدمات التعليمية"
+                    : "لا يوجد طلبة مسندون إلى مكاتب الخدمات التعليمية"
             }
         />
     );
@@ -153,7 +153,7 @@ function LargestSchoolInsight({ schools }: { schools?: EducationMonitorSchoolDis
             ]
                 .filter(Boolean)
                 .join(" - ")
-            : "لا يوجد طلاب مسجلون بالمدارس";
+            : "لا يوجد طلبة مسجلون بالمدارس";
 
     return (
         <InsightCard
@@ -184,7 +184,7 @@ function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDis
             detail={
                 largest
                     ? `يضم ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلاب مقيدون بالصفوف الدراسية"
+                    : "لا يوجد طلبة مقيدون بالصفوف الدراسية"
             }
         />
     );
@@ -197,7 +197,7 @@ function AverageClassSizeInsight({ summary }: { summary?: EducationMonitorDashbo
 
     return (
         <InsightCard
-            label="متوسط الطلاب لكل فصل"
+            label="متوسط الطلبة لكل فصل"
             icon={PresentationIcon}
             isLoading={!summary}
             value={

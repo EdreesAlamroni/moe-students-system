@@ -110,7 +110,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                             اختر المُراقبة والمدرسة لإنشاء تقرير إحصائيات توزيع الكُتب المدرسية لكل صف دراسي.
                         </span>
                         <span>
-                            تُعرض إحصائيات استلام الطلاب من المدرسة بعد تأكيد استلام الكُتب من المخزن؛ وإلا يظهر
+                            تُعرض إحصائيات استلام الطلبة من المدرسة بعد تأكيد استلام الكُتب من المخزن؛ وإلا يظهر
                             تنبيه بذلك في التقرير.
                         </span>
                     </AlertDescription>
@@ -294,7 +294,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead scope="col">الصف الدراسي</TableHead>
-                                                <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                                <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                                 <TableHead scope="col" className="text-center">المُوزَّع</TableHead>
                                                 <TableHead scope="col" className="text-center">المُعلَّق</TableHead>
                                             </TableRow>

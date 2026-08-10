@@ -17,7 +17,7 @@ const LABEL_WIDTH = 200;
 
 const chartConfig = {
     students: {
-        label: "الطلاب",
+        label: "الطلبة",
         color: "var(--chart-2)",
     },
 } satisfies ChartConfig;
@@ -30,8 +30,8 @@ type EducationMonitorStudentsChartProps = {
 export default function EducationMonitorStudentsChart({ items, className }: EducationMonitorStudentsChartProps) {
     return (
         <DashboardSectionCard
-            title="الطلاب حسب المُراقبات التعليمية"
-            description="عدد الطلاب المسندين إلى كل مُراقبة تربية وتعليم تابعة للمخزن"
+            title="الطلبة حسب المُراقبات التعليمية"
+            description="عدد الطلبة المسندين إلى كل مُراقبة تربية وتعليم تابعة للمخزن"
             icon={UsersIcon}
             reloadProps={["educationMonitorDistribution"]}
             isLoading={!items}

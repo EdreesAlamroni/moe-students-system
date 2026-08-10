@@ -47,8 +47,8 @@ export default function SummaryStats({ summary }: SummaryStatsProps) {
             aria-label="إحصائيات المُراقبة التعليمية"
             columns={4}
             items={[
-                { label: "إجمالي الطلاب", value: summary.students, icon: UsersIcon },
-                { label: "الطلاب الذكور", value: summary.males, icon: MarsIcon },
+                { label: "إجمالي الطلبة", value: summary.students, icon: UsersIcon },
+                { label: "الطلبة الذكور", value: summary.males, icon: MarsIcon },
                 { label: "الطالبات الإناث", value: summary.females, icon: VenusIcon },
                 { label: "الجنسيات", value: summary.nationalities, icon: FlagIcon },
                 { label: "مكاتب الخدمات التعليمية", value: summary.education_services_offices, icon: BuildingIcon },

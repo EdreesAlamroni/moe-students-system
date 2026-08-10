@@ -12,7 +12,7 @@
                 <th scope="col">{{ __('اسم المُراقبة') }}</th>
                 <th scope="col" class="text-center">{{ __('عدد مكاتب الخدمات التعليمية') }}</th>
                 <th scope="col" class="text-center">{{ __('عدد المدارس') }}</th>
-                <th scope="col" class="text-center">{{ __('عدد الطلاب') }}</th>
+                <th scope="col" class="text-center">{{ __('عدد الطلبة') }}</th>
             </x-slot:columns>
 
             @forelse ($monitors as $monitor)

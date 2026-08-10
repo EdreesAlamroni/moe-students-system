@@ -16,7 +16,7 @@
                 <th scope="col">{{ __('اسم المدرسة') }}</th>
                 <th scope="col">{{ __('نوع المدرسة') }}</th>
                 <th scope="col">{{ __('الفترة الدراسية') }}</th>
-                <th scope="col" class="text-center">{{ __('عدد الطلاب') }}</th>
+                <th scope="col" class="text-center">{{ __('عدد الطلبة') }}</th>
             </x-slot:columns>
 
             @forelse ($schools as $school)

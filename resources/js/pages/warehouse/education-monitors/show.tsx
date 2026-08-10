@@ -33,7 +33,7 @@ export default function Show({ monitor }: PageProps) {
                     items={[
                         { label: "مكاتب الخدمات التعليمية", value: monitor.offices_count || 0, icon: BuildingIcon },
                         { label: "المدارس", value: monitor.schools_count || 0, icon: SchoolIcon },
-                        { label: "الطلاب", value: monitor.students_count || 0, icon: UsersIcon },
+                        { label: "الطلبة", value: monitor.students_count || 0, icon: UsersIcon },
                     ]}
                     columns={3}
                 />

@@ -58,8 +58,8 @@ const config: Record<AddTransferredStudentContext, {
     'education-monitor': {
         alertDescription: (
             <>
-                ابحث عن الطلاب، ثم اختر طالباً واحداً أو أكثر من القائمة. اضغط على «إضافة» لإضافة الطلاب
-                المحددين إلى المُراقبة. إذا لم تظهر أي نتائج، فقد يكون الطلاب مُسجلين بالفعل في مُراقبة أخرى،
+                ابحث عن الطلبة، ثم اختر طالباً واحداً أو أكثر من القائمة. اضغط على «إضافة» لإضافة الطلبة
+                المحددين إلى المُراقبة. إذا لم تظهر أي نتائج، فقد يكون الطلبة مُسجلين بالفعل في مُراقبة أخرى،
                 أو أن بيانات البحث غير صحيحة.
             </>
         ),
@@ -68,8 +68,8 @@ const config: Record<AddTransferredStudentContext, {
     school: {
         alertDescription: (
             <>
-                ابحث عن الطلاب، ثم اختر طالباً واحداً أو أكثر من القائمة. تظهر فقط نتائج الطلاب الذين يتوافق صفهم الدراسي مع صفوف المدرسة.
-                اضغط على «إضافة» لإضافة الطلاب المحددين إلى المدرسة. إذا لم تظهر أي نتائج، فقد يكون الطلاب مُسجلين بالفعل في مدرسة أخرى،
+                ابحث عن الطلبة، ثم اختر طالباً واحداً أو أكثر من القائمة. تظهر فقط نتائج الطلبة الذين يتوافق صفهم الدراسي مع صفوف المدرسة.
+                اضغط على «إضافة» لإضافة الطلبة المحددين إلى المدرسة. إذا لم تظهر أي نتائج، فقد يكون الطلبة مُسجلين بالفعل في مدرسة أخرى،
                 أو أن صفهم الدراسي غير متاح في هذه المدرسة، أو أن بيانات البحث غير صحيحة.
             </>
         ),
@@ -160,7 +160,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
         <MainContainer>
             <Alert>
                 <InfoIcon />
-                <AlertTitle>البحث عن الطلاب أولاً</AlertTitle>
+                <AlertTitle>البحث عن الطلبة أولاً</AlertTitle>
                 <AlertDescription>{alertDescription}</AlertDescription>
             </Alert>
 
@@ -171,7 +171,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                             <CardHeader className="border-b">
                                 <CardTitle>
                                     <FunnelIcon />
-                                    <span>بحث عن طلاب مُنتقلين</span>
+                                    <span>بحث عن طلبة مُنتقلين</span>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -227,7 +227,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                                     <Button type="reset" variant="outline" asChild>
                                         <Link href={resolveCreateUrl(context)}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -245,7 +245,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                                 <ListIcon />
                                 <div className="flex min-w-0 flex-1 items-center justify-between gap-x-4">
                                     <div className="flex items-center gap-x-1.5">
-                                        <span>قائمة الطلاب</span>
+                                        <span>قائمة الطلبة</span>
                                         {students.length > 0 && (
                                             <span className="font-mono">({students.length})</span>
                                         )}
@@ -256,7 +256,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                                             className="inline-flex shrink-0 items-center gap-x-2 text-xs font-normal normal-case tracking-normal"
                                             aria-live="polite"
                                         >
-                                            <span className="text-muted-foreground">الطلاب المحددون</span>
+                                            <span className="text-muted-foreground">الطلبة المحددون</span>
                                             <span className="font-mono tabular-nums text-foreground">
                                                 {selectedCount}
                                             </span>
@@ -273,7 +273,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                                         <TableRow>
                                             <TableHead scope="col" className="w-12 [&:has([role=checkbox])]:pr-4">
                                                 <Checkbox
-                                                    aria-label="تحديد جميع الطلاب"
+                                                    aria-label="تحديد جميع الطلبة"
                                                     checked={allSelected ? true : someSelected ? 'indeterminate' : false}
                                                     disabled={form.processing}
                                                     onCheckedChange={toggleAll}
@@ -365,7 +365,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                             <CardContent>
                                 <EmptyState
                                     hasFilter={hasFilter}
-                                    text="لم يتم البحث عن طلاب بعد."
+                                    text="لم يتم البحث عن طلبة بعد."
                                 />
                             </CardContent>
                         )}

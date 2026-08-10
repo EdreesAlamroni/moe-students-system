@@ -39,13 +39,13 @@ export default function NationalityDistributionChart({ items, className }: Natio
 
     return (
         <DashboardSectionCard
-            title="توزيع الطلاب حسب الجنسية"
-            description="عدد الطلاب من كل جنسية مسجلة في المدرسة"
+            title="توزيع الطلبة حسب الجنسية"
+            description="عدد الطلبة حسب الجنسيات المسجلة في المدرسة"
             icon={FlagIcon}
             reloadProps={["nationalityDistribution"]}
             isLoading={!items}
             isEmpty={items?.length === 0}
-            emptyText="لا يوجد طلاب مسجلون حالياً."
+            emptyText="لا يوجد طلبة مسجلون حالياً."
             skeleton={<DonutChartSkeleton />}
             className={className}
         >
@@ -65,7 +65,7 @@ export default function NationalityDistributionChart({ items, className }: Natio
                         innerRadius={60}
                         strokeWidth={5}
                     >
-                        <Label content={donutCenterLabel(total, "إجمالي الطلاب")} />
+                        <Label content={donutCenterLabel(total, "إجمالي الطلبة")} />
                     </Pie>
                     <ChartLegend
                         content={<ChartLegendContent nameKey="key" className="flex-wrap" />}

@@ -162,7 +162,7 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -189,7 +189,7 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
                                             <TableHead scope="col">اسم المدرسة</TableHead>
                                             <TableHead scope="col">الفترة الدراسية</TableHead>
                                             <TableHead scope="col">مكتب الخدمات التعليمية</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                             <TableHead scope="col" />
                                         </TableRow>
                                     </TableHeader>

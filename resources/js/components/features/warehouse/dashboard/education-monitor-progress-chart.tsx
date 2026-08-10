@@ -39,7 +39,7 @@ export default function EducationMonitorProgressChart({ items, className }: Educ
     return (
         <DashboardSectionCard
             title="تقدّم التوزيع حسب المُراقبات"
-            description="الطلاب الذين استلموا الكُتب مقابل التسليمات المعلّقة لكل مُراقبة تعليمية"
+            description="الطلبة الذين استلموا الكُتب مقابل التسليمات المعلّقة لكل مُراقبة تعليمية"
             icon={LandmarkIcon}
             reloadProps={["educationMonitorDistribution"]}
             isLoading={!items}

@@ -47,7 +47,7 @@ export default function Show({ gradeLevel, canAny, can }: PageProps) {
                 <StatCardsSection
                     items={[
                         { label: "الفصول الدراسية", value: gradeLevel.classrooms_count ?? 0, icon: PresentationIcon },
-                        { label: "الطلاب", value: gradeLevel.students_count ?? 0, icon: UsersIcon },
+                        { label: "الطلبة", value: gradeLevel.students_count ?? 0, icon: UsersIcon },
                     ]}
                     columns={2}
                 />

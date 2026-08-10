@@ -311,7 +311,7 @@ export default function Show({ student, gradeLevels, classrooms, transfers, canA
 Show.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: index.url(),
         },
         {

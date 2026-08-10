@@ -103,11 +103,11 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                     <AlertTitle>إحصائيات توزيع الكُتب المدرسية</AlertTitle>
                     <AlertDescription className="flex flex-col gap-1">
                         <span>
-                            اختر المُراقبة والمدرسة لعرض عدد الطلاب المسجّلين في كل صف دراسي، ومعرفة من استلم الكُتب من
+                            اختر المُراقبة والمدرسة لعرض عدد الطلبة المسجّلين في كل صف دراسي، ومعرفة من استلم الكُتب من
                             المدرسة.
                         </span>
                         <span>
-                            تُعرض إحصائيات استلام الطلاب من المدرسة بعد تأكيد استلام الكُتب من المخزن؛ وإلا يظهر
+                            تُعرض إحصائيات استلام الطلبة من المدرسة بعد تأكيد استلام الكُتب من المخزن؛ وإلا يظهر
                             تنبيه بذلك في الجدول.
                         </span>
                     </AlertDescription>
@@ -264,7 +264,7 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
                                                 <TableHead scope="col" className="w-24 font-mono">#</TableHead>
                                                 <TableHead scope="col">الصف الدراسي</TableHead>
                                                 <TableHead scope="col">المرحلة التعليمية</TableHead>
-                                                <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                                <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                                 <TableHead scope="col" className="text-center">المُوزَّع</TableHead>
                                                 <TableHead scope="col" className="text-center">المُعلَّق</TableHead>
                                             </TableRow>

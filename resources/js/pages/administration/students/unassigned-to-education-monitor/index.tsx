@@ -57,7 +57,7 @@ export default function Index({
 
     return (
         <>
-            <Head title="الطلاب غير المسجّلين في مُراقبات" />
+            <Head title="الطلبة غير المسجّلين في مُراقبات" />
 
             <MainContainer showAcademicYearNotice>
                 <section>
@@ -163,7 +163,7 @@ export default function Index({
                                     <Button type="reset" variant="outline" asChild>
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -177,7 +177,7 @@ export default function Index({
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <ListIcon />
-                                <span>الطلاب</span>
+                                <span>الطلبة</span>
                             </CardTitle>
                         </CardHeader>
                         {data.length > 0 ? (
@@ -257,7 +257,7 @@ export default function Index({
 Index.layout = () => ({
     breadcrumbs: [
         {
-            title: 'الطلاب غير المسجّلين في مُراقبات',
+            title: 'الطلبة غير المسجّلين في مُراقبات',
             href: index.url(),
         },
     ],

@@ -45,7 +45,7 @@ type PageProps = {
     schools: OrganizationOption[];
     nationalities?: Pick<Nationality, "id" | "name">[];
     registrationStatuses?: Enum[];
-    school_id?: number | null;
+    school_period_id?: number | null;
     filter: {
         name?: string;
         registration_status?: string;
@@ -66,7 +66,7 @@ const visitOptions = {
 function StudentsSectionSkeleton() {
     return (
         <>
-            <section aria-busy="true" aria-label="جارٍ تحميل فلاتر البحث">
+            <section aria-busy="true" aria-label="جارٍ تحميل حقول البحث">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-40" />
@@ -87,7 +87,7 @@ function StudentsSectionSkeleton() {
                 </Card>
             </section>
 
-            <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلاب">
+            <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلبة">
                 <Card>
                     <CardHeader className="border-b">
                         <Skeleton className="h-5 w-24" />
@@ -110,7 +110,7 @@ export default function Index({
     schools,
     nationalities,
     registrationStatuses,
-    school_id,
+    school_period_id,
     filter,
     canAny,
     can,
@@ -133,7 +133,7 @@ export default function Index({
         };
     }, []);
 
-    const schoolId = school_id?.toString();
+    const schoolId = school_period_id?.toString();
     const schoolPending = pendingSchoolId !== undefined && pendingSchoolId !== schoolId;
     const activeSchoolId = schoolId ?? pendingSchoolId;
     const studentsStale = isNavigating && schoolPending;
@@ -147,13 +147,13 @@ export default function Index({
         setPendingSchoolId(value);
 
         router.get(index.url(), {
-            school_id: value,
+            school_period_id: value,
         }, visitOptions);
     };
 
     return (
         <>
-            <Head title="الطلاب" />
+            <Head title="الطلبة" />
 
             <MainContainer showAcademicYearNotice>
                 {(canAny && currentAcademicYear?.is_active) && (
@@ -184,19 +184,19 @@ export default function Index({
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Field>
                                     <Label
-                                        htmlFor="school_id"
+                                        htmlFor="school_period_id"
                                     >
                                         المدرسة
                                     </Label>
 
                                     {schools.length > 0 ? (
                                         <Select
-                                            value={activeSchoolId}
+                                            value={activeSchoolId ?? ""}
                                             disabled={isNavigating}
                                             onValueChange={handleSchoolChange}
                                         >
                                             <SelectTrigger
-                                                id="school_id"
+                                                id="school_period_id"
                                             >
                                                 <SelectValue
                                                     placeholder="اختر المدرسة"
@@ -217,7 +217,7 @@ export default function Index({
                                         </Select>
                                     ) : (
                                         <EmptyOptionsInput
-                                            id="school_id"
+                                            id="school_period_id"
                                             placeholder="لا توجد مدارس متاحة للاختيار"
                                         />
                                     )}
@@ -234,7 +234,7 @@ export default function Index({
                                 <EmptyState
                                     icon={Building2Icon}
                                     text="اختر المدرسة للمتابعة"
-                                    description="بعد اختيار المدرسة، ستظهر فلاتر البحث وقائمة الطلاب المسجّلين فيها."
+                                    description="بعد اختيار المدرسة، ستظهر حقول البحث وقائمة الطلبة المسجّلين بها."
                                 />
                             </CardContent>
                         </Card>
@@ -261,7 +261,7 @@ export default function Index({
                             <Form
                                 {...index.form()}
                             >
-                                <input type="hidden" name="school_id" value={activeSchoolId} />
+                                <input type="hidden" name="school_period_id" value={activeSchoolId} />
 
                                 <Card>
                                     <CardHeader className="border-b">
@@ -380,12 +380,12 @@ export default function Index({
                                             <Button type="reset" variant="outline" asChild>
                                                 <Link href={index.url({
                                                     query: {
-                                                        school_id: activeSchoolId,
+                                                        school_period_id: activeSchoolId,
                                                     },
                                                 })}
                                                 >
                                                     <RefreshCcwIcon />
-                                                    <span>مسح حقول الفلتر</span>
+                                                    <span>مسح حقول التصفية</span>
                                                 </Link>
                                             </Button>
                                         </div>
@@ -399,7 +399,7 @@ export default function Index({
                                 <CardHeader className="border-b">
                                     <CardTitle>
                                         <ListIcon />
-                                        <span>الطلاب</span>
+                                        <span>الطلبة</span>
                                     </CardTitle>
                                 </CardHeader>
                                 {studentData.length > 0 ? (
@@ -484,7 +484,7 @@ export default function Index({
 Index.layout = () => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: index.url(),
         },
     ],

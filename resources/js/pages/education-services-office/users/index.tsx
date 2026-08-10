@@ -158,7 +158,7 @@ export default function Index({ users, scopes, filter, canAny, can }: PageProps)
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>

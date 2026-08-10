@@ -346,7 +346,7 @@ export default function Index({ monitors, schools, gradeLevels, selected, can }:
                                                 <TableHead scope="col">الصف الدراسي</TableHead>
                                                 <TableHead scope="col">المرحلة التعليمية</TableHead>
                                                 <TableHead scope="col" className="text-center">
-                                                    عدد الطلاب
+                                                    عدد الطلبة
                                                 </TableHead>
                                                 <TableHead scope="col" className="text-center">
                                                     الحالة

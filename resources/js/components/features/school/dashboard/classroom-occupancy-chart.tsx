@@ -21,7 +21,7 @@ const MAX_TICK_LENGTH = 16;
 
 const chartConfig = {
     students: {
-        label: "الطلاب",
+        label: "الطلبة",
         color: "var(--chart-2)",
     },
     capacity: {
@@ -43,8 +43,8 @@ export default function ClassroomOccupancyChart({ items, className }: ClassroomO
 
     return (
         <DashboardSectionCard
-            title="توزيع الطلاب حسب الفصول الدراسية"
-            description="عدد الطلاب الموزعين على كل فصل دراسي مقارنةً بسعته الاستيعابية"
+            title="توزيع الطلبة حسب الفصول الدراسية"
+            description="عدد الطلبة الموزعين على كل فصل دراسي مقارنةً بسعته الاستيعابية"
             icon={PresentationIcon}
             reloadProps={["classroomOccupancy"]}
             isLoading={!items}

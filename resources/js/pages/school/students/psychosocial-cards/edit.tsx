@@ -1271,7 +1271,7 @@ export default function Edit({
 Edit.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: indexStudents.url(),
         },
         {

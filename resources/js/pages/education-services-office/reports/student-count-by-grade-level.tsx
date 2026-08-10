@@ -34,7 +34,7 @@ type PageProps = {
 export default function Index({ gradeLevels, educationalStages, filter, canAny, can }: PageProps) {
     return (
         <>
-            <Head title="إحصائية الطلاب حسب الصفوف الدراسية" />
+            <Head title="إحصائية الطلبة حسب الصفوف الدراسية" />
 
             <MainContainer showAcademicYearNotice>
                 {canAny && (
@@ -115,7 +115,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -129,7 +129,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                         <CardHeader className="border-b">
                             <CardTitle>
                                 <ListIcon />
-                                <span>إحصائية الطلاب حسب الصفوف الدراسية</span>
+                                <span>إحصائية الطلبة حسب الصفوف الدراسية</span>
                             </CardTitle>
                         </CardHeader>
                         {gradeLevels.length > 0 ? (
@@ -140,7 +140,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                                             <TableHead scope="col" className="font-mono w-24">#</TableHead>
                                             <TableHead scope="col">الصف الدراسي</TableHead>
                                             <TableHead scope="col">المرحلة التعليمية</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -172,7 +172,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
 Index.layout = () => ({
     breadcrumbs: [
         {
-            title: 'إحصائية الطلاب حسب الصفوف الدراسية',
+            title: 'إحصائية الطلبة حسب الصفوف الدراسية',
             href: index.url(),
         },
     ],

@@ -1,7 +1,7 @@
-<x-print-layout :title="__('إحصائية الطلاب حسب الصفوف الدراسية')" :printed-by="auth('education_services_office')->user()->name">
+<x-print-layout :title="__('إحصائية الطلبة حسب الصفوف الدراسية')" :printed-by="auth('education_services_office')->user()->name">
     <x-slot:content>
         <x-print.report-table
-            :title="__('إحصائية الطلاب حسب الصفوف الدراسية')"
+            :title="__('إحصائية الطلبة حسب الصفوف الدراسية')"
             :colspan="4"
             :organization-lines="auth('education_services_office')->user()->organization->printOrganizationLines()"
         >
@@ -14,7 +14,7 @@
                 <th scope="col">{{ __('ر.م') }}</th>
                 <th scope="col">{{ __('اسم الصف الدراسي') }}</th>
                 <th scope="col">{{ __('المرحلة الدراسية') }}</th>
-                <th scope="col" class="text-center">{{ __('عدد الطلاب') }}</th>
+                <th scope="col" class="text-center">{{ __('عدد الطلبة') }}</th>
             </x-slot:columns>
 
             @forelse ($gradeLevels as $gradeLevel)

@@ -77,9 +77,9 @@ export default function ConfigureStudentsGenderNotice() {
                 aria-atomic="true"
             >
                 <TriangleAlertIcon />
-                <AlertTitle>يجب تحديد جنس الطلاب الدارسين بالمدرسة</AlertTitle>
+                <AlertTitle>يجب تحديد جنس الطلبة الدارسين بالمدرسة</AlertTitle>
                 <AlertDescription>
-                    لم يتم تحديد جنس الطلاب الدارسين في هذه المدرسة بعد، يرجى التحديث الآن.
+                    لم يتم تحديد جنس الطلبة الدارسين في هذه المدرسة بعد، يرجى التحديث الآن.
                 </AlertDescription>
                 <AlertAction>
                     <DialogTrigger asChild>
@@ -104,9 +104,9 @@ export default function ConfigureStudentsGenderNotice() {
                     {({ processing, errors }) => (
                         <FormLayout>
                             <DialogHeader>
-                                <DialogTitle>تحديد جنس الطلاب الدارسين بالمدرسة</DialogTitle>
+                                <DialogTitle>تحديد جنس الطلبة الدارسين بالمدرسة</DialogTitle>
                                 <DialogDescription>
-                                    اختر جنس الطلاب الدارسين في هذه المدرسة. هذا الإعداد مطلوب لإكمال تهيئة المدرسة في النظام.
+                                    اختر جنس الطلبة الدارسين في هذه المدرسة. هذا الإعداد مطلوب لإكمال تهيئة المدرسة في النظام.
                                 </DialogDescription>
                             </DialogHeader>
 
@@ -117,7 +117,7 @@ export default function ConfigureStudentsGenderNotice() {
                                         hasError={!!errors.students_gender}
                                         required
                                     >
-                                        جنس الطلاب الدارسين بالمدرسة
+                                        جنس الطلبة الدارسين بالمدرسة
                                     </Label>
                                     <Select
                                         name="students_gender"
@@ -129,7 +129,7 @@ export default function ConfigureStudentsGenderNotice() {
                                             id="students_gender"
                                             hasError={!!errors.students_gender}
                                         >
-                                            <SelectValue placeholder="اختر جنس الطلاب" />
+                                            <SelectValue placeholder="اختر جنس الطلبة" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>

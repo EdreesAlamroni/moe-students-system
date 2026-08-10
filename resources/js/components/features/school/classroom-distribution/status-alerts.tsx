@@ -51,7 +51,7 @@ export default function StatusAlerts({
                     <AlertTitle>لم يتم تفعيل سنة دراسية حالياً</AlertTitle>
                     <AlertDescription>
                         لا توجد سنة دراسية نشطة حالياً.
-                        يرجى انتظار تفعيل السنة الدراسية من الإدارة لبدء توزيع الطلاب.
+                        يرجى انتظار تفعيل السنة الدراسية من الإدارة لبدء توزيع الطلبة.
                     </AlertDescription>
                 </Alert>
             )}
@@ -73,10 +73,10 @@ export default function StatusAlerts({
                 !isDistributionCompleted && (
                     <Alert variant="info">
                         <InfoIcon />
-                        <AlertTitle>لا توجد تسجيلات طلاب</AlertTitle>
+                        <AlertTitle>لا توجد تسجيلات طلبة</AlertTitle>
                         <AlertDescription>
-                            لا توجد تسجيلات طلاب للسنة الدراسية الحالية. يُرجى
-                            تسجيل الطلاب في السنة الدراسية أولاً قبل تنفيذ
+                            لا توجد تسجيلات طلبة للسنة الدراسية الحالية. يُرجى
+                            تسجيل الطلبة في السنة الدراسية أولاً قبل تنفيذ
                             التوزيع أو إتمامه.
                         </AlertDescription>
                     </Alert>
@@ -89,10 +89,10 @@ export default function StatusAlerts({
                 !isDistributionCompleted && (
                     <Alert variant="warning">
                         <AlertTriangleIcon />
-                        <AlertTitle>الطلاب غير مسجّلين في صف دراسي</AlertTitle>
+                        <AlertTitle>الطلبة غير مسجّلين في صف دراسي</AlertTitle>
                         <AlertDescription>
-                            يوجد طلاب مسجّلون في السنة الدراسية الحالية، لكن لم
-                            يُسجَّلوا في أي صف دراسي. يُرجى تسجيل الطلاب في الصف
+                            يوجد طلبة مسجّلون في السنة الدراسية الحالية، لكن لم
+                            يُسجَّلوا في أي صف دراسي. يُرجى تسجيل الطلبة في الصف
                             الدراسي المناسب من صفحة الطالب قبل تنفيذ التوزيع أو
                             إتمامه.
                         </AlertDescription>
@@ -107,7 +107,7 @@ export default function StatusAlerts({
                     <Alert variant="warning">
                         <AlertTriangleIcon />
                         <AlertTitle>
-                            بعض الطلاب غير مسجّلين في صف دراسي
+                            بعض الطلبة غير مسجّلين في صف دراسي
                         </AlertTitle>
                         <AlertDescription>
                             يتبقى{' '}
@@ -126,7 +126,7 @@ export default function StatusAlerts({
                     <CheckCircle2Icon />
                     <AlertTitle>تم إتمام التوزيع</AlertTitle>
                     <AlertDescription>
-                        تم إنهاء عملية توزيع الطلاب على الفصول للسنة الدراسية
+                        تم إنهاء عملية توزيع الطلبة على الفصول للسنة الدراسية
                         الحالية. لا يمكن تنفيذ توزيع جديد أو تعديل التوزيع من
                         هذه الشاشة.
                     </AlertDescription>
@@ -142,7 +142,7 @@ export default function StatusAlerts({
                         <AlertTitle>لا تملك صلاحية التوزيع</AlertTitle>
                         <AlertDescription>
                             عرض فقط — يلزم صلاحية تنفيذ التوزيع لتنفيذ توزيع
-                            الطلاب على الفصول الدراسية.
+                            الطلبة على الفصول الدراسية.
                         </AlertDescription>
                     </Alert>
                 )}

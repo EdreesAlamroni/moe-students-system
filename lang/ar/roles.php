@@ -109,26 +109,26 @@ return [
     ],
 
     'student' => [
-        'label' => 'الطلاب',
+        'label' => 'الطلبة',
         'values' => [
-            'student:role:view' => 'عرض الطلاب',
-            'student:role:create' => 'إضافة الطلاب',
-            'student:role:update' => 'تعديل الطلاب',
-            'student:role:delete' => 'حذف الطلاب',
-            'student:role:add-transferred-student' => 'إضافة طلاب مُنتقلين',
-            'student:role:transfer-student-out-of-school' => 'نقل طلاب خارج المدرسة',
-            'student:role:transfer-student-out-of-monitor' => 'نقل طلاب خارج المُراقبة',
+            'student:role:view' => 'عرض الطلبة',
+            'student:role:create' => 'إضافة الطلبة',
+            'student:role:update' => 'تعديل الطلبة',
+            'student:role:delete' => 'حذف الطلبة',
+            'student:role:add-transferred-student' => 'إضافة طلبة مُنتقلين',
+            'student:role:transfer-student-out-of-school' => 'نقل طلبة خارج المدرسة',
+            'student:role:transfer-student-out-of-monitor' => 'نقل طلبة خارج المُراقبة',
 
-            'student:role:enroll-in-grade-level' => 'تسجيل الطلاب في صف دراسي',
-            'student:role:enroll-in-classroom' => 'تسجيل الطلاب في فصل دراسي',
-            'student:role:transfer-classroom' => 'نقل الطلاب بين الفصول الدراسية',
+            'student:role:enroll-in-grade-level' => 'تسجيل الطلبة في صف دراسي',
+            'student:role:enroll-in-classroom' => 'تسجيل الطلبة في فصل دراسي',
+            'student:role:transfer-classroom' => 'نقل الطلبة بين الفصول الدراسية',
 
-            'student:role:view-psychosocial-card' => 'عرض البطاقة الإجتماعية والنفسية للطلاب',
-            'student:role:update-psychosocial-card' => 'تحديث البطاقة الإجتماعية والنفسية للطلاب',
-            'student:role:print-psychosocial-card' => 'طباعة البطاقة الإجتماعية والنفسية للطلاب',
+            'student:role:view-psychosocial-card' => 'عرض البطاقة الإجتماعية والنفسية للطلبة',
+            'student:role:update-psychosocial-card' => 'تحديث البطاقة الإجتماعية والنفسية للطلبة',
+            'student:role:print-psychosocial-card' => 'طباعة البطاقة الإجتماعية والنفسية للطلبة',
 
-            'student:role:view-academic-record' => 'عرض السجل الدراسي للطلاب',
-            'student:role:create-academic-record' => 'إنشاء السجل الدراسي للطلاب',
+            'student:role:view-academic-record' => 'عرض السجل الدراسي للطلبة',
+            'student:role:create-academic-record' => 'إنشاء السجل الدراسي للطلبة',
         ],
     ],
 
@@ -154,11 +154,11 @@ return [
     ],
 
     'classroom-distribution' => [
-        'label' => 'توزيع الطلاب على الفصول الدراسية',
+        'label' => 'توزيع الطلبة على الفصول الدراسية',
         'values' => [
-            'classroom-distribution:role:view' => 'عرض توزيع الطلاب على الفصول الدراسية',
-            'classroom-distribution:role:distribute' => 'تنفيذ توزيع الطلاب على الفصول الدراسية',
-            'classroom-distribution:role:finalize' => 'اعتماد توزيع الطلاب على الفصول الدراسية',
+            'classroom-distribution:role:view' => 'عرض توزيع الطلبة على الفصول الدراسية',
+            'classroom-distribution:role:distribute' => 'تنفيذ توزيع الطلبة على الفصول الدراسية',
+            'classroom-distribution:role:finalize' => 'اعتماد توزيع الطلبة على الفصول الدراسية',
         ],
     ],
 
@@ -193,14 +193,14 @@ return [
             'report:role:school:view' => 'عرض تقرير المدارس',
             'report:role:school:print' => 'طباعة تقرير المدارس',
 
-            'report:role:student-count-by-grade-level:view' => 'عرض تقرير إحصائية الطلاب حسب الصفوف الدراسية',
-            'report:role:student-count-by-grade-level:print' => 'طباعة تقرير إحصائية الطلاب حسب الصفوف الدراسية',
+            'report:role:student-count-by-grade-level:view' => 'عرض تقرير إحصائية الطلبة حسب الصفوف الدراسية',
+            'report:role:student-count-by-grade-level:print' => 'طباعة تقرير إحصائية الطلبة حسب الصفوف الدراسية',
 
-            'report:role:student-by-grade-level:view' => 'عرض تقرير الطلاب حسب الصفوف الدراسية',
-            'report:role:student-by-grade-level:print' => 'طباعة تقرير الطلاب حسب الصفوف الدراسية',
+            'report:role:student-by-grade-level:view' => 'عرض تقرير الطلبة حسب الصفوف الدراسية',
+            'report:role:student-by-grade-level:print' => 'طباعة تقرير الطلبة حسب الصفوف الدراسية',
 
-            'report:role:student-by-classroom:view' => 'عرض تقرير الطلاب حسب الفصول الدراسية',
-            'report:role:student-by-classroom:print' => 'طباعة تقرير الطلاب حسب الفصول الدراسية',
+            'report:role:student-by-classroom:view' => 'عرض تقرير الطلبة حسب الفصول الدراسية',
+            'report:role:student-by-classroom:print' => 'طباعة تقرير الطلبة حسب الفصول الدراسية',
 
             'report:role:attendance:view' => 'عرض تقرير الغياب',
             'report:role:attendance:print' => 'طباعة تقرير الغياب',

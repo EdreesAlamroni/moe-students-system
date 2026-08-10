@@ -38,7 +38,7 @@ class EducationMonitorNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['viewAny'], School::class),
             ],
             [
-                'title' => 'الطلاب',
+                'title' => 'الطلبة',
                 'href' => route('education-monitor.students.index'),
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'education-monitor.students.*',
@@ -46,7 +46,7 @@ class EducationMonitorNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
-                'title' => 'الطلاب غير المسجّلين في مدارس',
+                'title' => 'الطلبة غير المسجّلين في مدارس',
                 'href' => route('education-monitor.students.unassigned-to-school.index'),
                 'icon' => 'UserXIcon',
                 'activeRoutes' => 'education-monitor.students.unassigned-to-school.*',
@@ -73,7 +73,7 @@ class EducationMonitorNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['view'], SchoolReport::class),
             ],
             [
-                'title' => 'إحصائية الطلاب حسب الصفوف الدراسية',
+                'title' => 'إحصائية الطلبة حسب الصفوف الدراسية',
                 'href' => route('education-monitor.reports.student-count-by-grade-level.index'),
                 'icon' => 'ClipboardList',
                 'activeRoutes' => 'education-monitor.reports.student-count-by-grade-level.*',

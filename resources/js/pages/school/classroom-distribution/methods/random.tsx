@@ -50,10 +50,10 @@ export default function Random({
                         <ShuffleIcon className="h-4 w-4 shrink-0" />
                         <div className="flex flex-col gap-1">
                             <h1 className="text-sm font-medium text-foreground">
-                                التوزيع العشوائي للطلاب
+                                التوزيع العشوائي للطلبة
                             </h1>
                             <p className="text-xs text-muted-foreground">
-                                وزّع الطلاب غير الموزّعين في الصف الدراسي المحدد
+                                وزّع الطلبة غير الموزّعين في الصف الدراسي المحدد
                                 عشوائياً على الفصول الدراسية المختارة.
                             </p>
                         </div>
@@ -93,7 +93,7 @@ export default function Random({
 Random.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'توزيع الطلاب على الفصول الدراسية',
+            title: 'توزيع الطلبة على الفصول الدراسية',
             href: index.url(),
         },
         {

@@ -42,7 +42,7 @@ export default function GradeLevelSelector({
                         <span>الصف الدراسي</span>
                     </CardTitle>
                     <CardDescription>
-                        اختر الصف الدراسي لعرض الفصول الدراسية والطلاب غير
+                        اختر الصف الدراسي لعرض الفصول الدراسية والطلبة غير
                         المعيَّنين في فصل ضمن السنة الدراسية الحالية.
                     </CardDescription>
                 </CardHeader>

@@ -52,8 +52,8 @@ function SchoolTypeStats({ data }: { data?: SchoolTypeDistribution }) {
             items={[
                 { label: "المدارس العامة", value: data.public_schools, icon: SchoolIcon },
                 { label: "المدارس الخاصة", value: data.private_schools, icon: SchoolIcon },
-                { label: "طلاب المدارس العامة", value: data.public_students, icon: UsersIcon },
-                { label: "طلاب المدارس الخاصة", value: data.private_students, icon: UsersIcon },
+                { label: "طلبة المدارس العامة", value: data.public_students, icon: UsersIcon },
+                { label: "طلبة المدارس الخاصة", value: data.private_students, icon: UsersIcon },
             ]}
         />
     );
@@ -75,7 +75,7 @@ function SchoolTypeInsights({ data }: { data?: SchoolTypeDistribution }) {
             />
 
             <RatioInsight
-                label="نسبة الطلاب في المدارس العامة إلى الخاصة"
+                label="نسبة الطلبة في المدارس العامة إلى الخاصة"
                 icon={UsersIcon}
                 data={data}
                 publicCount={data?.public_students ?? 0}
@@ -83,11 +83,11 @@ function SchoolTypeInsights({ data }: { data?: SchoolTypeDistribution }) {
                 detail={(publicCount, privateCount) =>
                     `${formatNumber(publicCount)} في العامة مقابل ${formatNumber(privateCount)} في الخاصة`
                 }
-                emptyText="لا يوجد طلاب مسندون إلى المدارس"
+                emptyText="لا يوجد طلبة مسندون إلى المدارس"
             />
 
             <AverageStudentsInsight
-                label="متوسط الطلاب لكل مدرسة عامة"
+                label="متوسط عدد الطلبة لكل مدرسة عامة"
                 data={data}
                 students={data?.public_students ?? 0}
                 schools={data?.public_schools ?? 0}
@@ -95,7 +95,7 @@ function SchoolTypeInsights({ data }: { data?: SchoolTypeDistribution }) {
             />
 
             <AverageStudentsInsight
-                label="متوسط الطلاب لكل مدرسة خاصة"
+                label="متوسط عدد الطلبة لكل مدرسة خاصة"
                 data={data}
                 students={data?.private_students ?? 0}
                 schools={data?.private_schools ?? 0}
@@ -103,17 +103,17 @@ function SchoolTypeInsights({ data }: { data?: SchoolTypeDistribution }) {
             />
 
             <LargestSchoolInsight
-                label="أكبر مدرسة عامة"
+                label="أعلى المدرسة عامة كثافة"
                 data={data}
                 school={data?.largest_public_school ?? null}
-                emptyText="لا يوجد طلاب مسجلون بالمدارس العامة"
+                emptyText="لا يوجد طلبة مسجلون في المدارس العامة"
             />
 
             <LargestSchoolInsight
-                label="أكبر مدرسة خاصة"
+                label="أعلى المدرسة خاصة كثافة"
                 data={data}
                 school={data?.largest_private_school ?? null}
-                emptyText="لا يوجد طلاب مسجلون بالمدارس الخاصة"
+                emptyText="لا يوجد طلبة مسجلون في المدارس الخاصة"
             />
         </div>
     );
@@ -144,7 +144,7 @@ function RatioInsight({ label, icon, data, publicCount, privateCount, detail, em
                         ٪{publicPercentage} / ٪{100 - publicPercentage}
                     </span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
             detail={data && total > 0 ? detail(publicCount, privateCount) : emptyText}
@@ -184,7 +184,7 @@ function AverageStudentsInsight({ label, data, students, schools, emptyText }: A
                 data && schools > 0 ? (
                     <span className="font-mono tabular-nums">{formatNumber(average)}</span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
             detail={

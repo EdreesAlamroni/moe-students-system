@@ -34,8 +34,8 @@ type EducationMonitorStudentsChartProps = {
 export default function EducationMonitorStudentsChart({ items, className }: EducationMonitorStudentsChartProps) {
     return (
         <DashboardSectionCard
-            title="توزيع الطلاب حسب المُراقبات التعليمية"
-            description="عدد الطلاب المسندين إلى كل مُراقبة تربية وتعليم"
+            title="توزيع الطلبة حسب المُراقبات التعليمية"
+            description="عدد الطلبة المسندين إلى كل مُراقبة تربية وتعليم"
             icon={LandmarkIcon}
             reloadProps={["educationMonitorDistribution"]}
             isLoading={!items}

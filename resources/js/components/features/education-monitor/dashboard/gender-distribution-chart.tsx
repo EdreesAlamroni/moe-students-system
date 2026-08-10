@@ -38,13 +38,13 @@ export default function GenderDistributionChart({ summary, className }: GenderDi
 
     return (
         <DashboardSectionCard
-            title="توزيع الطلاب حسب الجنس"
-            description="نسبة الذكور والإناث من إجمالي الطلاب في نطاق المُراقبة التعليمية"
+            title="توزيع الطلبة حسب الجنس"
+            description="نسبة الذكور والإناث من إجمالي الطلبة في نطاق المُراقبة التعليمية"
             icon={VenusAndMarsIcon}
             reloadProps={["summary"]}
             isLoading={!summary}
             isEmpty={data.length === 0}
-            emptyText="لا يوجد طلاب مسجلون حالياً."
+            emptyText="لا يوجد طلبة مسجلون حالياً."
             skeleton={<DonutChartSkeleton />}
             className={className}
         >
@@ -64,7 +64,7 @@ export default function GenderDistributionChart({ summary, className }: GenderDi
                         innerRadius={60}
                         strokeWidth={5}
                     >
-                        <Label content={donutCenterLabel(summary?.students ?? 0, "إجمالي الطلاب")} />
+                        <Label content={donutCenterLabel(summary?.students ?? 0, "إجمالي الطلبة")} />
                     </Pie>
                     <ChartLegend content={<ChartLegendContent nameKey="key" />} />
                 </PieChart>

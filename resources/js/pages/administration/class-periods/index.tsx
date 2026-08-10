@@ -153,7 +153,7 @@ export default function Index({ classPeriods, academicPeriods, filter, canAny, c
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>

@@ -49,7 +49,7 @@ function GenderRatioInsight({ summary }: { summary?: DashboardSummary }) {
             detail={
                 summary && summary.students > 0
                     ? `${formatNumber(summary.males)} ذكور مقابل ${formatNumber(summary.females)} إناث`
-                    : "لا يوجد طلاب مسجلون حالياً"
+                    : "لا يوجد طلبة مسجلون حالياً"
             }
             extra={
                 summary && summary.students > 0 ? (
@@ -78,14 +78,14 @@ function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDis
 
     return (
         <InsightCard
-            label="أكبر صف دراسي"
+            label="أعلى صف دراسي كثافة"
             icon={CrownIcon}
             isLoading={!gradeLevels}
             value={largest?.name ?? "—"}
             detail={
                 largest
                     ? `يضم ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلاب مقيدون بالصفوف الدراسية"
+                    : "لا يوجد طلبة مقيدون بالصفوف الدراسية"
             }
         />
     );
@@ -124,7 +124,7 @@ function AverageClassSizeInsight({ classrooms }: { classrooms?: ClassroomOccupan
 
     return (
         <InsightCard
-            label="متوسط الطلاب لكل فصل"
+            label="متوسط عدد الطلبة لكل فصل"
             icon={UsersIcon}
             isLoading={!classrooms}
             value={

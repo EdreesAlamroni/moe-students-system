@@ -387,7 +387,7 @@ export default function Edit({ student, nationalities, libyanNationalityId }: Pa
 Edit.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: index.url(),
         },
         {

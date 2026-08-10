@@ -19,7 +19,7 @@ const chartConfig = {
         color: "var(--chart-3)",
     },
     students_received: {
-        label: "طلاب استلموا الكُتب",
+        label: "طلبة استلموا الكُتب",
         color: "var(--chart-2)",
     },
 } satisfies ChartConfig;
@@ -33,7 +33,7 @@ export default function AcademicYearTrendsChart({ items, className }: AcademicYe
     return (
         <DashboardSectionCard
             title="اتجاهات التوزيع حسب السنة الدراسية"
-            description="عدد توزيعات الكُتب والطلاب المستلمين عبر السنوات الدراسية"
+            description="عدد توزيعات الكُتب والطلبة المستلمين عبر السنوات الدراسية"
             icon={CalendarRangeIcon}
             reloadProps={["academicYearTrends"]}
             isLoading={!items}

@@ -13,7 +13,7 @@
             <x-slot:columns>
                 <th scope="col">{{ __('ر.م') }}</th>
                 <th scope="col">{{ __('الصف الدراسي') }}</th>
-                <th scope="col" class="text-center">{{ __('عدد الطلاب') }}</th>
+                <th scope="col" class="text-center">{{ __('عدد الطلبة') }}</th>
                 <th scope="col" class="text-center">{{ __('المُوزَّع') }}</th>
                 <th scope="col" class="text-center">{{ __('المُعلَّق') }}</th>
             </x-slot:columns>

@@ -101,7 +101,7 @@ export default function Show({ classroom, canViewSchedule, canAny, can }: PagePr
                                 </DetailField>
 
                                 <DetailField>
-                                    <DetailLabel>عدد الطلاب</DetailLabel>
+                                    <DetailLabel>عدد الطلبة</DetailLabel>
                                     <DetailValue value={classroom.students_count ?? 0} className="font-mono" />
                                 </DetailField>
 

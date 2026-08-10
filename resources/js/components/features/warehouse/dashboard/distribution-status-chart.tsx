@@ -43,7 +43,7 @@ export default function DistributionStatusChart({ summary, className }: Distribu
     return (
         <DashboardSectionCard
             title="حالة توزيع الكُتب"
-            description="عدد الطلاب المستلمون مقابل المعلّقين لهذا العام الدراسي."
+            description="عدد الطلبة المستلمون مقابل المعلّقين لهذا العام الدراسي."
 
             icon={BookOpenCheckIcon}
             reloadProps={["summary"]}
@@ -69,7 +69,7 @@ export default function DistributionStatusChart({ summary, className }: Distribu
                         innerRadius={60}
                         strokeWidth={5}
                     >
-                        <Label content={donutCenterLabel(total, "عدد الطلاب")} />
+                        <Label content={donutCenterLabel(total, "عدد الطلبة")} />
                     </Pie>
                     <ChartLegend content={<ChartLegendContent nameKey="key" />} />
                 </PieChart>

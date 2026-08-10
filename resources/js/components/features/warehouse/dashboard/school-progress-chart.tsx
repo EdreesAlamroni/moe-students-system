@@ -38,7 +38,7 @@ export default function SchoolProgressChart({ items, className }: SchoolProgress
     return (
         <DashboardSectionCard
             title="تقدّم التوزيع حسب المدارس"
-            description="الطلاب الذين استلموا الكُتب مقابل التسليمات المعلّقة لأكبر المدارس"
+            description="الطلبة الذين استلموا الكُتب مقابل التسليمات المعلّقة لأكبر المدارس"
             icon={TruckIcon}
             reloadProps={["schoolDistribution"]}
             isLoading={!items}

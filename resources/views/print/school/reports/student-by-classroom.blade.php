@@ -1,7 +1,7 @@
-<x-print-layout :title="__('تقرير الطلاب حسب الفصول الدراسية')" :printed-by="auth('school')->user()->name">
+<x-print-layout :title="__('تقرير الطلبة حسب الفصول الدراسية')" :printed-by="auth('school')->user()->name">
     <x-slot:content>
         <x-print.report-table
-            :title="__('تقرير الطلاب حسب الفصول الدراسية')"
+            :title="__('تقرير الطلبة حسب الفصول الدراسية')"
             :colspan="4"
             :organization-lines="auth('school')->user()->organization->printOrganizationLines()"
         >

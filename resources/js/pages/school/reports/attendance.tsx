@@ -47,7 +47,7 @@ export default function Index({ classrooms, months, canAny, can }: PageProps) {
                         <AlertCircleIcon />
                         <AlertTitle>تنبيه مهم!</AlertTitle>
                         <AlertDescription>
-                            هذا التقرير مخصص لطباعة كشف الغياب الخاص بالطلاب خلال شهر معين.
+                            هذا التقرير مخصص لطباعة كشف الغياب الخاص بالطلبة خلال شهر معين.
                             يُرجى تحديد الحقول التالية المبيّنة بدقة لإتمام عملية الطباعة بنجاح.
                         </AlertDescription>
                     </Alert>

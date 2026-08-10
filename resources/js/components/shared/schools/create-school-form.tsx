@@ -457,7 +457,7 @@ export function CreateSchoolForm({
                                                         htmlFor="students_gender"
                                                         hasError={!!errors.students_gender}
                                                     >
-                                                        جنس الطلاب الدارسين بالمدرسة
+                                                        جنس الطلبة الدارسين بالمدرسة
                                                     </Label>
 
                                                     <Select name="students_gender">
@@ -465,7 +465,7 @@ export function CreateSchoolForm({
                                                             id="students_gender"
                                                             hasError={!!errors.students_gender}
                                                         >
-                                                            <SelectValue placeholder="اختر جنس الطلاب الدارسين بالمدرسة" />
+                                                            <SelectValue placeholder="اختر جنس الطلبة الدارسين بالمدرسة" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectGroup>
@@ -624,7 +624,7 @@ export function CreateSchoolForm({
                                                         htmlFor="students_gender_morning"
                                                         hasError={!!errors.students_gender_morning}
                                                     >
-                                                        <span>جنس الطلاب الدارسين بالمدرسة</span>
+                                                        <span>جنس الطلبة الدارسين بالمدرسة</span>
                                                         <span className="text-muted-foreground ms-1.5">( الفترة الصباحية )</span>
                                                     </Label>
 
@@ -633,7 +633,7 @@ export function CreateSchoolForm({
                                                             id="students_gender_morning"
                                                             hasError={!!errors.students_gender_morning}
                                                         >
-                                                            <SelectValue placeholder="اختر جنس الطلاب الدارسين بالمدرسة" />
+                                                            <SelectValue placeholder="اختر جنس الطلبة الدارسين بالمدرسة" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectGroup>
@@ -657,7 +657,7 @@ export function CreateSchoolForm({
                                                         htmlFor="students_gender_evening"
                                                         hasError={!!errors.students_gender_evening}
                                                     >
-                                                        <span>جنس الطلاب الدارسين بالمدرسة</span>
+                                                        <span>جنس الطلبة الدارسين بالمدرسة</span>
                                                         <span className="text-muted-foreground ms-1.5">( الفترة المسائية )</span>
                                                     </Label>
 
@@ -666,7 +666,7 @@ export function CreateSchoolForm({
                                                             id="students_gender_evening"
                                                             hasError={!!errors.students_gender_evening}
                                                         >
-                                                            <SelectValue placeholder="اختر جنس الطلاب الدارسين بالمدرسة" />
+                                                            <SelectValue placeholder="اختر جنس الطلبة الدارسين بالمدرسة" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectGroup>

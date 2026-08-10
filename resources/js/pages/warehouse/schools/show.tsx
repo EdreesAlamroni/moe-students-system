@@ -37,7 +37,7 @@ export default function Show({ school, gradeLevels }: PageProps) {
                     items={[
                         { label: "الصفوف الدراسية", value: school.grade_levels_count || 0, icon: GraduationCapIcon },
                         { label: "الفصول الدراسية", value: school.classrooms_count || 0, icon: PresentationIcon },
-                        { label: "الطلاب", value: school.students_count || 0, icon: UsersIcon },
+                        { label: "الطلبة", value: school.students_count || 0, icon: UsersIcon },
                     ]}
                     columns={3}
                 />
@@ -129,7 +129,7 @@ export default function Show({ school, gradeLevels }: PageProps) {
                                             <TableHead scope="col">الفترة الدراسية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد الصفوف الدراسية</TableHead>
                                             <TableHead scope="col" className="text-center">عدد الفصول الدراسية</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -179,7 +179,7 @@ export default function Show({ school, gradeLevels }: PageProps) {
                                             <TableHead scope="col">الاسم</TableHead>
                                             <TableHead scope="col">المرحلة الدراسية</TableHead>
                                             <TableHead scope="col">الفترة الدراسية</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>

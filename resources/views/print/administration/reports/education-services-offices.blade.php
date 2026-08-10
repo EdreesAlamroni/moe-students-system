@@ -12,7 +12,7 @@
                 <th scope="col">{{ __('مكتب الخدمات التعليمية') }}</th>
                 <th scope="col">{{ __('المُراقبة') }}</th>
                 <th scope="col" class="text-center">{{ __('عدد المدارس') }}</th>
-                <th scope="col" class="text-center">{{ __('عدد الطلاب') }}</th>
+                <th scope="col" class="text-center">{{ __('عدد الطلبة') }}</th>
             </x-slot:columns>
 
             @forelse ($offices as $office)

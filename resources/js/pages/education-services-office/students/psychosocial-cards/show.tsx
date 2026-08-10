@@ -372,7 +372,7 @@ export default function Show({ student, psychosocialCard }: PageProps) {
 Show.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: indexStudents.url(),
         },
         {

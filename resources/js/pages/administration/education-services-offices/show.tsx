@@ -61,7 +61,7 @@ export default function Show({ office, canAny, can }: PageProps) {
                 <StatCardsSection
                     items={[
                         { label: "المدارس", value: office.schools_count || 0, icon: SchoolIcon },
-                        { label: "الطلاب", value: office.students_count || 0, icon: UsersIcon },
+                        { label: "الطلبة", value: office.students_count || 0, icon: UsersIcon },
                     ]}
                     columns={2}
                 />

@@ -58,7 +58,7 @@ function GenderRatioInsight({ summary }: { summary?: AdministrationDashboardSumm
             detail={
                 summary && summary.students > 0
                     ? `${formatNumber(summary.males)} ذكور مقابل ${formatNumber(summary.females)} إناث`
-                    : "لا يوجد طلاب مسجلون حالياً"
+                    : "لا يوجد طلبة مسجلون حالياً"
             }
             extra={
                 summary && summary.students > 0 ? (
@@ -94,7 +94,7 @@ function LargestEducationMonitorInsight({ monitors }: { monitors?: EducationMoni
             detail={
                 largest && largest.students > 0
                     ? `تضم ${formatNumber(largest.students)} طالباً موزعين على ${formatNumber(largest.schools)} مدرسة`
-                    : "لا يوجد طلاب مسندون إلى المُراقبات التعليمية"
+                    : "لا يوجد طلبة مسندون إلى المُراقبات التعليمية"
             }
         />
     );
@@ -117,7 +117,7 @@ function LargestSchoolInsight({ schools }: { schools?: SchoolDistributionItem[] 
             ]
                 .filter(Boolean)
                 .join(" - ")
-            : "لا يوجد طلاب مسجلون بالمدارس";
+            : "لا يوجد طلبة مسجلون بالمدارس";
 
     return (
         <InsightCard
@@ -148,7 +148,7 @@ function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDis
             detail={
                 largest
                     ? `يضم ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلاب مقيدون بالصفوف الدراسية"
+                    : "لا يوجد طلبة مقيدون بالصفوف الدراسية"
             }
         />
     );
@@ -173,7 +173,7 @@ function SchoolDistributionInsight({ summary }: { summary?: AdministrationDashbo
             }
             detail={
                 summary && summary.schools > 0
-                    ? `متوسط الطلاب لكل مدرسة عبر ${formatNumber(summary.schools)} مدرسة و ${formatNumber(summary.education_monitors)} مُراقبة`
+                    ? `متوسط الطلبة لكل مدرسة عبر ${formatNumber(summary.schools)} مدرسة و ${formatNumber(summary.education_monitors)} مُراقبة`
                     : "لا توجد مدارس مسجلة حالياً"
             }
         />
@@ -187,7 +187,7 @@ function AverageClassSizeInsight({ summary }: { summary?: AdministrationDashboar
 
     return (
         <InsightCard
-            label="متوسط الطلاب لكل فصل"
+            label="متوسط الطلبة لكل فصل"
             icon={PresentationIcon}
             isLoading={!summary}
             value={

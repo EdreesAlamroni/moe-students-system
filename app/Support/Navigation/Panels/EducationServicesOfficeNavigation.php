@@ -29,7 +29,7 @@ class EducationServicesOfficeNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['viewAny'], School::class),
             ],
             [
-                'title' => 'الطلاب',
+                'title' => 'الطلبة',
                 'href' => route('education-services-office.students.index'),
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'education-services-office.students.*',
@@ -49,7 +49,7 @@ class EducationServicesOfficeNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['view'], SchoolReport::class),
             ],
             [
-                'title' => 'إحصائية الطلاب حسب الصفوف الدراسية',
+                'title' => 'إحصائية الطلبة حسب الصفوف الدراسية',
                 'href' => route('education-services-office.reports.student-count-by-grade-level.index'),
                 'icon' => 'ClipboardList',
                 'activeRoutes' => 'education-services-office.reports.student-count-by-grade-level.*',

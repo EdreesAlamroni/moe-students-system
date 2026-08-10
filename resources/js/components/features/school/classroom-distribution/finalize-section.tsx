@@ -87,7 +87,7 @@ export default function FinalizeSection({
                         <span>إتمام التوزيع للسنة الدراسية الحالية</span>
                     </CardTitle>
                     <CardDescription>
-                        يُسمح بإتمام العملية فقط بعد تسجيل جميع الطلاب في صف
+                        يُسمح بإتمام العملية فقط بعد تسجيل جميع الطلبة في صف
                         دراسي وتعيينهم في فصول لهذه السنة الدراسية. بعد الإتمام
                         لن يمكن تعديل التوزيع من هذه الشاشة.
                     </CardDescription>
@@ -98,7 +98,7 @@ export default function FinalizeSection({
                         <Alert variant="warning">
                             <AlertTriangleIcon />
                             <AlertTitle>
-                                بعض الطلاب غير مسجّلين في صف دراسي
+                                بعض الطلبة غير مسجّلين في صف دراسي
                             </AlertTitle>
                             <AlertDescription>
                                 <div>
@@ -120,7 +120,7 @@ export default function FinalizeSection({
                             <Alert variant="warning">
                                 <AlertTriangleIcon />
                                 <AlertTitle>
-                                    لا يزال هناك طلاب بلا فصل دراسي
+                                    لا يزال هناك طلبة بلا فصل دراسي
                                 </AlertTitle>
                                 <AlertDescription>
                                     <div>
@@ -142,7 +142,7 @@ export default function FinalizeSection({
                             <CheckCircle2Icon />
                             <AlertTitle>جاهز للإتمام</AlertTitle>
                             <AlertDescription>
-                                جميع الطلاب المسجّلين في صف دراسي لديهم فصل
+                                جميع الطلبة المسجّلين في صف دراسي لديهم فصل
                                 دراسي للسنة الدراسية الحالية. يمكنك إتمام
                                 التوزيع رسمياً لإغلاق العملية.
                             </AlertDescription>
@@ -167,7 +167,7 @@ export default function FinalizeSection({
                                 <AlertDialogDescription asChild>
                                     <div className="space-y-4 text-right text-sm text-foreground">
                                         <p>
-                                            أنت على وشك إتمام توزيع الطلاب على
+                                            أنت على وشك إتمام توزيع الطلبة على
                                             الفصول للسنة الدراسية{' '}
                                             <strong className="font-mono">
                                                 {academicYearName}
@@ -180,7 +180,7 @@ export default function FinalizeSection({
                                             </p>
                                             <ul className="space-y-2 text-xs leading-relaxed text-muted-foreground">
                                                 <li>
-                                                    جميع الطلاب المسجّلين لديهم
+                                                    جميع الطلبة المسجّلين لديهم
                                                     فصل دراسي للسنة الدراسية
                                                     الحالية.
                                                 </li>

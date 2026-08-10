@@ -122,7 +122,7 @@ export default function ClassroomCard({
                 <>
                     <Separator />
                     <p className="text-[11px] leading-relaxed text-amber-700">
-                        قد يُعاد توزيع طلاب إضافيين على هذا الفصل عند تجاوز
+                        قد يُعاد توزيع طلبة إضافيين على هذا الفصل عند تجاوز
                         السعة الإجمالية للفصول المحددة.
                     </p>
                 </>

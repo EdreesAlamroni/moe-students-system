@@ -114,7 +114,7 @@ export default function Create({
 Create.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: indexStudents.url(),
         },
         {

@@ -46,9 +46,9 @@ export default function SummaryStats({ summary }: SummaryStatsProps) {
             columns={3}
             items={[
                 { label: "المدارس", value: summary.schools, icon: SchoolIcon },
-                { label: "إجمالي الطلاب", value: summary.students, icon: UsersIcon },
+                { label: "إجمالي الطلبة", value: summary.students, icon: UsersIcon },
                 { label: "توزيعات الكُتب", value: summary.book_distributions, icon: TruckIcon },
-                { label: "طلاب استلموا الكُتب", value: summary.students_received, icon: BookOpenCheckIcon },
+                { label: "طلبة استلموا الكُتب", value: summary.students_received, icon: BookOpenCheckIcon },
                 { label: "تسليمات معلّقة", value: summary.students_pending, icon: ClockIcon },
                 { label: "نسبة الإنجاز", value: `%${summary.completion_rate}`, icon: PercentIcon },
             ]}

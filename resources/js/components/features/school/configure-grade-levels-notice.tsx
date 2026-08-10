@@ -29,7 +29,7 @@ export default function ConfigureGradeLevelsNotice() {
             <AlertTitle>يجب إعداد الصفوف الدراسية بالمدرسة</AlertTitle>
             <AlertDescription>
                 لم يتم إضافة أي صف دراسي للمدرسة في السنة الدراسية الحالية، ويجب إعدادها قبل المتابعة في إضافة
-                الفصول الدراسية وتسجيل الطلاب، أو مراجعتها من{" "}
+                الفصول الدراسية وتسجيل الطلبة، أو مراجعتها من{" "}
                 <Link href={gradeLevelsIndex.url()}>صفحة الصفوف الدراسية</Link>.
             </AlertDescription>
             <AlertAction>

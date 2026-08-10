@@ -40,7 +40,7 @@ class SchoolNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['viewAny'], Classroom::class),
             ],
             [
-                'title' => 'الطلاب',
+                'title' => 'الطلبة',
                 'href' => route('school.students.index'),
                 'icon' => 'UsersIcon',
                 'activeRoutes' => 'school.students.*',
@@ -48,21 +48,21 @@ class SchoolNavigation extends NavigationPanel
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
-                'title' => 'الطلاب غير المسجّلين في صفوف دراسية',
+                'title' => 'الطلبة غير المسجّلين في صفوف دراسية',
                 'href' => route('school.students.unenrolled-from-grade-level.index'),
                 'icon' => 'UserXIcon',
                 'activeRoutes' => 'school.students.unenrolled-from-grade-level.*',
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
-                'title' => 'الطلاب غير المسجّلين في فصول دراسية',
+                'title' => 'الطلبة غير المسجّلين في فصول دراسية',
                 'href' => route('school.students.unenrolled-from-classroom.index'),
                 'icon' => 'UserXIcon',
                 'activeRoutes' => 'school.students.unenrolled-from-classroom.*',
                 'can' => $this->user?->canAny(['viewAny'], Student::class),
             ],
             [
-                'title' => 'توزيع الطلاب على الفصول',
+                'title' => 'توزيع الطلبة على الفصول',
                 'href' => route('school.classroom-distribution.index'),
                 'icon' => 'TableOfContentsIcon',
                 'activeRoutes' => 'school.classroom-distribution.*',
@@ -82,14 +82,14 @@ class SchoolNavigation extends NavigationPanel
     {
         return [
             [
-                'title' => 'تقرير الطلاب حسب الصفوف',
+                'title' => 'تقرير الطلبة حسب الصفوف',
                 'href' => route('school.reports.students-by-grade-level.index'),
                 'icon' => 'ClipboardList',
                 'activeRoutes' => 'school.reports.students-by-grade-level.*',
                 'can' => $this->user?->canAny(['view'], StudentByGradeLevelReport::class),
             ],
             [
-                'title' => 'تقرير الطلاب حسب الفصول',
+                'title' => 'تقرير الطلبة حسب الفصول',
                 'href' => route('school.reports.students-by-classroom.index'),
                 'icon' => 'ClipboardList',
                 'activeRoutes' => 'school.reports.students-by-classroom.*',

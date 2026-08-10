@@ -50,7 +50,7 @@ class WarehouseNavigation extends NavigationPanel
                 'can' => $this->user?->can('viewStatistics', BookDistribution::class),
             ],
             [
-                'title' => 'حالة توزيع الكُتب المدرسية للطلاب',
+                'title' => 'حالة توزيع الكُتب المدرسية للطلبة',
                 'href' => route('warehouse.book-distributions.students'),
                 'icon' => 'SearchIcon',
                 'activeRoutes' => 'warehouse.book-distributions.students',

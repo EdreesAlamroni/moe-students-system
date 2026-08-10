@@ -149,7 +149,7 @@ export default function Show({
 Show.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: indexStudents.url(),
         },
         {

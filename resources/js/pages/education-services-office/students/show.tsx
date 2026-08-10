@@ -254,7 +254,7 @@ export default function Show({ student, transfers, canAny, can }: PageProps) {
 Show.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: index.url(),
         },
         {

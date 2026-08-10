@@ -459,7 +459,7 @@ export default function Create({ gradeLevels, registrationStatuses, nationalitie
 Create.layout = () => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: index.url(),
         },
         {

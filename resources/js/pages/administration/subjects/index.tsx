@@ -135,7 +135,7 @@ export default function Index({ subjects, gradeLevels, filter, canAny, can }: Pa
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>

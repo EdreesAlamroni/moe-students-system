@@ -189,7 +189,7 @@ export default function ManualDistributionSection({
                         <span>توزيع يدوي</span>
                     </CardTitle>
                     <CardDescription>
-                        اختر الطلاب ثم الفصل المستهدف. يُعرض فقط الطلاب
+                        اختر الطلبة ثم الفصل المستهدف. يُعرض فقط الطلبة
                         المسجّلين في هذا الصف الدراسي دون تعيين فصل دراسي للسنة
                         الدراسية الحالية.
                     </CardDescription>
@@ -201,7 +201,7 @@ export default function ManualDistributionSection({
                         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                             <div className="flex items-center gap-x-2 text-sm font-medium">
                                 <UsersIcon className="h-4 w-4 shrink-0" />
-                                <span>قائمة الطلاب</span>
+                                <span>قائمة الطلبة</span>
                                 {!loadingStudents &&
                                     unassignedStudents.length > 0 && (
                                         <Badge
@@ -230,7 +230,7 @@ export default function ManualDistributionSection({
                             <LoadingData className="py-6" />
                         ) : unassignedStudents.length === 0 ? (
                             <EmptyState
-                                text="لا يوجد طلاب مسجّلون في هذا الصف الدراسي بانتظار تعيين فصل دراسي للسنة الدراسية الحالية."
+                                text="لا يوجد طلبة مسجّلون في هذا الصف الدراسي بانتظار تعيين فصل دراسي للسنة الدراسية الحالية."
                             />
                         ) : (
                             <>
@@ -245,7 +245,7 @@ export default function ManualDistributionSection({
                                         placeholder="بحث بالاسم..."
                                         className="ps-9"
                                         disabled={formsDisabled}
-                                        aria-label="بحث الطلاب بالاسم"
+                                        aria-label="بحث الطلبة بالاسم"
                                     />
                                 </div>
 
@@ -261,7 +261,7 @@ export default function ManualDistributionSection({
                                                 >
                                                     <Checkbox
                                                         role="checkbox"
-                                                        aria-label="تحديد جميع الطلاب"
+                                                        aria-label="تحديد جميع الطلبة"
                                                         checked={
                                                             allFilteredSelected
                                                                 ? true
@@ -444,7 +444,7 @@ export default function ManualDistributionSection({
                                             <ul className="space-y-2 text-xs text-muted-foreground">
                                                 <li className="flex flex-wrap justify-between gap-2">
                                                     <span>
-                                                        عدد الطلاب المحددين
+                                                        عدد الطلبة المحددين
                                                     </span>
                                                     <span className="font-mono text-foreground tabular-nums">
                                                         {selectedStudentCount}
@@ -462,7 +462,7 @@ export default function ManualDistributionSection({
                                                 </li>
                                                 <li className="flex flex-wrap justify-between gap-2">
                                                     <span>
-                                                        عدد الطلاب الحالي في
+                                                        عدد الطلبة الحالي في
                                                         الفصل الدراسي
                                                     </span>
                                                     <span className="font-mono text-foreground tabular-nums">
@@ -493,13 +493,13 @@ export default function ManualDistributionSection({
                                                 </AlertTitle>
                                                 <AlertDescription>
                                                     <div>
-                                                        عدد الطلاب المحددين
+                                                        عدد الطلبة المحددين
                                                         يتجاوز المقاعد المتاحة
                                                         بمقدار{' '}
                                                         <strong className="font-mono tabular-nums">
                                                             {overflowCount}
                                                         </strong>
-                                                        . سيصبح عدد طلاب الفصل
+                                                        . سيصبح عدد طلبة الفصل
                                                         الدراسي{' '}
                                                         <strong className="font-mono tabular-nums">
                                                             {(selectedClassroom?.students_count ??
@@ -524,7 +524,7 @@ export default function ManualDistributionSection({
                                         )}
 
                                         <p className="text-xs leading-relaxed text-muted-foreground">
-                                            بالتأكيد، سيتم تعيين الطلاب المحددين
+                                            بالتأكيد، سيتم تعيين الطلبة المحددين
                                             في الفصل الدراسي فوراً ولا يمكن
                                             التراجع عنه من هذه الشاشة.
                                         </p>

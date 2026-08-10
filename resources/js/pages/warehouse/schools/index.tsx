@@ -145,7 +145,7 @@ export default function Index({ schools, monitors, types, filter }: PageProps) {
                                     >
                                         <Link href={index.url()}>
                                             <RefreshCcwIcon />
-                                            <span>مسح حقول الفلتر</span>
+                                            <span>مسح حقول التصفية</span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -172,7 +172,7 @@ export default function Index({ schools, monitors, types, filter }: PageProps) {
                                             <TableHead scope="col">اسم المدرسة</TableHead>
                                             <TableHead scope="col">الفترة الدراسية</TableHead>
                                             <TableHead scope="col">المُراقبة</TableHead>
-                                            <TableHead scope="col" className="text-center">عدد الطلاب</TableHead>
+                                            <TableHead scope="col" className="text-center">عدد الطلبة</TableHead>
                                             <TableHead scope="col" />
                                         </TableRow>
                                     </TableHeader>

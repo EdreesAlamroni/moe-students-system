@@ -1,7 +1,7 @@
 <x-print-layout :landscape="true" :title="__('تقرير الغياب')" :printed-by="auth('school')->user()->name">
     <x-slot:content>
         <x-print.report-table
-            :title="__('تقرير الغياب للطلاب')"
+            :title="__('تقرير الغياب للطلبة')"
             :colspan="count($days) + 3"
             :organization-lines="auth('school')->user()->organization->printOrganizationLines()"
         >

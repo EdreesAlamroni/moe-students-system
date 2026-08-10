@@ -36,7 +36,7 @@ export default function Create({ students, filter }: PageProps) {
 Create.layout = () => ({
     breadcrumbs: [
         {
-            title: 'الطلاب',
+            title: 'الطلبة',
             href: studentsIndex.url(),
         },
         {

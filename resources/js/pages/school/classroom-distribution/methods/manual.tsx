@@ -58,10 +58,10 @@ export default function Manual({
                         <UserPlusIcon className="h-4 w-4 shrink-0" />
                         <div className="flex flex-col gap-1">
                             <h1 className="text-sm font-medium text-foreground">
-                                التوزيع اليدوي للطلاب
+                                التوزيع اليدوي للطلبة
                             </h1>
                             <p className="text-xs text-muted-foreground">
-                                عيّن الطلاب غير الموزّعين في الصف الدراسي المحدد
+                                عيّن الطلبة غير الموزّعين في الصف الدراسي المحدد
                                 على الفصول الدراسية يدوياً حسب اختيارك.
                             </p>
                         </div>
@@ -101,7 +101,7 @@ export default function Manual({
 Manual.layout = (props: PageProps) => ({
     breadcrumbs: [
         {
-            title: 'توزيع الطلاب على الفصول الدراسية',
+            title: 'توزيع الطلبة على الفصول الدراسية',
             href: index.url(),
         },
         {
