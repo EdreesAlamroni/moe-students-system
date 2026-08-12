@@ -78,6 +78,9 @@ return [
         'classroom-distribution-reset-nothing-to-reset' => 'لا توجد توزيعات فصول دراسية متاحة لإعادة التعيين للصفوف الدراسية المحددة.',
         'classroom-distribution-reset-no-grade-levels' => 'لا توجد صفوف دراسية متاحة لإعادة تعيين توزيع الفصول الدراسية.',
 
+        'period-selected' => 'تم تغيير الفترة الدراسية بنجاح.',
+        'academic-year-selected' => 'تم تغيير السنة الدراسية بنجاح.',
+
         'student-grade-level-enrolled' => 'تم تسجيل الطالب في الصف الدراسي بنجاح.',
         'student-grade-level-already-enrolled' => 'الطالب مسجل بالفعل في صف دراسي للسنة الدراسية الحالية.',
 

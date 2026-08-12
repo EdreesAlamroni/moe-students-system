@@ -311,6 +311,40 @@ class School extends Model
             })->values();
     }
 
+    public static function listWithPeriods(?callable $callback = null, array $additionalColumns = ['id', 'name']): Collection
+    {
+        $columns = array_unique(
+            array_merge(['id', 'name'], $additionalColumns)
+        );
+
+        $query = self::query()->select($columns);
+
+        if ($callback) {
+            $callback($query);
+        }
+
+        return $query
+            ->with(['periods:id,school_id,name,academic_period'])
+            ->ordered()
+            ->get()
+            ->map(function (self $school): array {
+                return [
+                    'id' => $school->id,
+                    'name' => $school->name,
+                    'periods' => $school->periods
+                        ->sortBy(fn (SchoolPeriod $period): int => $period->academic_period->isMorning() ? 0 : 1)
+                        ->values()
+                        ->map(function (SchoolPeriod $period): array {
+                            return [
+                                'id' => $period->id,
+                                'name' => $period->display_name,
+                                'academic_period' => $period->academic_period->toArray(),
+                            ];
+                        })->all(),
+                ];
+            })->values();
+    }
+
     public function nameWithMonitor(): string
     {
         $this->loadMissing(['monitor:id,name']);
@@ -338,8 +372,6 @@ class School extends Model
     /**
      * Grade levels the school can still add for the current academic year, limited to its
      * educational stages and excluding those assigned to any of its periods.
-     *
-     * @return Collection<int, array{id: int, name: string}>
      */
     public function availableGradeLevels(): Collection
     {

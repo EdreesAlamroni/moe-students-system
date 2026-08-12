@@ -127,7 +127,7 @@ test('student index only lists schools for the current education services office
             ->component('education-services-office/students/index')
             ->has('schoolPeriods', 1)
             ->where('schoolPeriods.0.id', $schoolPeriod->id)
-            ->where('schoolPeriods.0.name', sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->isMorning() ? 'فترة صباحية' : 'فترة مسائية'))
+            ->where('schoolPeriods.0.name', $schoolPeriod->display_name)
             ->missing('students')
         );
 });

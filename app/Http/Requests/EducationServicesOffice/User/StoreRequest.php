@@ -4,7 +4,9 @@ namespace App\Http\Requests\EducationServicesOffice\User;
 
 use App\Enums\UserRole;
 use App\Enums\UserScope;
+use App\Http\Requests\Concerns\InteractsWithSchoolPeriodAssignment;
 use App\Models\EducationServicesOffice;
+use App\Models\School;
 use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
@@ -16,6 +18,8 @@ use Spatie\Permission\Models\Role;
 
 class StoreRequest extends FormRequest
 {
+    use InteractsWithSchoolPeriodAssignment;
+
     public function authorize(): bool
     {
         return auth('education_services_office')->check();
@@ -28,11 +32,17 @@ class StoreRequest extends FormRequest
         $scopeIsSchool = $this->scopeIs(UserScope::SCHOOL);
 
         return [
-            'school_period_id' => Rule::when($scopeIsSchool, [
+            'school_id' => Rule::when($scopeIsSchool, [
                 'required',
-                Rule::exists(SchoolPeriod::class, 'id')
+                'integer',
+                Rule::exists(School::class, 'id')
                     ->where('education_services_office_id', $officeId),
             ]),
+            'school_period_ids' => Rule::when($scopeIsSchool, $this->schoolPeriodAssignmentRules($this->integer('school_id') ?: null)),
+            'school_period_ids.*' => [
+                'integer',
+                'distinct',
+            ],
             'name' => [
                 'required',
                 'string',
@@ -92,7 +102,8 @@ class StoreRequest extends FormRequest
         $scope = UserScope::from($validated['scope']);
 
         $attributes = Arr::except($validated, [
-            'school_period_id',
+            'school_id',
+            'school_period_ids',
             'roles',
             'password_confirmation',
         ]);
@@ -103,7 +114,7 @@ class StoreRequest extends FormRequest
                 EducationServicesOffice::class,
             ],
             UserScope::SCHOOL => [
-                $validated['school_period_id'] ?? null,
+                User::resolveDefaultActiveSchoolPeriodId($this->validatedSchoolPeriodIds()),
                 SchoolPeriod::class,
             ],
             default => [null, null],

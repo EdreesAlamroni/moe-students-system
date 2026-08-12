@@ -4,6 +4,7 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\BindDashboardAuth;
 use App\Http\Middleware\EnforceAcademicYearReadOnly;
 use App\Http\Middleware\EnsurePasswordIsChanged;
+use App\Http\Middleware\EnsureValidSchoolPeriodContext;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Support\UniqueUsernameConstraint;
@@ -39,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'guest' => RedirectIfAuthenticated::class,
             'bind.dashboard' => BindDashboardAuth::class,
             'ensure.password.changed' => EnsurePasswordIsChanged::class,
+            'ensure.valid.school-period' => EnsureValidSchoolPeriodContext::class,
             'academic-year.readonly' => EnforceAcademicYearReadOnly::class,
         ]);
     })

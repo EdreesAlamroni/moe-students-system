@@ -72,9 +72,9 @@ class BookDistributionController extends Controller
         );
 
         if ($count === 0) {
-            flash()->warning(__('alerts.messages.book-distribution-no-eligible-students'));
+            flash_warning('book-distribution-no-eligible-students');
         } else {
-            flash()->success(__('alerts.messages.book-distribution-completed', ['count' => $count]));
+            flash_success('book-distribution-completed', ['count' => $count]);
         }
 
         return Redirect::route('school.book-distributions.index', array_filter([

@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             'state' => $user->state->toArray(),
             'request_state' => $user->request_state->toArray(),
             'organization' => $user->resolvedOrganization(),
+            'school_period_memberships' => $user->schoolPeriodMemberships(),
         ];
     }
 }

@@ -121,7 +121,7 @@ test('student index only lists schools for the current education monitor', funct
             ->component('education-monitor/students/index')
             ->has('schools', 1)
             ->where('schools.0.id', $schoolPeriod->id)
-            ->where('schools.0.name', sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->isMorning() ? 'فترة صباحية' : 'فترة مسائية'))
+            ->where('schools.0.name', $schoolPeriod->display_name)
             ->missing('students')
         );
 });

@@ -16,8 +16,10 @@ use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -45,7 +47,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property Warehouse|EducationMonitor|EducationServicesOffice|SchoolPeriod|null $organization
+ * @property-read Warehouse|EducationMonitor|EducationServicesOffice|SchoolPeriod|null $organization
+ * @property-read EloquentCollection<int, SchoolPeriod> $schoolPeriods
  */
 #[Guarded(['id'])]
 #[Hidden(['password', 'remember_token'])]
@@ -186,6 +189,11 @@ class User extends Authenticatable
         return $this->morphTo();
     }
 
+    public function schoolPeriods(): BelongsToMany
+    {
+        return $this->belongsToMany(SchoolPeriod::class, 'school_period_user');
+    }
+
     /*
      * End: Relations
      */
@@ -268,19 +276,130 @@ class User extends Authenticatable
             UserScope::SCHOOL => SchoolPeriod::class,
         };
 
-        return $this->organization_type === $expectedType
-            && $this->organization_id !== null
-            && ! $this->belongsToDeletedOrganization()
-            && ! $this->hasOrphanedOrganization();
+        if ($this->organization_type !== $expectedType || $this->organization_id === null) {
+            return false;
+        }
+
+        if ($this->belongsToDeletedOrganization() || $this->hasOrphanedOrganization()) {
+            return false;
+        }
+
+        if ($this->scope === UserScope::SCHOOL && ! $this->isMemberOfSchoolPeriod((int) $this->organization_id)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function isMemberOfSchoolPeriod(int $schoolPeriodId): bool
+    {
+        if ($this->scope !== UserScope::SCHOOL) {
+            return false;
+        }
+
+        if ($this->relationLoaded('schoolPeriods')) {
+            return $this->schoolPeriods->contains('id', '=', $schoolPeriodId);
+        }
+
+        return $this->schoolPeriods()->where('id', '=', $schoolPeriodId)->exists();
+    }
+
+    public static function resolveSchoolPeriodIds(int $schoolId, ?array $requestedIds): array
+    {
+        $periodIds = SchoolPeriod::query()
+            ->where('school_id', '=', $schoolId)
+            ->orderedByAcademicPeriod()
+            ->pluck('id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
+
+        if (count($periodIds) === 1) {
+            return $periodIds;
+        }
+
+        $requestedIds = array_values(array_unique(array_map(intval(...), $requestedIds ?? [])));
+
+        return $requestedIds;
+    }
+
+    public static function resolveDefaultActiveSchoolPeriodId(array $schoolPeriodIds): int
+    {
+        return (int) SchoolPeriod::query()
+            ->whereIn('id', $schoolPeriodIds)
+            ->orderedByAcademicPeriod()
+            ->value('id');
+    }
+
+    public function syncSchoolPeriodMemberships(array $schoolPeriodIds): void
+    {
+        $this->schoolPeriods()->sync($schoolPeriodIds);
+    }
+
+    public function ensureActiveSchoolPeriodIsValid(): bool
+    {
+        if ($this->scope !== UserScope::SCHOOL) {
+            return false;
+        }
+
+        $membershipIds = $this->schoolPeriods()->pluck('school_periods.id')->map(fn ($id): int => (int) $id)->all();
+
+        if ($membershipIds === []) {
+            return false;
+        }
+
+        if ($this->organization_id !== null && in_array((int) $this->organization_id, $membershipIds, true)) {
+            return false;
+        }
+
+        $this->update([
+            'organization_id' => self::resolveDefaultActiveSchoolPeriodId($membershipIds),
+            'organization_type' => SchoolPeriod::class,
+        ]);
+
+        return true;
+    }
+
+    public function schoolPeriodFormData(): array
+    {
+        if ($this->scope !== UserScope::SCHOOL) {
+            return [];
+        }
+
+        $this->loadMissing([
+            'schoolPeriods:id,school_id,academic_period,name',
+            'organization',
+        ]);
+
+        $schoolId = $this->organization instanceof SchoolPeriod
+            ? $this->organization->school_id
+            : $this->schoolPeriods->first()?->school_id;
+
+        return [
+            'school_id' => $schoolId,
+            'school_period_ids' => $this->schoolPeriods->pluck('id')->map(fn ($id): int => (int) $id)->values()->all(),
+        ];
+    }
+
+    public function schoolPeriodMemberships(): array
+    {
+        if ($this->scope !== UserScope::SCHOOL) {
+            return [];
+        }
+
+        $this->loadMissing(['schoolPeriods:id,school_id,academic_period,name']);
+
+        return $this->schoolPeriods
+            ->sortBy(fn (SchoolPeriod $period): int => $period->academic_period->isMorning() ? 0 : 1)
+            ->values()
+            ->map(fn (SchoolPeriod $period): array => [
+                'id' => $period->id,
+                'name' => $period->display_name,
+                'academic_period' => $period->academic_period->toArray(),
+            ])->all();
     }
 
     /**
      * Typed organizational context for the attached organization morph.
-     *
-     * @return array{
-     *     type: string,
-     *     organization: array<string, array{id: int, name: string}>
-     * }|null
      */
     public function resolvedOrganization(): ?array
     {
@@ -335,43 +454,6 @@ class User extends Authenticatable
         };
     }
 
-    /*
-     * End: Custom Functions
-     */
-
-    /**
-     * @param  array<class-string<Model>, string>  $descendants
-     */
-    private function scopedToOrganization(Builder $query, int|string|null $organizationId, string $organizationClass, array $descendants = []): Builder
-    {
-        if ($organizationId === null) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where(function (Builder $query) use ($organizationId, $organizationClass, $descendants): void {
-            $query
-                ->where('organization_type', $organizationClass)
-                ->where('organization_id', $organizationId);
-
-            if ($descendants !== []) {
-                $query->orWhereHasMorph('organization', array_keys($descendants), function (Builder $query, string $type) use ($organizationId, $descendants): void {
-                    $query->where($descendants[$type], $organizationId);
-                });
-            }
-        });
-    }
-
-    private function authenticatedOrganizationId(UserScope $scope): ?int
-    {
-        $user = auth($scope->guard())->user();
-
-        if (! $user instanceof self || $user->scope !== $scope || ! $user->hasValidOrganizationContext()) {
-            return null;
-        }
-
-        return $user->organization_id;
-    }
-
     public function hasAnyRelations(): bool
     {
         return false;
@@ -421,4 +503,38 @@ class User extends Authenticatable
     {
         return $this->request_state->equals(Pending::class);
     }
+
+    private function scopedToOrganization(Builder $query, int|string|null $organizationId, string $organizationClass, array $descendants = []): Builder
+    {
+        if ($organizationId === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where(function (Builder $query) use ($organizationId, $organizationClass, $descendants): void {
+            $query
+                ->where('organization_type', $organizationClass)
+                ->where('organization_id', $organizationId);
+
+            if ($descendants !== []) {
+                $query->orWhereHasMorph('organization', array_keys($descendants), function (Builder $query, string $type) use ($organizationId, $descendants): void {
+                    $query->where($descendants[$type], $organizationId);
+                });
+            }
+        });
+    }
+
+    private function authenticatedOrganizationId(UserScope $scope): ?int
+    {
+        $user = auth($scope->guard())->user();
+
+        if (! $user instanceof self || $user->scope !== $scope || ! $user->hasValidOrganizationContext()) {
+            return null;
+        }
+
+        return $user->organization_id;
+    }
+
+    /*
+     * End: Custom Functions
+     */
 }

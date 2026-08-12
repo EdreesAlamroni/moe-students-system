@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\UserRole;
 use App\Enums\UserScope;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\ModelStates\User\RequestState\Approved;
 use App\ModelStates\User\RequestState\UserRequestState;
@@ -75,5 +76,18 @@ class UserFactory extends Factory
     public function withMustChangePassword(bool $mustChangePassword = true): static
     {
         return $this->state(['must_change_password' => $mustChangePassword]);
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            if ($user->scope !== UserScope::SCHOOL
+                || $user->organization_type !== SchoolPeriod::class
+                || $user->organization_id === null) {
+                return;
+            }
+
+            $user->schoolPeriods()->sync([(int) $user->organization_id]);
+        });
     }
 }

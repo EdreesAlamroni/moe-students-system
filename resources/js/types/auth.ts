@@ -1,4 +1,4 @@
-import type { Enum, ModelState } from '@/types/index';
+import type { Enum, ModelState, SchoolPeriod } from '@/types/index';
 
 /** Display-friendly reference to an organizational entity. */
 export type EntityReference = {
@@ -68,6 +68,9 @@ export type User = {
     /** Resolved organization for the user's attached entity, when eager-loaded. */
     organization?: UserOrganizationContext;
     role_ids: number[];
+    school_id?: number | null;
+    school_period_ids?: number[];
+    school_period_memberships?: SchoolPeriod[];
     avatar?: string;
     created_at: string;
     updated_at: string;

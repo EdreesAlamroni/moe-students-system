@@ -53,9 +53,9 @@ class BookDistributionController extends Controller
         );
 
         if ($count === 0) {
-            flash()->warning(__('alerts.messages.book-distribution-no-eligible-grade-levels'));
+            flash_warning('book-distribution-no-eligible-grade-levels');
         } else {
-            flash()->success(__('alerts.messages.book-distribution-grade-levels-confirmed', ['count' => $count]));
+            flash_success('book-distribution-grade-levels-confirmed', ['count' => $count]);
         }
 
         return Redirect::route('warehouse.book-distributions.index', [

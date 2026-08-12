@@ -11,6 +11,7 @@ use App\Http\Resources\EducationMonitor\UserFormResource;
 use App\Http\Resources\EducationMonitor\UserResource;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
+use App\Models\School;
 use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\ModelAbilityMap;
@@ -20,14 +21,11 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Role;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
@@ -105,7 +103,7 @@ class UserController extends Controller
             : collect([]);
 
         $schools = $scope->isSchool()
-            ? SchoolPeriod::list(function ($query) {
+            ? School::listWithPeriods(function ($query): void {
                 $query->forCurrentEducationMonitor();
             }, ['education_monitor_id'])
             : collect([]);
@@ -116,7 +114,7 @@ class UserController extends Controller
             'monitor' => $monitor->only(['id', 'name']),
             'offices' => $offices,
             'schools' => $schools,
-            'groupedRoles' => $this->getGroupedRoles($scope),
+            'groupedRoles' => get_grouped_roles($scope),
         ]);
     }
 
@@ -127,6 +125,10 @@ class UserController extends Controller
         $user = DB::transaction(function () use ($request): User {
             /** @var User $user */
             $user = User::create($request->getAttributes());
+
+            if ($request->enum('scope', UserScope::class) === UserScope::SCHOOL) {
+                $user->syncSchoolPeriodMemberships($request->validatedSchoolPeriodIds());
+            }
 
             $user->assignRole($request->validated('roles', []));
 
@@ -150,7 +152,7 @@ class UserController extends Controller
                 UserResource::make($user),
             ),
             'roles' => $user->roles->isNotEmpty()
-                ? $this->getGroupedRoles($user->scope, $user->roles->pluck('id'))
+                ? get_grouped_roles($user->scope, $user->roles->pluck('id'))
                 : [],
             'availableStates' => $user->getTransitionableStates(),
             ...ModelAbilityMap::make($user, ['update', 'delete', 'stateUpdate']),
@@ -162,13 +164,21 @@ class UserController extends Controller
         Gate::authorize('update', $user);
 
         $this->loadOrganizationRelation($user);
-        $user->loadMissing('roles:id,name');
+        $user->loadMissing([
+            'roles:id,name',
+            'schoolPeriods:id,school_id,academic_period,name',
+        ]);
 
         return Inertia::render('education-monitor/users/edit', [
             'user' => ResourcePayloadBuilder::make(
                 UserFormResource::make($user),
             ),
-            'groupedRoles' => $this->getGroupedRoles($user->scope),
+            'schools' => $user->scope === UserScope::SCHOOL
+                ? School::listWithPeriods(function ($query): void {
+                    $query->forCurrentEducationMonitor();
+                }, ['education_monitor_id'])
+                : collect([]),
+            'groupedRoles' => get_grouped_roles($user->scope),
         ]);
     }
 
@@ -178,6 +188,11 @@ class UserController extends Controller
 
         DB::transaction(function () use ($request, $user): void {
             $user->update($request->getAttributes());
+
+            if ($user->scope === UserScope::SCHOOL) {
+                $user->syncSchoolPeriodMemberships($request->validatedSchoolPeriodIdsForUser($user));
+                $user->ensureActiveSchoolPeriodIsValid();
+            }
 
             $user->syncRoles($request->validated('roles', []));
         });
@@ -208,37 +223,5 @@ class UserController extends Controller
             EducationServicesOffice::class, SchoolPeriod::class => ['organization.monitor'],
             default => ['organization'],
         });
-    }
-
-    protected function getGroupedRoles(UserScope|string $scope, Collection|array $ids = []): Collection
-    {
-        $ids = $ids instanceof Collection ? $ids : collect($ids);
-
-        $scope = $scope instanceof UserScope ? $scope->value : $scope;
-
-        return Role::query()
-            ->select(['id', 'name', 'guard_name'])
-            ->where('guard_name', '=', $scope)
-            ->when($ids->isNotEmpty(), function (Builder $query) use ($ids) {
-                $query->whereIn('id', $ids->all());
-            })
-            ->oldest()
-            ->get()
-            ->groupBy(function (Role $role): string {
-                return Str::before($role->name, ':');
-            })->mapWithKeys(function (Collection $roles, string $group): array {
-                return [
-                    $group => [
-                        'label' => __("roles.{$group}.label"),
-                        'roles' => $roles->map(function (Role $role) use ($group): array {
-                            return [
-                                'id' => $role->id,
-                                'name' => $role->name,
-                                'label' => __("roles.{$group}.values.{$role->name}"),
-                            ];
-                        })->values(),
-                    ],
-                ];
-            })->values();
     }
 }

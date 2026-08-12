@@ -3,8 +3,9 @@ import React from 'react'
 import { Form, Head, Link } from "@inertiajs/react";
 
 import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
-import type { EducationMonitor, EducationServicesOffice, Enum, SchoolPeriod } from "@/types";
+import type { EducationMonitor, EducationServicesOffice, Enum } from "@/types";
 import type { RoleGroup } from "@/types/auth";
+import type { SchoolWithPeriods } from "@/components/shared/users/school-user-period-fieldset";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
@@ -26,6 +27,7 @@ import InputError from "@/components/ui/controls/input-error";
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
 import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
+import SchoolUserPeriodFieldset, { useSchoolPeriodAssignment } from "@/components/shared/users/school-user-period-fieldset";
 import UsernameField from "@/components/shared/users/username-field";
 import EmailField from "@/components/shared/users/email-field";
 import PasswordField from "@/components/shared/users/password-field";
@@ -42,7 +44,7 @@ type PageProps = {
     creationLabel: string;
     monitor: EducationMonitor;
     offices: EducationServicesOffice[];
-    schools: SchoolPeriod[];
+    schools: SchoolWithPeriods[];
     groupedRoles: RoleGroup[];
 };
 
@@ -58,7 +60,13 @@ export default function Create({
     const isSchool = scope.id === "school";
 
     const [selectedOfficeId, setSelectedOfficeId] = React.useState<string>();
-    const [selectedSchoolPeriodId, setSelectedSchoolPeriodId] = React.useState<string>();
+
+    const {
+        selectedSchoolId,
+        selectedPeriodIds,
+        handleSchoolChange,
+        togglePeriod,
+    } = useSchoolPeriodAssignment({ schools });
 
     const {
         selectedRoles,
@@ -162,52 +170,15 @@ export default function Create({
                                             )}
 
                                             {isSchool && (
-                                                <Field className="col-span-full">
-                                                    <Label
-                                                        htmlFor="school_period_id"
-                                                        hasError={!!errors.school_period_id}
-                                                        required
-                                                    >
-                                                        المدرسة
-                                                    </Label>
-
-                                                    {schools.length > 0 ? (
-                                                        <Select
-                                                            name="school_period_id"
-                                                            value={selectedSchoolPeriodId}
-                                                            onValueChange={setSelectedSchoolPeriodId}
-                                                        >
-                                                            <SelectTrigger
-                                                                id="school_period_id"
-                                                                hasError={!!errors.school_period_id}
-                                                            >
-                                                                <SelectValue
-                                                                    placeholder="اختر المدرسة والفترة الدراسية"
-                                                                />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    {schools.map((school) => (
-                                                                        <SelectItem
-                                                                            key={school.id}
-                                                                            value={school.id.toString()}
-                                                                        >
-                                                                            {school.name}
-                                                                        </SelectItem>
-                                                                    ))}
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    ) : (
-                                                        <EmptyOptionsInput
-                                                            id="school_period_id"
-                                                            placeholder="لا توجد مدارس متاحة للاختيار"
-                                                            aria-invalid={!!errors.school_period_id}
-                                                        />
-                                                    )}
-
-                                                    <InputError message={errors.school_period_id} />
-                                                </Field>
+                                                <SchoolUserPeriodFieldset
+                                                    schools={schools}
+                                                    selectedSchoolId={selectedSchoolId}
+                                                    selectedPeriodIds={selectedPeriodIds}
+                                                    onSchoolChange={handleSchoolChange}
+                                                    onPeriodToggle={togglePeriod}
+                                                    errors={errors}
+                                                    className="col-span-full"
+                                                />
                                             )}
 
                                             <Separator className="col-span-full" />

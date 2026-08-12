@@ -21,6 +21,11 @@ export type SchoolOrganizationContext = SchoolPeriod & {
     type: 'school';
     students_gender_options?: Enum[];
     available_grade_levels: GradeLevel[];
+    available_periods?: Array<{
+        id: number;
+        name: string;
+        academic_period: Enum & { display_name: string };
+    }>;
 };
 
 export type OrganizationContext =

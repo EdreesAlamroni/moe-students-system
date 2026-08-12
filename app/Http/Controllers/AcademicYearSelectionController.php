@@ -21,7 +21,7 @@ class AcademicYearSelectionController extends Controller
 
         AcademicYear::clearCachedCurrent();
 
-        flash()->success(__('تم تغيير العام الدراسي بنجاح.'));
+        flash_success('academic-year-selected');
 
         $previousUrl = URL::previous();
 

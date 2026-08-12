@@ -119,7 +119,8 @@ function schoolUserPayload(EducationMonitor $monitor, SchoolPeriod $schoolPeriod
     return array_merge([
         'scope' => UserScope::SCHOOL->value,
         'education_monitor_id' => $monitor->id,
-        'school_period_id' => $schoolPeriod->id,
+        'school_id' => $schoolPeriod->school_id,
+        'school_period_ids' => [$schoolPeriod->id],
         'name' => 'New School User',
         'username' => 'school.user.create',
         'email' => null,
@@ -227,7 +228,8 @@ test('create education services office user page loads monitors with offices', f
 test('create school user page loads monitors with schools', function () {
     $user = createUserAdminUser();
     $monitor = EducationMonitor::factory()->create();
-    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
+    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for($school)->create();
 
     $this->actingAs($user, 'administration')
         ->get(route('administration.users.create', ['scope' => UserScope::SCHOOL->value]))
@@ -238,7 +240,9 @@ test('create school user page loads monitors with schools', function () {
             ->has('monitors', 1)
             ->where('monitors.0.id', $monitor->id)
             ->has('monitors.0.schools', 1)
-            ->where('monitors.0.schools.0.id', $schoolPeriod->id)
+            ->where('monitors.0.schools.0.id', $school->id)
+            ->has('monitors.0.schools.0.periods', 1)
+            ->where('monitors.0.schools.0.periods.0.id', $schoolPeriod->id)
         );
 });
 
@@ -373,7 +377,7 @@ test('store requires an education monitor and school when school fields are omit
 
     $this->actingAs($user, 'administration')
         ->post(route('administration.users.store'), $payload)
-        ->assertSessionHasErrors(['education_monitor_id', 'school_period_id']);
+        ->assertSessionHasErrors(['education_monitor_id', 'school_id']);
 
     expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
 });

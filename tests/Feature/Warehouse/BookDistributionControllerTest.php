@@ -109,7 +109,7 @@ test('selecting a monitor loads its warehouse schools', function () {
             ->component('warehouse/book-distributions/index')
             ->has('schools', 1)
             ->where('schools.0.id', $schoolPeriod->id)
-            ->where('schools.0.name', sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->isMorning() ? 'فترة صباحية' : 'فترة مسائية'))
+            ->where('schools.0.name', $schoolPeriod->display_name)
             ->missing('schools.0.number')
             ->has('gradeLevels', 0)
             ->where('selected.education_monitor_id', $monitor->id)

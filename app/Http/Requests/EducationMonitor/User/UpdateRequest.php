@@ -2,6 +2,10 @@
 
 namespace App\Http\Requests\EducationMonitor\User;
 
+use App\Enums\UserScope;
+use App\Http\Requests\Concerns\InteractsWithSchoolPeriodAssignment;
+use App\Models\School;
+use App\Models\SchoolPeriod;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
@@ -10,6 +14,8 @@ use Spatie\Permission\Models\Role;
 
 class UpdateRequest extends FormRequest
 {
+    use InteractsWithSchoolPeriodAssignment;
+
     public function authorize(): bool
     {
         return auth('education_monitor')->check();
@@ -19,6 +25,9 @@ class UpdateRequest extends FormRequest
     {
         /** @var User $user */
         $user = $this->route('user');
+
+        $scopeIsSchool = $user->scope === UserScope::SCHOOL;
+        $monitorId = $this->currentMonitorId();
 
         return [
             'name' => [
@@ -33,6 +42,17 @@ class UpdateRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::unique(User::class, 'email')->ignore($user),
+            ],
+            'school_id' => Rule::when($scopeIsSchool, [
+                'required',
+                'integer',
+                Rule::exists(School::class, 'id')
+                    ->where('education_monitor_id', $monitorId),
+            ]),
+            'school_period_ids' => Rule::when($scopeIsSchool, $this->schoolPeriodAssignmentRules($this->integer('school_id') ?: null)),
+            'school_period_ids.*' => [
+                'integer',
+                'distinct',
             ],
             'roles' => [
                 'required',
@@ -59,8 +79,33 @@ class UpdateRequest extends FormRequest
 
     public function getAttributes(): array
     {
-        return Arr::except($this->validated(), [
+        /** @var User $user */
+        $user = $this->route('user');
+
+        $attributes = Arr::except($this->validated(), [
             'roles',
+            'school_id',
+            'school_period_ids',
         ]);
+
+        if ($user->scope === UserScope::SCHOOL) {
+            $schoolPeriodIds = $this->validatedSchoolPeriodIdsForUser($user);
+            $activeSchoolPeriodId = in_array((int) $user->organization_id, $schoolPeriodIds, true)
+                ? (int) $user->organization_id
+                : User::resolveDefaultActiveSchoolPeriodId($schoolPeriodIds);
+
+            $attributes['organization_id'] = $activeSchoolPeriodId;
+            $attributes['organization_type'] = SchoolPeriod::class;
+        }
+
+        return $attributes;
+    }
+
+    private function currentMonitorId(): ?int
+    {
+        /** @var User|null $user */
+        $user = $this->user('education_monitor');
+
+        return $user?->organization_id;
     }
 }

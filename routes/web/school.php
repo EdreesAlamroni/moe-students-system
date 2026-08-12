@@ -11,6 +11,7 @@ use App\Http\Controllers\School\ClassScheduleController;
 use App\Http\Controllers\School\DashboardController;
 use App\Http\Controllers\School\GradeLevelController;
 use App\Http\Controllers\School\GradeLevelTransferController;
+use App\Http\Controllers\School\PeriodSelectionController;
 use App\Http\Controllers\School\SchoolStudentsGenderController;
 use App\Http\Controllers\School\StudentAcademicRecordController;
 use App\Http\Controllers\School\StudentByClassroomReportController;
@@ -30,7 +31,9 @@ use Illuminate\Support\Facades\Route;
 
 RegistersDashboardAuthRoutes::registerGuestRoutes(DashboardAuth::school());
 
-Route::middleware(['auth:school', 'ensure.password.changed'])->group(function () {
+Route::middleware(['auth:school', 'ensure.password.changed', 'ensure.valid.school-period'])->group(function () {
+    Route::patch('/period/select', PeriodSelectionController::class)->name('period.select');
+
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     Route::patch('/students-gender', [SchoolStudentsGenderController::class, 'update'])->name('students-gender.update');

@@ -71,7 +71,7 @@ test('authenticated users can select an academic year', function () {
 
     $response
         ->assertRedirect('/administration/dashboard')
-        ->assertSessionHas('laravel_flash_message.message', __('تم تغيير العام الدراسي بنجاح.'))
+        ->assertSessionHas('laravel_flash_message.message', __('alerts.messages.academic-year-selected'))
         ->assertSessionHas('laravel_flash_message.level', 'success');
 
     app()->instance(DashboardAuth::class, DashboardAuth::administration());

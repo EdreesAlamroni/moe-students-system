@@ -213,18 +213,29 @@ class EducationServicesOffice extends Model
     {
         return self::query()
             ->select(['id', 'name'])
-            ->with(['schoolPeriods:id,name,education_services_office_id,academic_period'])
+            ->with(['schools.periods:id,school_id,name,academic_period'])
             ->get()
             ->map(function (EducationServicesOffice $office): array {
                 return [
                     'id' => $office->id,
                     'name' => $office->name,
-                    'schools' => $office->schoolPeriods->map(function (SchoolPeriod $schoolPeriod): array {
-                        return [
-                            'id' => $schoolPeriod->id,
-                            'name' => $schoolPeriod->display_name,
-                        ];
-                    })->all(),
+                    'schools' => $office->schools
+                        ->map(function (School $school): array {
+                            return [
+                                'id' => $school->id,
+                                'name' => $school->name,
+                                'periods' => $school->periods
+                                    ->sortBy(fn (SchoolPeriod $period): int => $period->academic_period->isMorning() ? 0 : 1)
+                                    ->values()
+                                    ->map(function (SchoolPeriod $period): array {
+                                        return [
+                                            'id' => $period->id,
+                                            'name' => $period->display_name,
+                                            'academic_period' => $period->academic_period->toArray(),
+                                        ];
+                                    })->all(),
+                            ];
+                        })->values()->all(),
                 ];
             })->values();
     }

@@ -169,6 +169,8 @@ test('create school user page loads schools for the current office', function ()
     $otherOffice = EducationServicesOffice::factory()->create();
     createEducationServicesOfficeSchoolPeriod($otherOffice);
 
+    $school = $schoolPeriod->school;
+
     $this->actingAs($user, 'education_services_office')
         ->get(route('education-services-office.users.create', ['scope' => UserScope::SCHOOL->value]))
         ->assertOk()
@@ -176,7 +178,9 @@ test('create school user page loads schools for the current office', function ()
             ->component('education-services-office/users/create')
             ->where('scope.id', UserScope::SCHOOL->value)
             ->has('schools', 1)
-            ->where('schools.0.id', $schoolPeriod->id)
+            ->where('schools.0.id', $school->id)
+            ->has('schools.0.periods', 1)
+            ->where('schools.0.periods.0.id', $schoolPeriod->id)
         );
 });
 
@@ -225,7 +229,8 @@ test('authenticated education services office users can store a school user unde
     $schoolPeriod = createEducationServicesOfficeSchoolPeriod($office);
     $payload = educationServicesOfficeDashboardUserPayload([
         'scope' => UserScope::SCHOOL->value,
-        'school_period_id' => $schoolPeriod->id,
+        'school_id' => $schoolPeriod->school_id,
+        'school_period_ids' => [$schoolPeriod->id],
         'username' => 'school.dashboard.user',
         'email' => 'school.dashboard.user@example.com',
     ]);
@@ -253,10 +258,11 @@ test('store rejects schools that do not belong to the current office', function 
     $this->actingAs($user, 'education_services_office')
         ->post(route('education-services-office.users.store'), educationServicesOfficeDashboardUserPayload([
             'scope' => UserScope::SCHOOL->value,
-            'school_period_id' => $foreignSchoolPeriod->id,
+            'school_id' => $foreignSchoolPeriod->school_id,
+            'school_period_ids' => [$foreignSchoolPeriod->id],
             'username' => 'foreign.school.user',
         ]))
-        ->assertSessionHasErrors('school_period_id');
+        ->assertSessionHasErrors('school_id');
 });
 
 test('store requires a school when the field is omitted', function () {
@@ -274,7 +280,7 @@ test('store requires a school when the field is omitted', function () {
 
     $this->actingAs($user, 'education_services_office')
         ->post(route('education-services-office.users.store'), $payload)
-        ->assertSessionHasErrors('school_period_id');
+        ->assertSessionHasErrors('school_id');
 
     expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
 });

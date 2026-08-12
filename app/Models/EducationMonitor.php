@@ -258,19 +258,30 @@ class EducationMonitor extends Model
             ->select(['id', 'name'])
             ->ordered()
             ->with([
-                'schoolPeriods:id,name,education_monitor_id,academic_period',
+                'schools.periods:id,school_id,name,academic_period',
             ])
             ->get()
             ->map(function (EducationMonitor $monitor): array {
                 return [
                     'id' => $monitor->id,
                     'name' => $monitor->name,
-                    'schools' => $monitor->schoolPeriods->map(function (SchoolPeriod $schoolPeriod): array {
-                        return [
-                            'id' => $schoolPeriod->id,
-                            'name' => $schoolPeriod->display_name,
-                        ];
-                    })->all(),
+                    'schools' => $monitor->schools
+                        ->map(function (School $school): array {
+                            return [
+                                'id' => $school->id,
+                                'name' => $school->name,
+                                'periods' => $school->periods
+                                    ->sortBy(fn (SchoolPeriod $period): int => $period->academic_period->isMorning() ? 0 : 1)
+                                    ->values()
+                                    ->map(function (SchoolPeriod $period): array {
+                                        return [
+                                            'id' => $period->id,
+                                            'name' => $period->display_name,
+                                            'academic_period' => $period->academic_period->toArray(),
+                                        ];
+                                    })->all(),
+                            ];
+                        })->values()->all(),
                 ];
             })->values();
     }

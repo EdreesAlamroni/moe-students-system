@@ -13,17 +13,13 @@ use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Role;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
@@ -78,7 +74,7 @@ class UserController extends Controller
         return Inertia::render('school/users/create', [
             'scope' => UserScope::SCHOOL->toArray(),
             'schoolPeriod' => $schoolPeriod->only(['id', 'name']),
-            'groupedRoles' => $this->getGroupedRoles(),
+            'groupedRoles' => get_grouped_roles(UserScope::SCHOOL),
         ]);
     }
 
@@ -111,7 +107,7 @@ class UserController extends Controller
                 UserResource::make($user),
             ),
             'roles' => $user->roles->isNotEmpty()
-                ? $this->getGroupedRoles($user->roles->pluck('id'))
+                ? get_grouped_roles($user->scope, $user->roles->pluck('id'))
                 : [],
             'availableStates' => $user->getTransitionableStates(),
             ...ModelAbilityMap::make($user, ['update', 'delete', 'stateUpdate']),
@@ -128,7 +124,7 @@ class UserController extends Controller
             'user' => ResourcePayloadBuilder::make(
                 UserFormResource::make($user),
             ),
-            'groupedRoles' => $this->getGroupedRoles(),
+            'groupedRoles' => get_grouped_roles($user->scope),
         ]);
     }
 
@@ -156,35 +152,5 @@ class UserController extends Controller
         flash_success('delete');
 
         return Redirect::route('school.users.index');
-    }
-
-    protected function getGroupedRoles(Collection|array $ids = []): Collection
-    {
-        $ids = $ids instanceof Collection ? $ids : collect($ids);
-
-        return Role::query()
-            ->select(['id', 'name', 'guard_name'])
-            ->where('guard_name', '=', UserScope::SCHOOL->value)
-            ->when($ids->isNotEmpty(), function (Builder $query) use ($ids) {
-                $query->whereIn('id', $ids->all());
-            })
-            ->oldest()
-            ->get()
-            ->groupBy(function (Role $role): string {
-                return Str::before($role->name, ':');
-            })->mapWithKeys(function (Collection $roles, string $group): array {
-                return [
-                    $group => [
-                        'label' => __("roles.{$group}.label"),
-                        'roles' => $roles->map(function (Role $role) use ($group): array {
-                            return [
-                                'id' => $role->id,
-                                'name' => $role->name,
-                                'label' => __("roles.{$group}.values.{$role->name}"),
-                            ];
-                        })->values(),
-                    ],
-                ];
-            })->values();
     }
 }

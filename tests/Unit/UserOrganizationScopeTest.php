@@ -32,7 +32,7 @@ it('fails closed when the authenticated user has no organization', function () {
 
 it('scopes users to the authenticated school organization', function () {
     $schoolPeriod = SchoolPeriod::factory()->create();
-    $user = User::factory()->make([
+    $user = User::factory()->create([
         'scope' => UserScope::SCHOOL,
         'organization_id' => $schoolPeriod->id,
         'organization_type' => SchoolPeriod::class,

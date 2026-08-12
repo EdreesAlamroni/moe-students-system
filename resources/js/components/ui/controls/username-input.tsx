@@ -88,7 +88,7 @@ export default function UsernameInput({
             ref={ref}
             type="text"
             name="username"
-            className={cn('not-placeholder-shown:font-mono', className)}
+            className={cn('not-placeholder-shown:font-mono tracking-widest', className)}
             hasError={hasError}
             autoComplete="username"
             spellCheck={false}

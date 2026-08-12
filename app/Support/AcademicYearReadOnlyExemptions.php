@@ -35,7 +35,7 @@ class AcademicYearReadOnlyExemptions
             return $routeNames;
         }
 
-        $routeNames = ['academic-year.select'];
+        $routeNames = ['academic-year.select', 'school.period.select'];
 
         foreach (DashboardAuth::all() as $dashboard) {
             foreach (self::DASHBOARD_ROUTE_SUFFIXES as $suffix) {

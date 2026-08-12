@@ -176,7 +176,8 @@ test('create education services office user page loads offices for the current m
 test('create school user page loads schools for the current monitor', function () {
     $monitor = EducationMonitor::factory()->create();
     $user = createEducationMonitorManager($monitor);
-    $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
+    $school = School::factory()->for($monitor, 'monitor')->create();
+    $schoolPeriod = SchoolPeriod::factory()->for($school)->create();
     $otherMonitor = EducationMonitor::factory()->create();
     SchoolPeriod::factory()->for(School::factory()->for($otherMonitor, 'monitor'), 'school')->create();
 
@@ -187,7 +188,9 @@ test('create school user page loads schools for the current monitor', function (
             ->component('education-monitor/users/create')
             ->where('scope.id', UserScope::SCHOOL->value)
             ->has('schools', 1)
-            ->where('schools.0.id', $schoolPeriod->id)
+            ->where('schools.0.id', $school->id)
+            ->has('schools.0.periods', 1)
+            ->where('schools.0.periods.0.id', $schoolPeriod->id)
             ->where('offices', [])
         );
 });
@@ -297,7 +300,7 @@ test('store requires a school when the field is omitted', function () {
 
     $this->actingAs($user, 'education_monitor')
         ->post(route('education-monitor.users.store'), $payload)
-        ->assertSessionHasErrors('school_period_id');
+        ->assertSessionHasErrors('school_id');
 
     expect(User::query()->where('username', $payload['username'])->exists())->toBeFalse();
 });
@@ -308,7 +311,8 @@ test('authenticated education monitor users can store a school user under their 
     $schoolPeriod = SchoolPeriod::factory()->for(School::factory()->for($monitor, 'monitor'), 'school')->create();
     $payload = educationMonitorDashboardUserPayload([
         'scope' => UserScope::SCHOOL->value,
-        'school_period_id' => $schoolPeriod->id,
+        'school_id' => $schoolPeriod->school_id,
+        'school_period_ids' => [$schoolPeriod->id],
         'username' => 'school.dashboard.user',
         'email' => 'school.dashboard.user@example.com',
     ]);
@@ -336,10 +340,11 @@ test('store rejects schools that do not belong to the current monitor', function
     $this->actingAs($user, 'education_monitor')
         ->post(route('education-monitor.users.store'), educationMonitorDashboardUserPayload([
             'scope' => UserScope::SCHOOL->value,
-            'school_period_id' => $foreignSchoolPeriod->id,
+            'school_id' => $foreignSchoolPeriod->school_id,
+            'school_period_ids' => [$foreignSchoolPeriod->id],
             'username' => 'foreign.school.user',
         ]))
-        ->assertSessionHasErrors('school_period_id');
+        ->assertSessionHasErrors('school_id');
 });
 
 test('store validates required fields', function () {

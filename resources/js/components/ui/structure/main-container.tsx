@@ -4,6 +4,8 @@ import { Form, router, usePage } from "@inertiajs/react";
 
 import { cn } from "@/lib/utils";
 
+import type { SchoolOrganizationContext } from "@/types/global.d.ts";
+
 import { FormLayout } from "@/components/ui/structure/form-layout";
 
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/ui/alerts/alert";
@@ -24,6 +26,7 @@ import ConfigureStudentsGenderNotice from "@/components/features/school/configur
 import ConfigureGradeLevelsNotice from "@/components/features/school/configure-grade-levels-notice";
 
 import { select as selectAcademicYear } from "@/routes/academic-year";
+import { select as selectSchoolPeriod } from "@/routes/school/period";
 
 type MainContainerProps = React.ComponentProps<"main"> & {
     showAcademicYearNotice?: boolean;
@@ -44,6 +47,7 @@ export default function MainContainer({
         >
             <ConfigureStudentsGenderNotice />
             <ConfigureGradeLevelsNotice />
+            <ChangeSchoolPeriodNotice />
             {(showAcademicYearNotice && !changeAcademicYearNotice) && <ShowAcademicYearNotice />}
             {changeAcademicYearNotice && <ChangeAcademicYearNotice />}
             {children}
@@ -205,6 +209,135 @@ function ChangeAcademicYearNotice() {
                                         )}
                                     </Select>
                                     <InputError message={errors.academic_year_id} />
+                                </Field>
+                            </DialogBody>
+
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline">إغلاق</Button>
+                                </DialogClose>
+                                <UpdateButton processing={processing} />
+                            </DialogFooter>
+                        </FormLayout>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function ChangeSchoolPeriodNotice() {
+    const { organization } = usePage().props;
+
+    const schoolOrganization = organization?.type === "school"
+        ? organization as SchoolOrganizationContext
+        : null;
+
+    const availablePeriods = schoolOrganization?.available_periods ?? [];
+
+    const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+    const [selectedPeriodId, setSelectedPeriodId] = React.useState(
+        () => schoolOrganization?.id?.toString() ?? "",
+    );
+
+    if (availablePeriods.length <= 1 || schoolOrganization === null) {
+        return null;
+    }
+
+    const handleDialogOpenChange = (open: boolean): void => {
+        setIsDialogOpen(open);
+
+        if (open) {
+            setSelectedPeriodId(schoolOrganization.id.toString());
+        }
+    };
+
+    const handleFormSuccess = (): void => {
+        setIsDialogOpen(false);
+        router.flushAll();
+    };
+
+    return (
+        <Dialog
+            open={isDialogOpen}
+            onOpenChange={handleDialogOpenChange}
+        >
+            <Alert
+                aria-live="polite"
+                aria-atomic="true"
+            >
+                <InfoIcon />
+                <AlertTitle className="flex flex-wrap items-center gap-1">
+                    <span>تعرض حالياً بيانات</span>
+                    (<span className="font-semibold">{schoolOrganization.academic_period.display_name}</span>)
+                </AlertTitle>
+                <AlertDescription className="mt-0.5 flex flex-wrap items-center gap-1">
+                    <span>
+                        يمكنك التبديل بين الفترات الدراسية المصرح لك بالوصول إليها لعرض بيانات كل فترة على حدة.
+                    </span>
+                </AlertDescription>
+                <AlertAction>
+                    <DialogTrigger asChild>
+                        <Button
+                            size="xs"
+                            className="bg-foreground hover:bg-foreground/80"
+                        >
+                            تغيير الفترة
+                        </Button>
+                    </DialogTrigger>
+                </AlertAction>
+            </Alert>
+
+            <DialogContent>
+                <Form
+                    {...selectSchoolPeriod.form()}
+                    disableWhileProcessing
+                    options={{ preserveScroll: true, preserveState: false }}
+                    onSuccess={handleFormSuccess}
+                >
+                    {({ processing, errors }) => (
+                        <FormLayout>
+                            <DialogHeader>
+                                <DialogTitle>تغيير الفترة الدراسية</DialogTitle>
+                                <DialogDescription>
+                                    اختر الفترة الدراسية التي ترغب في عرض بياناتها في لوحة المدرسة.
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <DialogBody>
+                                <Field>
+                                    <Label
+                                        htmlFor="school_period_id"
+                                        hasError={!!errors.school_period_id}
+                                        required
+                                    >
+                                        الفترة الدراسية
+                                    </Label>
+                                    <Select
+                                        name="school_period_id"
+                                        value={selectedPeriodId}
+                                        onValueChange={setSelectedPeriodId}
+                                    >
+                                        <SelectTrigger
+                                            id="school_period_id"
+                                            hasError={!!errors.school_period_id}
+                                        >
+                                            <SelectValue placeholder="اختر الفترة الدراسية" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {availablePeriods.map((period) => (
+                                                    <SelectItem
+                                                        key={period.id}
+                                                        value={period.id.toString()}
+                                                    >
+                                                        {period.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={errors.school_period_id} />
                                 </Field>
                             </DialogBody>
 

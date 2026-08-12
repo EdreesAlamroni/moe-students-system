@@ -6,6 +6,7 @@ import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
 
 import type { EducationMonitor, Enum, Warehouse } from "@/types";
 import type { RoleGroup } from "@/types/auth";
+import type { SchoolWithPeriods } from "@/components/shared/users/school-user-period-fieldset";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
@@ -24,6 +25,7 @@ import InputError from "@/components/ui/controls/input-error";
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
 import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
+import SchoolUserPeriodFieldset, { useSchoolPeriodAssignment } from "@/components/shared/users/school-user-period-fieldset";
 import UsernameField from "@/components/shared/users/username-field";
 import EmailField from "@/components/shared/users/email-field";
 import PasswordField from "@/components/shared/users/password-field";
@@ -59,7 +61,31 @@ export default function Create({
     const [selectedWarehouseId, setSelectedWarehouseId] = React.useState("");
     const [selectedMonitorId, setSelectedMonitorId] = React.useState("");
     const [selectedOfficeId, setSelectedOfficeId] = React.useState("");
-    const [selectedSchoolPeriodId, setSelectedSchoolPeriodId] = React.useState("");
+
+    const availableSchools = React.useMemo((): SchoolWithPeriods[] => {
+        if (!isSchool || !selectedMonitorId) {
+            return [];
+        }
+
+        const monitor = (monitors as EducationMonitor[]).find(
+            (item) => item.id.toString() === selectedMonitorId,
+        );
+
+        return (monitor?.schools ?? []) as SchoolWithPeriods[];
+    }, [isSchool, monitors, selectedMonitorId]);
+
+    const {
+        selectedSchoolId,
+        selectedPeriodIds,
+        handleSchoolChange,
+        togglePeriod,
+    } = useSchoolPeriodAssignment({ schools: availableSchools });
+
+    const handleMonitorChange = (value: string) => {
+        setSelectedMonitorId(value);
+        setSelectedOfficeId("");
+        handleSchoolChange("");
+    };
 
     const {
         selectedRoles,
@@ -83,24 +109,6 @@ export default function Create({
 
         return monitor?.offices ?? [];
     }, [isEducationServicesOffice, monitors, selectedMonitorId]);
-
-    const availableSchools = React.useMemo(() => {
-        if (!isSchool || !selectedMonitorId) {
-            return [];
-        }
-
-        const monitor = (monitors as EducationMonitor[]).find(
-            (item) => item.id.toString() === selectedMonitorId,
-        );
-
-        return monitor?.schools ?? [];
-    }, [isSchool, monitors, selectedMonitorId]);
-
-    const handleMonitorChange = (value: string) => {
-        setSelectedMonitorId(value);
-        setSelectedOfficeId("");
-        setSelectedSchoolPeriodId("");
-    };
 
     const pageTitle = `إضافة ${creationLabel}`;
 
@@ -299,60 +307,16 @@ export default function Create({
                                             )}
 
                                             {isSchool && (
-                                                <Field>
-                                                    <Label
-                                                        htmlFor="school_period_id"
-                                                        hasError={!!errors.school_period_id}
-                                                        required
-                                                    >
-                                                        المدرسة
-                                                    </Label>
-
-                                                    {selectedMonitorId ? (
-                                                        availableSchools.length > 0 ? (
-                                                            <Select
-                                                                name="school_period_id"
-                                                                value={selectedSchoolPeriodId}
-                                                                onValueChange={setSelectedSchoolPeriodId}
-                                                            >
-                                                                <SelectTrigger
-                                                                    id="school_period_id"
-                                                                    hasError={!!errors.school_period_id}
-                                                                >
-                                                                    <SelectValue
-                                                                        placeholder="اختر المدرسة"
-                                                                    />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    <SelectGroup>
-                                                                        {availableSchools.map((school) => (
-                                                                            <SelectItem
-                                                                                key={school.id}
-                                                                                value={school.id.toString()}
-                                                                            >
-                                                                                {school.name}
-                                                                            </SelectItem>
-                                                                        ))}
-                                                                    </SelectGroup>
-                                                                </SelectContent>
-                                                            </Select>
-                                                        ) : (
-                                                            <EmptyOptionsInput
-                                                                id="school_period_id"
-                                                                placeholder="لا توجد مدارس متاحة للاختيار"
-                                                                hasError={!!errors.school_period_id}
-                                                            />
-                                                        )
-                                                    ) : (
-                                                        <EmptyOptionsInput
-                                                            id="school_period_id"
-                                                            placeholder="يرجى اختيار المُراقبة أولاً"
-                                                            hasError={!!errors.school_period_id}
-                                                        />
-                                                    )}
-
-                                                    <InputError message={errors.school_period_id} />
-                                                </Field>
+                                                <SchoolUserPeriodFieldset
+                                                    schools={availableSchools}
+                                                    selectedSchoolId={selectedSchoolId}
+                                                    selectedPeriodIds={selectedPeriodIds}
+                                                    onSchoolChange={handleSchoolChange}
+                                                    onPeriodToggle={togglePeriod}
+                                                    errors={errors}
+                                                    enabled={!!selectedMonitorId}
+                                                    disabledPlaceholder="لا توجد مدارس متاحة للاختيار"
+                                                />
                                             )}
 
                                             <Separator className="col-span-full" />

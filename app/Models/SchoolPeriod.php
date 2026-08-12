@@ -329,6 +329,19 @@ class SchoolPeriod extends Model
      * Start: Custom Functions
      */
 
+    public static function hasDualPeriodsForSchool(?int $schoolId): bool
+    {
+        if ($schoolId === null) {
+            return false;
+        }
+
+        return static::query()
+            ->where('school_id', '=', $schoolId)
+            ->offset(1)
+            ->limit(1)
+            ->exists();
+    }
+
     public static function list(?callable $callback = null, array $additionalColumns = ['id', 'name']): Collection
     {
         $columns = array_unique(

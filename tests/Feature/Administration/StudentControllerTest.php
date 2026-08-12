@@ -114,7 +114,7 @@ test('student index loads schools when education monitor is selected', function 
             ->where('school_period_id', null)
             ->has('schoolPeriods', 1)
             ->where('schoolPeriods.0.id', $schoolPeriod->id)
-            ->where('schoolPeriods.0.name', sprintf('%s (%s)', $schoolPeriod->name, $schoolPeriod->academic_period->isMorning() ? 'فترة صباحية' : 'فترة مسائية'))
+            ->where('schoolPeriods.0.name', $schoolPeriod->display_name)
             ->missing('students')
             ->missing('nationalities')
             ->missing('registrationStatuses')

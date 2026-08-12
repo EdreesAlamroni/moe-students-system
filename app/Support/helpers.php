@@ -1,6 +1,11 @@
 <?php
 
+use App\Enums\UserScope;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 if (! function_exists('flash_success')) {
     /**
@@ -30,6 +35,20 @@ if (! function_exists('flash_error')) {
     }
 }
 
+if (! function_exists('flash_warning')) {
+    /**
+     * Flash a translated warning message with replacements.
+     */
+    function flash_warning(string $key, array $replacements = []): void
+    {
+        $key = sprintf('alerts.messages.%s', $key);
+
+        $message = Lang::get($key, $replacements);
+
+        flash()->warning($message);
+    }
+}
+
 if (! function_exists('classroom_names')) {
     /**
      * Get the classroom names.
@@ -45,5 +64,42 @@ if (! function_exists('classroom_names')) {
                 'name' => $name,
             ];
         })->all();
+    }
+}
+
+if (! function_exists('grouped_roles')) {
+    /**
+     * Get the grouped roles.
+     */
+    function get_grouped_roles(UserScope|string $scope, Collection|array $ids = []): Collection
+    {
+        $ids = $ids instanceof Collection ? $ids : collect($ids);
+
+        $scope = $scope instanceof UserScope ? $scope->value : $scope;
+
+        return Role::query()
+            ->select(['id', 'name', 'guard_name'])
+            ->where('guard_name', '=', $scope)
+            ->when($ids->isNotEmpty(), function (Builder $query) use ($ids) {
+                $query->whereIn('id', $ids->all());
+            })
+            ->oldest()
+            ->get()
+            ->groupBy(function (Role $role): string {
+                return Str::before($role->name, ':');
+            })->mapWithKeys(function (Collection $roles, string $group): array {
+                return [
+                    $group => [
+                        'label' => __("roles.{$group}.label"),
+                        'roles' => $roles->map(function (Role $role) use ($group): array {
+                            return [
+                                'id' => $role->id,
+                                'name' => $role->name,
+                                'label' => __("roles.{$group}.values.{$role->name}"),
+                            ];
+                        })->values(),
+                    ],
+                ];
+            })->values();
     }
 }

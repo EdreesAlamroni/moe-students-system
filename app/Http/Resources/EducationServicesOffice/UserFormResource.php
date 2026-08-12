@@ -22,6 +22,7 @@ class UserFormResource extends JsonResource
             'scope' => $user->scope->toArray(),
             'organization' => $user->resolvedOrganization(),
             'role_ids' => $this->whenLoaded('roles', fn () => $user->roles->pluck('id')->values()->all(), []),
+            ...$user->schoolPeriodFormData(),
         ];
     }
 }

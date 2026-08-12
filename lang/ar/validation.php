@@ -317,6 +317,8 @@ return [
         'is_break' => 'هذه فترة استراحة',
         'guardian_name' => 'اسم ولي الأمر',
         'order' => 'الترتيب',
+        'school_period_ids' => 'الفترات الدراسية',
+        'school_period_ids.*' => 'الفترة الدراسية',
     ],
 
     'values' => [],

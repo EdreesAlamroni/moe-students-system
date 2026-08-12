@@ -7,6 +7,7 @@ import { resolveOrganizationDisplay } from "@/lib/user-organization";
 
 import type { User } from "@/types";
 import type { RoleGroup } from "@/types/auth";
+import type { SchoolWithPeriods } from "@/components/shared/users/school-user-period-fieldset";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
@@ -26,6 +27,7 @@ import InputError from "@/components/ui/controls/input-error";
 import ValidationErrors from "@/components/ui/alerts/validation-errors";
 
 import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
+import SchoolUserPeriodFieldset, { useSchoolPeriodAssignment } from "@/components/shared/users/school-user-period-fieldset";
 import EmailField from "@/components/shared/users/email-field";
 
 import { Button } from "@/components/ui/actions/button";
@@ -37,11 +39,24 @@ import { edit, index, show, update } from "@/routes/education-monitor/users";
 
 type PageProps = {
     user: User;
+    schools: SchoolWithPeriods[];
     groupedRoles: RoleGroup[];
 };
 
-export default function Edit({ user, groupedRoles }: PageProps) {
+export default function Edit({ user, schools, groupedRoles }: PageProps) {
+    const isSchoolUser = user.scope.id === "school";
     const organization = resolveOrganizationDisplay(user.organization);
+
+    const {
+        selectedSchoolId,
+        selectedPeriodIds,
+        handleSchoolChange,
+        togglePeriod,
+    } = useSchoolPeriodAssignment({
+        schools,
+        initialSchoolId: user.school_id,
+        initialPeriodIds: user.school_period_ids ?? [],
+    });
 
     const {
         selectedRoles,
@@ -90,7 +105,7 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                                 <DetailValue value={user.username} className="font-mono" />
                                             </DetailField>
 
-                                            {organization && (
+                                            {organization && !isSchoolUser && (
                                                 <>
                                                     {organization.parent && (
                                                         <DetailField>
@@ -104,6 +119,25 @@ export default function Edit({ user, groupedRoles }: PageProps) {
                                                         <DetailValue value={organization.name} />
                                                     </DetailField>
                                                 </>
+                                            )}
+
+                                            {isSchoolUser && organization?.parent && (
+                                                <DetailField className="col-span-full">
+                                                    <DetailLabel>{organization.parent.label}</DetailLabel>
+                                                    <DetailValue value={organization.parent.name} />
+                                                </DetailField>
+                                            )}
+
+                                            {isSchoolUser && (
+                                                <SchoolUserPeriodFieldset
+                                                    schools={schools}
+                                                    selectedSchoolId={selectedSchoolId}
+                                                    selectedPeriodIds={selectedPeriodIds}
+                                                    onSchoolChange={handleSchoolChange}
+                                                    onPeriodToggle={togglePeriod}
+                                                    errors={errors}
+                                                    className="col-span-full"
+                                                />
                                             )}
 
                                             <Separator className="col-span-full" />

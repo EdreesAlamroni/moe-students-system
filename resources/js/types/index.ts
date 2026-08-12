@@ -303,7 +303,8 @@ export type SchoolPeriod = {
     school_id: number;
     school?: School;
     name: string;
-    academic_period: Enum;
+    display_name: string;
+    academic_period: Enum & { display_name: string };
     students_gender?: Enum | null;
     educational_stages?: SchoolEducationalStage[];
     educational_stages_labels?: string;
