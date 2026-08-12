@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Concerns;
+namespace App\Http\Requests\Shared\User;
 
 use App\Enums\UserScope;
 use App\Models\SchoolPeriod;
@@ -18,6 +18,27 @@ trait InteractsWithSchoolPeriodAssignment
             }),
             'array',
             new SchoolPeriodMembership($schoolId),
+        ];
+    }
+
+    protected function schoolPeriodIdsItemRules(): array
+    {
+        return [
+            'integer',
+            'distinct',
+        ];
+    }
+
+    protected function schoolOrganizationAttributesForUser(User $user): array
+    {
+        $schoolPeriodIds = $this->validatedSchoolPeriodIdsForUser($user);
+        $activeSchoolPeriodId = in_array((int) $user->organization_id, $schoolPeriodIds, true)
+            ? (int) $user->organization_id
+            : User::resolveDefaultActiveSchoolPeriodId($schoolPeriodIds);
+
+        return [
+            'organization_id' => $activeSchoolPeriodId,
+            'organization_type' => SchoolPeriod::class,
         ];
     }
 

@@ -1,43 +1,22 @@
-import React from 'react'
+import React from 'react';
 
-import { Form, Head, Link } from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 
-import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
-import type { EducationMonitor, EducationServicesOffice, Enum } from "@/types";
-import type { RoleGroup } from "@/types/auth";
-import type { SchoolWithPeriods } from "@/components/shared/users/school-user-period-fieldset";
+import type { EducationMonitor, EducationServicesOffice, Enum } from '@/types';
+import type { RoleGroup } from '@/types/auth';
+import type { SchoolWithPeriods } from '@/components/shared/users/school-user-period-fieldset';
 
-import MainContainer from "@/components/ui/structure/main-container";
-import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
-import { FormLayout } from "@/components/ui/structure/form-layout";
-import { Separator } from "@/components/ui/structure/separator";
+import UserForm from '@/components/shared/users/user-form';
+import UserContextDetails from '@/components/shared/users/user-context-details';
+import SchoolUserPeriodFieldset, { useSchoolPeriodAssignment } from '@/components/shared/users/school-user-period-fieldset';
 
-import RequiredFieldsNote from "@/components/ui/display/required-fields-note";
-import { DetailField } from "@/components/ui/display/detail-field";
-import { DetailLabel } from "@/components/ui/display/detail-label";
-import { DetailValue } from "@/components/ui/display/detail-value";
+import Field from '@/components/ui/controls/field';
+import { Label } from '@/components/ui/controls/label';
+import { EmptyOptionsInput } from '@/components/ui/controls/empty-options-input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/controls/select';
+import InputError from '@/components/ui/controls/input-error';
 
-import Field from "@/components/ui/controls/field";
-import { Label } from "@/components/ui/controls/label";
-import { Input } from "@/components/ui/controls/input";
-import { EmptyOptionsInput } from "@/components/ui/controls/empty-options-input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/controls/select";
-import InputError from "@/components/ui/controls/input-error";
-
-import ValidationErrors from "@/components/ui/alerts/validation-errors";
-
-import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
-import SchoolUserPeriodFieldset, { useSchoolPeriodAssignment } from "@/components/shared/users/school-user-period-fieldset";
-import UsernameField from "@/components/shared/users/username-field";
-import EmailField from "@/components/shared/users/email-field";
-import PasswordField from "@/components/shared/users/password-field";
-
-import { Button } from "@/components/ui/actions/button";
-import { CreateButton } from "@/components/ui/actions/submit-button";
-
-import { ReplyIcon } from "lucide-react";
-
-import { create, index, store } from "@/routes/education-monitor/users";
+import { create, index, store } from '@/routes/education-monitor/users';
 
 type PageProps = {
     scope: Enum;
@@ -56,8 +35,8 @@ export default function Create({
     schools,
     groupedRoles,
 }: PageProps) {
-    const isEducationServicesOffice = scope.id === "education_services_office";
-    const isSchool = scope.id === "school";
+    const isEducationServicesOffice = scope.id === 'education_services_office';
+    const isSchool = scope.id === 'school';
 
     const [selectedOfficeId, setSelectedOfficeId] = React.useState<string>();
 
@@ -68,199 +47,91 @@ export default function Create({
         togglePeriod,
     } = useSchoolPeriodAssignment({ schools });
 
-    const {
-        selectedRoles,
-        allRolesChecked,
-        someRolesChecked,
-        toggleRole,
-        toggleAllRoles,
-        isGroupAllChecked,
-        isGroupSomeChecked,
-        toggleGroupRoles,
-    } = useGroupedRolesSelection(groupedRoles);
-
-
     const pageTitle = `إضافة ${creationLabel}`;
 
     return (
         <>
             <Head title={pageTitle} />
 
-            <MainContainer>
-                <Form
-                    {...store.form()}
-                    disableWhileProcessing
-                    resetOnError={["password", "password_confirmation"]}
-                >
-                    {({ processing, errors }) => (
-                        <FormLayout>
-                            <ValidationErrors errors={errors} />
+            <UserForm
+                mode="create"
+                title={pageTitle}
+                cancelHref={index.url()}
+                form={store.form()}
+                groupedRoles={groupedRoles}
+                hiddenFields={<input type="hidden" name="scope" value={scope.id} />}
+                context={(errors) => (
+                    <>
+                        <UserContextDetails
+                            items={[
+                                { label: 'النطاق', value: scope.name },
+                                { label: 'المُراقبة', value: monitor.name },
+                            ]}
+                        />
 
-                            <input type="hidden" name="scope" value={scope.id} />
-                            <input type="hidden" name="roles" value={JSON.stringify(selectedRoles)} />
+                        {isEducationServicesOffice && (
+                            <Field className="col-span-full">
+                                <Label
+                                    htmlFor="education_services_office_id"
+                                    hasError={!!errors.education_services_office_id}
+                                    required
+                                >
+                                    مكتب الخدمات التعليمية
+                                </Label>
 
-                            <section>
-                                <Card>
-                                    <CardHeader className="border-b">
-                                        <CardTitle>{pageTitle}</CardTitle>
-                                        <CardDescription>
-                                            <RequiredFieldsNote />
-                                        </CardDescription>
-                                    </CardHeader>
-
-                                    <CardFormContent>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <DetailField>
-                                                <DetailLabel>النطاق</DetailLabel>
-                                                <DetailValue value={scope.name} />
-                                            </DetailField>
-
-                                            <DetailField>
-                                                <DetailLabel>المُراقبة</DetailLabel>
-                                                <DetailValue value={monitor.name} />
-                                            </DetailField>
-
-                                            {isEducationServicesOffice && (
-                                                <Field className="col-span-full">
-                                                    <Label
-                                                        htmlFor="education_services_office_id"
-                                                        hasError={!!errors.education_services_office_id}
-                                                        required
-                                                    >
-                                                        مكتب الخدمات التعليمية
-                                                    </Label>
-
-                                                    {offices.length > 0 ? (
-                                                        <Select
-                                                            name="education_services_office_id"
-                                                            value={selectedOfficeId}
-                                                            onValueChange={setSelectedOfficeId}
-                                                        >
-                                                            <SelectTrigger
-                                                                id="education_services_office_id"
-                                                                hasError={!!errors.education_services_office_id}
-                                                            >
-                                                                <SelectValue
-                                                                    placeholder="اختر مكتب الخدمات التعليمية"
-                                                                />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    {offices.map((office) => (
-                                                                        <SelectItem
-                                                                            key={office.id}
-                                                                            value={office.id.toString()}
-                                                                        >
-                                                                            {office.name}
-                                                                        </SelectItem>
-                                                                    ))}
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    ) : (
-                                                        <EmptyOptionsInput
-                                                            id="education_services_office_id"
-                                                            placeholder="لا توجد مكاتب خدمات تعليمية متاحة للاختيار"
-                                                            aria-invalid={!!errors.education_services_office_id}
-                                                        />
-                                                    )}
-
-                                                    <InputError message={errors.education_services_office_id} />
-                                                </Field>
-                                            )}
-
-                                            {isSchool && (
-                                                <SchoolUserPeriodFieldset
-                                                    schools={schools}
-                                                    selectedSchoolId={selectedSchoolId}
-                                                    selectedPeriodIds={selectedPeriodIds}
-                                                    onSchoolChange={handleSchoolChange}
-                                                    onPeriodToggle={togglePeriod}
-                                                    errors={errors}
-                                                    className="col-span-full"
-                                                />
-                                            )}
-
-                                            <Separator className="col-span-full" />
-
-                                            <Field>
-                                                <Label
-                                                    htmlFor="name"
-                                                    hasError={!!errors.name}
-                                                    required
-                                                >
-                                                    الاسم
-                                                </Label>
-
-                                                <Input
-                                                    id="name"
-                                                    type="text"
-                                                    name="name"
-                                                    hasError={!!errors.name}
-                                                    autoComplete="name"
-                                                    required
-                                                />
-
-                                                <InputError message={errors.name} />
-                                            </Field>
-
-                                            <UsernameField
-                                                error={errors.username}
-                                            />
-
-                                            <EmailField
-                                                error={errors.email}
-                                                className="col-span-full"
-                                            />
-
-                                            <PasswordField
-                                                passwordError={errors.password}
-                                                passwordConfirmationError={errors.password_confirmation}
-                                            />
-
-                                            <Separator className="col-span-full" />
-
-                                            <div className="col-span-full space-y-2">
-                                                <GroupedRolesFieldset
-                                                    groupedRoles={groupedRoles}
-                                                    selectedRoles={selectedRoles}
-                                                    allRolesChecked={allRolesChecked}
-                                                    someRolesChecked={someRolesChecked}
-                                                    onToggleAllRoles={toggleAllRoles}
-                                                    onToggleRole={toggleRole}
-                                                    isGroupAllChecked={isGroupAllChecked}
-                                                    isGroupSomeChecked={isGroupSomeChecked}
-                                                    onToggleGroupRoles={toggleGroupRoles}
-                                                    hasError={!!errors.roles}
-                                                />
-
-                                                <InputError message={errors.roles} />
-                                            </div>
-                                        </div>
-                                    </CardFormContent>
-
-                                    <CardFooter className="justify-end gap-x-4 border-t">
-                                        <Button
-                                            variant="outline"
-                                            className="flex items-center gap-x-2"
-                                            asChild
+                                {offices.length > 0 ? (
+                                    <Select
+                                        name="education_services_office_id"
+                                        value={selectedOfficeId}
+                                        onValueChange={setSelectedOfficeId}
+                                    >
+                                        <SelectTrigger
+                                            id="education_services_office_id"
+                                            hasError={!!errors.education_services_office_id}
                                         >
-                                            <Link href={index.url()}>
-                                                <ReplyIcon />
-                                                <span>إلغاء الأمر</span>
-                                            </Link>
-                                        </Button>
+                                            <SelectValue placeholder="اختر مكتب الخدمات التعليمية" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {offices.map((office) => (
+                                                    <SelectItem
+                                                        key={office.id}
+                                                        value={office.id.toString()}
+                                                    >
+                                                        {office.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <EmptyOptionsInput
+                                        id="education_services_office_id"
+                                        placeholder="لا توجد مكاتب خدمات تعليمية متاحة للاختيار"
+                                        aria-invalid={!!errors.education_services_office_id}
+                                    />
+                                )}
 
-                                        <CreateButton processing={processing} />
-                                    </CardFooter>
-                                </Card>
-                            </section>
-                        </FormLayout>
-                    )}
-                </Form>
-            </MainContainer>
+                                <InputError message={errors.education_services_office_id} />
+                            </Field>
+                        )}
+
+                        {isSchool && (
+                            <SchoolUserPeriodFieldset
+                                schools={schools}
+                                selectedSchoolId={selectedSchoolId}
+                                selectedPeriodIds={selectedPeriodIds}
+                                onSchoolChange={handleSchoolChange}
+                                onPeriodToggle={togglePeriod}
+                                errors={errors}
+                                className="col-span-full"
+                            />
+                        )}
+                    </>
+                )}
+            />
         </>
-    )
+    );
 }
 
 Create.layout = (props: PageProps) => ({

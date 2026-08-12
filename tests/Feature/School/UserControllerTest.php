@@ -137,6 +137,7 @@ test('authenticated school users can store a user for their school', function ()
         ->and($createdUser->request_state)->toBeInstanceOf(Pending::class)
         ->and($createdUser->organization_id)->toBe($schoolPeriod->id)
         ->and($createdUser->organization_type)->toBe(SchoolPeriod::class)
+        ->and($createdUser->schoolPeriods()->pluck('school_periods.id')->all())->toBe([$schoolPeriod->id])
         ->and($createdUser->hasRole($payload['roles'][0]))->toBeTrue();
 
     $response->assertRedirect(route('school.users.show', ['user' => $createdUser]));

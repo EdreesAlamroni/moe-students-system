@@ -285,6 +285,45 @@ test('existing school users keep working after membership backfill', function ()
     expect($user->hasValidOrganizationContext())->toBeTrue();
 });
 
+test('school dashboard create attaches membership for the current period', function () {
+    $schoolPeriod = SchoolPeriod::factory()->create();
+    $manager = User::factory()->create([
+        'scope' => UserScope::SCHOOL,
+        'organization_type' => SchoolPeriod::class,
+        'organization_id' => $schoolPeriod->id,
+    ]);
+    $manager->schoolPeriods()->sync([$schoolPeriod->id]);
+
+    foreach (['user:view-any', 'user:view', 'user:create', 'user:update'] as $permission) {
+        Permission::findOrCreate($permission, UserScope::SCHOOL->value);
+    }
+
+    $manager->givePermissionTo([
+        'user:view-any',
+        'user:view',
+        'user:create',
+        'user:update',
+    ]);
+
+    $role = \Spatie\Permission\Models\Role::findOrCreate('user:role:view', UserScope::SCHOOL->value);
+
+    $this->actingAs($manager, 'school')
+        ->post(route('school.users.store'), [
+            'name' => 'School Created Member',
+            'username' => 'school.created.member',
+            'email' => null,
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'roles' => [$role->id],
+        ])
+        ->assertRedirect();
+
+    $createdUser = User::query()->where('username', 'school.created.member')->firstOrFail();
+
+    expect($createdUser->organization_id)->toBe($schoolPeriod->id)
+        ->and($createdUser->schoolPeriods()->pluck('school_periods.id')->all())->toBe([$schoolPeriod->id]);
+});
+
 test('multi-period users only see students for the active period', function () {
     $monitor = EducationMonitor::factory()->create();
     ['morning' => $morning, 'evening' => $evening] = createDualPeriodSchool($monitor);

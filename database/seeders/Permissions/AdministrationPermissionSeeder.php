@@ -107,7 +107,6 @@ class AdministrationPermissionSeeder extends Seeder
         $create = Permission::findOrCreate('grade-level:create', $this->scope);
         $update = Permission::findOrCreate('grade-level:update', $this->scope);
         $delete = Permission::findOrCreate('grade-level:delete', $this->scope);
-        $stateUpdate = Permission::findOrCreate('grade-level:state-update', $this->scope);
 
         // Roles
         $viewRole = Role::findOrCreate('grade-level:role:view', $this->scope);
@@ -121,7 +120,6 @@ class AdministrationPermissionSeeder extends Seeder
         $createRole->syncPermissions([$viewAny, $create]);
         $updateRole->syncPermissions([$viewAny, $view, $update]);
         $deleteRole->syncPermissions([$viewAny, $view, $delete]);
-        $stateUpdateRole->syncPermissions([$viewAny, $view, $stateUpdate]);
     }
 
     private function seedSubject(): void

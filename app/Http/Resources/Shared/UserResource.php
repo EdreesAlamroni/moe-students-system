@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources\Administration;
+namespace App\Http\Resources\Shared;
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserFormResource extends JsonResource
+class UserResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -20,9 +20,11 @@ class UserFormResource extends JsonResource
             'username' => $user->username,
             'email' => $user->email,
             'scope' => $user->scope->toArray(),
+            'role' => $user->role->toArray(),
+            'state' => $user->state->toArray(),
+            'request_state' => $user->request_state->toArray(),
             'organization' => $user->resolvedOrganization(),
-            'role_ids' => $this->whenLoaded('roles', fn () => $user->roles->pluck('id')->values()->all(), []),
-            ...$user->schoolPeriodFormData(),
+            'school_period_memberships' => $user->schoolPeriodMemberships(),
         ];
     }
 }

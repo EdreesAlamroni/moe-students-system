@@ -93,7 +93,8 @@ export default function GroupedRolesFieldset({
                 />
             ) : (
                 <>
-                    <div className="flex items-center gap-x-2 border-b pb-3 mt-2">
+                    {/* border-b pb-3 */}
+                    <div className="flex items-center gap-x-2 mt-2">
                         <Checkbox
                             id="checkbox-all-roles"
                             checked={allRolesChecked ? true : someRolesChecked ? "indeterminate" : false}

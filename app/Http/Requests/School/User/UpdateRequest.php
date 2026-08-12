@@ -2,66 +2,22 @@
 
 namespace App\Http\Requests\School\User;
 
-use App\Enums\UserScope;
-use App\Models\User;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
-use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
+use App\Http\Requests\Shared\User\UpdateUserRequest;
 
-class UpdateRequest extends FormRequest
+class UpdateRequest extends UpdateUserRequest
 {
     public function authorize(): bool
     {
         return auth('school')->check();
     }
 
-    public function rules(): array
+    protected function schoolIdRules(): array
     {
-        /** @var User $user */
-        $user = $this->route('user');
-
-        return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'email' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique(User::class, 'email')->ignore($user),
-            ],
-            'roles' => [
-                'required',
-                'array',
-                'min:1',
-            ],
-            'roles.*' => [
-                'required',
-                'integer',
-                Rule::exists(Role::class, 'id')->where('guard_name', UserScope::SCHOOL->value),
-            ],
-        ];
+        return [];
     }
 
-    protected function prepareForValidation(): void
+    protected function allowsSchoolPeriodAssignment(): bool
     {
-        $roles = $this->input('roles', []);
-
-        $this->merge([
-            'email' => $this->filled('email') ? $this->input('email') : null,
-            'roles' => is_array($roles) ? $roles : json_decode($roles, true) ?? [],
-        ]);
-    }
-
-    public function getAttributes(): array
-    {
-        return Arr::except($this->validated(), [
-            'roles',
-        ]);
+        return false;
     }
 }

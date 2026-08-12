@@ -1,39 +1,12 @@
-import React from 'react'
+import { Head } from '@inertiajs/react';
 
-import { Form, Head, Link } from "@inertiajs/react";
+import type { Enum } from '@/types';
+import type { RoleGroup } from '@/types/auth';
 
-import { useGroupedRolesSelection } from "@/hooks/use-grouped-roles-selection";
-import type { Enum } from "@/types";
-import type { RoleGroup } from "@/types/auth";
+import UserForm from '@/components/shared/users/user-form';
+import UserContextDetails from '@/components/shared/users/user-context-details';
 
-import MainContainer from "@/components/ui/structure/main-container";
-import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
-import { FormLayout } from "@/components/ui/structure/form-layout";
-import { Separator } from "@/components/ui/structure/separator";
-
-import RequiredFieldsNote from "@/components/ui/display/required-fields-note";
-import { DetailField } from "@/components/ui/display/detail-field";
-import { DetailLabel } from "@/components/ui/display/detail-label";
-import { DetailValue } from "@/components/ui/display/detail-value";
-
-import Field from "@/components/ui/controls/field";
-import { Label } from "@/components/ui/controls/label";
-import { Input } from "@/components/ui/controls/input";
-import InputError from "@/components/ui/controls/input-error";
-
-import ValidationErrors from "@/components/ui/alerts/validation-errors";
-
-import GroupedRolesFieldset from "@/components/shared/users/grouped-roles-fieldset";
-import UsernameField from "@/components/shared/users/username-field";
-import EmailField from "@/components/shared/users/email-field";
-import PasswordField from "@/components/shared/users/password-field";
-
-import { Button } from "@/components/ui/actions/button";
-import { CreateButton } from "@/components/ui/actions/submit-button";
-
-import { ReplyIcon } from "lucide-react";
-
-import { create, index, store } from "@/routes/warehouse/users";
+import { create, index, store } from '@/routes/warehouse/users';
 
 type PageProps = {
     scope: Enum;
@@ -49,137 +22,27 @@ export default function Create({
     warehouse,
     groupedRoles,
 }: PageProps) {
-    const {
-        selectedRoles,
-        allRolesChecked,
-        someRolesChecked,
-        toggleRole,
-        toggleAllRoles,
-        isGroupAllChecked,
-        isGroupSomeChecked,
-        toggleGroupRoles,
-    } = useGroupedRolesSelection(groupedRoles);
-
-
     return (
         <>
             <Head title="إضافة مُستخدم جديد" />
 
-            <MainContainer>
-                <Form
-                    {...store.form()}
-                    disableWhileProcessing
-                    resetOnError={["password", "password_confirmation"]}
-                >
-                    {({ processing, errors }) => (
-                        <FormLayout>
-                            <ValidationErrors errors={errors} />
-
-                            <input type="hidden" name="roles" value={JSON.stringify(selectedRoles)} />
-
-                            <section>
-                                <Card>
-                                    <CardHeader className="border-b">
-                                        <CardTitle>إضافة مُستخدم جديد</CardTitle>
-                                        <CardDescription>
-                                            <RequiredFieldsNote />
-                                        </CardDescription>
-                                    </CardHeader>
-
-                                    <CardFormContent>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <DetailField>
-                                                <DetailLabel>النطاق</DetailLabel>
-                                                <DetailValue value={scope.name} />
-                                            </DetailField>
-
-                                            <DetailField>
-                                                <DetailLabel>المخزن</DetailLabel>
-                                                <DetailValue value={warehouse?.name} />
-                                            </DetailField>
-
-                                            <Separator className="col-span-full" />
-
-                                            <Field>
-                                                <Label
-                                                    htmlFor="name"
-                                                    hasError={!!errors.name}
-                                                    required
-                                                >
-                                                    الاسم
-                                                </Label>
-
-                                                <Input
-                                                    id="name"
-                                                    type="text"
-                                                    name="name"
-                                                    hasError={!!errors.name}
-                                                    autoComplete="name"
-                                                    required
-                                                />
-
-                                                <InputError message={errors.name} />
-                                            </Field>
-
-                                            <UsernameField
-                                                error={errors.username}
-                                            />
-
-                                            <EmailField
-                                                error={errors.email}
-                                                className="md:col-span-2"
-                                            />
-
-                                            <PasswordField
-                                                passwordError={errors.password}
-                                                passwordConfirmationError={errors.password_confirmation}
-                                            />
-
-                                            <Separator className="col-span-full" />
-
-                                            <div className="col-span-full space-y-2">
-                                                <GroupedRolesFieldset
-                                                    groupedRoles={groupedRoles}
-                                                    selectedRoles={selectedRoles}
-                                                    allRolesChecked={allRolesChecked}
-                                                    someRolesChecked={someRolesChecked}
-                                                    onToggleAllRoles={toggleAllRoles}
-                                                    onToggleRole={toggleRole}
-                                                    isGroupAllChecked={isGroupAllChecked}
-                                                    isGroupSomeChecked={isGroupSomeChecked}
-                                                    onToggleGroupRoles={toggleGroupRoles}
-                                                    hasError={!!errors.roles}
-                                                />
-
-                                                <InputError message={errors.roles} />
-                                            </div>
-                                        </div>
-                                    </CardFormContent>
-
-                                    <CardFooter className="justify-end gap-x-4 border-t">
-                                        <Button
-                                            variant="outline"
-                                            className="flex items-center gap-x-2"
-                                            asChild
-                                        >
-                                            <Link href={index.url()}>
-                                                <ReplyIcon />
-                                                <span>إلغاء الأمر</span>
-                                            </Link>
-                                        </Button>
-
-                                        <CreateButton
-                                            processing={processing}
-                                        />
-                                    </CardFooter>
-                                </Card>
-                            </section>
-                        </FormLayout>
-                    )}
-                </Form>
-            </MainContainer>
+            <UserForm
+                mode="create"
+                title="إضافة مُستخدم جديد"
+                cancelHref={index.url()}
+                form={store.form()}
+                groupedRoles={groupedRoles}
+                context={() => (
+                    <UserContextDetails
+                        items={[
+                            { label: 'النطاق', value: scope.name },
+                            { label: 'المخزن', value: warehouse?.name },
+                        ]}
+                    />
+                )}
+            />
         </>
-    )
+    );
 }
 
 Create.layout = () => ({

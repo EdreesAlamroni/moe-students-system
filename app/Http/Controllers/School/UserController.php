@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\School\User\StoreRequest;
 use App\Http\Requests\School\User\UpdateRequest;
 use App\Http\Resources\School\UserCollection;
-use App\Http\Resources\School\UserFormResource;
-use App\Http\Resources\School\UserResource;
+use App\Http\Resources\Shared\UserFormResource;
+use App\Http\Resources\Shared\UserResource;
 use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Support\ModelAbilityMap;
@@ -86,6 +86,7 @@ class UserController extends Controller
             /** @var User $user */
             $user = User::create($request->getAttributes());
 
+            $user->syncSchoolPeriodMemberships([(int) $user->organization_id]);
             $user->assignRole($request->validated('roles', []));
 
             return $user;

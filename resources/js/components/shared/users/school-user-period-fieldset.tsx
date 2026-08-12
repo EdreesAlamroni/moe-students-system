@@ -172,7 +172,7 @@ export default function SchoolUserPeriodFieldset({
                     </Label>
 
                     <p className="mb-2 text-sm text-muted-foreground">
-                        حدد الفترة أو الفترات التي يمكن للمُستخدم الوصول إلى بياناتها في لوحة المدرسة.
+                        حدد الفترة أو الفترات التي يمكن للمُستخدم الوصول إلى بياناتها في لوحة تحكم المدرسة.
                     </p>
 
                     <div className="space-y-3">

@@ -2,92 +2,57 @@
 
 namespace App\Http\Requests\School\User;
 
-use App\Enums\UserRole;
 use App\Enums\UserScope;
+use App\Http\Requests\Shared\User\StoreUserRequest;
 use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\ModelStates\User\RequestState\Pending;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
-use Spatie\Permission\Models\Role;
 
-class StoreRequest extends FormRequest
+class StoreRequest extends StoreUserRequest
 {
     public function authorize(): bool
     {
         return auth('school')->check();
     }
 
-    public function rules(): array
+    protected function organizationRules(): array
     {
-        return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'username' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique(User::class, 'username'),
-            ],
-            'email' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique(User::class, 'email'),
-            ],
-            'password' => [
-                'required',
-                'string',
-                'max:255',
-                'confirmed',
-                Password::defaults(),
-            ],
-            'roles' => [
-                'required',
-                'array',
-                'min:1',
-            ],
-            'roles.*' => [
-                'required',
-                'integer',
-                Rule::exists(Role::class, 'id')->where('guard_name', UserScope::SCHOOL->value),
-            ],
-        ];
+        return [];
     }
 
-    protected function prepareForValidation(): void
+    protected function scopeRules(): array
     {
-        $roles = $this->input('roles', []);
-
-        $this->merge([
-            'email' => $this->filled('email') ? $this->input('email') : null,
-            'roles' => is_array($roles) ? $roles : json_decode($roles, true) ?? [],
-        ]);
+        return [];
     }
 
-    public function getAttributes(): array
+    protected function forcedScope(): ?UserScope
+    {
+        return UserScope::SCHOOL;
+    }
+
+    protected function includesSchoolPeriodAssignment(): bool
+    {
+        return false;
+    }
+
+    protected function roleGuardName(): string
+    {
+        return UserScope::SCHOOL->value;
+    }
+
+    protected function defaultRequestState(): string
+    {
+        return Pending::class;
+    }
+
+    protected function resolveOrganization(UserScope $scope, array $validated): array
     {
         /** @var User $user */
         $user = $this->user('school');
 
-        $attributes = Arr::except($this->validated(), [
-            'roles',
-            'password_confirmation',
-        ]);
-
-        return Arr::merge($attributes, [
-            'scope' => UserScope::SCHOOL->value,
-            'organization_id' => $user->organization_id,
-            'organization_type' => SchoolPeriod::class,
-            'role' => UserRole::EMPLOYEE->value,
-            'request_state' => Pending::class,
-        ]);
+        return [
+            $user->organization_id,
+            SchoolPeriod::class,
+        ];
     }
 }

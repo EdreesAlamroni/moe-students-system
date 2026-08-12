@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EducationMonitor\User\StoreRequest;
 use App\Http\Requests\EducationMonitor\User\UpdateRequest;
 use App\Http\Resources\EducationMonitor\UserCollection;
-use App\Http\Resources\EducationMonitor\UserFormResource;
-use App\Http\Resources\EducationMonitor\UserResource;
+use App\Http\Resources\Shared\UserFormResource;
+use App\Http\Resources\Shared\UserResource;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\School;
@@ -144,7 +144,6 @@ class UserController extends Controller
     {
         Gate::authorize('view', $user);
 
-        $this->loadOrganizationRelation($user);
         $user->loadMissing('roles:id,name');
 
         return Inertia::render('education-monitor/users/show', [
@@ -163,7 +162,6 @@ class UserController extends Controller
     {
         Gate::authorize('update', $user);
 
-        $this->loadOrganizationRelation($user);
         $user->loadMissing([
             'roles:id,name',
             'schoolPeriods:id,school_id,academic_period,name',
@@ -211,17 +209,5 @@ class UserController extends Controller
         flash_success('delete');
 
         return Redirect::route('education-monitor.users.index');
-    }
-
-    protected function loadOrganizationRelation(User $user): void
-    {
-        if ($user->organization_type === null) {
-            return;
-        }
-
-        $user->loadMissing(match ($user->organization_type) {
-            EducationServicesOffice::class, SchoolPeriod::class => ['organization.monitor'],
-            default => ['organization'],
-        });
     }
 }
