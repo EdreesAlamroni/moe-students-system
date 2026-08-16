@@ -107,6 +107,7 @@ function schoolStudentUpdatePayload(Student $student, array $overrides = []): ar
 {
     return array_merge([
         'nationality_id' => $student->nationality_id,
+        'registration_status' => $student->registration_status->value,
         'student_first_name' => 'Updated',
         'student_father_name' => $student->father_name,
         'student_grandfather_name' => $student->grandfather_name,
@@ -359,6 +360,7 @@ test('update validates required fields', function () {
         ->put(route('school.students.update', ['student' => $student]), [])
         ->assertSessionHasErrors([
             'nationality_id',
+            'registration_status',
             'student_first_name',
             'student_father_name',
             'student_grandfather_name',

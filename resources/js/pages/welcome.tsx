@@ -115,7 +115,7 @@ function PortalCard({ portal }: { portal: Portal }) {
                         </span>
 
                         <div className="min-w-0 flex-1 space-y-1.5">
-                            <CardTitle className="text-sm tracking-wider normal-case">
+                            <CardTitle className="text-sm normal-case">
                                 {portal.title}
                             </CardTitle>
                             <CardDescription className="text-sm leading-relaxed">
@@ -126,7 +126,7 @@ function PortalCard({ portal }: { portal: Portal }) {
                 </CardHeader>
 
                 <CardContent>
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider text-primary uppercase">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary uppercase">
                         <span>تسجيل الدخول</span>
                         <ArrowLeftIcon className="size-3.5 transition-transform duration-200 group-hover:-translate-x-1 group-focus-visible:-translate-x-1" />
                     </span>
@@ -173,10 +173,10 @@ export default function Welcome() {
                                 </div>
 
                                 <div className="space-y-1.5 sm:space-y-2">
-                                    <p className="text-xs font-semibold tracking-[0.22em] text-primary uppercase sm:text-sm">
+                                    <p className="text-xs font-semibold text-primary uppercase sm:text-sm">
                                         الحكومة الليبية
                                     </p>
-                                    <h1 className="text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl md:text-[2.15rem]">
+                                    <h1 className="text-2xl font-semibold text-balance text-foreground sm:text-3xl md:text-[2.15rem]">
                                         وزارة التربية والتعليم
                                     </h1>
                                 </div>
@@ -199,14 +199,14 @@ export default function Welcome() {
                         >
                             <Badge
                                 variant="secondary"
-                                className="mb-3 h-auto px-3 py-1 text-[0.7rem] tracking-[0.18em]"
+                                className="mb-3 h-auto px-3 py-1 text-sm"
                             >
                                 بوابة الدخول
                             </Badge>
 
                             <h2
                                 id="system-heading"
-                                className="text-lg font-semibold tracking-tight text-balance text-foreground sm:text-xl md:text-2xl"
+                                className="text-lg font-semibold text-balance text-foreground sm:text-xl md:text-2xl"
                             >
                                 نظام إدارة بيانات وزارة التربية والتعليم
                             </h2>
@@ -226,7 +226,7 @@ export default function Welcome() {
                             <div className="mb-5 flex flex-col items-center gap-1.5 text-center">
                                 <h2
                                     id="portals-heading"
-                                    className="text-sm font-semibold tracking-[0.18em] text-foreground uppercase"
+                                    className="text-sm font-semibold text-foreground uppercase"
                                 >
                                     لوحات التحكم
                                 </h2>
@@ -262,14 +262,14 @@ export default function Welcome() {
                                     aria-hidden
                                 />
                                 <span>
-                                    منصة رسمية آمنة لوزارة التربية والتعليم
+                                    منصة رسمية تابعة لوزارة التربية والتعليم
                                 </span>
                             </div>
 
                             <p className="text-xs text-muted-foreground space-x-1">
                                 <span>©</span>
                                 <span className="font-mono">{new Date().getFullYear()}</span>
-                                <span>وزارة التربية والتعليم — الحكومة الليبية</span>
+                                <span>وزارة التربية والتعليم - الحكومة الليبية</span>
                             </p>
                         </div>
                     </footer>

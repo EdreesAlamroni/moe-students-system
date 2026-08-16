@@ -37,7 +37,7 @@ export function LoginForm({ routes }: Props) {
                             id="username"
                             type="text"
                             name="username"
-                            className="not-placeholder-shown:font-mono tracking-widest"
+                            className="not-placeholder-shown:font-mono not-placeholder-shown:tracking-widest"
                             autoComplete="username"
                             placeholder="اسم المُستخدم"
                             hasError={!!errors.username}
@@ -66,7 +66,7 @@ export function LoginForm({ routes }: Props) {
                         <PasswordInput
                             id="password"
                             name="password"
-                            className="not-placeholder-shown:font-mono"
+                            className="not-placeholder-shown:font-mono not-placeholder-shown:tracking-widest"
                             autoComplete="current-password"
                             placeholder="كلمة المرور"
                             tabIndex={2}

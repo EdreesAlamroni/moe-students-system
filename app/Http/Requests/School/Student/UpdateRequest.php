@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\School\Student;
 
+use App\Enums\StudentRegistrationStatus;
 use App\Models\Nationality;
 use App\Models\Student;
 use App\Rules\NationalIdRule;
@@ -25,6 +26,10 @@ class UpdateRequest extends FormRequest
             'nationality_id' => [
                 'required',
                 Rule::exists(Nationality::class, 'id'),
+            ],
+            'registration_status' => [
+                'required',
+                Rule::enum(StudentRegistrationStatus::class),
             ],
             'student_first_name' => [
                 'required',

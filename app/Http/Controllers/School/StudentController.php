@@ -162,15 +162,13 @@ class StudentController extends Controller
 
         $student->load(['nationality']);
 
-        $nationalities = Nationality::list();
-        $libyanNationalityId = Nationality::libyanId();
-
         return Inertia::render('school/students/edit', [
             'student' => ResourcePayloadBuilder::make(
                 StudentFormResource::make($student),
             ),
-            'nationalities' => $nationalities,
-            'libyanNationalityId' => $libyanNationalityId,
+            'registrationStatuses' => StudentRegistrationStatus::optionsArray(),
+            'nationalities' => Nationality::list(),
+            'libyanNationalityId' => Nationality::libyanId(),
         ]);
     }
 

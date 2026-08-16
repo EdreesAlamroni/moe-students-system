@@ -13,7 +13,7 @@ import horizontalBarTick from "@/components/shared/dashboard/horizontal-bar-tick
 import { GraduationCapIcon } from "lucide-react";
 
 const ROW_HEIGHT = 48;
-const LABEL_WIDTH = 160;
+const LABEL_WIDTH = 180;
 
 const chartConfig = {
     males: {

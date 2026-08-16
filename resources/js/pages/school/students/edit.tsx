@@ -4,7 +4,7 @@ import { Form, Head, Link } from "@inertiajs/react";
 
 import { decimalInputConstraints, libyanNationalIdInputConstraints, passportNumberInputConstraints } from "@/lib/input-constraints";
 
-import type { Nationality, Student } from "@/types";
+import type { Enum, Nationality, Student } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
@@ -31,11 +31,12 @@ import { index, show, edit, update } from "@/routes/school/students";
 
 type PageProps = {
     student: Student;
+    registrationStatuses: Enum[];
     nationalities: Nationality[];
     libyanNationalityId: number;
 };
 
-export default function Edit({ student, nationalities, libyanNationalityId }: PageProps) {
+export default function Edit({ student, registrationStatuses, nationalities, libyanNationalityId }: PageProps) {
     const [selectedNationalityId, setSelectedNationalityId] = React.useState<string>(student.nationality_id.toString());
 
     const isLibyanNationalitySelected = selectedNationalityId === libyanNationalityId.toString();
@@ -64,6 +65,43 @@ export default function Edit({ student, nationalities, libyanNationalityId }: Pa
 
                                     <CardFormContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <Field className="col-span-full">
+                                                <Label
+                                                    htmlFor="registration_status"
+                                                    hasError={!!errors.registration_status}
+                                                    required
+                                                >
+                                                    صفة القيد
+                                                </Label>
+
+                                                <Select
+                                                    name="registration_status"
+                                                    defaultValue={student.registration_status.id}
+                                                    required
+                                                >
+                                                    <SelectTrigger
+                                                        id="registration_status"
+                                                        hasError={!!errors.registration_status}
+                                                    >
+                                                        <SelectValue placeholder="اختر صفة القيد" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            {registrationStatuses.map((status) => (
+                                                                <SelectItem
+                                                                    key={status.id}
+                                                                    value={status.id}
+                                                                >
+                                                                    {status.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+
+                                                <InputError message={errors.registration_status} />
+                                            </Field>
+
                                             <Field>
                                                 <Label
                                                     htmlFor="student_first_name"
