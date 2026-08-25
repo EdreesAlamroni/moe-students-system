@@ -36,7 +36,10 @@ export default function GroupedRolesShowCard({
         <section>
             <Card>
                 <CardHeader className="border-b">
-                    <CardTitle className="text-sm">الأدوار والصلاحيات</CardTitle>
+                    <CardTitle>
+                        <ShieldIcon />
+                        <span>الأدوار والصلاحيات</span>
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     {hasRoles ? (

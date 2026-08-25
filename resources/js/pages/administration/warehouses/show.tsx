@@ -22,7 +22,7 @@ import { Paginator } from "@/components/ui/navigation/paginator";
 
 import { LocationShowMap } from "@/components/ui/maps/location-show-map";
 
-import { LandmarkIcon, ListIcon, NotepadTextIcon, SchoolIcon, SquarePenIcon } from "lucide-react";
+import { LandmarkIcon, NotepadTextIcon, SchoolIcon, SquarePenIcon } from "lucide-react";
 
 import { index, show, edit, destroy } from "@/routes/administration/warehouses";
 import { show as showMonitor } from "@/routes/administration/education-monitors";
@@ -141,7 +141,7 @@ export default function Show({ warehouse, monitors, canAny, can }: PageProps) {
                     <Card>
                         <CardHeader className="border-b">
                             <CardTitle>
-                                <ListIcon />
+                                <LandmarkIcon />
                                 <span>المُراقبات</span>
                             </CardTitle>
                         </CardHeader>

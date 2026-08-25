@@ -24,7 +24,7 @@ import { Paginator } from "@/components/ui/navigation/paginator";
 
 import { LocationShowMap } from "@/components/ui/maps/location-show-map";
 
-import { BuildingIcon, ListIcon, NotepadTextIcon, SchoolIcon, SquarePenIcon, UsersIcon } from "lucide-react";
+import { BuildingIcon, NotepadTextIcon, SchoolIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
 import { index, show, edit, destroy } from "@/routes/administration/education-monitors";
 import { show as showOffice } from "@/routes/administration/education-services-offices";
@@ -161,7 +161,7 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                     <Card>
                         <CardHeader className="border-b">
                             <CardTitle>
-                                <ListIcon />
+                                <BuildingIcon />
                                 <div className="flex items-center gap-x-1.5">
                                     <span>مكاتب الخدمات التعليمية</span>
                                     <span className="font-mono">({officesMeta.total})</span>

@@ -22,7 +22,7 @@ import {
 
 import PasswordField from "@/components/shared/users/password-field";
 
-import { KeyRoundIcon } from 'lucide-react';
+import { LockKeyholeIcon } from 'lucide-react';
 
 import { update as passwordUpdate } from '@/routes/administration/users/password';
 
@@ -52,7 +52,7 @@ export function UpdatePassword({ user }: UpdatePasswordProps) {
                     type="button"
                     variant="outline"
                 >
-                    <KeyRoundIcon />
+                    <LockKeyholeIcon />
                     <span>تحديث كلمة المرور</span>
                 </Button>
             </DialogTrigger>
