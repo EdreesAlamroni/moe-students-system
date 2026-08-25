@@ -1,5 +1,14 @@
 import React from "react";
 
+import {
+    assignmentStatus,
+    emptyStates,
+    genderComparison,
+    studentsDistributedAcross,
+    studentsGroupedAcross,
+    studentsInclusive,
+} from "@/lib/arabic-labels";
+
 import type {
     EducationMonitorDashboardSummary,
     EducationMonitorSchoolDistributionItem,
@@ -58,13 +67,13 @@ function GenderRatioInsight({ summary }: { summary?: EducationMonitorDashboardSu
                         ٪{malesPercentage} / ٪{100 - malesPercentage}
                     </span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
             detail={
                 summary && summary.students > 0
-                    ? `${formatNumber(summary.males)} ذكور مقابل ${formatNumber(summary.females)} إناث`
-                    : "لا يوجد طلبة مسجلون حالياً"
+                    ? genderComparison(summary.males, summary.females)
+                    : emptyStates.noEnrolledStudents()
             }
             extra={
                 summary && summary.students > 0 ? (
@@ -93,20 +102,20 @@ function SchoolAssignmentInsight({ summary }: { summary?: EducationMonitorDashbo
 
     return (
         <InsightCard
-            label="نسبة إسناد الطلبة للمدارس"
+            label="نسبة إسناد الطلبة إلى المدارس"
             icon={UserRoundXIcon}
             isLoading={!summary}
             value={
                 summary && summary.students > 0 ? (
                     <span className="font-mono tabular-nums">٪{assignmentRate}</span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
             detail={
                 summary && summary.students > 0
-                    ? `${formatNumber(assigned)} مسندون و ${formatNumber(summary.students_unassigned_to_school)} غير مسندين لمدرسة`
-                    : "لا يوجد طلبة مسجلون حالياً"
+                    ? assignmentStatus(assigned, summary.students_unassigned_to_school)
+                    : emptyStates.noEnrolledStudents()
             }
         />
     );
@@ -123,14 +132,14 @@ function LargestOfficeInsight({ offices }: { offices?: EducationServicesOfficeDi
 
     return (
         <InsightCard
-            label="أكبر مكتب خدمات تعليمية"
+            label="أعلى مكتب خدمات تعليمية كثافة"
             icon={BuildingIcon}
             isLoading={!offices}
-            value={largest && largest.students > 0 ? largest.name : "—"}
+            value={largest && largest.students > 0 ? largest.name : <span className="font-mono">-</span>}
             detail={
                 largest && largest.students > 0
-                    ? `يضم ${formatNumber(largest.students)} طالباً موزعين على ${formatNumber(largest.schools)} مدرسة`
-                    : "لا يوجد طلبة مسندون إلى مكاتب الخدمات التعليمية"
+                    ? studentsGroupedAcross(largest.students, largest.schools, "يضم")
+                    : emptyStates.noAssignedStudents("مكاتب الخدمات التعليمية")
             }
         />
     );
@@ -148,19 +157,19 @@ function LargestSchoolInsight({ schools }: { schools?: EducationMonitorSchoolDis
     const detail =
         largest && largest.students > 0
             ? [
-                `يدرس بها ${formatNumber(largest.students)} طالباً وطالبة`,
+                `يدرس بها ${studentsInclusive(largest.students)}`,
                 largest.office?.name ? `تابعة لـ ${largest.office.name}` : null,
             ]
                 .filter(Boolean)
                 .join(" - ")
-            : "لا يوجد طلبة مسجلون بالمدارس";
+            : emptyStates.noRegisteredStudentsInSchools();
 
     return (
         <InsightCard
-            label="أكبر مدرسة"
+            label="أعلى مدرسة كثافة"
             icon={SchoolIcon}
             isLoading={!schools}
-            value={largest && largest.students > 0 ? largest.name : "—"}
+            value={largest && largest.students > 0 ? largest.name : <span className="font-mono">-</span>}
             detail={detail}
         />
     );
@@ -177,14 +186,14 @@ function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDis
 
     return (
         <InsightCard
-            label="أكبر صف دراسي"
+            label="أعلى صف دراسي كثافة"
             icon={CrownIcon}
             isLoading={!gradeLevels}
-            value={largest?.name ?? "—"}
+            value={largest?.name ?? <span className="font-mono">-</span>}
             detail={
                 largest
-                    ? `يضم ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلبة مقيدون بالصفوف الدراسية"
+                    ? `يضم ${studentsInclusive(largest.students)}`
+                    : emptyStates.noGradeLevelEnrolledStudents()
             }
         />
     );
@@ -195,23 +204,23 @@ function AverageClassSizeInsight({ summary }: { summary?: EducationMonitorDashbo
         ? Math.round(summary.students / summary.classrooms)
         : 0;
 
+    const detail = summary && summary.classrooms > 0
+        ? studentsDistributedAcross(summary.students, summary.classrooms, "classrooms")
+        : emptyStates.noClassroomsForCurrentYear();
+
     return (
         <InsightCard
-            label="متوسط الطلبة لكل فصل"
+            label="متوسط عدد الطلبة لكل فصل"
             icon={PresentationIcon}
             isLoading={!summary}
             value={
                 summary && summary.classrooms > 0 ? (
                     <span className="font-mono tabular-nums">{formatNumber(average)}</span>
                 ) : (
-                    "—"
+                    <span className="font-mono">-</span>
                 )
             }
-            detail={
-                summary && summary.classrooms > 0
-                    ? `${formatNumber(summary.students)} طالباً موزعون على ${formatNumber(summary.classrooms)} فصل دراسي`
-                    : "لا توجد فصول دراسية للسنة الدراسية الحالية"
-            }
+            detail={detail}
         />
     );
 }

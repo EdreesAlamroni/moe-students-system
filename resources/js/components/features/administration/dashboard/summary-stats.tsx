@@ -48,13 +48,13 @@ export default function SummaryStats({ summary }: SummaryStatsProps) {
             columns={4}
             items={[
                 { label: "إجمالي الطلبة", value: summary.students, icon: UsersIcon },
-                { label: "الطلبة الذكور", value: summary.males, icon: MarsIcon },
-                { label: "الطالبات الإناث", value: summary.females, icon: VenusIcon },
-                { label: "الجنسيات", value: summary.nationalities, icon: FlagIcon },
-                { label: "مُراقبات التّربية والتّعليم", value: summary.education_monitors, icon: LandmarkIcon },
-                { label: "مكاتب الخدمات التعليمية", value: summary.education_services_offices, icon: BuildingIcon },
-                { label: "المدارس", value: summary.schools, icon: SchoolIcon },
-                { label: "المخازن", value: summary.warehouses, icon: WarehouseIcon },
+                { label: "عدد الذكور", value: summary.males, icon: MarsIcon },
+                { label: "عدد الإناث", value: summary.females, icon: VenusIcon },
+                { label: "عدد الجنسيات", value: summary.nationalities, icon: FlagIcon },
+                { label: "عدد مُراقبات التّربية والتّعليم", value: summary.education_monitors, icon: LandmarkIcon },
+                { label: "عدد مكاتب الخدمات التعليمية", value: summary.education_services_offices, icon: BuildingIcon },
+                { label: "عدد المدارس", value: summary.schools, icon: SchoolIcon },
+                { label: "عدد المخازن", value: summary.warehouses, icon: WarehouseIcon },
             ]}
         />
     );

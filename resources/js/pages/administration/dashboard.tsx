@@ -68,14 +68,12 @@ export default function Dashboard({
                     />
 
                     <EducationMonitorSchoolsChart
-                        // items={educationMonitorDistribution?.slice(0, 10)}
-                        items={educationMonitorDistribution}
+                        items={educationMonitorDistribution?.slice(0, 5)}
                         className="xl:col-span-2"
                     />
 
                     <EducationMonitorStudentsChart
-                        // items={educationMonitorDistribution?.slice(0, 10)}
-                        items={educationMonitorDistribution}
+                        items={educationMonitorDistribution?.slice(0, 5)}
                         className="xl:col-span-2"
                     />
 

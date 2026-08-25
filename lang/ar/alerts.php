@@ -71,7 +71,7 @@ return [
         'classroom-distribution-finalize-students-unassigned' => 'لا يمكن إتمام التوزيع: لا يزال هناك :count طالب/طالبة مسجّلين في صف دراسي لكن بلا فصل دراسي لهذه السنة الدراسية. عيّنهم عبر التوزيع العشوائي أو اليدوي قبل الإتمام.',
         'classroom-distribution-no-students-without-classroom' => 'لا يوجد طلبة مسجّلون في هذا الصف الدراسي بانتظار تعيين فصل دراسي للسنة الدراسية الحالية.',
         'classroom-distribution-no-enrollments' => 'لا توجد تسجيلات طلبة للسنة الدراسية الحالية. يُرجى تسجيل الطلبة في السنة الدراسية أولاً قبل تنفيذ التوزيع أو إتمامه.',
-        'classroom-distribution-no-grade-level-enrollments' => 'يوجد طلبة مسجّلون في السنة الدراسية الحالية، لكن لم يُسجَّلوا في أي صف دراسي. يُرجى تسجيل الطلبة في الصف الدراسي المناسب قبل تنفيذ التوزيع.',
+        'classroom-distribution-no-grade-level-enrollments' => 'يوجد طلبة مسجّلون في السنة الدراسية الحالية، لكن لم يُسجَّل أيٌّ منهم في صف دراسي. يُرجى تسجيلهم في الصف الدراسي المناسب قبل تنفيذ التوزيع.',
         'classroom-distribution-enrollments-missing-grade-level' => 'لا يمكن إتمام التوزيع: لا يزال هناك :count طالب/طالبة غير مسجّلين في أي صف دراسي للسنة الدراسية الحالية. يُرجى إكمال تسجيلهم في صف دراسي أولاً.',
         'classroom-distribution-applied' => 'تم توزيع الطلبة على الفصول الدراسية المحددة بنجاح.',
         'classroom-distribution-reset' => 'تم إعادة تعيين توزيع الفصول الدراسية بنجاح.',
@@ -94,7 +94,7 @@ return [
         'academic-record-updated' => 'تم تحديث السجل الدراسي بنجاح.',
 
         'book-distribution-completed' => 'تم تسليم الكُتب لـ :count طالب/طالبة بنجاح. لا يمكن التراجع عن هذا الإجراء.',
-        'book-distribution-no-eligible-students' => 'لا يوجد طلبة مؤهلون لاستلام الكُتب من بين الطلبة المحددين.',
+        'book-distribution-no-eligible-students' => 'لا يوجد طلبة مؤهل لاستلام الكُتب من بين الطلبة المحددين.',
         'book-distribution-grade-levels-confirmed' => 'تم تأكيد استلام الكُتب لـ :count صف/صفوف دراسية بنجاح. لا يمكن التراجع عن هذا الإجراء.',
         'book-distribution-no-eligible-grade-levels' => 'لا يوجد صفوف دراسية مؤهلة للتأكيد من بين الصفوف المحددة.',
         'book-distribution-grade-level-not-confirmed' => 'لم يتم تأكيد استلام الكُتب لهذا الصف الدراسي من المخزن بعد. يرجى إتمام عملية الاستلام أولاً.',

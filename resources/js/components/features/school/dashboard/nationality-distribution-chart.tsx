@@ -2,6 +2,8 @@ import React from "react";
 
 import { Label, Pie, PieChart } from "recharts";
 
+import { emptyStates } from "@/lib/arabic-labels";
+
 import type { NationalityDistributionItem } from "@/types";
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
@@ -45,7 +47,7 @@ export default function NationalityDistributionChart({ items, className }: Natio
             reloadProps={["nationalityDistribution"]}
             isLoading={!items}
             isEmpty={items?.length === 0}
-            emptyText="لا يوجد طلبة مسجلون حالياً."
+            emptyText={emptyStates.noEnrolledStudents()}
             skeleton={<DonutChartSkeleton />}
             className={className}
         >

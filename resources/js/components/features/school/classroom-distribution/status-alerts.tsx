@@ -8,6 +8,8 @@ import {
 
 import type { EnrollmentSummary } from '@/types/classroom-distribution';
 
+import { emptyStates } from '@/lib/arabic-labels';
+
 import { AlertTriangleIcon, CheckCircle2Icon, InfoIcon } from 'lucide-react';
 
 interface StatusAlertsProps {
@@ -39,8 +41,8 @@ export default function StatusAlerts({
                     </AlertTitle>
                     <AlertDescription>
                         إذا كنت بحاجة إلى إعادة تعيين توزيع الفصول الدراسية
-                        لجميع الصفوف أو لصف معين، يرجى التواصل المراقبة التابع
-                        لها لإتمام هذه العملية.
+                        لجميع الصفوف أو لصف معين، يرجى التواصل مع المراقبة
+                        التابع لها لإتمام هذه العملية.
                     </AlertDescription>
                 </Alert>
             )}
@@ -91,10 +93,7 @@ export default function StatusAlerts({
                         <AlertTriangleIcon />
                         <AlertTitle>الطلبة غير مسجّلين في صف دراسي</AlertTitle>
                         <AlertDescription>
-                            يوجد طلبة مسجّلون في السنة الدراسية الحالية، لكن لم
-                            يُسجَّلوا في أي صف دراسي. يُرجى تسجيل الطلبة في الصف
-                            الدراسي المناسب من صفحة الطالب قبل تنفيذ التوزيع أو
-                            إتمامه.
+                            {emptyStates.studentsEnrolledWithoutGradeLevel()}
                         </AlertDescription>
                     </Alert>
                 )}

@@ -2,15 +2,17 @@ import React from "react";
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
-import type { ChartConfig } from "@/components/ui/display/chart";
-
-import { GraduationCapIcon } from "lucide-react";
+import { emptyStates } from "@/lib/arabic-labels";
 
 import type { GradeLevelDistributionItem } from "@/types";
 
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
+import type { ChartConfig } from "@/components/ui/display/chart";
+
 import DashboardSectionCard, { BarChartSkeleton } from "@/components/shared/dashboard/dashboard-section-card";
 import horizontalBarTick from "@/components/shared/dashboard/horizontal-bar-tick";
+
+import { GraduationCapIcon } from "lucide-react";
 
 const ROW_HEIGHT = 48;
 const LABEL_WIDTH = 185;
@@ -40,7 +42,7 @@ export default function GradeLevelDistributionChart({ items, className }: GradeL
             reloadProps={["gradeLevelDistribution"]}
             isLoading={!items}
             isEmpty={items?.length === 0}
-            emptyText="لا يوجد طلبة مقيدون حاليًا في الصفوف الدراسية."
+            emptyText={emptyStates.noGradeLevelEnrolledStudentsCurrently()}
             skeleton={<BarChartSkeleton />}
             className={className}
         >

@@ -35,6 +35,7 @@ import {
 import ValidationErrors from '@/components/ui/alerts/validation-errors';
 
 import EmptyState from '@/components/ui/display/empty-state';
+import { emptyStates } from '@/lib/arabic-labels';
 import { Badge } from '@/components/ui/display/badge';
 
 import { Checkbox } from '@/components/ui/controls/checkbox';
@@ -229,8 +230,8 @@ export default function RandomDistributionSection({
                                 )}
                                 {noPendingStudents && (
                                     <span className="text-xs text-muted-foreground">
-                                        لا يوجد طلبة مسجّلون في هذا الصف الدراسي
-                                        بانتظار تعيين فصل دراسي حالياً؛ تم تعطيل
+                                        {emptyStates.noStudentsInGradeLevel()}
+                                        {' '}بانتظار تعيين فصل دراسي حالياً؛ تم تعطيل
                                         الاختيار.
                                     </span>
                                 )}

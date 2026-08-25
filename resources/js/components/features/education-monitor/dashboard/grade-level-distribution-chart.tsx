@@ -2,6 +2,8 @@ import React from "react";
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
+import { emptyStates } from "@/lib/arabic-labels";
+
 import type { GradeLevelDistributionItem } from "@/types";
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
@@ -40,7 +42,7 @@ export default function GradeLevelDistributionChart({ items, className }: GradeL
             reloadProps={["gradeLevelDistribution"]}
             isLoading={!items}
             isEmpty={items?.length === 0}
-            emptyText="لا يوجد طلبة مقيدون بالصفوف الدراسية حالياً."
+            emptyText={emptyStates.noGradeLevelEnrolledStudentsCurrently()}
             skeleton={<BarChartSkeleton />}
             className={className}
         >

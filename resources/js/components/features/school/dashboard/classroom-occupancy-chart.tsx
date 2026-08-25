@@ -2,6 +2,8 @@ import React from "react";
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
+import { emptyStates } from "@/lib/arabic-labels";
+
 import type { ClassroomOccupancyItem } from "@/types";
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/display/chart";
@@ -49,7 +51,7 @@ export default function ClassroomOccupancyChart({ items, className }: ClassroomO
             reloadProps={["classroomOccupancy"]}
             isLoading={!items}
             isEmpty={items?.length === 0}
-            emptyText="لا توجد فصول دراسية حالياً."
+            emptyText={emptyStates.noClassroomsCurrently()}
             skeleton={<BarChartSkeleton />}
             className={className}
         >

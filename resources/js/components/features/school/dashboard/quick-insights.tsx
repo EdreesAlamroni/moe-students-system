@@ -1,9 +1,16 @@
 import React from "react";
 
+import {
+    emptyStates,
+    genderComparison,
+    studentsDistributedAcross,
+    studentsFromSeats,
+    studentsInclusive,
+} from "@/lib/arabic-labels";
+
 import type { ClassroomOccupancyItem, DashboardSummary, GradeLevelDistributionItem } from "@/types";
 
 import InsightCard from "@/components/shared/dashboard/insight-card";
-import formatNumber from "@/components/shared/dashboard/format-number";
 
 import { CrownIcon, GaugeIcon, ScaleIcon, UsersIcon } from "lucide-react";
 
@@ -48,8 +55,8 @@ function GenderRatioInsight({ summary }: { summary?: DashboardSummary }) {
             }
             detail={
                 summary && summary.students > 0
-                    ? `${formatNumber(summary.males)} ذكور مقابل ${formatNumber(summary.females)} إناث`
-                    : "لا يوجد طلبة مسجلون حالياً"
+                    ? genderComparison(summary.males, summary.females)
+                    : emptyStates.noEnrolledStudents()
             }
             extra={
                 summary && summary.students > 0 ? (
@@ -84,8 +91,8 @@ function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDis
             value={largest?.name ?? "—"}
             detail={
                 largest
-                    ? `يضم ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلبة مقيدون بالصفوف الدراسية"
+                    ? `يضم ${studentsInclusive(largest.students)}`
+                    : emptyStates.noGradeLevelEnrolledStudents()
             }
         />
     );
@@ -111,8 +118,8 @@ function ClassroomUtilizationInsight({ classrooms }: { classrooms?: ClassroomOcc
             }
             detail={
                 capacity > 0
-                    ? `${formatNumber(students)} طالباً من أصل ${formatNumber(capacity)} مقعد`
-                    : "لا توجد فصول دراسية بسعة محددة"
+                    ? studentsFromSeats(students, capacity)
+                    : emptyStates.noClassroomsWithCapacity()
             }
         />
     );
@@ -136,8 +143,8 @@ function AverageClassSizeInsight({ classrooms }: { classrooms?: ClassroomOccupan
             }
             detail={
                 count > 0
-                    ? `${formatNumber(students)} طالباً موزعون على ${formatNumber(count)} فصل دراسي`
-                    : "لا توجد فصول دراسية حالياً"
+                    ? studentsDistributedAcross(students, count, "classrooms")
+                    : emptyStates.noClassroomsCurrently()
             }
         />
     );

@@ -1,5 +1,13 @@
 import React from "react";
 
+import {
+    completionRateDetail,
+    completionRateWithPendingDetail,
+    emptyStates,
+    studentsReceivedBooks,
+    warehouseCoverageDetail,
+} from "@/lib/arabic-labels";
+
 import type {
     WarehouseDashboardSummary,
     WarehouseEducationMonitorDistributionItem,
@@ -57,7 +65,7 @@ function CompletionOverviewInsight({ summary }: { summary?: WarehouseDashboardSu
             }
             detail={
                 summary && eligible > 0
-                    ? `${formatNumber(summary.students_received)} طالباً استلموا الكُتب من أصل ${formatNumber(eligible)} ضمن الصفوف المؤكَّدة`
+                    ? studentsReceivedBooks(summary.students_received, eligible)
                     : "لا توجد توزيعات كُتب مؤكَّدة للسنة الدراسية الحالية"
             }
             extra={
@@ -97,8 +105,12 @@ function CoverageInsight({ summary }: { summary?: WarehouseDashboardSummary }) {
             }
             detail={
                 summary && summary.education_monitors > 0
-                    ? `${formatNumber(summary.education_monitors)} مُراقبة و ${formatNumber(summary.schools)} مدرسة بمتوسط ${formatNumber(averageStudentsPerSchool)} طالباً لكل مدرسة`
-                    : "لا توجد مُراقبات تعليمية مسندة إلى هذا المخزن"
+                    ? warehouseCoverageDetail(
+                        summary.education_monitors,
+                        summary.schools,
+                        averageStudentsPerSchool,
+                    )
+                    : emptyStates.noMonitorsAssigned()
             }
         />
     );
@@ -115,7 +127,7 @@ function TopMonitorInsight({ monitors }: { monitors?: WarehouseEducationMonitorD
             value={top ? top.name : "—"}
             detail={
                 top
-                    ? `أنجزت ${top.completion_rate}٪ (${formatNumber(top.students_received)} مستلم / ${formatNumber(top.students_pending)} معلّق)`
+                    ? completionRateDetail(top.completion_rate, top.students_received, top.students_pending)
                     : "لا توجد بيانات توزيع كُتب للمُراقبات التعليمية"
             }
         />
@@ -133,7 +145,7 @@ function LowestMonitorInsight({ monitors }: { monitors?: WarehouseEducationMonit
             value={lowest ? lowest.name : "—"}
             detail={
                 lowest
-                    ? `أنجزت ${lowest.completion_rate}٪ مع ${formatNumber(lowest.students_pending)} تسليم معلّق`
+                    ? completionRateWithPendingDetail(lowest.completion_rate, lowest.students_pending)
                     : "لا توجد بيانات توزيع كُتب للمُراقبات التعليمية"
             }
         />
@@ -169,7 +181,7 @@ function LowestSchoolInsight({ schools }: { schools?: WarehouseSchoolDistributio
             value={lowest ? lowest.name : "—"}
             detail={
                 lowest
-                    ? `أنجزت ${lowest.completion_rate}٪ مع ${formatNumber(lowest.students_pending)} تسليم معلّق`
+                    ? completionRateWithPendingDetail(lowest.completion_rate, lowest.students_pending)
                     : "لا توجد بيانات توزيع كُتب للمدارس"
             }
         />

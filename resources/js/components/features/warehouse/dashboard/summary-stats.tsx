@@ -45,11 +45,11 @@ export default function SummaryStats({ summary }: SummaryStatsProps) {
             aria-label="إحصائيات المخزن"
             columns={3}
             items={[
-                { label: "المدارس", value: summary.schools, icon: SchoolIcon },
+                { label: "عدد المدارس", value: summary.schools, icon: SchoolIcon },
                 { label: "إجمالي الطلبة", value: summary.students, icon: UsersIcon },
-                { label: "توزيعات الكُتب", value: summary.book_distributions, icon: TruckIcon },
-                { label: "طلبة استلموا الكُتب", value: summary.students_received, icon: BookOpenCheckIcon },
-                { label: "تسليمات معلّقة", value: summary.students_pending, icon: ClockIcon },
+                { label: "عدد توزيعات الكُتب المدرسية", value: summary.book_distributions, icon: TruckIcon },
+                { label: "عدد الطلبة الذين استلموا الكُتب المدرسية", value: summary.students_received, icon: BookOpenCheckIcon },
+                { label: "عدد التسليمات المعلّقة", value: summary.students_pending, icon: ClockIcon },
                 { label: "نسبة الإنجاز", value: `%${summary.completion_rate}`, icon: PercentIcon },
             ]}
         />

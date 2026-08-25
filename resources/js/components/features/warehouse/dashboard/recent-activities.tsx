@@ -1,5 +1,7 @@
 import React from "react";
 
+import { cn } from "@/lib/utils";
+
 import type { WarehouseRecentActivityItem } from "@/types";
 
 import { Skeleton } from "@/components/ui/structure/skeleton";
@@ -15,7 +17,6 @@ import {
 import DashboardSectionCard from "@/components/shared/dashboard/dashboard-section-card";
 
 import { HistoryIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 type RecentActivitiesProps = {
     items?: WarehouseRecentActivityItem[];

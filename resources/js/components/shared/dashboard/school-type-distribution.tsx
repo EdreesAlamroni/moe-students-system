@@ -1,5 +1,13 @@
 import React from "react";
 
+import {
+    emptyStates,
+    schoolTypeComparison,
+    schoolTypeStudentComparison,
+    studentsDistributedAcross,
+    studentsInclusive,
+} from "@/lib/arabic-labels";
+
 import type { LargestSchoolOfType, SchoolTypeDistribution } from "@/types";
 
 import { Card, CardHeader } from "@/components/ui/structure/card";
@@ -69,7 +77,7 @@ function SchoolTypeInsights({ data }: { data?: SchoolTypeDistribution }) {
                 publicCount={data?.public_schools ?? 0}
                 privateCount={data?.private_schools ?? 0}
                 detail={(publicCount, privateCount) =>
-                    `${formatNumber(publicCount)} عامة مقابل ${formatNumber(privateCount)} خاصة`
+                    schoolTypeComparison(publicCount, privateCount)
                 }
                 emptyText="لا توجد مدارس مسجلة حالياً"
             />
@@ -81,9 +89,9 @@ function SchoolTypeInsights({ data }: { data?: SchoolTypeDistribution }) {
                 publicCount={data?.public_students ?? 0}
                 privateCount={data?.private_students ?? 0}
                 detail={(publicCount, privateCount) =>
-                    `${formatNumber(publicCount)} في العامة مقابل ${formatNumber(privateCount)} في الخاصة`
+                    schoolTypeStudentComparison(publicCount, privateCount)
                 }
-                emptyText="لا يوجد طلبة مسندون إلى المدارس"
+                emptyText={emptyStates.noRegisteredStudentsInSchoolType()}
             />
 
             <AverageStudentsInsight
@@ -106,14 +114,14 @@ function SchoolTypeInsights({ data }: { data?: SchoolTypeDistribution }) {
                 label="أعلى المدرسة عامة كثافة"
                 data={data}
                 school={data?.largest_public_school ?? null}
-                emptyText="لا يوجد طلبة مسجلون في المدارس العامة"
+                emptyText={emptyStates.noRegisteredStudentsInPublicSchools()}
             />
 
             <LargestSchoolInsight
                 label="أعلى المدرسة خاصة كثافة"
                 data={data}
                 school={data?.largest_private_school ?? null}
-                emptyText="لا يوجد طلبة مسجلون في المدارس الخاصة"
+                emptyText={emptyStates.noRegisteredStudentsInPrivateSchools()}
             />
         </div>
     );
@@ -189,7 +197,7 @@ function AverageStudentsInsight({ label, data, students, schools, emptyText }: A
             }
             detail={
                 data && schools > 0
-                    ? `${formatNumber(students)} طالباً موزعون على ${formatNumber(schools)} مدرسة`
+                    ? studentsDistributedAcross(students, schools, "schools")
                     : emptyText
             }
         />
@@ -212,7 +220,7 @@ function LargestSchoolInsight({ label, data, school, emptyText }: LargestSchoolI
             value={school?.name ?? "—"}
             detail={
                 school
-                    ? `يدرس بها ${formatNumber(school.students)} طالباً وطالبة`
+                    ? `يدرس بها ${studentsInclusive(school.students)}`
                     : emptyText
             }
         />

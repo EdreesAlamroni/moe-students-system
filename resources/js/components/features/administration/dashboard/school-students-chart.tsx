@@ -35,7 +35,7 @@ export default function SchoolStudentsChart({ items, className }: SchoolStudents
     return (
         <DashboardSectionCard
             title="توزيع الطلبة حسب المدارس"
-            description="أكبر المدارس في المنظومة من حيث عدد الطلبة المسجلين"
+            description="أكبر المدارس في النظام من حيث عدد الطلبة المسجلين"
             icon={UsersIcon}
             reloadProps={["schoolDistribution"]}
             isLoading={!items}

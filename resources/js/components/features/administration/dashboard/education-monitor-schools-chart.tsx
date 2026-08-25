@@ -32,8 +32,8 @@ export default function EducationMonitorSchoolsChart({ items, className }: Educa
 
     return (
         <DashboardSectionCard
-            title="توزيع المدارس حسب المُراقبات التعليمية"
-            description="عدد المدارس التابعة لكل مُراقبة تربية وتعليم"
+            title="أعلى خمس مُراقبات تعليمية من حيث عدد المدارس"
+            description="عدد المدارس التابعة لكل من أعلى خمس مُراقبات تعليمية"
             icon={SchoolIcon}
             reloadProps={["educationMonitorDistribution"]}
             isLoading={!data}

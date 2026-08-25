@@ -1,5 +1,13 @@
 import React from "react";
 
+import {
+    emptyStates,
+    enrollmentStatus,
+    genderComparison,
+    studentsDistributedAcross,
+    studentsInclusive,
+} from "@/lib/arabic-labels";
+
 import type {
     EducationServicesOfficeDashboardSummary,
     EducationServicesOfficeSchoolDistributionItem,
@@ -61,8 +69,8 @@ function GenderRatioInsight({ summary }: { summary?: EducationServicesOfficeDash
             }
             detail={
                 summary && summary.students > 0
-                    ? `${formatNumber(summary.males)} ذكور مقابل ${formatNumber(summary.females)} إناث`
-                    : "لا يوجد طلبة مسجلون حالياً"
+                    ? genderComparison(summary.males, summary.females)
+                    : emptyStates.noEnrolledStudents()
             }
             extra={
                 summary && summary.students > 0 ? (
@@ -103,8 +111,8 @@ function GradeLevelEnrollmentInsight({ summary }: { summary?: EducationServicesO
             }
             detail={
                 summary && summary.students > 0
-                    ? `${formatNumber(enrolled)} مقيدون و ${formatNumber(summary.students_unenrolled_in_grade_level)} غير مقيدين بالصفوف الدراسية`
-                    : "لا يوجد طلبة مسجلون حالياً"
+                    ? enrollmentStatus(enrolled, summary.students_unenrolled_in_grade_level)
+                    : emptyStates.noEnrolledStudents()
             }
         />
     );
@@ -127,8 +135,8 @@ function LargestSchoolInsight({ schools }: { schools?: EducationServicesOfficeSc
             value={largest && largest.students > 0 ? largest.name : "—"}
             detail={
                 largest && largest.students > 0
-                    ? `يدرس فيها ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلبة مسجلون في المدارس"
+                    ? `يدرس فيها ${studentsInclusive(largest.students)}`
+                    : emptyStates.noRegisteredStudentsInSchools()
             }
         />
     );
@@ -151,8 +159,8 @@ function LargestGradeLevelInsight({ gradeLevels }: { gradeLevels?: GradeLevelDis
             value={largest?.name ?? "—"}
             detail={
                 largest
-                    ? `يضم ${formatNumber(largest.students)} طالباً وطالبة`
-                    : "لا يوجد طلبة مقيدون في الصفوف الدراسية"
+                    ? `يضم ${studentsInclusive(largest.students)}`
+                    : emptyStates.noGradeLevelEnrolledStudents()
             }
         />
     );
@@ -177,8 +185,8 @@ function AverageSchoolSizeInsight({ summary }: { summary?: EducationServicesOffi
             }
             detail={
                 summary && summary.schools > 0
-                    ? `${formatNumber(summary.students)} طالباً موزعون على ${formatNumber(summary.schools)} مدرسة`
-                    : "لا توجد مدارس مسجلة حالياً"
+                    ? studentsDistributedAcross(summary.students, summary.schools, "schools")
+                    : emptyStates.noSchoolsRegistered()
             }
         />
     );
@@ -203,8 +211,8 @@ function AverageClassSizeInsight({ summary }: { summary?: EducationServicesOffic
             }
             detail={
                 summary && summary.classrooms > 0
-                    ? `${formatNumber(summary.students)} طالباً موزعون على ${formatNumber(summary.classrooms)} فصل دراسي`
-                    : "لا توجد فصول دراسية للسنة الدراسية الحالية"
+                    ? studentsDistributedAcross(summary.students, summary.classrooms, "classrooms")
+                    : emptyStates.noClassroomsForCurrentYear()
             }
         />
     );

@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/structure/card';
 
 import EmptyState from '@/components/ui/display/empty-state';
+import { emptyStates } from '@/lib/arabic-labels';
 import { Badge } from '@/components/ui/display/badge';
 import { LoadingData } from '@/components/ui/display/loading-data';
 import {
@@ -230,7 +231,7 @@ export default function ManualDistributionSection({
                             <LoadingData className="py-6" />
                         ) : unassignedStudents.length === 0 ? (
                             <EmptyState
-                                text="لا يوجد طلبة مسجّلون في هذا الصف الدراسي بانتظار تعيين فصل دراسي للسنة الدراسية الحالية."
+                                text={emptyStates.noStudentsAwaitingClassroom()}
                             />
                         ) : (
                             <>
