@@ -38,9 +38,6 @@ abstract class ModelState extends State
         return Lang::has($key) ? __($key) : null;
     }
 
-    /**
-     * @return array{id: string, name: string, uiClasses: string, action: string|null}
-     */
     public function toArray(): array
     {
         return [
@@ -51,18 +48,12 @@ abstract class ModelState extends State
         ];
     }
 
-    /**
-     * @return array{id: string, name: string, uiClasses: string, action: string|null}
-     */
     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
-    /**
-     * @return class-string<static>
-     */
     public static function resolve(string $state): string
     {
         $resolved = static::resolveStateClass($state);

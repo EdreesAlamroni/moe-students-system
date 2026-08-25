@@ -51,14 +51,6 @@ trait ModelStateUtilities
             ->values();
     }
 
-    /**
-     * @return array{
-     *     id: string,
-     *     name: string,
-     *     uiClasses: string,
-     *     action: string|null
-     * }|null
-     */
     protected function getStateOption(string $column, string $state): ?array
     {
         $stateClass = $this->getStateClassFor($column);
@@ -72,9 +64,6 @@ trait ModelStateUtilities
         return $instance instanceof ModelState ? $instance->toArray() : null;
     }
 
-    /**
-     * @return class-string<State>|null
-     */
     protected function getStateClassFor(string $column): ?string
     {
         $cast = $this->getCasts()[$column] ?? null;

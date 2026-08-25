@@ -18,9 +18,6 @@ class DistributeBooksToStudents
      *
      * Requires warehouse confirmation for the grade level. Records only students who are
      * enrolled in the school and have not already received books this year.
-     *
-     * @param  array<int, int>  $studentIds
-     * @return int Number of students marked as having received books.
      */
     public function execute(int $schoolPeriodId, int $gradeLevelId, array $studentIds, ?int $classroomId = null): int
     {

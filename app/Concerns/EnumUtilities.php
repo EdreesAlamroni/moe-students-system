@@ -31,9 +31,6 @@ trait EnumUtilities
         return $this->label();
     }
 
-    /**
-     * @return array<string, string|int>
-     */
     public function toOption(string $idKey = 'id', string $nameKey = 'name'): array
     {
         return [
@@ -42,9 +39,6 @@ trait EnumUtilities
         ];
     }
 
-    /**
-     * @return array{id: string|int, name: string, key: string}
-     */
     public function toArray(): array
     {
         return [
@@ -54,9 +48,6 @@ trait EnumUtilities
         ];
     }
 
-    /**
-     * @return Collection<int, array<string, string|int>>
-     */
     public static function options(string $idKey = 'id', string $nameKey = 'name'): Collection
     {
         return collect(self::cases())->map(function (self $case) use ($idKey, $nameKey): array {
@@ -64,25 +55,16 @@ trait EnumUtilities
         });
     }
 
-    /**
-     * @return list<array<string, string|int>>
-     */
     public static function optionsArray(string $idKey = 'id', string $nameKey = 'name'): array
     {
         return self::options($idKey, $nameKey)->values()->all();
     }
 
-    /**
-     * @return list<string|int>
-     */
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
     }
 
-    /**
-     * @return array{id: string|int, name: string, key: string}|array{}
-     */
     public static function toArrayFor(self|string|int $case): array
     {
         if (is_string($case) || is_int($case)) {

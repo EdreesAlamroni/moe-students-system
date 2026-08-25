@@ -14,12 +14,6 @@ use Illuminate\Validation\ValidationException;
 
 class ResetClassroomDistribution
 {
-    /**
-     * @return array{
-     *     has_distribution_data: bool,
-     *     eligible_grade_levels: list<array{id: int, name: string}>,
-     * }
-     */
     public function summary(School $school): array
     {
         $currentAcademicYearId = AcademicYear::currentId();

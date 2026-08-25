@@ -11,9 +11,12 @@ use Spatie\ModelStates\StateConfig;
  */
 abstract class UserState extends ModelState
 {
+    abstract public function getUiClasses(): string;
+
     public static function config(): StateConfig
     {
         return parent::config()
+            ->registerState([Activated::class, Deactivated::class])
             ->default(Activated::class)
             ->allowTransition(Activated::class, Deactivated::class)
             ->allowTransition(Deactivated::class, Activated::class);

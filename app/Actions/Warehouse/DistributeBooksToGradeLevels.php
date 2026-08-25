@@ -16,9 +16,6 @@ class DistributeBooksToGradeLevels
      *
      * Creates one distribution record per grade level for the current academic year.
      * Grade levels that have already been confirmed are skipped.
-     *
-     * @param  array<int, int>  $gradeLevelIds
-     * @return int Number of grade levels confirmed as having received books.
      */
     public function execute(int $monitorId, int $schoolPeriodId, int $warehouseId, array $gradeLevelIds): int
     {

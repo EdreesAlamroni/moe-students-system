@@ -11,9 +11,12 @@ use Spatie\ModelStates\StateConfig;
  */
 abstract class UserRequestState extends ModelState
 {
+    abstract public function getUiClasses(): string;
+
     public static function config(): StateConfig
     {
         return parent::config()
+            ->registerState([Approved::class, Rejected::class, Pending::class])
             ->default(Pending::class)
             ->allowTransition(Pending::class, Approved::class)
             ->allowTransition(Pending::class, Rejected::class)
