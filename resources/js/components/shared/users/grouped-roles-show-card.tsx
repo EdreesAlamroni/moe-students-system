@@ -35,7 +35,7 @@ export default function GroupedRolesShowCard({
     return (
         <section>
             <Card>
-                <CardHeader className="border-b">
+                <CardHeader>
                     <CardTitle>
                         <ShieldIcon />
                         <span>الأدوار والصلاحيات</span>

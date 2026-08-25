@@ -72,7 +72,7 @@ export default function Show({ classroom, canViewSchedule, canAny, can }: PagePr
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات الفصل الدراسي</span>

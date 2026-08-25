@@ -115,6 +115,10 @@ class StudentController extends Controller
 
         flash_success('create');
 
+        if ($request->boolean('create_another')) {
+            return Redirect::route('school.students.create');
+        }
+
         return Redirect::route('school.students.show', ['student' => $student]);
     }
 

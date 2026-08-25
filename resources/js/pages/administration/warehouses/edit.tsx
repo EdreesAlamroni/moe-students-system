@@ -7,7 +7,7 @@ import { latitudeInputConstraints, longitudeInputConstraints } from "@/lib/input
 import type { EducationMonitor, Warehouse } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import { Card, CardFormContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/structure/card";
+import { Card, CardFormContent, CardDescription, CardTitle, CardFormFooter, CardHeader } from "@/components/ui/structure/card";
 import { FormLayout } from "@/components/ui/structure/form-layout";
 
 import RequiredFieldsNote from "@/components/ui/display/required-fields-note";
@@ -68,7 +68,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
 
                             <section>
                                 <Card>
-                                    <CardHeader className="border-b">
+                                    <CardHeader>
                                         <CardTitle>تعديل بيانات المخزن</CardTitle>
                                         <CardDescription>
                                             <RequiredFieldsNote />
@@ -247,7 +247,8 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                             )}
                                         </div>
                                     </CardFormContent>
-                                    <CardFooter className="justify-end gap-x-4 border-t">
+
+                                    <CardFormFooter>
                                         <Button variant="outline" className="flex items-center gap-x-2" asChild>
                                             <Link href={show.url({ warehouse: warehouse })}>
                                                 <ReplyIcon />
@@ -258,7 +259,7 @@ export default function Edit({ warehouse, monitors }: PageProps) {
                                         <UpdateButton
                                             processing={processing}
                                         />
-                                    </CardFooter>
+                                    </CardFormFooter>
                                 </Card>
                             </section>
                         </FormLayout>

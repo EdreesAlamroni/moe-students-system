@@ -43,7 +43,7 @@ export default function AcademicRecordStudentOverview({
 
     return (
         <Card>
-            <CardHeader className="border-b">
+            <CardHeader>
                 <CardTitle>
                     <NotepadTextIcon />
                     <span>عرض بيانات الطالب</span>

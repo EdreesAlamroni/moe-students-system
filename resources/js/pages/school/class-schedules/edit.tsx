@@ -4,7 +4,7 @@ import { Form, Head, Link } from '@inertiajs/react';
 
 import type { ClassScheduleGrid, Enum, Subject } from '@/types';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/structure/card';
+import { Card, CardContent, CardDescription, CardFormFooter, CardHeader, CardTitle } from '@/components/ui/structure/card';
 import MainContainer from '@/components/ui/structure/main-container';
 import { FormLayout } from '@/components/ui/structure/form-layout';
 
@@ -71,7 +71,7 @@ export default function Edit({ schedule, subjects, days }: PageProps) {
 
                             <section>
                                 <Card className="gap-0">
-                                    <CardHeader className="border-b">
+                                    <CardHeader>
                                         <CardTitle>
                                             <CalendarDaysIcon />
                                             <span>تعديل الجدول الدراسي — {classroomName}</span>
@@ -118,7 +118,7 @@ export default function Edit({ schedule, subjects, days }: PageProps) {
                                         />
                                     </CardContent>
 
-                                    <CardFooter className="justify-end gap-x-4 border-t">
+                                    <CardFormFooter>
                                         <Button variant="outline" className="flex items-center gap-x-2" asChild>
                                             <Link href={show.url({ classroom: schedule.classroom })}>
                                                 <ReplyIcon />
@@ -127,7 +127,7 @@ export default function Edit({ schedule, subjects, days }: PageProps) {
                                         </Button>
 
                                         <UpdateButton processing={processing} disabled={!canEdit || processing} />
-                                    </CardFooter>
+                                    </CardFormFooter>
                                 </Card>
                             </section>
                         </FormLayout>

@@ -27,6 +27,21 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
             data-slot="card-header"
             className={cn(
                 "group/card-header @container/card-header grid auto-rows-min items-start gap-1.5 rounded-none px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+                "border-b",
+                className,
+            )}
+            {...props}
+        />
+    )
+}
+
+function CardFormHeader({ className, ...props }: React.ComponentProps<"div">) {
+    return (
+        <div
+            data-slot="card-header"
+            className={cn(
+                "group/card-header @container/card-header grid auto-rows-min items-start gap-1.5 rounded-none px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+                "border-b",
                 className
             )}
             {...props}
@@ -121,7 +136,7 @@ function CardFormFooter({ className, ...props }: React.ComponentProps<"div">) {
             data-slot="card-form-footer"
             className={cn(
                 "flex items-center px-(--card-spacing) [.border-t]:pt-(--card-spacing)",
-                "justify-end gap-x-4 border-t",
+                "flex-wrap justify-end gap-x-4 gap-y-2 border-t",
                 className
             )}
             {...props}
@@ -132,6 +147,7 @@ function CardFormFooter({ className, ...props }: React.ComponentProps<"div">) {
 export {
     Card,
     CardHeader,
+    CardFormHeader,
     CardFooter,
     CardTitle,
     CardAction,

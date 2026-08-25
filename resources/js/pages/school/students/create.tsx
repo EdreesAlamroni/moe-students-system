@@ -7,7 +7,7 @@ import { decimalInputConstraints, libyanNationalIdInputConstraints, passportNumb
 import type { Enum, GradeLevel, Nationality } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
+import { Card, CardDescription, CardFormContent, CardFormFooter, CardHeader, CardTitle } from "@/components/ui/structure/card";
 import { FormLayout } from "@/components/ui/structure/form-layout";
 
 import RequiredFieldsNote from "@/components/ui/display/required-fields-note";
@@ -37,6 +37,7 @@ type PageProps = {
 };
 
 export default function Create({ gradeLevels, registrationStatuses, nationalities, libyanNationalityId }: PageProps) {
+    const [formKey, setFormKey] = React.useState(0);
     const [selectedNationalityId, setSelectedNationalityId] = React.useState<string>(libyanNationalityId.toString());
 
     const isLibyanNationalitySelected = selectedNationalityId === libyanNationalityId.toString();
@@ -47,7 +48,13 @@ export default function Create({ gradeLevels, registrationStatuses, nationalitie
 
             <MainContainer showAcademicYearNotice>
                 <Form
+                    key={formKey}
                     {...store.form()}
+                    resetOnSuccess
+                    onSuccess={() => {
+                        setFormKey((key) => key + 1);
+                        setSelectedNationalityId(libyanNationalityId.toString());
+                    }}
                     disableWhileProcessing
                 >
                     {({ processing, errors }) => (
@@ -56,7 +63,7 @@ export default function Create({ gradeLevels, registrationStatuses, nationalitie
 
                             <section>
                                 <Card>
-                                    <CardHeader className="border-b">
+                                    <CardHeader>
                                         <CardTitle>إضافة طالب جديد</CardTitle>
                                         <CardDescription>
                                             <RequiredFieldsNote />
@@ -434,7 +441,7 @@ export default function Create({ gradeLevels, registrationStatuses, nationalitie
                                         </div>
                                     </CardFormContent>
 
-                                    <CardFooter className="justify-end gap-x-4 border-t">
+                                    <CardFormFooter>
                                         <Button variant="outline" className="flex items-center gap-x-2" asChild>
                                             <Link href={index.url()}>
                                                 <ReplyIcon />
@@ -443,9 +450,17 @@ export default function Create({ gradeLevels, registrationStatuses, nationalitie
                                         </Button>
 
                                         <CreateButton
+                                            name="create_another"
+                                            value="true"
+                                            title="حفظ وإضافة طالب آخر"
+                                            variant="outline"
                                             processing={processing}
                                         />
-                                    </CardFooter>
+
+                                        <CreateButton
+                                            processing={processing}
+                                        />
+                                    </CardFormFooter>
                                 </Card>
                             </section>
                         </FormLayout>

@@ -61,7 +61,7 @@ export function StatCard({
                 className,
             )}
         >
-            <CardHeader className="gap-2">
+            <CardHeader className="gap-2 border-b-0">
                 <CardDescription className="line-clamp-1 text-sm font-medium tracking-wide uppercase select-none">
                     {label}
                 </CardDescription>

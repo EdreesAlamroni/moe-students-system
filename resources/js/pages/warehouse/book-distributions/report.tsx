@@ -137,7 +137,7 @@ export default function ReportPage({ monitors, schools, statistics: gradeLevelSt
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <Building2Icon />
                                 <span>اختيار المؤسسة التعليمية</span>

@@ -68,7 +68,7 @@ export default function Show({ office, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات مكتب الخدمات التعليمية</span>

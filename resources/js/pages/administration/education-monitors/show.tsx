@@ -85,7 +85,7 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات المُراقبة</span>
@@ -159,7 +159,7 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <BuildingIcon />
                                 <div className="flex items-center gap-x-1.5">

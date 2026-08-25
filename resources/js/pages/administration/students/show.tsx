@@ -73,7 +73,7 @@ export default function Show({ student, transfers, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات الطالب</span>
@@ -171,7 +171,7 @@ export default function Show({ student, transfers, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ArrowRightLeftIcon />
                                 <div className="flex items-center gap-x-1.5">

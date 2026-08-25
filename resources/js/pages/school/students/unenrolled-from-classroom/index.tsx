@@ -66,7 +66,7 @@ export default function Index({ students, nationalities, registrationStatuses, g
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -218,7 +218,7 @@ export default function Index({ students, nationalities, registrationStatuses, g
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>الطلبة</span>

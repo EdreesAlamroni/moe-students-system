@@ -78,7 +78,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -152,7 +152,7 @@ export default function Index({ offices, monitors, filter, canAny, can }: PagePr
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>مكاتب الخدمات التعليمية</span>

@@ -77,7 +77,7 @@ export default function Show({ classroomName, schedule, subjects, days, canAny, 
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <CalendarDaysIcon />
                                 <span>الجدول الدراسي — {classroomName}</span>

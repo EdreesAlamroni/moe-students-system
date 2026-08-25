@@ -2,19 +2,15 @@ import React from 'react';
 
 import { Head } from '@inertiajs/react';
 
-import type { EducationMonitor, EducationServicesOffice, Enum, GradeLevel } from '@/types';
+import type { EducationMonitor, Enum, GradeLevel } from '@/types';
 
 import { AdministrationOrganizationFields } from '@/components/shared/schools/administration-organization-fields';
 import { CreateSchoolForm } from '@/components/shared/schools/create-school-form';
 
 import { index, create, store } from '@/routes/administration/schools';
 
-type MonitorWithOffices = Pick<EducationMonitor, 'id' | 'name'> & {
-    offices: Pick<EducationServicesOffice, 'id' | 'name'>[];
-};
-
 type PageProps = {
-    monitors: MonitorWithOffices[];
+    monitors: EducationMonitor[];
     types: Enum[];
     academicPeriods: Enum[];
     studentsGender: Enum[];

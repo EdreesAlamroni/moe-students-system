@@ -57,7 +57,7 @@ export default function Show({ subject, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات المقرر الدراسي</span>

@@ -90,7 +90,7 @@ export default function Show({ user, roles, availableRequestStates, availableSta
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات المُستخدم</span>

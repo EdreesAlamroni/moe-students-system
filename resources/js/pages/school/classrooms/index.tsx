@@ -70,7 +70,7 @@ export default function Index({ classrooms, gradeLevels, classroomNames, filter,
             <section>
                 <Form {...index.form()}>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <FunnelIcon />
                                 <div className="flex items-center gap-x-1.5">
@@ -157,7 +157,7 @@ export default function Index({ classrooms, gradeLevels, classroomNames, filter,
 
             <section>
                 <Card>
-                    <CardHeader className="border-b">
+                    <CardHeader>
                         <CardTitle>
                             <ListIcon />
                             <span>الفصول الدراسية</span>

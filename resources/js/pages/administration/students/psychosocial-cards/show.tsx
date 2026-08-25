@@ -47,7 +47,7 @@ export default function Show({ student, psychosocialCard }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <BookUserIcon />
                                 <span>عرض بيانات البطاقة الإجتماعية والنفسية</span>
@@ -391,7 +391,7 @@ function StudentDetailsSection({ student }: { student: Student }) {
     return (
         <section>
             <Card>
-                <CardHeader className="border-b">
+                <CardHeader>
                     <CardTitle>
                         <NotepadTextIcon />
                         <span>عرض بيانات الطالب</span>

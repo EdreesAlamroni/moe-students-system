@@ -170,7 +170,7 @@ export default function Index({
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <FilterIcon />
                                 <span>اختيار الصف الدراسي</span>
@@ -317,7 +317,7 @@ export default function Index({
                                 )}
 
                                 <Card>
-                                    <CardHeader className="border-b">
+                                    <CardHeader>
                                         <CardTitle>
                                             <FunnelIcon />
                                             <div className="flex items-center gap-x-1.5">
@@ -533,7 +533,7 @@ function StudentsSectionSkeleton() {
         <>
             <section aria-busy="true" aria-label="جارٍ تحميل حقول البحث">
                 <Card>
-                    <CardHeader className="border-b">
+                    <CardHeader>
                         <Skeleton className="h-5 w-40" />
                     </CardHeader>
                     <CardContent>
@@ -551,7 +551,7 @@ function StudentsSectionSkeleton() {
 
             <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلبة">
                 <Card>
-                    <CardHeader className="border-b">
+                    <CardHeader>
                         <Skeleton className="h-5 w-24" />
                     </CardHeader>
                     <CardContent>

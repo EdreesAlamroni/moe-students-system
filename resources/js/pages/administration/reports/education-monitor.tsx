@@ -62,7 +62,7 @@ export default function Index({ monitors, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>تقرير المُراقبات</span>

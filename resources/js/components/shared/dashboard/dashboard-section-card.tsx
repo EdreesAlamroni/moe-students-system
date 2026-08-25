@@ -54,7 +54,7 @@ export default function DashboardSectionCard({
 
     return (
         <Card className={className}>
-            <CardHeader className="border-b">
+            <CardHeader>
                 <CardTitle>
                     <Icon />
                     <span>{title}</span>

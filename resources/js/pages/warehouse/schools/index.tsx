@@ -59,7 +59,7 @@ export default function Index({ schools, monitors, types, filter }: PageProps) {
                         disableWhileProcessing
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -156,7 +156,7 @@ export default function Index({ schools, monitors, types, filter }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>المدارس</span>

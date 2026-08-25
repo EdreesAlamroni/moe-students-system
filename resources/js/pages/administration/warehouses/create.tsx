@@ -7,7 +7,7 @@ import { latitudeInputConstraints, longitudeInputConstraints } from "@/lib/input
 import type { EducationMonitor } from "@/types";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import { Card, CardFormContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/structure/card";
+import { Card, CardFormContent, CardDescription, CardHeader, CardTitle, CardFormFooter } from "@/components/ui/structure/card";
 import { FormLayout } from "@/components/ui/structure/form-layout";
 
 import RequiredFieldsNote from "@/components/ui/display/required-fields-note";
@@ -66,7 +66,7 @@ export default function Create({ monitors }: PageProps) {
 
                             <section>
                                 <Card>
-                                    <CardHeader className="border-b">
+                                    <CardHeader>
                                         <CardTitle>إضافة مخزن جديد</CardTitle>
                                         <CardDescription>
                                             <RequiredFieldsNote />
@@ -230,7 +230,8 @@ export default function Create({ monitors }: PageProps) {
                                             )}
                                         </div>
                                     </CardFormContent>
-                                    <CardFooter className="justify-end gap-x-4 border-t">
+
+                                    <CardFormFooter>
                                         <Button variant="outline" className="flex items-center gap-x-2" asChild>
                                             <Link href={index.url()}>
                                                 <ReplyIcon />
@@ -241,7 +242,7 @@ export default function Create({ monitors }: PageProps) {
                                         <CreateButton
                                             processing={processing}
                                         />
-                                    </CardFooter>
+                                    </CardFormFooter>
                                 </Card>
                             </section>
                         </FormLayout>

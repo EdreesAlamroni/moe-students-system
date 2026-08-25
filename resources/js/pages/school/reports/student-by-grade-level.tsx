@@ -101,7 +101,7 @@ export default function Index({
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -275,7 +275,7 @@ export default function Index({
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>الطلبة</span>

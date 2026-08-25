@@ -259,6 +259,25 @@ test('authenticated school users can store a student with grade level enrollment
     $response->assertRedirect(route('school.students.show', ['student' => $student]));
 });
 
+test('store redirects to the create page when create another is requested', function () {
+    ['schoolPeriod' => $schoolPeriod, 'gradeLevel' => $gradeLevel, 'user' => $user] = createSchoolStudentContext();
+
+    $response = $this->actingAs($user, 'school')
+        ->post(route('school.students.store'), schoolStudentStorePayload($gradeLevel, [
+            'student_first_name' => 'CreateAnother',
+            'create_another' => true,
+        ]));
+
+    $student = Student::query()->where('first_name', '=', 'CreateAnother')->first();
+
+    expect($student)->not->toBeNull()
+        ->and($student->school_period_id)->toBe($schoolPeriod->id)
+        ->and($student->enrollment)->not->toBeNull()
+        ->and($student->enrollment->grade_level_id)->toBe($gradeLevel->id);
+
+    $response->assertRedirect(route('school.students.create'));
+});
+
 test('store validates required fields', function () {
     ['user' => $user] = createSchoolStudentContext();
 

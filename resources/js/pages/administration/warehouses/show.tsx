@@ -84,7 +84,7 @@ export default function Show({ warehouse, monitors, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات المخزن</span>
@@ -139,7 +139,7 @@ export default function Show({ warehouse, monitors, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <LandmarkIcon />
                                 <span>المُراقبات</span>

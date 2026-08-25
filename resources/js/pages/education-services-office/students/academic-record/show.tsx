@@ -77,7 +77,7 @@ export default function Show({
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <FileTextIcon />
                                 <span>السجل الدراسي</span>

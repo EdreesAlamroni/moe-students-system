@@ -115,7 +115,7 @@ export default function StatisticsPage({ monitors, schools, statistics: gradeLev
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <Building2Icon />
                                 <span>اختيار المؤسسة التعليمية</span>

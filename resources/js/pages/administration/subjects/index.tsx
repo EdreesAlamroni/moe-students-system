@@ -78,7 +78,7 @@ export default function Index({ subjects, gradeLevels, filter, canAny, can }: Pa
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -146,7 +146,7 @@ export default function Index({ subjects, gradeLevels, filter, canAny, can }: Pa
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>المقررات الدراسية</span>

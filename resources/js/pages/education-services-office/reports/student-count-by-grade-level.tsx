@@ -66,7 +66,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -126,7 +126,7 @@ export default function Index({ gradeLevels, educationalStages, filter, canAny, 
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>إحصائية الطلبة حسب الصفوف الدراسية</span>

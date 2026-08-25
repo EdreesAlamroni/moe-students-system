@@ -68,7 +68,7 @@ export default function AcademicRecordGradeLevelCard({
                     !isLast && "mb-6",
                 )}
             >
-                <CardHeader className="border-b">
+                <CardHeader>
                     <div className="flex items-center justify-between gap-3">
                         <CardTitle className="text-sm font-medium">
                             {record.grade_level.name}

@@ -73,7 +73,7 @@ export default function Show({ school, gradeLevels, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات المدرسة</span>
@@ -140,7 +140,7 @@ export default function Show({ school, gradeLevels, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <CalendarRangeIcon />
                                 <div className="flex items-center gap-x-1.5">
@@ -190,7 +190,7 @@ export default function Show({ school, gradeLevels, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <GraduationCapIcon />
                                 <div className="flex items-center gap-x-1.5">

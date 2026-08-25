@@ -7,7 +7,7 @@ import { passportNumberInputConstraints, libyanNationalIdInputConstraints, decim
 import type { Student } from '@/types';
 
 import MainContainer from '@/components/ui/structure/main-container';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/structure/card';
+import { Card, CardContent, CardFooter, CardFormFooter, CardHeader, CardTitle } from '@/components/ui/structure/card';
 import { FormLayout } from '@/components/ui/structure/form-layout';
 
 import { Table, TableBody, TableCell, TableCellActions, TableCellNullableValue, TableHead, TableHeader, TableRow } from '@/components/ui/display/table';
@@ -168,12 +168,13 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                 <section>
                     <Form {...resolveCreateForm(context)}>
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <span>بحث عن طلبة مُنتقلين</span>
                                 </CardTitle>
                             </CardHeader>
+
                             <CardContent>
                                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                                     <Input
@@ -218,6 +219,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                                     />
                                 </div>
                             </CardContent>
+
                             <CardFooter className="border-t">
                                 <div className="flex items-center gap-x-3">
                                     <Button type="submit" variant="default">
@@ -240,7 +242,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                     <ValidationErrors errors={form.errors} />
 
                     <Card className={students.length > 0 ? 'gap-0' : ''}>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle className="min-w-0 flex-1">
                                 <ListIcon />
                                 <div className="flex min-w-0 flex-1 items-center justify-between gap-x-4">
@@ -370,7 +372,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                             </CardContent>
                         )}
 
-                        <CardFooter className="justify-end gap-x-4 border-t">
+                        <CardFormFooter>
                             <Button
                                 variant="outline"
                                 className="flex items-center gap-x-2"
@@ -417,7 +419,7 @@ export default function AddTransferredStudent({ students, filter, context }: Add
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
-                        </CardFooter>
+                        </CardFormFooter>
                     </Card>
                 </section>
             </FormLayout>

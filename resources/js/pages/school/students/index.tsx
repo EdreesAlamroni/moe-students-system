@@ -97,7 +97,7 @@ export default function Index({ students, nationalities, registrationStatuses, f
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -222,7 +222,7 @@ export default function Index({ students, nationalities, registrationStatuses, f
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>الطلبة</span>

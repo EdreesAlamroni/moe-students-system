@@ -78,7 +78,7 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
                         disableWhileProcessing
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -173,7 +173,7 @@ export default function Index({ schools, offices, types, filter, canAny, can }: 
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>المدارس</span>

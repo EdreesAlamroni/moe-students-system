@@ -187,7 +187,7 @@ export default function Edit({
 
                             <section>
                                 <Card>
-                                    <CardHeader className="border-b">
+                                    <CardHeader>
                                         <CardTitle>
                                             <BookUserIcon />
                                             <span>تعديل بيانات البطاقة الإجتماعية والنفسية</span>
@@ -1293,7 +1293,7 @@ function StudentDetailsSection({ student }: { student: Student }) {
     return (
         <section>
             <Card>
-                <CardHeader className="border-b">
+                <CardHeader>
                     <CardTitle>
                         <NotepadTextIcon />
                         <span>عرض بيانات الطالب</span>

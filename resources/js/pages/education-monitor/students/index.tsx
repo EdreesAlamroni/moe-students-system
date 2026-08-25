@@ -68,7 +68,7 @@ function StudentsSectionSkeleton() {
         <>
             <section aria-busy="true" aria-label="جارٍ تحميل حقول البحث">
                 <Card>
-                    <CardHeader className="border-b">
+                    <CardHeader>
                         <Skeleton className="h-5 w-40" />
                     </CardHeader>
                     <CardContent>
@@ -89,7 +89,7 @@ function StudentsSectionSkeleton() {
 
             <section aria-busy="true" aria-label="جارٍ تحميل قائمة الطلبة">
                 <Card>
-                    <CardHeader className="border-b">
+                    <CardHeader>
                         <Skeleton className="h-5 w-24" />
                     </CardHeader>
                     <CardContent>
@@ -174,7 +174,7 @@ export default function Index({
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <Building2Icon />
                                 <span>اختيار المؤسسة التعليمية</span>
@@ -264,7 +264,7 @@ export default function Index({
                                 <input type="hidden" name="school_period_id" value={activeSchoolId} />
 
                                 <Card>
-                                    <CardHeader className="border-b">
+                                    <CardHeader>
                                         <CardTitle>
                                             <FunnelIcon />
                                             <div className="flex items-center gap-x-1.5">
@@ -396,7 +396,7 @@ export default function Index({
 
                         <section>
                             <Card>
-                                <CardHeader className="border-b">
+                                <CardHeader>
                                     <CardTitle>
                                         <ListIcon />
                                         <span>الطلبة</span>

@@ -149,7 +149,7 @@ export default function Index({ monitors, schools, gradeLevels, selected, can }:
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <Building2Icon />
                                 <span>اختيار المؤسسة التعليمية</span>

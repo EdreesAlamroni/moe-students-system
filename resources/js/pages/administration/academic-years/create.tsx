@@ -3,7 +3,7 @@ import React from 'react'
 import { Form, Head, Link } from "@inertiajs/react";
 
 import MainContainer from "@/components/ui/structure/main-container";
-import { Card, CardFormContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/structure/card";
+import { Card, CardFormContent, CardDescription, CardTitle, CardFormFooter, CardHeader } from "@/components/ui/structure/card";
 import { FormLayout } from "@/components/ui/structure/form-layout";
 
 import RequiredFieldsNote from "@/components/ui/display/required-fields-note";
@@ -47,7 +47,7 @@ export default function Create({ name, minStartDate, maxEndDate }: PageProps) {
 
                             <section>
                                 <Card>
-                                    <CardHeader className="border-b">
+                                    <CardHeader>
                                         <CardTitle>إضافة سنة دراسية</CardTitle>
                                         <CardDescription>
                                             <RequiredFieldsNote />
@@ -106,7 +106,7 @@ export default function Create({ name, minStartDate, maxEndDate }: PageProps) {
                                             </Field>
                                         </div>
                                     </CardFormContent>
-                                    <CardFooter className="justify-end gap-x-4 border-t">
+                                    <CardFormFooter>
                                         <Button variant="outline" className="flex items-center gap-x-2" asChild>
                                             <Link href={index.url()}>
                                                 <ReplyIcon />
@@ -117,7 +117,7 @@ export default function Create({ name, minStartDate, maxEndDate }: PageProps) {
                                         <CreateButton
                                             processing={processing}
                                         />
-                                    </CardFooter>
+                                    </CardFormFooter>
                                 </Card>
                             </section>
                         </FormLayout>

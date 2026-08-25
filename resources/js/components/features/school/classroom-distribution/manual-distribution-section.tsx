@@ -184,7 +184,7 @@ export default function ManualDistributionSection({
     return (
         <section>
             <Card>
-                <CardHeader className="border-b">
+                <CardHeader>
                     <CardTitle>
                         <UserPlusIcon />
                         <span>توزيع يدوي</span>

@@ -96,7 +96,7 @@ export default function Index({ classPeriods, academicPeriods, filter, canAny, c
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -164,7 +164,7 @@ export default function Index({ classPeriods, academicPeriods, filter, canAny, c
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>الحصص الدراسية</span>

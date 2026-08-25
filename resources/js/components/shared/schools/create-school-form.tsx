@@ -6,7 +6,7 @@ import type { FormDataErrors } from '@inertiajs/core';
 import type { CreateSchoolFormData, Enum, GradeLevel } from '@/types';
 
 import MainContainer from '@/components/ui/structure/main-container';
-import { Card, CardDescription, CardFooter, CardFormContent, CardHeader, CardTitle } from "@/components/ui/structure/card";
+import { Card, CardDescription, CardFormFooter, CardFormContent, CardTitle, CardHeader } from "@/components/ui/structure/card";
 import { FormLayout } from "@/components/ui/structure/form-layout";
 import { Separator } from "@/components/ui/structure/separator";
 
@@ -249,7 +249,7 @@ export function CreateSchoolForm({
 
                         <section>
                             <Card>
-                                <CardHeader className="border-b">
+                                <CardHeader>
                                     <CardTitle>إضافة مدرسة جديدة</CardTitle>
                                     <CardDescription>
                                         <RequiredFieldsNote />
@@ -778,7 +778,7 @@ export function CreateSchoolForm({
                                         )}
                                     </div>
                                 </CardFormContent>
-                                <CardFooter className="justify-end gap-x-4 border-t">
+                                <CardFormFooter>
                                     <Button
                                         variant="outline"
                                         className="flex items-center gap-x-2"
@@ -793,7 +793,7 @@ export function CreateSchoolForm({
                                     <CreateButton
                                         processing={processing}
                                     />
-                                </CardFooter>
+                                </CardFormFooter>
                             </Card>
                         </section>
                     </FormLayout>

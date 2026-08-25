@@ -17,7 +17,7 @@ type InsightCardProps = {
 export default function InsightCard({ label, icon: Icon, isLoading, value, detail, extra }: InsightCardProps) {
     return (
         <Card size="sm">
-            <CardHeader className="gap-2">
+            <CardHeader className="gap-2 border-b-0">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <Icon className="size-4 shrink-0 stroke-[1.5]" aria-hidden />
                     <span className="line-clamp-1 text-xs font-medium tracking-wide uppercase select-none">

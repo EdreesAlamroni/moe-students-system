@@ -152,7 +152,7 @@ export default function RandomDistributionSection({
     return (
         <section>
             <Card>
-                <CardHeader className="border-b">
+                <CardHeader>
                     <CardTitle>
                         <ShuffleIcon />
                         <span>توزيع عشوائي حسب السعة</span>

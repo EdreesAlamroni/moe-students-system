@@ -74,7 +74,7 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <FunnelIcon />
                                     <div className="flex items-center gap-x-1.5">
@@ -144,7 +144,7 @@ export default function Index({ schools, types, filter, canAny, can }: PageProps
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <ListIcon />
                                 <span>تقرير المدارس</span>

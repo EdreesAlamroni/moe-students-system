@@ -81,7 +81,7 @@ export default function FinalizeSection({
     return (
         <section>
             <Card className="border-dashed">
-                <CardHeader className="border-b">
+                <CardHeader>
                     <CardTitle>
                         <CheckCircle2Icon />
                         <span>إتمام التوزيع للسنة الدراسية الحالية</span>

@@ -36,7 +36,7 @@ export default function GradeLevelSelector({
     return (
         <section>
             <Card>
-                <CardHeader className="border-b">
+                <CardHeader>
                     <CardTitle>
                         <GraduationCapIcon />
                         <span>الصف الدراسي</span>

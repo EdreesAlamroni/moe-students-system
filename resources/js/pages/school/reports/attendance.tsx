@@ -58,7 +58,7 @@ export default function Index({ classrooms, months, canAny, can }: PageProps) {
                         {...index.form()}
                     >
                         <Card>
-                            <CardHeader className="border-b">
+                            <CardHeader>
                                 <CardTitle>
                                     <SheetIcon />
                                     <span>تقرير الغياب</span>

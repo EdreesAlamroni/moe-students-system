@@ -54,7 +54,7 @@ export default function Show({ gradeLevel, canAny, can }: PageProps) {
 
                 <section>
                     <Card>
-                        <CardHeader className="border-b">
+                        <CardHeader>
                             <CardTitle>
                                 <NotepadTextIcon />
                                 <span>عرض بيانات الصف الدراسي</span>
