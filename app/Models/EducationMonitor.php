@@ -211,6 +211,11 @@ class EducationMonitor extends Model
             })->values();
     }
 
+    public function organizationUsers(): Collection
+    {
+        return $this->users()->orderBy('id')->get();
+    }
+
     public function syncGeneratedName(): void
     {
         if (blank($this->municipal_id)) {

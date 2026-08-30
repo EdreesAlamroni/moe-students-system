@@ -10,6 +10,7 @@ use App\Enums\SchoolEducationalStageEnum;
 use App\Enums\SchoolStudentsGender;
 use App\Enums\SchoolType;
 use App\Http\Controllers\Controller;
+use App\Http\Pipelines\School\CreateDefaultSchoolUsers;
 use App\Http\Pipelines\School\CreateEducationalStages;
 use App\Http\Pipelines\School\CreateGradeLevels;
 use App\Http\Pipelines\School\CreateSchoolRecords;
@@ -19,6 +20,7 @@ use App\Http\Resources\Administration\GradeLevelCollection;
 use App\Http\Resources\Administration\SchoolCollection;
 use App\Http\Resources\Administration\SchoolFormResource;
 use App\Http\Resources\Administration\SchoolResource;
+use App\Http\Resources\Shared\OrganizationUserResource;
 use App\Models\AcademicYear;
 use App\Models\EducationMonitor;
 use App\Models\GradeLevel;
@@ -120,6 +122,7 @@ class SchoolController extends Controller
                 ->send($request)
                 ->through([
                     CreateSchoolRecords::class,
+                    CreateDefaultSchoolUsers::class,
                     CreateEducationalStages::class,
                     CreateGradeLevels::class,
                 ])
@@ -177,6 +180,9 @@ class SchoolController extends Controller
             ),
             'gradeLevels' => ResourcePayloadBuilder::make(
                 GradeLevelCollection::make($gradeLevels),
+            ),
+            'users' => ResourcePayloadBuilder::collection(
+                OrganizationUserResource::collection($school->organizationUsers()),
             ),
             ...ModelAbilityMap::make($school, ['update', 'delete']),
         ]);

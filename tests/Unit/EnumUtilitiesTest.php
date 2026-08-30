@@ -2,9 +2,6 @@
 
 use App\Enums\DayOfWeek;
 use App\Enums\UserRole;
-use Tests\TestCase;
-
-uses(TestCase::class);
 
 it('generates options with id and name keys by default', function () {
     $option = UserRole::MANAGER->toOption();

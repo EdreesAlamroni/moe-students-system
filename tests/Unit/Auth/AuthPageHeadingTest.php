@@ -2,9 +2,6 @@
 
 use App\Enums\AuthPage;
 use App\Support\Auth\DashboardAuth;
-use Tests\TestCase;
-
-uses(TestCase::class);
 
 test('auth page heading interpolates the dashboard label', function (DashboardAuth $dashboard, AuthPage $page, string $expectedTitleFragment) {
     $heading = $dashboard->authPageHeading($page);

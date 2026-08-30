@@ -3,6 +3,7 @@ import React from 'react'
 import { Head, Link } from "@inertiajs/react";
 
 import type { CanPermissions, Enum, GradeLevel, School } from "@/types";
+import type { OrganizationUser } from "@/types/auth";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import ActionsSection from "@/components/ui/structure/actions-section";
@@ -19,6 +20,8 @@ import { Button } from "@/components/ui/actions/button";
 import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action";
 
 import ResetClassroomDistributionAction from "@/components/features/education-monitor/schools/reset-classroom-distribution";
+
+import OrganizationUsersSection from "@/components/shared/users/organization-users-section";
 
 import { CalendarRangeIcon, GraduationCapIcon, PresentationIcon, NotepadTextIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
@@ -38,9 +41,10 @@ type PageProps = {
     classroomDistributionReset: ClassroomDistributionResetProps;
     canAny: boolean;
     can: CanPermissions;
+    users: OrganizationUser[];
 }
 
-export default function Show({ school, gradeLevels, classroomDistributionReset, canAny, can }: PageProps) {
+export default function Show({ school, gradeLevels, classroomDistributionReset, canAny, can, users }: PageProps) {
     const isPrivate = school.is_private === true;
     const hasOffice = !!school.office;
     const periods = school.periods ?? [];
@@ -156,6 +160,8 @@ export default function Show({ school, gradeLevels, classroomDistributionReset, 
                         </CardContent>
                     </Card>
                 </section>
+
+                <OrganizationUsersSection users={users} />
 
                 <section>
                     <Card>

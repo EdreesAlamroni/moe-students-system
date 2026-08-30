@@ -43,6 +43,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property UserRequestState $request_state
  * @property bool $must_change_password
  * @property string $password
+ * @property string|null $initial_password
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -50,8 +51,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read Warehouse|EducationMonitor|EducationServicesOffice|SchoolPeriod|null $organization
  * @property-read EloquentCollection<int, SchoolPeriod> $schoolPeriods
  */
-#[Guarded(['id'])]
-#[Hidden(['password', 'remember_token'])]
+#[Guarded(['id', 'initial_password'])]
+#[Hidden(['password', 'initial_password', 'remember_token'])]
 
 class User extends Authenticatable
 {
@@ -68,7 +69,17 @@ class User extends Authenticatable
             'request_state' => UserRequestState::class,
             'must_change_password' => 'boolean',
             'password' => 'hashed',
+            'initial_password' => 'encrypted',
         ];
+    }
+
+    public static function booted(): void
+    {
+        static::updating(function (self $user): void {
+            if ($user->isDirty('password')) {
+                $user->initial_password = null;
+            }
+        });
     }
 
     public function guardName(): string
@@ -210,6 +221,11 @@ class User extends Authenticatable
     public function isNotApproved(): bool
     {
         return ! $this->request_state->equals(Approved::class);
+    }
+
+    public function hasInitialPassword(): bool
+    {
+        return filled($this->initial_password);
     }
 
     public function hasOrganization(): bool

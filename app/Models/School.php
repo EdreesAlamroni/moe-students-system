@@ -369,6 +369,23 @@ class School extends Model
         return $this->type->isPrivate();
     }
 
+    public function organizationUsers(): Collection
+    {
+        $this->load([
+            'periods' => function ($query): void {
+                $query
+                    ->orderedByAcademicPeriod()
+                    ->with(['users' => function ($query): void {
+                        $query->orderBy('id');
+                    }]);
+            },
+        ]);
+
+        return $this->periods->flatMap(function (SchoolPeriod $period) {
+            return $period->users;
+        });
+    }
+
     /**
      * Grade levels the school can still add for the current academic year, limited to its
      * educational stages and excluding those assigned to any of its periods.

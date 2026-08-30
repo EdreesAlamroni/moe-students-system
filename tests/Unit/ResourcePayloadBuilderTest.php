@@ -5,12 +5,8 @@ use App\Http\Resources\Administration\UserCollection;
 use App\Models\Municipal;
 use App\Models\User;
 use App\Support\ResourcePayloadBuilder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Gate;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 it('merges resource data with additional attributes', function () {
     $user = User::factory()->make([

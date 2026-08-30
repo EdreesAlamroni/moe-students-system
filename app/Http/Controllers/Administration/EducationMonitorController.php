@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Administration;
 
+use App\Actions\User\CreateDefaultOrganizationUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\EducationMonitor\StoreRequest;
 use App\Http\Requests\Administration\EducationMonitor\UpdateRequest;
@@ -9,6 +10,7 @@ use App\Http\Resources\Administration\EducationMonitorCollection;
 use App\Http\Resources\Administration\EducationMonitorFormResource;
 use App\Http\Resources\Administration\EducationMonitorResource;
 use App\Http\Resources\Administration\EducationServicesOfficeCollection;
+use App\Http\Resources\Shared\OrganizationUserResource;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Models\Municipal;
@@ -16,6 +18,7 @@ use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -77,7 +80,13 @@ class EducationMonitorController extends Controller
     {
         Gate::authorize('create', EducationMonitor::class);
 
-        $monitor = EducationMonitor::create($request->getAttributes());
+        $monitor = DB::transaction(function () use ($request): EducationMonitor {
+            $monitor = EducationMonitor::create($request->getAttributes());
+
+            app(CreateDefaultOrganizationUser::class)->forEducationMonitor($monitor);
+
+            return $monitor;
+        });
 
         flash_success('create');
 
@@ -114,6 +123,9 @@ class EducationMonitorController extends Controller
                 EducationServicesOfficeCollection::make($offices),
                 ['view'],
                 $request,
+            ),
+            'users' => ResourcePayloadBuilder::collection(
+                OrganizationUserResource::collection($monitor->organizationUsers()),
             ),
             ...ModelAbilityMap::make($monitor, ['update', 'delete']),
         ]);

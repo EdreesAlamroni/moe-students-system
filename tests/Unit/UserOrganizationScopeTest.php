@@ -6,10 +6,6 @@ use App\Models\EducationServicesOffice;
 use App\Models\SchoolPeriod;
 use App\Models\User;
 use App\Models\Warehouse;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 it('fails closed when no user is authenticated', function () {
     expect(User::query()->forCurrentEducationMonitor()->toSql())->toContain('1 = 0')

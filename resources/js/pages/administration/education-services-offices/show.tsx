@@ -3,6 +3,7 @@ import React from 'react'
 import { Head, Link } from "@inertiajs/react";
 
 import type { CanPermissions, EducationServicesOffice } from "@/types";
+import type { OrganizationUser } from "@/types/auth";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import ActionsSection from "@/components/ui/structure/actions-section";
@@ -19,6 +20,8 @@ import { ConfirmDeleteAction } from "@/components/ui/actions/confirmation-action
 
 import { LocationShowMap } from "@/components/ui/maps/location-show-map";
 
+import OrganizationUsersSection from "@/components/shared/users/organization-users-section";
+
 import { NotepadTextIcon, SchoolIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
 import { destroy, edit, index, show } from "@/routes/administration/education-services-offices";
@@ -27,9 +30,10 @@ type PageProps = {
     office: EducationServicesOffice;
     canAny: boolean;
     can: CanPermissions;
+    users: OrganizationUser[];
 }
 
-export default function Show({ office, canAny, can }: PageProps) {
+export default function Show({ office, canAny, can, users }: PageProps) {
     return (
         <>
             <Head title="عرض بيانات مكتب الخدمات التعليمية" />
@@ -139,6 +143,8 @@ export default function Show({ office, canAny, can }: PageProps) {
                         </CardContent>
                     </Card>
                 </section>
+
+                <OrganizationUsersSection users={users} />
             </MainContainer>
         </>
     )

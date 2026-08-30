@@ -240,6 +240,11 @@ class EducationServicesOffice extends Model
             })->values();
     }
 
+    public function organizationUsers(): Collection
+    {
+        return $this->users()->orderBy('id')->get();
+    }
+
     /*
      * End: Custom Functions
      */

@@ -51,6 +51,14 @@ export type UserScope = {
     icon: string;
 };
 
+export type OrganizationUser = {
+    id: number;
+    name: string;
+    username: string;
+    initial_password: string | null;
+    academic_period_label?: string | null;
+};
+
 export type User = {
     id: number;
     uuid: string;

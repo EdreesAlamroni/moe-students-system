@@ -1,9 +1,5 @@
 <?php
 
-use Tests\TestCase;
-
-uses(TestCase::class);
-
 test('application helpers are available at runtime', function () {
     expect(function_exists('flash_success'))->toBeTrue()
         ->and(function_exists('flash_error'))->toBeTrue()

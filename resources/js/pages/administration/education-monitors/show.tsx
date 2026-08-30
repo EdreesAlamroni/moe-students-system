@@ -3,6 +3,7 @@ import React from 'react'
 import { Head, Link } from "@inertiajs/react";
 
 import type { CanPermissions, EducationMonitor, EducationServicesOffice, Paginated } from "@/types";
+import type { OrganizationUser } from "@/types/auth";
 
 import MainContainer from "@/components/ui/structure/main-container";
 import ActionsSection from "@/components/ui/structure/actions-section";
@@ -24,6 +25,8 @@ import { Paginator } from "@/components/ui/navigation/paginator";
 
 import { LocationShowMap } from "@/components/ui/maps/location-show-map";
 
+import OrganizationUsersSection from "@/components/shared/users/organization-users-section";
+
 import { BuildingIcon, NotepadTextIcon, SchoolIcon, SquarePenIcon, UsersIcon } from "lucide-react";
 
 import { index, show, edit, destroy } from "@/routes/administration/education-monitors";
@@ -39,9 +42,10 @@ type PageProps = {
     offices: Paginated<OfficeProps>;
     canAny: boolean;
     can: CanPermissions;
+    users: OrganizationUser[];
 }
 
-export default function Show({ monitor, offices, canAny, can }: PageProps) {
+export default function Show({ monitor, offices, canAny, can, users }: PageProps) {
     const { data: officesData, links: officesLinks, ...officesMeta } = offices;
 
     const hasPagination = officesData.length > 0 && officesMeta.last_page > 1;
@@ -156,6 +160,8 @@ export default function Show({ monitor, offices, canAny, can }: PageProps) {
                         </CardContent>
                     </Card>
                 </section>
+
+                <OrganizationUsersSection users={users} />
 
                 <section>
                     <Card>

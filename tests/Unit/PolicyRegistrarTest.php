@@ -5,9 +5,6 @@ use App\Policies\Administration\EducationMonitorPolicy;
 use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Tests\TestCase;
-
-uses(TestCase::class);
 
 test('register binds policies for the current request group', function () {
     PolicyRegistrar::register(Request::create('/administration/education-monitors', 'GET'));

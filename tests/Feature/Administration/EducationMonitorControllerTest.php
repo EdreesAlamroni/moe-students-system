@@ -9,6 +9,7 @@ use App\Support\PolicyRegistrar;
 use Illuminate\Http\Request;
 use Mockery\MockInterface;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 /**
  * Wrap a persisted monitor in a partial mock so route-model binding resolves it,
@@ -109,6 +110,8 @@ test('authenticated users can store an education monitor and name is generated f
     $user = createEducationMonitorAdminUser();
     $municipal = Municipal::factory()->create(['name' => 'بنغازي']);
 
+    Role::findOrCreate('user:role:view', UserScope::EDUCATION_MONITOR->value);
+
     $this->actingAs($user, 'administration')
         ->post(route('administration.education-monitors.store'), monitorPayload($municipal, [
             'name' => 'اسم مُرسل من الطلب',
@@ -125,6 +128,11 @@ test('authenticated users can store an education monitor and name is generated f
         'id' => $monitor->id,
         'municipal_id' => $municipal->id,
     ]);
+
+    $defaultUser = User::query()->where('organization_id', $monitor->id)->firstOrFail();
+
+    expect($defaultUser->scope)->toBe(UserScope::EDUCATION_MONITOR)
+        ->and($defaultUser->hasInitialPassword())->toBeTrue();
 });
 
 test('store validates municipal uniqueness across education monitors', function () {

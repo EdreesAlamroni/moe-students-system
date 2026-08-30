@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers\Administration;
 
+use App\Actions\User\CreateDefaultOrganizationUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\EducationServicesOffice\StoreRequest;
 use App\Http\Requests\Administration\EducationServicesOffice\UpdateRequest;
 use App\Http\Resources\Administration\EducationServicesOfficeCollection;
 use App\Http\Resources\Administration\EducationServicesOfficeFormResource;
 use App\Http\Resources\Administration\EducationServicesOfficeResource;
+use App\Http\Resources\Shared\OrganizationUserResource;
 use App\Models\EducationMonitor;
 use App\Models\EducationServicesOffice;
 use App\Support\ModelAbilityMap;
 use App\Support\ResourcePayloadBuilder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -76,7 +79,13 @@ class EducationServicesOfficeController extends Controller
     {
         Gate::authorize('create', EducationServicesOffice::class);
 
-        $office = EducationServicesOffice::create($request->getAttributes());
+        $office = DB::transaction(function () use ($request): EducationServicesOffice {
+            $office = EducationServicesOffice::create($request->getAttributes());
+
+            app(CreateDefaultOrganizationUser::class)->forEducationServicesOffice($office);
+
+            return $office;
+        });
 
         flash_success('create');
 
@@ -99,6 +108,9 @@ class EducationServicesOfficeController extends Controller
         return Inertia::render('administration/education-services-offices/show', [
             'office' => ResourcePayloadBuilder::make(
                 EducationServicesOfficeResource::make($office),
+            ),
+            'users' => ResourcePayloadBuilder::collection(
+                OrganizationUserResource::collection($office->organizationUsers()),
             ),
             ...ModelAbilityMap::make($office, ['update', 'delete']),
         ]);

@@ -7,11 +7,7 @@ use App\Models\Municipal;
 use App\Models\User;
 use App\Policies\Administration\EducationMonitorReportPolicy;
 use App\Support\ModelAbilityMap;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 it('maps individual abilities with can', function () {
     $municipal = Municipal::factory()->makeOne();
