@@ -24,7 +24,7 @@ class SchoolPolicy
 
     private function belongsToCurrentWarehouse(User $user, School $school): bool
     {
-        $school->loadMissing('monitor:id,warehouse_id');
+        $school->loadMissing(['monitor:id,warehouse_id']);
 
         return $user->organization_type === Warehouse::class
             && $user->organization_id === $school->monitor->warehouse_id;

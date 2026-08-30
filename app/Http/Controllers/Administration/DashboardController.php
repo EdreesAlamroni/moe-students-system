@@ -83,7 +83,7 @@ class DashboardController extends Controller
 
         return EducationMonitor::query()
             ->select(['id', 'name'])
-            ->withCount('schools')
+            ->withCount(['schools'])
             ->ordered()
             ->get()
             ->map(function (EducationMonitor $monitor) use ($students): array {

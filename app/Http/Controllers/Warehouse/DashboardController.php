@@ -82,7 +82,7 @@ class DashboardController extends Controller
         return EducationMonitor::query()
             ->select(['id', 'name'])
             ->forCurrentWarehouse()
-            ->withCount('schools')
+            ->withCount(['schools'])
             ->ordered()
             ->get()
             ->map(function (EducationMonitor $monitor) use ($students, $distributions, $received, $pending): array {
@@ -124,7 +124,7 @@ class DashboardController extends Controller
             ->select(['id', 'name', 'education_monitor_id'])
             ->forCurrentWarehouse()
             ->with(['monitor:id,name'])
-            ->withCount('students')
+            ->withCount(['students'])
             ->orderByDesc('students_count')
             ->ordered()
             ->take($SCHOOL_SEGMENTS)

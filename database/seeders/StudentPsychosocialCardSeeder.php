@@ -27,7 +27,7 @@ class StudentPsychosocialCardSeeder extends Seeder
             return;
         }
 
-        $student->load('enrollment');
+        $student->load(['enrollment']);
 
         $currentAcademicYearId = AcademicYear::currentId();
         $enrollment = $student->enrollment;

@@ -87,7 +87,7 @@ class DashboardController extends Controller
         return Classroom::query()
             ->select(['classrooms.id', 'classrooms.name', 'classrooms.capacity', 'grade_levels.name as grade_level_name'])
             ->forCurrentSchoolAndAcademicYear()
-            ->withCount('students')
+            ->withCount(['students'])
             ->ordered()
             ->get()
             ->map(fn (Classroom $classroom): array => [

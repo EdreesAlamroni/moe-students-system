@@ -208,7 +208,7 @@ class DashboardController extends Controller
             ->whereHas('school', function (Builder $query) use ($type): void {
                 $query->where('type', '=', $type);
             })
-            ->withCount('students')
+            ->withCount(['students'])
             ->orderByDesc('students_count')
             ->first();
 

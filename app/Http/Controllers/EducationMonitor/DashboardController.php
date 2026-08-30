@@ -102,7 +102,7 @@ class DashboardController extends Controller
         return EducationServicesOffice::query()
             ->select(['id', 'name'])
             ->forCurrentEducationMonitor()
-            ->withCount('schools')
+            ->withCount(['schools'])
             ->ordered()
             ->get()
             ->map(function (EducationServicesOffice $office) use ($students): array {
@@ -225,7 +225,7 @@ class DashboardController extends Controller
             ->whereHas('school', function (Builder $query) use ($type): void {
                 $query->where('type', '=', $type);
             })
-            ->withCount('students')
+            ->withCount(['students'])
             ->orderByDesc('students_count')
             ->first();
 

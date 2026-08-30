@@ -133,7 +133,7 @@ class UserController extends Controller
     {
         Gate::authorize('view', $user);
 
-        $user->loadMissing('roles:id,name');
+        $user->loadMissing(['roles:id,name']);
 
         return Inertia::render('education-services-office/users/show', [
             'user' => ResourcePayloadBuilder::make(
